@@ -1,4 +1,4 @@
-# Quakearts--JSF-Webtools
+# Quakearts-JSF-Webtools
 My JSF Tag Libraries and Utility classes for web application development.
 Includes:
 
