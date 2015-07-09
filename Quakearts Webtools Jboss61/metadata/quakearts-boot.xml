@@ -1,0 +1,773 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<md:metadatamodel
+	xmlns:md="http://org.eclipse.jst.jsf.common.metadata/metadata.ecore"
+	xmlns:cnst="http://org.eclipse.jst.jsf.core/constraints.ecore"
+	xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+	xmlns:mdt="http://org.eclipse.jst.jsf.common.metadata/metadataTraitTypes.ecore"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	id="http://quakearts.com/2.0/boot"
+	type="tagFile">
+
+	<entity id="column" type="tag">
+		<entity id="size">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.IntegerType
+				</value>
+			</trait>
+			<trait id="valid-minimum"><value xsi:type="mdt:StringValue">0</value></trait>
+			<trait id="valid-maximum"><value xsi:type="mdt:StringValue">12</value></trait>
+		</entity>
+	</entity>
+
+	<entity id="button" type="tag">
+		<entity id="displayType">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>default</item>
+					<item>primary</item>
+					<item>success</item>
+					<item>info</item>
+					<item>warning</item>
+					<item>danger</item>
+				</value>
+			</trait>
+		</entity>
+		<entity id="type">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>submit</item>
+					<item>button</item>
+					<item>reset</item>
+				</value>
+			</trait>
+		</entity>
+		<entity id="actionListener">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">org.eclipse.jst.jsf.core.attributevalues.MethodBindingType</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">void</value>
+			</trait>
+			<trait id="runtime-param-types">
+				<value xsi:type="mdt:StringValue">javax.faces.event.ActionEvent</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="action">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">org.eclipse.jst.jsf.core.attributevalues.MethodBindingType</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">java.lang.String</value>
+			</trait>
+			<trait id="runtime-param-types">
+				<value xsi:type="mdt:StringValue"></value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="menu" type="tag">
+		<entity id="displayType">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>default</item>
+					<item>primary</item>
+					<item>success</item>
+					<item>info</item>
+					<item>warning</item>
+					<item>danger</item>
+				</value>
+			</trait>
+		</entity>
+		<entity id="type">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>default</item>
+					<item>navbar</item>
+				</value>
+			</trait>
+		</entity>
+		<entity id="dropup">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.BooleanType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="glyph" type="tag">
+		<entity id="value">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>adjust</item>
+					<item>alert</item>
+					<item>align-center</item>
+					<item>align-justify</item>
+					<item>align-left</item>
+					<item>align-right</item>
+					<item>apple</item>
+					<item>arrow-down</item>
+					<item>arrow-left</item>
+					<item>arrow-right</item>
+					<item>arrow-up</item>
+					<item>asterisk</item>
+					<item>baby-formula</item>
+					<item>backward</item>
+					<item>ban-circle</item>
+					<item>barcode</item>
+					<item>bed</item>
+					<item>bell</item>
+					<item>bishop</item>
+					<item>bitcoin</item>
+					<item>blackboard</item>
+					<item>bold</item>
+					<item>book</item>
+					<item>bookmark</item>
+					<item>briefcase</item>
+					<item>bullhorn</item>
+					<item>calendar</item>
+					<item>camera</item>
+					<item>cd</item>
+					<item>certificate</item>
+					<item>check</item>
+					<item>chevron-down</item>
+					<item>chevron-left</item>
+					<item>chevron-right</item>
+					<item>chevron-up</item>
+					<item>circle-arrow-down</item>
+					<item>circle-arrow-left</item>
+					<item>circle-arrow-right</item>
+					<item>circle-arrow-up</item>
+					<item>cloud-download</item>
+					<item>cloud-upload</item>
+					<item>cloud</item>
+					<item>cog</item>
+					<item>collapse-down</item>
+					<item>collapse-up</item>
+					<item>comment</item>
+					<item>compressed</item>
+					<item>console</item>
+					<item>copy</item>
+					<item>copyright-mark</item>
+					<item>credit-card</item>
+					<item>cutlery</item>
+					<item>dashboard</item>
+					<item>download-alt</item>
+					<item>download</item>
+					<item>duplicate</item>
+					<item>earphone</item>
+					<item>edit</item>
+					<item>education</item>
+					<item>eject</item>
+					<item>envelope</item>
+					<item>equalizer</item>
+					<item>erase</item>
+					<item>eur</item>
+					<item>euro</item>
+					<item>exclamation-sign</item>
+					<item>expand</item>
+					<item>export</item>
+					<item>eye-close</item>
+					<item>eye-open</item>
+					<item>facetime-video</item>
+					<item>fast-backward</item>
+					<item>fast-forward</item>
+					<item>file</item>
+					<item>film</item>
+					<item>filter</item>
+					<item>fire</item>
+					<item>flag</item>
+					<item>flash</item>
+					<item>floppy-disk</item>
+					<item>floppy-open</item>
+					<item>floppy-remove</item>
+					<item>floppy-save</item>
+					<item>floppy-saved</item>
+					<item>folder-close</item>
+					<item>folder-open</item>
+					<item>font</item>
+					<item>forward</item>
+					<item>fullscreen</item>
+					<item>gbp</item>
+					<item>gift</item>
+					<item>glass</item>
+					<item>globe</item>
+					<item>grain</item>
+					<item>hand-down</item>
+					<item>hand-left</item>
+					<item>hand-right</item>
+					<item>hand-up</item>
+					<item>hd-video</item>
+					<item>hdd</item>
+					<item>header</item>
+					<item>headphones</item>
+					<item>heart-empty</item>
+					<item>heart</item>
+					<item>home</item>
+					<item>hourglass</item>
+					<item>ice-lolly-tasted</item>
+					<item>ice-lolly</item>
+					<item>import</item>
+					<item>inbox</item>
+					<item>indent-left</item>
+					<item>indent-right</item>
+					<item>info-sign</item>
+					<item>italic</item>
+					<item>king</item>
+					<item>knight</item>
+					<item>lamp</item>
+					<item>leaf</item>
+					<item>level-up</item>
+					<item>link</item>
+					<item>list-alt</item>
+					<item>list</item>
+					<item>lock</item>
+					<item>log-in</item>
+					<item>log-out</item>
+					<item>magnet</item>
+					<item>map-marker</item>
+					<item>menu-down</item>
+					<item>menu-hamburger</item>
+					<item>menu-left</item>
+					<item>menu-right</item>
+					<item>menu-up</item>
+					<item>minus-sign</item>
+					<item>minus</item>
+					<item>modal-window</item>
+					<item>move</item>
+					<item>music</item>
+					<item>new-window</item>
+					<item>object-align-bottom</item>
+					<item>object-align-horizontal</item>
+					<item>object-align-left</item>
+					<item>object-align-right</item>
+					<item>object-align-top</item>
+					<item>object-align-vertical</item>
+					<item>off</item>
+					<item>oil</item>
+					<item>ok-circle</item>
+					<item>ok-sign</item>
+					<item>ok</item>
+					<item>open-file</item>
+					<item>open</item>
+					<item>option-horizontal</item>
+					<item>option-vertical</item>
+					<item>paperclip</item>
+					<item>paste</item>
+					<item>pause</item>
+					<item>pawn</item>
+					<item>pencil</item>
+					<item>phone-alt</item>
+					<item>phone</item>
+					<item>picture</item>
+					<item>piggy-bank</item>
+					<item>plane</item>
+					<item>play-circle</item>
+					<item>play</item>
+					<item>plus-sign</item>
+					<item>plus</item>
+					<item>print</item>
+					<item>pushpin</item>
+					<item>qrcode</item>
+					<item>queen</item>
+					<item>question-sign</item>
+					<item>random</item>
+					<item>record</item>
+					<item>refresh</item>
+					<item>registration-mark</item>
+					<item>remove-circle</item>
+					<item>remove-sign</item>
+					<item>remove</item>
+					<item>repeat</item>
+					<item>resize-full</item>
+					<item>resize-horizontal</item>
+					<item>resize-small</item>
+					<item>resize-vertical</item>
+					<item>retweet</item>
+					<item>road</item>
+					<item>ruble</item>
+					<item>save-file</item>
+					<item>save</item>
+					<item>saved</item>
+					<item>scale</item>
+					<item>scissors</item>
+					<item>screenshot</item>
+					<item>sd-video</item>
+					<item>search</item>
+					<item>send</item>
+					<item>share-alt</item>
+					<item>share</item>
+					<item>shopping-cart</item>
+					<item>signal</item>
+					<item>sort-by-alphabet-alt</item>
+					<item>sort-by-alphabet</item>
+					<item>sort-by-attributes-alt</item>
+					<item>sort-by-attributes</item>
+					<item>sort-by-order-alt</item>
+					<item>sort-by-order</item>
+					<item>sort</item>
+					<item>sound-5-1</item>
+					<item>sound-6-1</item>
+					<item>sound-7-1</item>
+					<item>sound-dolby</item>
+					<item>sound-stereo</item>
+					<item>star-empty</item>
+					<item>star</item>
+					<item>stats</item>
+					<item>step-backward</item>
+					<item>step-forward</item>
+					<item>stop</item>
+					<item>subscript</item>
+					<item>subtitles</item>
+					<item>sunglasses</item>
+					<item>superscript</item>
+					<item>tag</item>
+					<item>tags</item>
+					<item>tasks</item>
+					<item>tent</item>
+					<item>text-background</item>
+					<item>text-color</item>
+					<item>text-height</item>
+					<item>text-size</item>
+					<item>text-width</item>
+					<item>th-large</item>
+					<item>th-list</item>
+					<item>th</item>
+					<item>thumbs-down</item>
+					<item>thumbs-up</item>
+					<item>time</item>
+					<item>tint</item>
+					<item>tower</item>
+					<item>transfer</item>
+					<item>trash</item>
+					<item>tree-conifer</item>
+					<item>tree-deciduous</item>
+					<item>triangle-bottom</item>
+					<item>triangle-left</item>
+					<item>triangle-right</item>
+					<item>triangle-top</item>
+					<item>unchecked</item>
+					<item>upload</item>
+					<item>usd</item>
+					<item>user</item>
+					<item>volume-down</item>
+					<item>volume-off</item>
+					<item>volume-up</item>
+					<item>warning-sign</item>
+					<item>wrench</item>
+					<item>yen</item>
+					<item>zoom-in</item>
+					<item>zoom-out</item>
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="container" type="tag">
+		<entity id="fluid">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.BooleanType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="label" type="tag">
+		<entity id="type">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>default</item>
+					<item>primary</item>
+					<item>success</item>
+					<item>info</item>
+					<item>warning</item>
+					<item>danger</item>
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="nav" type="tag">
+		<entity id="type">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>none</item>
+					<item>pills</item>
+					<item>tabs</item>
+				</value>
+			</trait>
+		</entity>
+		<entity id="stacked">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.BooleanType
+				</value>
+			</trait>
+		</entity>
+		<entity id="justified">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.BooleanType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="navbar" type="tag">
+		<entity id="type">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>default</item>
+					<item>inverse</item>
+				</value>
+			</trait>
+		</entity>
+		<entity id="position">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>fixed</item>
+					<item>fixed-top</item>
+					<item>fixed-bottom</item>
+					<item>static</item>
+					<item>static-top</item>
+					<item>static-bottom</item>
+				</value>
+			</trait>
+		</entity>		
+		<entity id="responsive">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.BooleanType
+				</value>
+			</trait>
+		</entity>
+		<entity id="fluid">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.BooleanType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="panel" type="tag">
+		<entity id="type">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>default</item>
+					<item>primary</item>
+					<item>success</item>
+					<item>info</item>
+					<item>warning</item>
+					<item>danger</item>
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="panel" type="tag">
+		<entity id="type">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>default</item>
+					<item>primary</item>
+					<item>success</item>
+					<item>info</item>
+					<item>warning</item>
+					<item>danger</item>
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="date" type="tag">
+		<entity id="value">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+		</entity>
+		<entity id="min">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.IntegerType
+				</value>
+			</trait>
+			<trait id="valid-minimum"><value xsi:type="mdt:StringValue">0</value></trait>
+		</entity>
+		<entity id="max">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.IntegerType
+				</value>
+			</trait>
+			<trait id="valid-minimum"><value xsi:type="mdt:StringValue">0</value></trait>
+		</entity>
+		<entity id="format">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>dmy</item>
+					<item>dm</item>
+					<item>m</item>
+					<item>my</item>
+					<item>y</item>
+				</value>
+			</trait>
+		</entity>
+		<entity id="dayType">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>default</item>
+					<item>primary</item>
+					<item>success</item>
+					<item>info</item>
+					<item>warning</item>
+					<item>danger</item>
+				</value>
+			</trait>
+		</entity>
+		<entity id="monthType">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>default</item>
+					<item>primary</item>
+					<item>success</item>
+					<item>info</item>
+					<item>warning</item>
+					<item>danger</item>
+				</value>
+			</trait>
+		</entity>
+		<entity id="yearType">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>default</item>
+					<item>primary</item>
+					<item>success</item>
+					<item>info</item>
+					<item>warning</item>
+					<item>danger</item>
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="resource" type="tag">
+		<entity id="position">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>top</item>
+					<item>bottom</item>
+				</value>
+			</trait>
+		</entity>
+		<entity id="type">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>script</item>
+					<item>css</item>
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="selectManyListbox" type="tag">
+		<entity id="displayType">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>default</item>
+					<item>primary</item>
+					<item>success</item>
+					<item>info</item>
+					<item>warning</item>
+					<item>danger</item>
+				</value>
+			</trait>
+		</entity>
+	</entity>
+	
+	<entity id="selectManyMenu" type="tag">
+		<entity id="displayType">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>default</item>
+					<item>primary</item>
+					<item>success</item>
+					<item>info</item>
+					<item>warning</item>
+					<item>danger</item>
+				</value>
+			</trait>
+		</entity>
+	</entity>
+	
+	<entity id="selectOneListbox" type="tag">
+		<entity id="displayType">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>default</item>
+					<item>primary</item>
+					<item>success</item>
+					<item>info</item>
+					<item>warning</item>
+					<item>danger</item>
+				</value>
+			</trait>
+		</entity>
+	</entity>
+	
+	<entity id="selectOneMenu" type="tag">
+		<entity id="displayType">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>default</item>
+					<item>primary</item>
+					<item>success</item>
+					<item>info</item>
+					<item>warning</item>
+					<item>danger</item>
+				</value>
+			</trait>
+		</entity>
+	</entity>
+	
+	<entity id="form" type="tag">
+		<entity id="type">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>inline</item>
+					<item>horizontal</item>
+					<item>navbar</item>
+				</value>
+			</trait>
+		</entity>
+	</entity>	
+</md:metadatamodel>

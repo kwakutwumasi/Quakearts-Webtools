@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
+  <display-name>logging console</display-name>
+  <listener>
+    <listener-class>com.quakearts.webapp.logging.WebLogSessionListener</listener-class>
+  </listener>
+  <servlet>
+    <servlet-name>Logging Servlet</servlet-name>
+    <servlet-class>com.quakearts.webapp.logging.WebLogServlet</servlet-class>
+    <init-param>
+      <param-name>appender.name</param-name>
+      <param-value>WEB</param-value>
+    </init-param>
+    <init-param>
+      <param-name>log.file</param-name>
+      <param-value>D:\SERVERS\jboss-5.1.0.GA\server\default\log\server.log</param-value>
+    </init-param>
+    <init-param>
+      <param-name>log.printer</param-name>
+      <param-value>com.quakearts.webapp.logging.parser.impl.JBossLogPrinter</param-value>
+    </init-param>
+    <init-param>
+      <param-name>log.base</param-name>
+      <param-value>D:\SERVERS\jboss-5.1.0.GA\server\default\log</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <context-param>
+    <param-name>navigation.resolver</param-name>
+    <param-value>com.quakearts.webapp.facelets.tag.ext.GravelNavigationResolver</param-value>
+  </context-param>
+  <servlet-mapping>
+    <servlet-name>Logging Servlet</servlet-name>
+    <url-pattern>/logger/*</url-pattern>
+  </servlet-mapping>
+  <session-config>
+    <session-timeout>30</session-timeout>
+  </session-config>
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+  <servlet>
+    <servlet-name>Faces Servlet</servlet-name>
+    <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Faces Servlet</servlet-name>
+    <url-pattern>/faces/*</url-pattern>
+  </servlet-mapping>
+</web-app>

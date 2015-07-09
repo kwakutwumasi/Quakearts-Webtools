@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="build/auth" path="auth-src"/>
+	<classpathentry kind="src" output="build/boot" path="boot-src"/>
+	<classpathentry kind="src" output="build/ext" path="common-ext"/>
+	<classpathentry kind="src" path="common-src"/>
+	<classpathentry kind="src" output="build/ui" path="commonui-src"/>
+	<classpathentry kind="src" output="build/crypt" path="crypt-src"/>
+	<classpathentry kind="src" output="build/dbload" path="dbloader-src"/>
+	<classpathentry kind="src" output="build/logging" path="logging-src"/>
+	<classpathentry kind="src" output="build/wf" path="wf-src"/>
+	<classpathentry kind="lib" path="C:/Users/Public/Utilities/ldap.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/Public/servers/jboss-6.1.0.Final/server/default/deploy/jbossweb.sar/jbossweb.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/Gravel-2.0.2.GA">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/Richfaces-4.3.4.Final">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7">
+		<attributes>
+			<attribute name="owner.project.facets" value="java"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget/JBoss 6.x Runtime"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jBPM4jsf2"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jBPM Core"/>
+	<classpathentry kind="output" path="build/main"/>
+</classpath>

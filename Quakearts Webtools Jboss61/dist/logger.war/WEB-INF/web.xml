@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.5"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+	<display-name>logging console</display-name>
+	<listener>
+		<listener-class>com.quakearts.webapp.logging.WebLogSessionListener</listener-class>
+	</listener>
+	<servlet>
+		<servlet-name>Logging Servlet</servlet-name>
+		<servlet-class>com.quakearts.webapp.logging.WebLogServlet</servlet-class>
+		<!-- init-param>
+			<param-name>appender.name</param-name>
+			<param-value>WEB</param-value>
+		</init-param -->
+		<init-param>
+			<param-name>finder.class</param-name>
+			<param-value>com.quakearts.webapp.logging.finder.impl.JBossLogManagerHandlerFinder</param-value>
+		</init-param>
+		<init-param>
+			<param-name>log.file</param-name>
+			<param-value>C:\Users\Public\servers\jboss-6.1.0.Final\server\default\log\server.log</param-value>
+		</init-param>
+		<init-param>
+			<param-name>log.printer</param-name>
+			<param-value>com.quakearts.webapp.logging.parser.impl.JBossLogPrinter</param-value>
+		</init-param>
+		<init-param>
+			<param-name>log.base</param-name>
+			<param-value>C:\Users\Public\servers\jboss-6.1.0.Final\server\default\log</param-value>
+		</init-param>
+		<init-param>
+			<param-name>system.monitor</param-name>
+			<param-value>com.quakearts.webapp.logging.monitor.impl.JbossSystemMonitor</param-value>
+		</init-param>		
+		<init-param>
+			<param-name>monitor.targets</param-name>
+			<param-value>"JMX Console"|"http://localhost:8080/jmx-console"|"webapp"
+			"Test Service"|"jboss:service=TestService,name=TestService"|"serverservice"
+			"Main Deployer"|"jboss.system:service=MainDeployer"|"serverservice"
+			"Test Webapp"|"http://localhost:8080/test-app"|"webapp"
+			</param-value>
+		</init-param>		
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<!-- Mapping for all plain pages. -->
+	<servlet-mapping>
+		<servlet-name>Logging Servlet</servlet-name>
+		<url-pattern>/system/*</url-pattern>
+	</servlet-mapping>
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+</web-app>

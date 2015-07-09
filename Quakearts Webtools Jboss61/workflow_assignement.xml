@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assignment xmlns="http://www.quakearts.com/workflow_assignement" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.quakearts.com/workflow_assignement workflow_assignement.xsd ">
+  <role name="supervisor">
+  	<actor username="ktwumasi"/>
+  </role>
+</assignment>
