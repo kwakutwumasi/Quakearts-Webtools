@@ -53,8 +53,8 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 
 		
 		writer.startElement("div", component);
-		writer.writeAttribute("class", "form-control" +(componentDisabled?" disabled":""), null);
-		writer.writeAttribute("style", "z-index: 3", null);
+		writer.writeAttribute("class", "form-control form-select" +(componentDisabled?" disabled":""), null);
+		writer.writeAttribute("style", "z-index: auto;", null);
 		writer.writeAttribute("onclick", "qaboot.selectInputDropDown('dd_"+id.replace(":", "\\\\:")+"');", null);
 
 		writer.startElement("span", component);
