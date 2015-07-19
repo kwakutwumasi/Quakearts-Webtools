@@ -50,7 +50,6 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		writer.writeAttribute("class", "input-group-addon", null);
     	writer.writeText(label!=null?label:" ",null);
 		writer.endElement("span");
-
 		
 		writer.startElement("div", component);
 		writer.writeAttribute("class", "form-control form-select" +(componentDisabled?" disabled":""), null);
