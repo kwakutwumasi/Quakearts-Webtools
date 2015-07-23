@@ -25,7 +25,7 @@ public class HashPassword {
 		try {
 			this.mdAlgorithm = MessageDigest.getInstance(this.algorithm);
 			String hashText = this.plainText
-					+ (this.salt != null ? this.salt : "&Sds$g1Art412Jj}|me?*0");
+					+ (this.salt != null ? this.salt : DEFAULT_SALT);
 			this.mdAlgorithm.update(hashText.getBytes());
 			hashBytes = this.mdAlgorithm.digest();
 			for (int i = 0; i < this.iterations; i++) {
