@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deployment xmlns="urn:jboss:bean-deployer:2.0">
-	<application-policy xmlns="urn:jboss:security-beans:1.0">
+	<application-policy name="" xmlns="urn:jboss:security-beans:1.0">
 		<authentication>
 			<login-module code="" flag="required">
 				<module-option name=""></module-option>
