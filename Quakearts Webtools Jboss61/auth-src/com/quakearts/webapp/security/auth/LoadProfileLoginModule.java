@@ -12,7 +12,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.StringTokenizer;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.security.auth.login.LoginException;
@@ -62,21 +61,15 @@ public class LoadProfileLoginModule implements LoginModule{
         }
         
         require_password_change = require_password_change && (changePasswordRole!=null);
-        
-        StringTokenizer tokenizer;
-        
+                
         if (rolesgrpname == null)
          rolesgrpname = new String("Roles");
         
         if(defaultroles_str != null){
-         tokenizer = new StringTokenizer(defaultroles_str,";",false);
-         defaultroles = new String[tokenizer.countTokens()];
-         
-         for(int i=0;i<defaultroles.length;i++){
-             defaultroles[i] = tokenizer.nextToken();
-         }
+        	defaultroles = defaultroles_str.split(";");
+        	for(int i=0;i<defaultroles.length;i++)
+        		defaultroles[i] = defaultroles[i].trim();
         }
-        
         
         log.trace("Initialization complete.\n"+
                   "\t\tZeDatabaseLoginModule options:\n" +
@@ -129,11 +122,11 @@ public class LoadProfileLoginModule implements LoginModule{
 		                if(!resOrientPort){
 			                if(rs.next()){
 			                    log.trace("Got profile. Loading....");
-			                    String[] roles = stringToArray(rolescolumns,",");
+			                    String[] roles = rolescolumns.split(",");
 			                    for(String role:roles){
 			                        userprof.put(role,rs.getString(role));
 			                    }
-			                }else{
+			                } else {
 			                    throw new DirectoryLoginException("No profile found for "+username);
 			                }
 		                } else {
@@ -184,14 +177,14 @@ public class LoadProfileLoginModule implements LoginModule{
             Set<Principal> principalset = subject.getPrincipals();
             
             log.trace("Fetching already existing roles group...");
-            for(Iterator i=principalset.iterator();i.hasNext();){
-                Object obj = i.next();
-                if(obj instanceof DirectoryRoles){
-                    rolesgrp = (DirectoryRoles) obj;
+			for (Iterator i = principalset.iterator(); i.hasNext();) {
+				Object obj = i.next();
+				if (obj instanceof Group && ((Group) obj).getName().equals(rolesgrpname)) {
+					rolesgrp = (Group) obj;
                     log.trace("Found existing roles group: "+rolesgrp.getName());
-                    break;
-                }
-            }
+					break;
+				}
+			}				
             
             if(rolesgrp == null){
                 log.trace("Creating roles group...");
@@ -252,21 +245,4 @@ public class LoadProfileLoginModule implements LoginModule{
         }else
             return false;
     }
-
-    private static String[] stringToArray(String string, String delim){
-        StringTokenizer tokenizer = new StringTokenizer(string,delim);
-        String[] arrayofstring = null;
-        int i = tokenizer.countTokens();
-        if(i>0)
-        {
-            arrayofstring = new String[i];
-            i=0;
-            while(tokenizer.hasMoreTokens())
-            {
-                arrayofstring[i++] = tokenizer.nextToken();
-            }
-        }
-        return arrayofstring;
-    }
-
 }

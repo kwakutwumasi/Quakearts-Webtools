@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.StringTokenizer;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.security.auth.callback.Callback;
@@ -66,18 +65,14 @@ public class DirectoryDatabaseLoginModule implements LoginModule{
         hashalgorithm = (String) options.get("database.hashalgorithm");
 
         String defaultroles_str = (String) options.get("database.defaultroles");
-        StringTokenizer tokenizer;
         
         if (rolesgrpname == null)
          rolesgrpname = new String("Roles");
         
         if(defaultroles_str != null){
-         tokenizer = new StringTokenizer(defaultroles_str,";",false);
-         defaultroles = new String[tokenizer.countTokens()];
-         
-         for(int i=0;i<defaultroles.length;i++){
-             defaultroles[i] = tokenizer.nextToken();
-         }
+        	defaultroles = defaultroles_str.split(";");
+        	for(int i=0;i<defaultroles.length;i++)
+        		defaultroles[i] = defaultroles[i].trim();
         }
         
         String maxAttempts_str = (String) options.get("max_try_attempts");

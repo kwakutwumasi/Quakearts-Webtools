@@ -9,8 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
-
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
@@ -55,18 +53,14 @@ public class WebServiceLoginModule implements LoginModule {
 		webserviceBaseURL = (String) options.get("login.service.url");
 		webserviceLocation = (String) options.get("login.service.location");
         String defaultroles_str = (String) options.get("defaultroles");
-        StringTokenizer tokenizer;
         
         if (rolesgrpname == null)
          rolesgrpname = "Roles";
         
         if(defaultroles_str != null){
-         tokenizer = new StringTokenizer(defaultroles_str,";",false);
-         defaultroles = new String[tokenizer.countTokens()];
-         
-         for(int i=0;i<defaultroles.length;i++){
-             defaultroles[i] = tokenizer.nextToken();
-         }
+        	defaultroles = defaultroles_str.split(";");
+        	for(int i=0;i<defaultroles.length;i++)
+        		defaultroles[i] = defaultroles[i].trim();
         }
         
         String maxAttempts_str = (String) options.get("max_try_attempts");
@@ -175,20 +169,21 @@ public class WebServiceLoginModule implements LoginModule {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean commit() throws LoginException {
 		if(loginOk){
             Set<Principal> principalset = subject.getPrincipals();            
             if(use_first_pass){
         		log.trace("Fetching already existing roles group...");
-                for(Iterator<?> i=principalset.iterator();i.hasNext();){
-                    Object obj = i.next();
-                    if(obj instanceof DirectoryRoles){
-                        rolesgrp = (DirectoryRoles) obj;
+				for (Iterator i = principalset.iterator(); i.hasNext();) {
+					Object obj = i.next();
+					if (obj instanceof Group && ((Group) obj).getName().equals(rolesgrpname)) {
+						rolesgrp = (Group) obj;
                         log.trace("Found existing roles group: "+rolesgrp.getName());
-                        break;
-                    }
-                }
+						break;
+					}
+				}				
         	}
         	if(rolesgrp==null)
         		rolesgrp = new DirectoryRoles(rolesgrpname);

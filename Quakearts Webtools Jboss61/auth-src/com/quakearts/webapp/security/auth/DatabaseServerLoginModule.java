@@ -15,7 +15,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.StringTokenizer;
 import javax.naming.InitialContext;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
@@ -69,19 +68,14 @@ public class DatabaseServerLoginModule implements LoginModule {
 		resOrientPort = Boolean.parseBoolean((String) options
 				.get("result_orientation_potrait"));
 
-		StringTokenizer tokenizer;
-
 		if (rolesgrpname == null)
 			rolesgrpname = new String("Roles");
 
-		if (defaultroles_str != null) {
-			tokenizer = new StringTokenizer(defaultroles_str, ";", false);
-			defaultroles = new String[tokenizer.countTokens()];
-
-			for (int i = 0; i < defaultroles.length; i++) {
-				defaultroles[i] = tokenizer.nextToken();
-			}
-		}
+        if(defaultroles_str != null){
+        	defaultroles = defaultroles_str.split(";");
+        	for(int i=0;i<defaultroles.length;i++)
+        		defaultroles[i] = defaultroles[i].trim();
+        }
 
 		use_first_pass = Boolean.parseBoolean((String) options
 				.get("use_first_pass"));
@@ -288,13 +282,12 @@ public class DatabaseServerLoginModule implements LoginModule {
 				log.trace("Fetching already existing roles group...");
 				for (Iterator i = principalset.iterator(); i.hasNext();) {
 					Object obj = i.next();
-					if (obj instanceof DirectoryRoles) {
-						rolesgrp = (DirectoryRoles) obj;
-						log.trace("Found existing roles group: "
-								+ rolesgrp.getName());
+					if (obj instanceof Group && ((Group) obj).getName().equals(rolesgrpname)) {
+						rolesgrp = (Group) obj;
+                        log.trace("Found existing roles group: "+rolesgrp.getName());
 						break;
 					}
-				}
+				}				
 			}
 			if (rolesgrp == null) {
 				log.trace("Creating roles group...");

@@ -265,7 +265,8 @@ public class DirectoryLoginModule implements LoginModule{
         return loginOk;
     }
 
-    public boolean commit() {
+    @SuppressWarnings("rawtypes")
+	public boolean commit() {
         if(loginOk){
 
             UserPrincipal user = new UserPrincipal(subject_username);
@@ -306,14 +307,14 @@ public class DirectoryLoginModule implements LoginModule{
             Set<Principal> principalset = subject.getPrincipals();            
             if(use_first_pass){
         		log.trace("Fetching already existing roles group...");
-                for(Iterator<?> i=principalset.iterator();i.hasNext();){
-                    Object obj = i.next();
-                    if(obj instanceof DirectoryRoles){
-                        rolesgrp = (DirectoryRoles) obj;
+				for (Iterator i = principalset.iterator(); i.hasNext();) {
+					Object obj = i.next();
+					if (obj instanceof Group && ((Group) obj).getName().equals(rolesgrpname)) {
+						rolesgrp = (Group) obj;
                         log.trace("Found existing roles group: "+rolesgrp.getName());
-                        break;
-                    }
-                }
+						break;
+					}
+				}				
         	}
             
         	if(rolesgrp==null){

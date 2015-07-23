@@ -12,7 +12,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.StringTokenizer;
 import javax.naming.InitialContext;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
@@ -96,19 +95,14 @@ public class DatabaseLoginModule implements LoginModule {
 				iterations = 10;
 			}
 
-		StringTokenizer tokenizer;
-
 		if (rolesgrpname == null)
 			rolesgrpname = new String("Roles");
 
-		if (defaultroles_str != null) {
-			tokenizer = new StringTokenizer(defaultroles_str, ";", false);
-			defaultroles = new String[tokenizer.countTokens()];
-
-			for (int i = 0; i < defaultroles.length; i++) {
-				defaultroles[i] = tokenizer.nextToken();
-			}
-		}
+        if(defaultroles_str != null){
+        	defaultroles = defaultroles_str.split(";");
+        	for(int i=0;i<defaultroles.length;i++)
+        		defaultroles[i] = defaultroles[i].trim();
+        }
 
 		use_first_pass = Boolean.parseBoolean((String) options
 				.get("use_first_pass"));
@@ -288,7 +282,7 @@ public class DatabaseLoginModule implements LoginModule {
 				if (!resOrientPort) {
 					if (rs.next()) {
 						log.trace("Got profile. Loading....");
-						String[] roles = stringToArray(rolescolumns, ",");
+						String[] roles = rolescolumns.split(",");
 						for (String role : roles) {
 							userprof.put(role, rs.getString(role));
 						}
@@ -340,14 +334,14 @@ public class DatabaseLoginModule implements LoginModule {
 				log.trace("Fetching already existing roles group...");
 				for (Iterator i = principalset.iterator(); i.hasNext();) {
 					Object obj = i.next();
-					if (obj instanceof DirectoryRoles) {
-						rolesgrp = (DirectoryRoles) obj;
-						log.trace("Found existing roles group: "
-								+ rolesgrp.getName());
+					if (obj instanceof Group && ((Group) obj).getName().equals(rolesgrpname)) {
+						rolesgrp = (Group) obj;
+                        log.trace("Found existing roles group: "+rolesgrp.getName());
 						break;
 					}
-				}
+				}				
 			}
+			
 			if (rolesgrp == null) {
 				log.trace("Creating roles group...");
 				rolesgrp = new DirectoryRoles(rolesgrpname);
@@ -413,20 +407,6 @@ public class DatabaseLoginModule implements LoginModule {
 			return true;
 		} else
 			return false;
-	}
-
-	private static String[] stringToArray(String string, String delim) {
-		StringTokenizer tokenizer = new StringTokenizer(string, delim);
-		String[] arrayofstring = null;
-		int i = tokenizer.countTokens();
-		if (i > 0) {
-			arrayofstring = new String[i];
-			i = 0;
-			while (tokenizer.hasMoreTokens()) {
-				arrayofstring[i++] = tokenizer.nextToken();
-			}
-		}
-		return arrayofstring;
 	}
 
 }
