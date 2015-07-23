@@ -28,7 +28,7 @@ public interface LoginBean {
      *     returns com.quakearts.webapp.security.webserviceclient.Subject
      */
     @WebMethod
-    @WebResult(name = "subject", targetNamespace = "http://www.quakearts.com/xml/jbossPrincipal")
+    @WebResult(name = "subject", targetNamespace = "http://quakearts.com/xml/jbossPrincipal")
     @RequestWrapper(localName = "authenticate", targetNamespace = "http://security.jboss.quakearts.com/", className = "com.quakearts.webapp.security.webserviceclient.Authenticate")
     @ResponseWrapper(localName = "authenticateResponse", targetNamespace = "http://security.jboss.quakearts.com/", className = "com.quakearts.webapp.security.webserviceclient.AuthenticateResponse")
     public Subject authenticate(

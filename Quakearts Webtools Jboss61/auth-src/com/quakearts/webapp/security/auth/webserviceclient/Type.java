@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  * </pre>
  * 
  */
-@XmlType(name = "type", namespace = "http://www.quakearts.com/xml/jbossPrincipal")
+@XmlType(name = "type", namespace = "http://quakearts.com/xml/jbossPrincipal")
 @XmlEnum
 public enum Type {
 

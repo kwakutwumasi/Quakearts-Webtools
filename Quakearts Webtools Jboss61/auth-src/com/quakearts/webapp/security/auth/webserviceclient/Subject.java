@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlValue;
  *           &lt;complexType>
  *             &lt;simpleContent>
  *               &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>string">
- *                 &lt;attribute name="type" use="required" type="{http://www.quakearts.com/xml/jbossPrincipal}type" />
+ *                 &lt;attribute name="type" use="required" type="{http://quakearts.com/xml/jbossPrincipal}type" />
  *               &lt;/extension>
  *             &lt;/simpleContent>
  *           &lt;/complexType>
@@ -57,12 +57,12 @@ import javax.xml.bind.annotation.XmlValue;
     "principal",
     "result"
 })
-@XmlRootElement(name = "subject", namespace = "http://www.quakearts.com/xml/jbossPrincipal")
+@XmlRootElement(name = "subject", namespace = "http://quakearts.com/xml/jbossPrincipal")
 public class Subject {
 
-    @XmlElement(namespace = "http://www.quakearts.com/xml/jbossPrincipal", required = true)
+    @XmlElement(namespace = "http://quakearts.com/xml/jbossPrincipal", required = true)
     protected List<Subject.Principal> principal;
-    @XmlElement(namespace = "http://www.quakearts.com/xml/jbossPrincipal", required = true)
+    @XmlElement(namespace = "http://quakearts.com/xml/jbossPrincipal", required = true)
     protected Subject.Result result;
     @XmlAttribute(required = true)
     protected String name;
@@ -234,7 +234,7 @@ public class Subject {
      * &lt;complexType>
      *   &lt;simpleContent>
      *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>string">
-     *       &lt;attribute name="type" use="required" type="{http://www.quakearts.com/xml/jbossPrincipal}type" />
+     *       &lt;attribute name="type" use="required" type="{http://quakearts.com/xml/jbossPrincipal}type" />
      *     &lt;/extension>
      *   &lt;/simpleContent>
      * &lt;/complexType>
