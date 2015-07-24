@@ -51,11 +51,12 @@ public class BootColumnRenderer extends HtmlBasicRenderer {
         }
         
         String style = ((BootColumn)component).get("style");
+        String styleClass = ((BootColumn)component).get("styleClass");
         
 		ResponseWriter writer = context.getResponseWriter();
 		writer.startElement("div",component);
 		writeIdAttributeIfNecessary(context, writer, component);
-		writer.writeAttribute("class",classString.toString(), null);
+		writer.writeAttribute("class", classString.append(styleClass != null ? " "+styleClass : "").toString(), null);
 		if(style!=null)
 			writer.writeAttribute("style", style, null);
 		
