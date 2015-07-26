@@ -35,8 +35,8 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		
 		Iterator<SelectItem> items = getSelectItems(context, component);
 		Holder holder = renderOptions(context, component, items,componentDisabled);
-		String value = holder.options.size()>0?holder.options.keySet().iterator().next():null;
-		String display = value!=null ? holder.options.get(value):null;
+		String display = holder.options.size()>0?holder.options.keySet().iterator().next():null;
+		String value = display!=null ? holder.options.get(display):null;
 
 		writer.startElement("div", component);
 		writer.writeAttribute("id", id+"_group", null);
@@ -80,6 +80,8 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		writer.endElement("div");
 		writer.write("\n");
 				
+		writer.endElement("div");
+		writer.write("\n");
 		if(value!=null){
 			writer.startElement("input", component);
 			writer.writeAttribute("name", id, "clientId");
@@ -88,8 +90,6 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 			writer.endElement("input");
 			writer.write("\n");
 		}
-		writer.endElement("div");
-		writer.write("\n");
 		writer.endElement("div");
 		writer.write("\n");
 	}
