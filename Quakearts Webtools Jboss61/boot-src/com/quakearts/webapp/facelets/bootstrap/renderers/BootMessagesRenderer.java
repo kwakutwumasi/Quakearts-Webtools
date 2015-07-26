@@ -61,8 +61,8 @@ public class BootMessagesRenderer extends HtmlBasicRenderer {
 					return;
 				}
 				writer.startElement("div", component);
-	    		writer.write("\n");
 				writeIdAttributeIfNecessary(context, writer, component);
+	    		writer.write("\n");
 				writer.endElement("div");
 	    		writer.write("\n");
 			}
