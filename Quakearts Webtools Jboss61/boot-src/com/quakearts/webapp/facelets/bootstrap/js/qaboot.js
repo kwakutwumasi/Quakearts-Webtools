@@ -115,5 +115,5 @@ qaboot.removeFormValues = function(fo) {
 };
 
 qaboot.escape = function(text) {
-	return text.replace(":","\\:");
+	return text.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
