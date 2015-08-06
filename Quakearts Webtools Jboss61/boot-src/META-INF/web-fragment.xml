@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-fragment version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-fragment_3_0.xsd ">
 <servlet>
-	<servlet-name>Upload Servlet</servlet-name>
+	<servlet-name>Bootstrap Servlet</servlet-name>
 	<servlet-class>com.quakearts.webapp.facelets.bootstrap.servlet.BootServlet</servlet-class>
 	<init-param>
 		<param-name>com.quakearts.bootstrap.FORBIDDEN</param-name>
@@ -21,7 +21,7 @@
 	</multipart-config>
 </servlet>
 <servlet-mapping>
-	<servlet-name>Upload Servlet</servlet-name>
+	<servlet-name>Bootstrap Servlet</servlet-name>
 	<url-pattern>/boot-services/*</url-pattern>
 </servlet-mapping>
 </web-fragment>

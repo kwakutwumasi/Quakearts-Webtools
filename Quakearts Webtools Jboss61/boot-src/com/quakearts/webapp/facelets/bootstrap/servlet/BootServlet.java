@@ -25,11 +25,13 @@ public class BootServlet extends HttpServlet {
 	private static final HashMap<String, String> forbidden = new HashMap<String, String>();
 	private static final Logger log = Logger.getLogger(BootServlet.class);
 	private static String fileForm;
+	private int maxFiles;
+	public static final String FILELOADCOUNT = "com.quakearts.bootstrap.FILELOADCOUNT";
 	
 	static{
 		bootResources.put("/css/bootstrap-theme.min.css",null);
 		bootResources.put("/css/bootstrap.min.css",null);
-		bootResources.put("/css/qaboot.css",null);
+		bootResources.put("/css/qaboot.min.css",null);
 		bootResources.put("/fonts/glyphicons-halflings-regular.eot",null);
 		bootResources.put("/fonts/glyphicons-halflings-regular.svg",null);
 		bootResources.put("/fonts/glyphicons-halflings-regular.ttf",null);
@@ -80,6 +82,11 @@ public class BootServlet extends HttpServlet {
 			for(String exemptExt:exempt.split(",")){
 				forbidden.remove(exemptExt);
 			}
+		}
+		try {
+			maxFiles = Integer.parseInt(getServletConfig().getServletContext().getInitParameter("com.quakearts.bootstrap.MAXFILELOAD"));
+		} catch (Exception e) {
+			maxFiles = 5;
 		}
 	}
 	
@@ -193,6 +200,18 @@ public class BootServlet extends HttpServlet {
 			throws ServletException, IOException {
 		if(req.getContentType().contains("multipart/form-data")){
 			if("/upload".equalsIgnoreCase(req.getPathInfo())){
+				Integer count = (Integer) req.getSession().getAttribute(FILELOADCOUNT);
+				if(count==null)
+					req.getSession().setAttribute(FILELOADCOUNT, 1);
+				else {
+					if(maxFiles>count)
+						req.getSession().setAttribute(FILELOADCOUNT, count++);
+					else {
+						sendError(req, resp, "File load limit exceeded");
+						return;
+					}
+				}
+				
 				try {
 					
 					Part filePart = req.getPart("upload-file");

@@ -4,9 +4,11 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.event.ActionEvent;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.sql.DataSource;
 import org.apache.log4j.Logger;
 
@@ -15,10 +17,10 @@ public class AutoCompleteBean implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -495885669752659887L;
-	private String jndi, column, table, search;
+	protected String jndi, column, table, search;
 	private List<String> list;
-	private boolean like;
-	private static final Logger log = Logger.getLogger(AutoCompleteBean.class);
+	protected boolean like;
+	protected static final Logger log = Logger.getLogger(AutoCompleteBean.class);
 	
 	public String getJndi() {
 		return jndi;
@@ -43,7 +45,13 @@ public class AutoCompleteBean implements Serializable {
 	public void setTable(String statement) {
 		this.table = statement;
 	}
-		
+	
+	public void loadAjax(AjaxBehaviorEvent event){
+		ActionEvent actionEvent = new ActionEvent(event.getComponent());
+		actionEvent.setPhaseId(event.getPhaseId());
+		load(actionEvent);
+	}
+	
 	public void load(ActionEvent event){
 		if(jndi == null || column == null || table == null || search == null)
 			return;
@@ -52,16 +60,11 @@ public class AutoCompleteBean implements Serializable {
 		try {
 			ds = (DataSource) UtilityMethods.getInitialContext().lookup(jndi);
 			con = ds.getConnection();
-			PreparedStatement ps = con.prepareStatement("SELECT "+column+" FROM "+table+" WHERE "+column+(like?" like ":"=")+" ?");
+			PreparedStatement ps = getPreparedStatement(con);
 			ps.setString(1, like?"%"+search+"%":search);
 			
 			ResultSet rs = ps.executeQuery();
-			List<String> addlist = getList(); 
-			if(rs.next()){
-				do {
-					addlist.add(rs.getString(column));
-				} while (rs.next());
-			}
+			processResults(rs);
 			
 		} catch (Exception e) {
 			log.error("Exception of type " + e.getClass().getName()
@@ -72,6 +75,19 @@ public class AutoCompleteBean implements Serializable {
 			} catch (Exception e) {
 			}
 		}
+	}
+
+	protected void processResults(ResultSet rs) throws SQLException {
+		List<String> addlist = getList(); 
+		if(rs.next()){
+			do {
+				addlist.add(rs.getString(column));
+			} while (rs.next());
+		}
+	}
+
+	protected PreparedStatement getPreparedStatement(Connection con) throws SQLException {
+		return con.prepareStatement("SELECT "+column+" FROM "+table+" WHERE "+column+(like?" like ":"=")+" ?");
 	}
 
 	public void setSearch(String value) {

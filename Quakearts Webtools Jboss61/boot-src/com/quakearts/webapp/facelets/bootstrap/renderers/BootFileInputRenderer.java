@@ -2,6 +2,7 @@ package com.quakearts.webapp.facelets.bootstrap.renderers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import javax.el.ValueExpression;
 import javax.faces.component.UIComponent;
@@ -13,6 +14,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.render.Renderer;
 
 import com.quakearts.webapp.facelets.bootstrap.components.BootFileInput;
+import com.quakearts.webapp.facelets.bootstrap.servlet.BootServlet;
 import com.quakearts.webapp.facelets.bootstrap.utils.BootFileUpload;
 import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.*;
 
@@ -28,12 +30,17 @@ public class BootFileInputRenderer extends Renderer {
 		}
 		
 		BootFileInput input = (BootFileInput) component;
-		BootFileUpload upload = (BootFileUpload) context.getExternalContext().getSessionMap().get(input.getTicket());
+		Map<String, Object> ctxMap= context.getExternalContext().getSessionMap();
+		BootFileUpload upload = (BootFileUpload) ctxMap.get(input.getTicket());
 		
 		if(upload==null){
 			LOGGER.fine("No upload for ticket "+input.getTicket());
 			return;
 		}
+		
+		ctxMap.remove(input.getTicket());//Garbage collection
+		Integer count = (Integer) ctxMap.get(BootServlet.FILELOADCOUNT);
+		ctxMap.put(BootServlet.FILELOADCOUNT, --count);
 		
 		ValueExpression dataExpression, valueExpression;
 		if((dataExpression=component.getValueExpression("data"))!=null){

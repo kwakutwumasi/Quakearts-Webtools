@@ -11,7 +11,7 @@ qaboot.manyListItemSelected = function (obj, ipid, val){
 		});
 		select.removeClass('active');
 	} else {
-		input.append('<input name="'+ipid.replace("\\:",":")+'" value="'+val+'" type="hidden"></input>');
+		input.append('<input name="'+ipid.replace(/\\:/g,":")+'" value="'+val+'" type="hidden"></input>');
 		select.addClass('active');
 	}
 	//trigger change event
@@ -43,13 +43,21 @@ qaboot.oneListItemSelected = function (obj,ipid,val,dspid){
 	select.addClass('active');
 	var input = $('#'+ipid);
 	input.find('input').each(function(){
+		if(dspid && $(this).attr("id")==dspid.replace(/\\:/g,":"))
+			return;
+		
 		$(this).remove();
 	});
-	input.append('<input name="'+ipid.replace("\\:",":")+'" value="'+val+'" type="hidden"></input>');
+	input.append('<input name="'+ipid.replace(/\\:/g,":")+'" value="'+val+'" type="hidden"></input>');
 	//trigger change event
 	input.change();
 	if(dspid){
-		$('#'+dspid).html(select.html());
+		var element = document.getElementById(dspid.replace(/\\:/g,":"));
+		if(element.nodeName == "INPUT"){
+			$(element).val(select.html());
+		} else {
+			$('#'+dspid).html(select.html());
+		}
 	}
 }
 
@@ -116,4 +124,13 @@ qaboot.removeFormValues = function(fo) {
 
 qaboot.escape = function(text) {
 	return text.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-}
+};
+
+qaboot.queueAction = function(obj,delay){
+	if(qaboot.tmid>0)
+		clearTimeout(qaboot.tmid);
+	
+	qaboot.tmid = setTimeout(obj, delay);
+};
+
+qaboot.tmid =0;

@@ -3,15 +3,24 @@ package com.quakearts.webapp.facelets.bootstrap.renderers;
 import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.*;
 import static com.quakearts.webapp.facelets.util.UtilityMethods.componentIsDisabled;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import javax.el.ValueExpression;
 import javax.faces.component.UIComponent;
+import javax.faces.component.behavior.ClientBehavior;
+import javax.faces.component.behavior.ClientBehaviorContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.convert.Converter;
 import javax.faces.model.SelectItem;
+
+import com.quakearts.webapp.facelets.bootstrap.behaviour.AutoCompleteBehavior;
 import com.quakearts.webapp.facelets.bootstrap.components.BootSelectManyMenu;
+import com.quakearts.webapp.facelets.util.ObjectExtractor;
 
 
 public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
@@ -26,9 +35,34 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		
 		String id = component.getClientId(context);
 		boolean componentDisabled = componentIsDisabled(component);
+		AutoCompleteBehavior autocompleteBehavior = null;
+		Map<String, List<ClientBehavior>> nonAutoCompleteMap = new HashMap<>();
+		Map<String, List<ClientBehavior>> behaviorsMap = getNonOnChangeBehaviors(component);
+		if(behaviorsMap.size()>0)
+			for(String key:behaviorsMap.keySet()){
+				List<ClientBehavior> behaviors = behaviorsMap.get(key);
+				if(key.equals("keyup")){
+					List<ClientBehavior> nonAutocompleteList = new ArrayList<>();
+					for(ClientBehavior behavior:behaviors){
+						if(behavior instanceof AutoCompleteBehavior){
+							autocompleteBehavior = (AutoCompleteBehavior) behavior;
+						} else {
+							nonAutocompleteList.add(behavior);
+						}
+					}
+					if(autocompleteBehavior==null)
+						nonAutoCompleteMap.put(key, nonAutocompleteList);
+				} else {
+					nonAutoCompleteMap.put(key, behaviors);
+				}
+			}
+		
 		writer.startElement("div", component);
 		writer.writeAttribute("id", id, "clientId");
 		renderOnchange(context, component, false);
+		renderPassThruAttributes(context, writer, component,
+				ATTRIBUTES,nonAutoCompleteMap);
+		renderXHTMLStyleBooleanAttributes(writer, component);
 		writer.write("\n");
 		String label = (String) component.getAttributes().get("label");
 		String styleClass = (String) component.getAttributes().get("styleClass");
@@ -43,9 +77,7 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		writer.writeAttribute("class", "input-group"
 				+(styleClass != null ? " " + styleClass : "")
 				+ (componentDisabled ? " disabled" : ""), null);
-		renderPassThruAttributes(context, writer, component,
-				ATTRIBUTES, getNonOnChangeBehaviors(component));
-		renderXHTMLStyleBooleanAttributes(writer, component);
+				
 		writer.startElement("span", component);
 		writer.writeAttribute("class", "input-group-addon", null);
     	writer.writeText(label!=null?label:" ",null);
@@ -53,13 +85,59 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		
 		writer.startElement("div", component);
 		writer.writeAttribute("class", "form-control form-select" +(componentDisabled?" disabled":""), null);
-		writer.writeAttribute("style", "z-index: auto;", null);
+		writer.writeAttribute("style", "z-index: auto;cursor:pointer;", null);
 		writer.writeAttribute("onclick", "qaboot.selectInputDropDown('dd_"+id.replace(":", "\\\\:")+"');", null);
 
-		writer.startElement("span", component);
+		String element = autocompleteBehavior!=null?"input":"span";
+		writer.startElement(element, component);
+		if(autocompleteBehavior!=null){
+			String render = ObjectExtractor.extractString(component.getValueExpression("render"), context.getELContext());
+			if(render==null)
+				render = (String) component.getAttributes().get("render");
+			
+			String execute = ObjectExtractor.extractString(component.getValueExpression("execute"), context.getELContext());
+			if(execute==null)
+				execute = (String) component.getAttributes().get("execute");
+
+			String onerror = ObjectExtractor.extractString(component.getValueExpression("onerror"), context.getELContext());
+			if(onerror==null)
+				onerror = (String) component.getAttributes().get("onerror");
+
+			String onevent = ObjectExtractor.extractString(component.getValueExpression("onevent"), context.getELContext());
+			if(onevent==null)
+				onevent = (String) component.getAttributes().get("onevent");
+			
+			ValueExpression delayExpression;
+			if((delayExpression=component.getValueExpression("delay"))!=null){
+				autocompleteBehavior.setDelay(ObjectExtractor.extractInteger(delayExpression, context.getELContext()));
+			} else {
+				try {
+					autocompleteBehavior.setDelay(Integer.parseInt((String)component.getAttributes().get("delay")));
+				} catch (Exception e) {
+				}
+			}
+			autocompleteBehavior.setRender(render);
+			autocompleteBehavior.setExecute(execute);
+			autocompleteBehavior.setOnerror(onerror);
+			autocompleteBehavior.setOnevent(onevent);
+
+			autocompleteBehavior.setId(id+"_display");
+			writer.writeAttribute("class", "auto-complete", null);
+			writer.writeAttribute("autocomplete", "off", null);
+			writer.writeAttribute("onkeyup",
+					autocompleteBehavior.getScript(
+							ClientBehaviorContext.createClientBehaviorContext(context, component, "keyup", id, null)),
+					null);
+		}
 		writer.writeAttribute("id", id+"_display", null);
-		writer.write(display!=null?display:" ");
-		writer.endElement("span");
+		writer.writeAttribute("name", id+"_display", null);
+		if(autocompleteBehavior==null)
+			writer.write(display!=null?display:" ");
+		else {
+			writer.writeAttribute("value", (autocompleteBehavior != null && autocompleteBehavior.hasSuggestion()
+					? autocompleteBehavior.getSuggest() : (display != null ? display : "")), null);
+		}
+		writer.endElement(element);
 		
 		writer.write("\n");
 		writer.startElement("span", component);
@@ -71,6 +149,9 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		writer.startElement("div", component);
 		writer.writeAttribute("id", "dd_"+id, null);
 		writer.writeAttribute("class", "dropdown-menu input-list-group", null);
+		if(autocompleteBehavior!=null && autocompleteBehavior.hasSuggestion())
+			writer.writeAttribute("style", "display: inline-block;", null);
+			
 		writer.writeAttribute("role", "menu", null);
 		
 		writer.write("\n");	

@@ -15,7 +15,7 @@ public class BootHeaderRenderer extends HtmlBasicRenderer {
 				+ "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1\" />\r\n";
 	public static String HEADERCSS = "<link href=\"@root/boot-services/css/bootstrap.min.css\" rel=\"stylesheet\" type=\"text/css\" />\r\n"
 				+"<link href=\"@root/boot-services/css/bootstrap-theme.min.css\" rel=\"stylesheet\" type=\"text/css\" />\r\n"
-				+"<link href=\"@root/boot-services/css/qaboot.css\" rel=\"stylesheet\" type=\"text/css\" />\r\n";
+				+"<link href=\"@root/boot-services/css/qaboot.min.css\" rel=\"stylesheet\" type=\"text/css\" />\r\n";
 	public static String HEADERRESPOND = "<script src=\"@root/boot-services/js/respond.min.js\" type=\"text/javascript\"></script>\r\n";
 	public static String HEADERJQUERY = "<script src=\"@root/boot-services/js/jquery-1.11.2.min.js\" type=\"text/javascript\"></script>\r\n";
 	public static String HEADERJS = "<script src=\"@root/boot-services/js/bootstrap.min.js\" type=\"text/javascript\"></script>\r\n"+

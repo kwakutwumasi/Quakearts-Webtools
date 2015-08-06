@@ -1702,7 +1702,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		<component>
 			<component-type>com.quakearts.bootstrap.selectOneInputGroup</component-type>
 			<renderer-type>com.quakearts.bootstrap.selectinputgroup.renderer</renderer-type>
-			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
+			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootInputGroupHandler</handler-class>
 		</component>
 		<attribute>
 			<name>id</name>
@@ -1817,6 +1817,27 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		</attribute>
 		<attribute>
 			<name>displayType</name>
+		</attribute>
+		<attribute>
+			<name>autocomplete</name>
+		</attribute>
+		<attribute>
+			<name>listener</name>
+		</attribute>
+		<attribute>
+			<name>render</name>
+		</attribute>
+		<attribute>
+			<name>execute</name>
+		</attribute>
+		<attribute>
+			<name>onevent</name>
+		</attribute>
+		<attribute>
+			<name>onerror</name>
+		</attribute>
+		<attribute>
+			<name>suggestion</name>
 		</attribute>
 	</tag>
 	<tag>
