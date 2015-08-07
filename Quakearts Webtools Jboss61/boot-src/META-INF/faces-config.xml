@@ -2,6 +2,16 @@
 <faces-config version="2.0" xmlns="http://java.sun.com/xml/ns/javaee"
 	xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd ">
+	<managed-bean>
+		<managed-bean-name>loader</managed-bean-name>
+		<managed-bean-class>com.quakearts.webapp.facelets.bootstrap.beans.LoaderBean</managed-bean-class>
+		<managed-bean-scope>view</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>pagination</managed-bean-name>
+		<managed-bean-class>com.quakearts.webapp.facelets.bootstrap.beans.PaginationBean</managed-bean-class>
+		<managed-bean-scope>view</managed-bean-scope>
+	</managed-bean>
 	<component>
 		<component-type>com.quakearts.bootstrap.header</component-type>
 		<component-class>com.quakearts.webapp.facelets.bootstrap.common.BootHeaderComponent</component-class>
