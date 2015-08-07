@@ -1,9 +1,9 @@
 package com.quakearts.webapp.facelets.bootstrap.beans;
 
-import javax.annotation.ManagedBean;
+import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
-@ManagedBean("loader")
+@ManagedBean(name="loader")
 @ViewScoped
 public class LoaderBean {
 	private static final String MAINAJAXLOADER = "qaboot.mainLoaderHandler";
