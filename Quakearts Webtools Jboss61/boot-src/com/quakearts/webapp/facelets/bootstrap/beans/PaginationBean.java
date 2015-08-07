@@ -1,12 +1,8 @@
 package com.quakearts.webapp.facelets.bootstrap.beans;
 import java.util.Collection;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 
-@ManagedBean(name="pagination")
-@ViewScoped
 public class PaginationBean {
 	private int begin, end;
 	private Object value;
