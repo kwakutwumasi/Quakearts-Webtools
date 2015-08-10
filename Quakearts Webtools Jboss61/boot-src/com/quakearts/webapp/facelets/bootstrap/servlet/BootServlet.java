@@ -78,7 +78,7 @@ public class BootServlet extends HttpServlet {
 			forbidden.put(forbiddenExt.trim(), "");
 		}
 		String exempt;
-		if((exempt=getServletConfig().getServletContext().getInitParameter("com.quakearts.bootstrap.EXEMPT"))!=null){
+		if((exempt=getServletContext().getInitParameter("com.quakearts.bootstrap.EXEMPT"))!=null){
 			for(String exemptExt:exempt.split(",")){
 				forbidden.remove(exemptExt);
 			}
