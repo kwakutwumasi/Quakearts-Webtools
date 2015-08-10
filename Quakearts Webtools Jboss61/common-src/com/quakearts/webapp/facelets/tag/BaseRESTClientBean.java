@@ -139,8 +139,11 @@ public abstract class BaseRESTClientBean extends BaseBean {
 			con = scon;
 		} else{
 			con = (HttpURLConnection) new URL("http", host, port, file).openConnection();
-		}
+		}		
 		
+		if(username!=null && password !=null){
+			con.addRequestProperty("Authorization", "Basic "+(Base64.encode(username+":"+password)));
+		}
 		con.addRequestProperty("Accept", "application/json, text/*, application/xml");
 		con.addRequestProperty("User-Agent", userAgent==null? "Generic REST Client":userAgent);
 		con.addRequestProperty("Date", dateFormat.format(new Date()) + " GMT");
@@ -156,10 +159,6 @@ public abstract class BaseRESTClientBean extends BaseBean {
 			con.addRequestProperty("Content-Type", contentType);
 			con.setDoOutput(true);
 			con.getOutputStream().write(requestValue.getBytes());
-		}
-		
-		if(username!=null && password !=null){
-			con.addRequestProperty("Authorization", "Basic "+(Base64.encode(username+":"+password)));
 		}
 		
 		int responseCode=0;
