@@ -38,7 +38,7 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		AutoCompleteBehavior autocompleteBehavior = null;
 		Map<String, List<ClientBehavior>> nonAutoCompleteMap = new HashMap<>();
 		Map<String, List<ClientBehavior>> behaviorsMap = getNonOnChangeBehaviors(component);
-		if(behaviorsMap.size()>0)
+		if(behaviorsMap!=null && behaviorsMap.size()>0)
 			for(String key:behaviorsMap.keySet()){
 				List<ClientBehavior> behaviors = behaviorsMap.get(key);
 				if(key.equals("keyup")){
