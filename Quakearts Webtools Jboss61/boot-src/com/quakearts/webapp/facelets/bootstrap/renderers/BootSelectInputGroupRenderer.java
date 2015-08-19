@@ -128,6 +128,7 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 					autocompleteBehavior.getScript(
 							ClientBehaviorContext.createClientBehaviorContext(context, component, "keyup", id, null)),
 					null);
+			writer.writeAttribute("onfocus", "$(this).select();", null);
 		}
 		writer.writeAttribute("id", id+"_display", null);
 		writer.writeAttribute("name", id+"_display", null);
