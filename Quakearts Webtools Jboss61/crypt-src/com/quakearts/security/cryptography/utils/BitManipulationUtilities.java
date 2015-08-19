@@ -107,4 +107,24 @@ public class BitManipulationUtilities {
 		} else
 			return Integer.toBinaryString(a).substring(24);
 	}
+	
+	public static int[] toArray(long value){
+		int topDec = 10;
+		int length = 1;
+		while(value>topDec){
+			topDec*=10;
+			length++;
+		}
+		
+		int[] intArray = new int[length];
+		topDec = topDec/10;
+		long remainder = value;
+		for(int i=0;i<length;i++){
+			intArray[i] = (int) ((remainder - (remainder % topDec))/topDec);
+			remainder = remainder % topDec;
+			topDec = topDec/10;
+		}
+		return intArray;
+	}
+
 }
