@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,11 +24,14 @@ public class BootServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 2594807694129920780L;
 	private static final HashMap<String, byte[]> bootResources = new HashMap<String, byte[]>();
+	private static final HashMap<Integer, String> imageMap = new HashMap<>();
+	private static Integer[] widthRange;
 	private static final HashMap<String, String> forbidden = new HashMap<String, String>();
 	private static final Logger log = Logger.getLogger(BootServlet.class);
 	private static String fileForm;
 	private int maxFiles;
 	public static final String FILELOADCOUNT = "com.quakearts.bootstrap.FILELOADCOUNT";
+	private static String DEFAULTIMAGE;
 	
 	static{
 		bootResources.put("/css/bootstrap-theme.min.css",null);
@@ -46,6 +51,47 @@ public class BootServlet extends HttpServlet {
 		bootResources.put("/css/images/loading.gif",null); 
 		bootResources.put("/css/images/loading-error.png",null); 
 		bootResources.put("/css/images/loaded.png",null); 
+	}
+
+	@Override
+	public void init() throws ServletException {
+		for(String forbiddenExt:getServletConfig().getInitParameter("com.quakearts.bootstrap.FORBIDDEN").split(",")){
+			forbidden.put(forbiddenExt.trim(), "");
+		}
+		String exempt;
+		if((exempt=getServletContext().getInitParameter("com.quakearts.bootstrap.EXEMPT"))!=null){
+			for(String exemptExt:exempt.split(",")){
+				forbidden.remove(exemptExt);
+			}
+		}
+		try {
+			maxFiles = Integer.parseInt(getServletConfig().getServletContext().getInitParameter("com.quakearts.bootstrap.MAXFILELOAD"));
+		} catch (Exception e) {
+			maxFiles = 5;
+		}
+		
+		String imageMapString = getServletContext().getInitParameter("com.quakearts.bootstrap.IMAGEMAP");
+		if(imageMapString !=null){
+			String[] imageEntries = imageMapString.split(";");
+			SortedSet<Integer> widthRangeSet = new TreeSet<>();
+			for(String imageEntry:imageEntries){
+				if(!imageEntry.trim().isEmpty()){
+					String[] imageTuple = imageEntry.split(":");
+					try {
+						int widthEntry = Integer.parseInt(imageTuple[0]);
+						widthRangeSet.add(widthEntry);
+						imageMap.put(widthEntry, imageTuple[1]);						
+					} catch (Exception e) {
+						log.error("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()
+								+ ". Exception occured whiles loading image entry "+imageEntry);
+					}
+				}
+			}
+			widthRange = widthRangeSet.toArray(new Integer[widthRangeSet.size()]);
+			DEFAULTIMAGE = getServletContext().getInitParameter("com.quakearts.bootstrap.IMAGEMAPDEFAULT");
+		} else {
+			widthRange=new Integer[0];
+		}
 	}
 
 	public static synchronized String getFileForm() {
@@ -73,24 +119,6 @@ public class BootServlet extends HttpServlet {
 	}
 	
 	@Override
-	public void init() throws ServletException {
-		for(String forbiddenExt:getServletConfig().getInitParameter("com.quakearts.bootstrap.FORBIDDEN").split(",")){
-			forbidden.put(forbiddenExt.trim(), "");
-		}
-		String exempt;
-		if((exempt=getServletContext().getInitParameter("com.quakearts.bootstrap.EXEMPT"))!=null){
-			for(String exemptExt:exempt.split(",")){
-				forbidden.remove(exemptExt);
-			}
-		}
-		try {
-			maxFiles = Integer.parseInt(getServletConfig().getServletContext().getInitParameter("com.quakearts.bootstrap.MAXFILELOAD"));
-		} catch (Exception e) {
-			maxFiles = 5;
-		}
-	}
-	
-	@Override
 	protected void doGet(javax.servlet.http.HttpServletRequest req, javax.servlet.http.HttpServletResponse resp) throws javax.servlet.ServletException ,IOException {
 		String resource;
 		OutputStream os = null;
@@ -101,6 +129,7 @@ public class BootServlet extends HttpServlet {
 						.getResourceAsStream("com/quakearts/webapp/facelets/bootstrap"+resource);
 				if(fis==null){
 					log.error("Cannot find resource '"+resource+"' in class path.");
+					resp.sendError(404);
 					return;
 				} else {
 					try {
@@ -191,8 +220,84 @@ public class BootServlet extends HttpServlet {
 			} finally {
 				os.close();
 			}
+		} else if("/image".equals(req.getPathInfo())
+				&& req.getParameter("w")!=null 
+				&& widthRange.length>0) {
+			String image = null;
+			int width = 0;
+			int sizeMatch = widthRange[0];
+			try {
+				width = Integer.parseInt(req.getParameter("w"));
+				for(int size:widthRange){
+					if(width<=size)
+						break;
+					sizeMatch = size;
+				}
+			} catch (Exception e) {
+				log.error("Exception of type " + e.getClass().getName() 
+						+ " was thrown. Message is " + e.getMessage()
+						+ ". Exception occured whiles parsing w parameter");
+				sizeMatch = 0;
+			}
+			
+			image = imageMap.get(sizeMatch);
+			if(image==null){
+				image = DEFAULTIMAGE;
+			}
+			
+			byte[] data = bootResources.get(image);
+			if(data==null){
+				InputStream fis = Thread.currentThread().getContextClassLoader()
+						.getResourceAsStream(image);
+				if(fis==null){
+					log.error("Cannot find resource '"+image+"' in class path.");
+					resp.sendError(404);
+					return;
+				} else {
+					try {
+						byte[] buffer = new byte[1024];
+						ByteArrayOutputStream bos = new ByteArrayOutputStream();
+						int read;
+						while((read=fis.read(buffer))!=-1){
+							bos.write(buffer,0,read);
+						}
+						data = bos.toByteArray();
+						bootResources.put(image, data);
+					} catch (IOException e) {
+						log.error("Cannot load resource "+image+" from classpath. Exception of type " + e.getClass().getName()
+								+ " was thrown. Message is " + e.getMessage());
+						resp.sendError(404);
+						return;
+					} finally {
+						try {fis.close();} catch (Exception e) {}
+					}
+				}
+			}
+			
+			try {
+				String contentType="";
+				if(image.endsWith("gif"))
+					contentType="image/gif";	
+				else if(image.endsWith("png"))
+					contentType="image/png";
+				else if(image.endsWith("jpeg")||resource.endsWith("jpg"))
+					contentType="image/jpeg";
+				else if(image.endsWith("bmp"))
+					contentType="image/bmp";
+				
+				resp.setContentType(contentType);
+				resp.setContentLength(data.length);
+				os = resp.getOutputStream();
+				os.write(data);
+				os.flush();
+			} catch (IOException e) {
+				log.error("Exception of type " + e.getClass().getName()
+						+ " was thrown. Message is " + e.getMessage()
+						+ ". Exception occured whiles pulling resource "+image);
+			} finally {
+				try {os.close();} catch (Exception e) {}
+			}
 		}
-		
 	};
 	
 	@Override
