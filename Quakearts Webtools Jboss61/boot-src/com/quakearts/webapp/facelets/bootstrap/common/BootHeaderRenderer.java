@@ -19,7 +19,7 @@ public class BootHeaderRenderer extends HtmlBasicRenderer {
 	public static String HEADERRESPOND = "<script src=\"@root/boot-services/js/respond.min.js\" type=\"text/javascript\"></script>\r\n";
 	public static String HEADERJQUERY = "<script src=\"@root/boot-services/js/jquery-1.11.2.min.js\" type=\"text/javascript\"></script>\r\n";
 	public static String HEADERJS = "<script src=\"@root/boot-services/js/bootstrap.min.js\" type=\"text/javascript\"></script>\r\n"+
-									"<script src=\"@root/boot-services/js/qaboot.js\" type=\"text/javascript\"></script>\r\n";
+									"<script src=\"@root/boot-services/js/qaboot.min.js\" type=\"text/javascript\"></script>\r\n";
 	
 	@Override
 	public void encodeBegin(FacesContext context, UIComponent component)
