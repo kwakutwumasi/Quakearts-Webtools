@@ -77,9 +77,9 @@ public class BootServlet extends HttpServlet {
 				if(!imageEntry.trim().isEmpty()){
 					String[] imageTuple = imageEntry.split(":",2);
 					try {
-						int widthEntry = Integer.parseInt(imageTuple[0]);
+						int widthEntry = Integer.parseInt(imageTuple[0].trim());
 						widthRangeSet.add(widthEntry);
-						imageMap.put(widthEntry, imageTuple[1]);						
+						imageMap.put(widthEntry, imageTuple[1].trim());						
 					} catch (Exception e) {
 						log.error("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()
 								+ ". Exception occured whiles loading image entry "+imageEntry);
