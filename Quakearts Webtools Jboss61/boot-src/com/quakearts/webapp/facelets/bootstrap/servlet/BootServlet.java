@@ -7,8 +7,6 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -24,8 +22,8 @@ public class BootServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 2594807694129920780L;
-	private final ConcurrentHashMap<String, byte[]> bootResources = new ConcurrentHashMap<String, byte[]>();
-	private final ConcurrentHashMap<Integer, String> imageMap = new ConcurrentHashMap<>();
+	private final HashMap<String, byte[]> bootResources = new HashMap<String, byte[]>();
+	private final HashMap<Integer, String> imageMap = new HashMap<>();
 	private Integer[] widthRange;
 	private final HashMap<String, String> forbidden = new HashMap<String, String>();
 	private static final Logger log = Logger.getLogger(BootServlet.class);
