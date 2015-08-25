@@ -76,6 +76,9 @@ public class BootServlet extends HttpServlet {
 			for(String imageEntry:imageEntries){
 				if(!imageEntry.trim().isEmpty()){
 					String[] imageTuple = imageEntry.split(":",2);
+					if(imageTuple.length!=2)
+						continue;
+					
 					try {
 						int widthEntry = Integer.parseInt(imageTuple[0].trim());
 						widthRangeSet.add(widthEntry);
