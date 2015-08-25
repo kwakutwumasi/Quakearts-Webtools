@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -23,17 +24,18 @@ public class BootServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 2594807694129920780L;
-	private static final HashMap<String, byte[]> bootResources = new HashMap<String, byte[]>();
-	private static final HashMap<Integer, String> imageMap = new HashMap<>();
-	private static Integer[] widthRange;
-	private static final HashMap<String, String> forbidden = new HashMap<String, String>();
+	private final ConcurrentHashMap<String, byte[]> bootResources = new ConcurrentHashMap<String, byte[]>();
+	private final ConcurrentHashMap<Integer, String> imageMap = new ConcurrentHashMap<>();
+	private Integer[] widthRange;
+	private final HashMap<String, String> forbidden = new HashMap<String, String>();
 	private static final Logger log = Logger.getLogger(BootServlet.class);
-	private static String fileForm;
+	private String fileForm;
 	private int maxFiles;
 	public static final String FILELOADCOUNT = "com.quakearts.bootstrap.FILELOADCOUNT";
-	private static String DEFAULTIMAGE;
+	private String defaultImage;
 	
-	static{
+	@Override
+	public void init() throws ServletException {
 		bootResources.put("/css/bootstrap-theme.min.css",null);
 		bootResources.put("/css/bootstrap.min.css",null);
 		bootResources.put("/css/qaboot.min.css",null);
@@ -44,17 +46,14 @@ public class BootServlet extends HttpServlet {
 		bootResources.put("/fonts/glyphicons-halflings-regular.woff2",null);
 		bootResources.put("/js/bootstrap.js",null);
 		bootResources.put("/js/bootstrap.min.js",null);
-		bootResources.put("/js/qaboot.js",null);
+		bootResources.put("/js/qaboot.min.js",null);
 		bootResources.put("/js/jquery-1.11.2.min.js",null);
 		bootResources.put("/js/npm.js",null); 
 		bootResources.put("/js/respond.min.js",null); 
 		bootResources.put("/css/images/loading.gif",null); 
 		bootResources.put("/css/images/loading-error.png",null); 
 		bootResources.put("/css/images/loaded.png",null); 
-	}
-
-	@Override
-	public void init() throws ServletException {
+		
 		for(String forbiddenExt:getServletConfig().getInitParameter("com.quakearts.bootstrap.FORBIDDEN").split(",")){
 			forbidden.put(forbiddenExt.trim(), "");
 		}
@@ -88,13 +87,13 @@ public class BootServlet extends HttpServlet {
 				}
 			}
 			widthRange = widthRangeSet.toArray(new Integer[widthRangeSet.size()]);
-			DEFAULTIMAGE = getServletContext().getInitParameter("com.quakearts.bootstrap.IMAGEMAPDEFAULT");
+			defaultImage = getServletContext().getInitParameter("com.quakearts.bootstrap.IMAGEMAPDEFAULT");
 		} else {
 			widthRange=new Integer[0];
 		}
 	}
 
-	public static synchronized String getFileForm() {
+	public synchronized String getFileForm() {
 		if(fileForm==null){
 			InputStream fis = Thread.currentThread().getContextClassLoader()
 					.getResourceAsStream("com/quakearts/webapp/facelets/bootstrap/html/file-form.html");
@@ -122,31 +121,34 @@ public class BootServlet extends HttpServlet {
 	protected void doGet(javax.servlet.http.HttpServletRequest req, javax.servlet.http.HttpServletResponse resp) throws javax.servlet.ServletException ,IOException {
 		String resource;
 		OutputStream os = null;
+		byte[] data;
 		if(bootResources.containsKey(resource=req.getPathInfo())){
-			byte[] data = bootResources.get(resource);
-			if(data==null){
-				InputStream fis = Thread.currentThread().getContextClassLoader()
-						.getResourceAsStream("com/quakearts/webapp/facelets/bootstrap"+resource);
-				if(fis==null){
-					log.error("Cannot find resource '"+resource+"' in class path.");
-					resp.sendError(404);
-					return;
-				} else {
-					try {
-						byte[] buffer = new byte[1024];
-						ByteArrayOutputStream bos = new ByteArrayOutputStream();
-						int read;
-						while((read=fis.read(buffer))!=-1){
-							bos.write(buffer,0,read);
-						}
-						data = bos.toByteArray();
-						bootResources.put(resource, data);
-					} catch (IOException e) {
-						log.error("Cannot load resource "+resource+" from classpath. Exception of type " + e.getClass().getName()
-								+ " was thrown. Message is " + e.getMessage());
+			synchronized (this) {
+				data = bootResources.get(resource);
+				if(data==null){
+					InputStream fis = Thread.currentThread().getContextClassLoader()
+							.getResourceAsStream("com/quakearts/webapp/facelets/bootstrap"+resource);
+					if(fis==null){
+						log.error("Cannot find resource '"+resource+"' in class path.");
+						resp.sendError(404);
 						return;
-					} finally {
-						try {fis.close();} catch (Exception e) {}
+					} else {
+						try {
+							byte[] buffer = new byte[1024];
+							ByteArrayOutputStream bos = new ByteArrayOutputStream();
+							int read;
+							while((read=fis.read(buffer))!=-1){
+								bos.write(buffer,0,read);
+							}
+							data = bos.toByteArray();
+							bootResources.put(resource, data);
+						} catch (IOException e) {
+							log.error("Cannot load resource "+resource+" from classpath. Exception of type " + e.getClass().getName()
+									+ " was thrown. Message is " + e.getMessage());
+							return;
+						} finally {
+							try {fis.close();} catch (Exception e) {}
+						}
 					}
 				}
 			}
@@ -185,7 +187,7 @@ public class BootServlet extends HttpServlet {
 			} finally {
 				try {os.close();} catch (Exception e) {}
 			}
-		} else if("/upload".equalsIgnoreCase(req.getPathInfo())){
+		} else if("/upload".equalsIgnoreCase(req.getPathInfo())) {
 			String id = req.getParameter("id");
 			if(id==null)
 				resp.sendError(400);
@@ -225,13 +227,15 @@ public class BootServlet extends HttpServlet {
 				&& widthRange.length>0) {
 			String image = null;
 			int width = 0;
-			int sizeMatch = widthRange[0];
+			int sizeMatch = 0;
 			try {
 				width = Integer.parseInt(req.getParameter("w"));
 				for(int size:widthRange){
+					sizeMatch = size;
+					
 					if(width<=size)
 						break;
-					sizeMatch = size;
+					
 				}
 			} catch (Exception e) {
 				log.error("Exception of type " + e.getClass().getName() 
@@ -241,39 +245,46 @@ public class BootServlet extends HttpServlet {
 			}
 			
 			image = imageMap.get(sizeMatch);
-			if(image==null){
-				image = DEFAULTIMAGE;
+			if(image==null) {
+				image = defaultImage;
 			}
 			
-			byte[] data = bootResources.get(image);
-			if(data==null){
-				InputStream fis = Thread.currentThread().getContextClassLoader()
-						.getResourceAsStream(image);
-				if(fis==null){
-					log.error("Cannot find resource '"+image+"' in class path.");
-					resp.sendError(404);
-					return;
-				} else {
-					try {
-						byte[] buffer = new byte[1024];
-						ByteArrayOutputStream bos = new ByteArrayOutputStream();
-						int read;
-						while((read=fis.read(buffer))!=-1){
-							bos.write(buffer,0,read);
-						}
-						data = bos.toByteArray();
-						bootResources.put(image, data);
-					} catch (IOException e) {
-						log.error("Cannot load resource "+image+" from classpath. Exception of type " + e.getClass().getName()
-								+ " was thrown. Message is " + e.getMessage());
+			synchronized (this) {
+				data = bootResources.get(image);
+				if(data==null){
+					InputStream fis = getServletContext().getResourceAsStream(image);
+					
+					if(fis==null) {
+						fis = Thread.currentThread().getContextClassLoader()
+								.getResourceAsStream(image);
+					}
+					
+					if(fis==null) {
+						log.error("Cannot find resource '"+image+"' in class path.");
 						resp.sendError(404);
 						return;
-					} finally {
-						try {fis.close();} catch (Exception e) {}
+					} else {
+						try {
+							byte[] buffer = new byte[1024];
+							ByteArrayOutputStream bos = new ByteArrayOutputStream();
+							int read;
+							while((read=fis.read(buffer))!=-1){
+								bos.write(buffer,0,read);
+							}
+							data = bos.toByteArray();
+							bootResources.put(image, data);
+						} catch (IOException e) {
+							log.error("Cannot load resource "+image+" from classpath. Exception of type " + e.getClass().getName()
+									+ " was thrown. Message is " + e.getMessage());
+							resp.sendError(404);
+							return;
+						} finally {
+							try {fis.close();} catch (Exception e) {}
+						}
 					}
 				}
 			}
-			
+
 			try {
 				String contentType="";
 				if(image.endsWith("gif"))
