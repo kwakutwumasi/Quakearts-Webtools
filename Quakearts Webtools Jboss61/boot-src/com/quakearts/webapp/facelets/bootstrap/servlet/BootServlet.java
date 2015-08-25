@@ -75,7 +75,7 @@ public class BootServlet extends HttpServlet {
 			SortedSet<Integer> widthRangeSet = new TreeSet<>();
 			for(String imageEntry:imageEntries){
 				if(!imageEntry.trim().isEmpty()){
-					String[] imageTuple = imageEntry.split(":");
+					String[] imageTuple = imageEntry.split(":",2);
 					try {
 						int widthEntry = Integer.parseInt(imageTuple[0]);
 						widthRangeSet.add(widthEntry);
