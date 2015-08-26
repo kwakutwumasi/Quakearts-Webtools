@@ -84,6 +84,7 @@ public class BootCheckboxRenderer extends HtmlBasicInputRenderer {
         ResponseWriter writer = context.getResponseWriter();
         assert(writer != null);
         String styleClass;
+        String id = component.getClientId(context);
         writer.startElement("div", component);
         writeIdAttributeIfNecessary(context, writer, component);
         writer.writeAttribute("class", "input-group", null);
@@ -93,8 +94,8 @@ public class BootCheckboxRenderer extends HtmlBasicInputRenderer {
         writer.write("\n");    	
         writer.startElement("input", component);
         writer.writeAttribute("type", "checkbox", "type");
-        writer.writeAttribute("name", component.getClientId(context),
-                              "clientId");
+        writer.writeAttribute("id", id+"_sub_input", null);      
+        writer.writeAttribute("name", id, "clientId");
 
         if (Boolean.valueOf(currentValue)) { 
             writer.writeAttribute("checked", Boolean.TRUE, "value");

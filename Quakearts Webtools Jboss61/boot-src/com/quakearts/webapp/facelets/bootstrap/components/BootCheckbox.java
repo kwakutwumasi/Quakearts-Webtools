@@ -1,7 +1,6 @@
 package com.quakearts.webapp.facelets.bootstrap.components;
 
 import java.util.ArrayList;
-
 import javax.faces.component.html.HtmlSelectBooleanCheckbox;
 
 public class BootCheckbox extends HtmlSelectBooleanCheckbox {

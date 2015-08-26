@@ -23,8 +23,7 @@ public class BootInputRenderer extends HtmlBasicInputRenderer {
     @Override
     protected void getEndTextToRender(FacesContext context,
                                       UIComponent component,
-                                      String currentValue)
-          throws IOException {
+                                      String currentValue) throws IOException {
 
     	if(!(component instanceof BootInputText))
     		throw new IOException("Component must be of type "+BootInputText.class.getName());
@@ -61,6 +60,7 @@ public class BootInputRenderer extends HtmlBasicInputRenderer {
         writer.startElement("input", component);
         writer.writeAttribute("type", type, null);
         writer.writeAttribute("name", id, "clientId");
+        writer.writeAttribute("id", component.getClientId()+"_sub_input", null);
         writer.writeAttribute("aria-describedby", "span_"+id, null);
 		String placeholder = text.get("placeholder");
         if( placeholder!=null){
@@ -92,7 +92,6 @@ public class BootInputRenderer extends HtmlBasicInputRenderer {
         writer.endElement("div");
 		writer.write("\n");
     }
-
 
     @Override
     public boolean getRendersChildren() {

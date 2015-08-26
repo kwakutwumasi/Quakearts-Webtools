@@ -1,9 +1,7 @@
 package com.quakearts.webapp.facelets.bootstrap.components;
 
 import java.util.ArrayList;
-
 import javax.faces.component.html.HtmlInputText;
-
 import com.quakearts.webapp.facelets.util.ObjectExtractor;
 
 public class BootInputText extends HtmlInputText {

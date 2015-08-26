@@ -50,7 +50,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-
 import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
@@ -66,7 +65,6 @@ import javax.faces.context.ResponseWriter;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.render.Renderer;
-
 import static com.quakearts.webapp.facelets.util.UtilityMethods.*;
 import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.*;
 
@@ -172,7 +170,7 @@ public abstract class HtmlBasicRenderer extends Renderer {
             if (behaviors.size() > 0) {
                String behaviorSource = params.get("javax.faces.source");
                String clientId = component.getClientId();
-               if (isBehaviorSource(context, behaviorSource, clientId)) {
+               if (isBehaviorSource(context, behaviorSource, clientId, component)) {
                    for (ClientBehavior behavior: behaviorsForEvent) {
                        behavior.decode(context, component);
                    }
@@ -186,9 +184,11 @@ public abstract class HtmlBasicRenderer extends Renderer {
     }
 
 	protected boolean isBehaviorSource(FacesContext ctx,
-			String behaviorSourceId, String componentClientId) {
+			String behaviorSourceId, String componentClientId, UIComponent component) {
 
-        return (behaviorSourceId != null && behaviorSourceId.equals(componentClientId));
+        return (behaviorSourceId != null 
+        		&&(behaviorSourceId.equals(componentClientId)
+        		||(behaviorSourceId.startsWith(componentClientId+"_sub"))));
 
     }
 
