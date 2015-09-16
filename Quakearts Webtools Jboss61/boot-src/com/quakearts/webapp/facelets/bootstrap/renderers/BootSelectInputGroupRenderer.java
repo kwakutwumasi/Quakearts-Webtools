@@ -38,7 +38,7 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		AutoCompleteBehavior autocompleteBehavior = null;
 		Map<String, List<ClientBehavior>> nonAutoCompleteMap = new HashMap<>();
 		Map<String, List<ClientBehavior>> behaviorsMap = getNonOnChangeBehaviors(component);
-		if(behaviorsMap!=null && behaviorsMap.size()>0)
+		if(behaviorsMap!=null && behaviorsMap.size()>0 && !componentDisabled)
 			for(String key:behaviorsMap.keySet()){
 				List<ClientBehavior> behaviors = behaviorsMap.get(key);
 				if(key.equals("keyup")){
@@ -59,7 +59,9 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		
 		writer.startElement("div", component);
 		writer.writeAttribute("id", id, "clientId");
-		renderOnchange(context, component, false);
+		if(!componentDisabled)
+			renderOnchange(context, component, false);
+		
 		renderPassThruAttributes(context, writer, component,
 				ATTRIBUTES,nonAutoCompleteMap);
 		renderXHTMLStyleBooleanAttributes(writer, component);
@@ -85,9 +87,10 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		
 		writer.startElement("div", component);
 		writer.writeAttribute("class", "form-control form-select" +(componentDisabled?" disabled":""), null);
-		writer.writeAttribute("style", "z-index: auto;cursor:pointer;", null);
-		writer.writeAttribute("onclick", "qaboot.selectInputDropDown('dd_"+id.replace(":", "\\\\:")+"');", null);
-
+		writer.writeAttribute("style", "z-index: auto;", null);
+		if(!componentDisabled)
+			writer.writeAttribute("onclick", "qaboot.selectInputDropDown('dd_"+id.replace(":", "\\\\:")+"');", null);
+		
 		String element = autocompleteBehavior!=null?"input":"span";
 		writer.startElement(element, component);
 		if(autocompleteBehavior!=null){
@@ -156,7 +159,9 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		writer.writeAttribute("role", "menu", null);
 		
 		writer.write("\n");	
-		writer.write(holder.buffer);
+		if(!componentDisabled)
+			writer.write(holder.buffer);
+		
 		writer.endElement("div");
 		writer.write("\n");
 		writer.endElement("div");
@@ -164,7 +169,7 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 				
 		writer.endElement("div");
 		writer.write("\n");
-		if(value!=null){
+		if(value!=null && !componentDisabled){
 			writer.startElement("input", component);
 			writer.writeAttribute("name", id, "clientId");
 			writer.writeAttribute("type", "hidden", null);
@@ -221,11 +226,11 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		writer.startElement("a", component);
 		writer.writeAttribute("class", "list-group-item select-list"
 				+ (isSelected ? " active" : "")
-				+ (labelClass != null ? " " + labelClass : "")
-				+((!optionInfo.isDisabled()) && curItem.isDisabled()?" disabled":""), null);		
-		writer.writeAttribute("onclick", "qaboot.oneListItemSelected(this,'"
-				+ jqId + "','" + valueString+"','"+jqId+"_display');",
-				null);
+				+ (labelClass != null ? " " + labelClass : ""), null);	
+		
+		if(!curItem.isDisabled() && !optionInfo.isDisabled())
+			writer.writeAttribute("onclick", "qaboot.oneListItemSelected(this,'"
+				+ jqId + "','" + valueString+"','"+jqId+"_display');", null);
 			
 		String label = curItem.getLabel();
 		if (label == null) {

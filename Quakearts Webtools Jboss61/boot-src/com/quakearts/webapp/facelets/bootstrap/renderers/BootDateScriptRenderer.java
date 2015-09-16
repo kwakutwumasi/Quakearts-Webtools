@@ -15,6 +15,7 @@ import com.quakearts.webapp.facelets.bootstrap.components.BootDateButton;
 import com.quakearts.webapp.facelets.bootstrap.components.BootDateButton.DateFormat;
 import com.quakearts.webapp.facelets.bootstrap.components.BootDateScriptComponent;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.html_basic.HtmlBasicRenderer;
+import static com.quakearts.webapp.facelets.util.UtilityMethods.*;
 
 public class BootDateScriptRenderer extends HtmlBasicRenderer {
 
@@ -82,27 +83,28 @@ public class BootDateScriptRenderer extends HtmlBasicRenderer {
 			throw new IOException("Component must be of type "+BootDateScriptComponent.class.getName());
 
 		BootDateScriptComponent dateScriptComponent = (BootDateScriptComponent) component;
-		ResponseWriter writer = context.getResponseWriter();
-
-		context.getAttributes().get("com.quakearts.bootstrap.DATE_COMMON");
-		if(context.getAttributes().get("com.quakearts.bootstrap.DATE_COMMON")==null){
-	        writer.startElement("script", dateScriptComponent);
+		if(!componentIsDisabled(dateScriptComponent.getDateComponent())){
+			ResponseWriter writer = context.getResponseWriter();
+			context.getAttributes().get("com.quakearts.bootstrap.DATE_COMMON");
+			if(context.getAttributes().get("com.quakearts.bootstrap.DATE_COMMON")==null){
+		        writer.startElement("script", dateScriptComponent);
+				writer.writeAttribute("type", "text/javascript", null);
+		        writer.write("\n");    	
+				writer.writeText(DATE_SCRIPT_TOP, null);
+		        writer.write("\n");    	
+				writer.endElement("script");
+		        writer.write("\n");    	
+				context.getAttributes().put("com.quakearts.bootstrap.DATE_COMMON","");
+			}
+			
+			writer.startElement("script", dateScriptComponent);
 			writer.writeAttribute("type", "text/javascript", null);
 	        writer.write("\n");    	
-			writer.writeText(DATE_SCRIPT_TOP, null);
+			writer.writeText(getContents(dateScriptComponent.getDateComponent(),context), null);	
 	        writer.write("\n");    	
 			writer.endElement("script");
-	        writer.write("\n");    	
-			context.getAttributes().put("com.quakearts.bootstrap.DATE_COMMON","");
+	        writer.write("\n");   
 		}
-		
-		writer.startElement("script", dateScriptComponent);
-		writer.writeAttribute("type", "text/javascript", null);
-        writer.write("\n");    	
-		writer.writeText(getContents(dateScriptComponent.getDateComponent(),context), null);	
-        writer.write("\n");    	
-		writer.endElement("script");
-        writer.write("\n");    	
 	}
 
 	private String getContents(BootDateButton dateComponent, FacesContext context) {

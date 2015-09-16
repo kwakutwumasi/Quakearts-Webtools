@@ -68,9 +68,7 @@ public class BootInputRenderer extends HtmlBasicInputRenderer {
         }
         
         if ("off".equals(component.getAttributes().get("autocomplete"))) {
-            writer.writeAttribute("autocomplete",
-                                  "off",
-                                  "autocomplete");
+            writer.writeAttribute("autocomplete", "off", "autocomplete");
         }
 
         if (currentValue != null) {
@@ -79,11 +77,7 @@ public class BootInputRenderer extends HtmlBasicInputRenderer {
         
         writer.writeAttribute("class", "form-control"+(styleClass!=null?" "+styleClass:""), "styleClass");
 
-        renderPassThruAttributes(context,
-                                                writer,
-                                                component,
-                                                INPUT_ATTRIBUTES,
-                                                getNonOnChangeBehaviors(component));
+        renderPassThruAttributes(context, writer, component, INPUT_ATTRIBUTES, getNonOnChangeBehaviors(component));
         renderXHTMLStyleBooleanAttributes(writer, component);
 
         renderOnchange(context, component, false);

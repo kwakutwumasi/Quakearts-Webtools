@@ -208,7 +208,9 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 		boolean componentDisabled = componentIsDisabled(component);
 		writer.startElement("div", component);
 		writer.writeAttribute("id", id, "clientId");
-		renderOnchange(context, component, false);
+		if(!componentDisabled)
+			renderOnchange(context, component, false);
+		
 		renderPassThruAttributes(context, writer, component,
 				ATTRIBUTES, getNonOnChangeBehaviors(component));
 		renderXHTMLStyleBooleanAttributes(writer, component);
@@ -247,14 +249,15 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 		writer.write(holder.buffer);
 		writer.endElement("div");
 		writer.write("\n");
-		for(String value:holder.options.values()){
-			writer.startElement("input", component);
-			writer.writeAttribute("name", id, "clientId");
-			writer.writeAttribute("type", "hidden", null);
-			writer.writeAttribute("value", value, null);
-			writer.endElement("input");
-			writer.write("\n");
-		}
+		if(!componentDisabled)
+			for(String value:holder.options.values()){
+				writer.startElement("input", component);
+				writer.writeAttribute("name", id, "clientId");
+				writer.writeAttribute("type", "hidden", null);
+				writer.writeAttribute("value", value, null);
+				writer.endElement("input");
+				writer.write("\n");
+			}
 		writer.endElement("div");
 		writer.write("\n");		
 	}
@@ -371,9 +374,10 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 		writer.startElement("a", component);
 		writer.writeAttribute("class", "list-group-item select-list"
 				+ (isSelected ? " active" : "")
-				+ (labelClass != null ? " " + labelClass : "")
-				+((!optionInfo.isDisabled()) && curItem.isDisabled()?" disabled":""), null);		
-		writer.writeAttribute("onclick", function+"(this,'"
+				+ (labelClass != null ? " " + labelClass : ""), null);	
+		
+		if (!optionInfo.isDisabled() && !curItem.isDisabled()) 
+			writer.writeAttribute("onclick", function+"(this,'"
 				+ component.getClientId(context).replace(":", "\\\\:") + "','" + valueString+"');",
 				null);
 			

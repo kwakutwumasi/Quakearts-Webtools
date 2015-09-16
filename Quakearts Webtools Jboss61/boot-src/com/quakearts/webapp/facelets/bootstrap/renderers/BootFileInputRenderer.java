@@ -17,6 +17,7 @@ import com.quakearts.webapp.facelets.bootstrap.components.BootFileInput;
 import com.quakearts.webapp.facelets.bootstrap.servlet.BootServlet;
 import com.quakearts.webapp.facelets.bootstrap.utils.BootFileUpload;
 import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.*;
+import static com.quakearts.webapp.facelets.util.UtilityMethods.*;
 
 public class BootFileInputRenderer extends Renderer {
 	
@@ -95,6 +96,8 @@ public class BootFileInputRenderer extends Renderer {
 		
 		BootFileInput fileInput = (BootFileInput) component;
 		
+		boolean componentDisabled = componentIsDisabled(fileInput);
+		
 		String root = context.getExternalContext().getRequestContextPath();
 		
 		ResponseWriter writer = context.getResponseWriter();
@@ -119,13 +122,13 @@ public class BootFileInputRenderer extends Renderer {
 		writer.startElement("div", component);
 		writer.writeAttribute("id", id, "clientId");
         if(style!=null)
-        	writer.writeAttribute("stlye", style, null);        
+        	writer.writeAttribute("stlye", style, null);    
 		writer.write("\n");    	
 		writer.startElement("div", component);
 		writer.writeAttribute("id", "div_"+id_js, null);
 		writer.writeAttribute("class", name==null?"collapse":"input-group", null);
 		writer.writeAttribute("style", "margin-bottom:5px;", null);
-		writer.write("\n");    	
+		writer.write("\n");
 		writer.startElement("span", component);
 		writer.writeAttribute("class", "input-group-addon", null);
 		writer.write("\n");    	
@@ -165,6 +168,9 @@ public class BootFileInputRenderer extends Renderer {
 		writer.writeAttribute("id", "btn_"+id_js, null);
 		writer.writeAttribute("type", "button", null);
 		writer.writeAttribute("class", "btn btn-default", null);
+		if(componentDisabled)
+			writer.writeAttribute("disabled", "disabled", "disabled");
+		
 		writer.writeAttribute("onclick", "$('#iframe_"+id_js+"').contents().find('#upload-button').click();", null);
 		writer.writeAttribute("onchange", "jsf.ajax.request(this, event, {execute:'"+id+(execute!=null?" "+execute:"")+"'"
 				+(render!=null&&render.length()>0? ",render: '"+render+"'":"")
@@ -173,13 +179,15 @@ public class BootFileInputRenderer extends Renderer {
         writer.write(label!=null?label:"Browse");
 		writer.endElement("button");
         writer.write("\n");
-		writer.startElement("iframe", component);
-		writer.writeAttribute("id", "iframe_"+id_js, null);
-		writer.writeAttribute("class", "collapse", null);
-		writer.writeAttribute("height", "0px", null);
-		writer.writeAttribute("src", root+"/boot-services/upload?id="
-						+id_js+"&ticket="+fileInput.getTicket(), null);
-		writer.endElement("iframe");		
+        if(!componentDisabled){
+			writer.startElement("iframe", component);
+			writer.writeAttribute("id", "iframe_"+id_js, null);
+			writer.writeAttribute("class", "collapse", null);
+			writer.writeAttribute("height", "0px", null);
+			writer.writeAttribute("src", root+"/boot-services/upload?id="
+							+id_js+"&ticket="+fileInput.getTicket(), null);
+			writer.endElement("iframe");
+        }
         writer.write("\n");
 		writer.endElement("div");		
         writer.write("\n");

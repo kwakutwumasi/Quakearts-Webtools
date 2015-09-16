@@ -294,6 +294,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		<attribute>
 			<name>tabindex</name>
 		</attribute>
+		<attribute>
+			<name>disabled</name>
+		</attribute>
 	</tag>
 	<tag>
 		<tag-name>column</tag-name>
@@ -433,6 +436,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		<attribute>
 			<name>title</name>
 		</attribute>
+		<attribute>
+			<name>disabled</name>
+		</attribute>
 	</tag>
 	<tag>
 		<tag-name>container</tag-name>
@@ -533,6 +539,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		<attribute>
 			<name>style</name>
 		</attribute>
+		<attribute>
+			<name>disabled</name>
+		</attribute>
 	</tag>
 	<tag>
 		<tag-name>menu</tag-name>
@@ -627,6 +636,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		</attribute>
 		<attribute>
 			<name>style</name>
+		</attribute>
+		<attribute>
+			<name>disabled</name>
 		</attribute>
 	</tag>
 	<tag>
@@ -1265,9 +1277,6 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 			<name>lang</name>
 		</attribute>
 		<attribute>
-			<name>disabled</name>
-		</attribute>
-		<attribute>
 			<name>label</name>
 		</attribute>
 		<attribute>
@@ -1509,9 +1518,6 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 			<name>lang</name>
 		</attribute>
 		<attribute>
-			<name>disabled</name>
-		</attribute>
-		<attribute>
 			<name>label</name>
 		</attribute>
 		<attribute>
@@ -1751,9 +1757,6 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		</attribute>
 		<attribute>
 			<name>lang</name>
-		</attribute>
-		<attribute>
-			<name>disabled</name>
 		</attribute>
 		<attribute>
 			<name>label</name>
