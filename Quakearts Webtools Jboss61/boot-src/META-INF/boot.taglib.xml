@@ -1334,10 +1334,10 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 			<name>size</name>
 		</attribute>
 		<attribute>
-			<name>tabindex</name>
+			<name>limit</name>
 		</attribute>
 		<attribute>
-			<name>displayType</name>
+			<name>tabindex</name>
 		</attribute>
 	</tag>
 	<tag>
@@ -1456,10 +1456,16 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 			<name>size</name>
 		</attribute>
 		<attribute>
+			<name>limit</name>
+		</attribute>
+		<attribute>
 			<name>tabindex</name>
 		</attribute>
 		<attribute>
 			<name>displayType</name>
+		</attribute>
+		<attribute>
+			<name>fill</name>
 		</attribute>
 	</tag>
 	<tag>
@@ -1575,10 +1581,10 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 			<name>size</name>
 		</attribute>
 		<attribute>
-			<name>tabindex</name>
+			<name>limit</name>
 		</attribute>
 		<attribute>
-			<name>displayType</name>
+			<name>tabindex</name>
 		</attribute>
 	</tag>
 	<tag>
@@ -1697,10 +1703,16 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 			<name>size</name>
 		</attribute>
 		<attribute>
+			<name>limit</name>
+		</attribute>
+		<attribute>
 			<name>tabindex</name>
 		</attribute>
 		<attribute>
 			<name>displayType</name>
+		</attribute>
+		<attribute>
+			<name>fill</name>
 		</attribute>
 	</tag>
 	<tag>

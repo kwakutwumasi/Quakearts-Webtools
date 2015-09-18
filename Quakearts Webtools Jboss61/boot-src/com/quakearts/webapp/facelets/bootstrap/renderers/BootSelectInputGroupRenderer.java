@@ -20,6 +20,8 @@ import javax.faces.model.SelectItem;
 
 import com.quakearts.webapp.facelets.bootstrap.behaviour.AutoCompleteBehavior;
 import com.quakearts.webapp.facelets.bootstrap.components.BootSelectManyMenu;
+import com.quakearts.webapp.facelets.bootstrap.renderkit.Attribute;
+import com.quakearts.webapp.facelets.bootstrap.renderkit.AttributeManager;
 import com.quakearts.webapp.facelets.util.ObjectExtractor;
 
 
@@ -30,7 +32,10 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		
 		if(component instanceof BootSelectManyMenu)
 			throw new IOException("Component cannot be of type "+BootSelectManyMenu.class.getName());
-		
+
+		Attribute[] attributes = AttributeManager
+				.getAttributes(AttributeManager.Key.SELECTMANYLIST);
+
 		ResponseWriter writer = context.getResponseWriter();
 		
 		String id = component.getClientId(context);
@@ -63,7 +68,7 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 			renderOnchange(context, component, false);
 		
 		renderPassThruAttributes(context, writer, component,
-				ATTRIBUTES,nonAutoCompleteMap);
+				attributes,nonAutoCompleteMap);
 		renderXHTMLStyleBooleanAttributes(writer, component);
 		writer.write("\n");
 		String label = (String) component.getAttributes().get("label");
@@ -182,10 +187,11 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 	}
 	
 	@Override
-	protected void renderOption(FacesContext context, UIComponent component,
+	protected boolean renderOption(FacesContext context, UIComponent component,
 			Converter converter, SelectItem curItem, Object currentSelections,
 			Object[] submittedValues, OptionComponentInfo optionInfo,
-			Map<String, String> values, boolean isManySelect, ResponseWriter writer)
+			Map<String, String> values, boolean isManySelect, 
+			ResponseWriter writer, int index)
 			throws IOException {
 	
 		Object valuesArray;
@@ -211,7 +217,7 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 				valuesArray, converter);
 		if (optionInfo.isHideNoSelection() && curItem.isNoSelectionOption()
 				&& currentSelections != null && !isSelected) {
-			return;
+			return false;
 		}
 	
 		String labelClass;
@@ -247,5 +253,6 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		if (isSelected) {
 			values.put(label,valueString);
 		}
+		return false;
 	}
 }

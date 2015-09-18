@@ -108,3 +108,9 @@
 	border: none;
 	min-width: 95%;
 }
+
+.list-container {
+	overflow: hidden;
+	max-height: 220px;
+	margin-bottom: 0px;
+}

@@ -20,18 +20,22 @@ qaboot.manyListItemSelected = function (obj, ipid, val){
 
 qaboot.selectManyDropDown = function(drid){
 	var obj = $('#'+drid);
-	if(obj.hasClass('collapse'))
-		obj.removeClass('collapse') ;
+	
+	if(obj.is(':hidden'))
+		obj.slideDown('slow', function(){
+			if($(window).scrollTop()<(obj.offset().top+obj.height()))
+			$(window).scrollTop(obj.offset().top+obj.height());
+		});
 	else
-		obj.addClass('collapse');
+		obj.slideUp('fast');	
 }
 
 qaboot.selectInputDropDown =function(drid){
 	var obj = $('#'+drid);
-	if(obj.css('display')=='none')
-		obj.css('display','inline-block');
+	if(obj.is(':hidden'))
+		obj.slideDown('slow');
 	else
-		obj.css('display','none');
+		obj.slideUp('fast');	
 }
 
 qaboot.oneListItemSelected = function (obj,ipid,val,dspid){
@@ -42,23 +46,30 @@ qaboot.oneListItemSelected = function (obj,ipid,val,dspid){
 	});
 	select.addClass('active');
 	var input = $('#'+ipid);
+	
 	input.find('input').each(function(){
 		if(dspid && $(this).attr("id")==dspid.replace(/\\:/g,":"))
 			return;
 		
 		$(this).remove();
 	});
-	input.append('<input name="'+ipid.replace(/\\:/g,":")+'" value="'+val+'" type="hidden"></input>');
-	//trigger change event
-	input.change();
+	
+	input.append('<input name="'
+			+ipid.replace(/\\:/g,":")
+			+'" value="'
+			+val
+			+'" type="hidden"></input>');
+	
 	if(dspid){
-		var element = document.getElementById(dspid.replace(/\\:/g,":"));
-		if(element.nodeName == "INPUT"){
-			$(element).val(select.html());
+		var element = $('#'+dspid);
+		if(element.prop("tagName").toLowerCase() == "input"){
+			element.val(select.html());
 		} else {
-			$('#'+dspid).html(select.html());
+			element.html(select.html());
 		}
 	}
+	//trigger change event
+	input.change();
 }
 
 qaboot.prevPage = function(id){
@@ -134,3 +145,29 @@ qaboot.queueAction = function(obj,delay){
 };
 
 qaboot.tmid =0;
+
+qaboot.scrollDown = function (drid,obj,upid){
+	var dropDown = $('#'+drid);
+	dropDown.animate({scrollTop:dropDown.scrollTop()+dropDown.height()},{duration:500,queue:true,done:function(){
+		if(dropDown.scrollTop()+dropDown.height()==dropDown.prop('scrollHeight')){
+			$(obj).prop("disabled",true);
+		}
+		var upbtn = $('#'+upid);
+		if(upbtn.prop("disabled"))
+			upbtn.prop("disabled",false);										
+	}})
+	return false;
+}
+
+qaboot.scrollUp = function (drid,obj,dnid){
+	var dropDown = $('#'+drid);
+	dropDown.animate({scrollTop:dropDown.scrollTop()-dropDown.height()},{duration:500,queue:true, done:function(){
+		if(dropDown.scrollTop()==0){
+			$(obj).prop("disabled",true);
+		}
+		var dnbtn = $('#'+dnid);
+		if(dnbtn.prop("disabled"))
+			dnbtn.prop("disabled",false);										
+	}})
+	return false;
+}

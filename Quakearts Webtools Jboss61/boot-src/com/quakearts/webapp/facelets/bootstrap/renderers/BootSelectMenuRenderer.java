@@ -41,12 +41,10 @@ import com.quakearts.webapp.facelets.bootstrap.renderkit.AttributeManager;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.html_basic.HtmlBasicInputRenderer;
 import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.*;
 import static com.quakearts.webapp.facelets.util.UtilityMethods.*;
+import static com.quakearts.webapp.facelets.bootstrap.common.BootOnLoadComponent.*;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
-
-	protected static final Attribute[] ATTRIBUTES = AttributeManager
-			.getAttributes(AttributeManager.Key.SELECTMANYMENU);
 
 	protected HashMap<Class, Method> methodCache = new HashMap<Class, Method>();
 	
@@ -203,31 +201,53 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 	
 		ResponseWriter writer = context.getResponseWriter();
 		
-		String id = component.getClientId(context);
+		String id = component.getClientId(context), idjs=id.replace(":", "\\\\:");
 		boolean isDropDown = component instanceof BootSelectManyMenu || component instanceof BootSelectOneMenu;
+		Attribute[] attributes;
+		if(isDropDown){
+			attributes = AttributeManager
+				.getAttributes(AttributeManager.Key.SELECTMANYMENU);
+		} else {
+			attributes = AttributeManager
+					.getAttributes(AttributeManager.Key.SELECTMANYLIST);
+		}
+		
 		boolean componentDisabled = componentIsDisabled(component);
+		
+		boolean limit = Boolean.parseBoolean(get("limit",component));
+		int size = 5;
+		if(limit){
+			try {
+				size = Integer.parseInt(get("size",component));
+				if(size<=0)
+					size=5;
+			} catch (Exception e) {
+			}
+		}
+		
 		writer.startElement("div", component);
 		writer.writeAttribute("id", id, "clientId");
 		if(!componentDisabled)
 			renderOnchange(context, component, false);
-		
-		renderPassThruAttributes(context, writer, component,
-				ATTRIBUTES, getNonOnChangeBehaviors(component));
-		renderXHTMLStyleBooleanAttributes(writer, component);
-		writer.write("\n");
+
 		if(isDropDown){
-			String label = (String) component.getAttributes().get("label");
-			String styleClass = (String) component.getAttributes().get("styleClass");
+			writer.write("\n");
+			String label = (String) get("label", component);
+			String styleClass = (String) get("styleClass", component);
+			boolean fill = Boolean.parseBoolean(get("fill", component));
 			
 			writer.startElement("button", component);
 			writer.writeAttribute("id", id+"_button", null);
 			writer.writeAttribute("class", "select-many-dropdown btn btn-"
-					+ getDisplayType(component, context)
-					+ (styleClass != null ? " " + styleClass : "")
-					+ (componentDisabled ? " disabled" : ""), null);
-			writer.writeAttribute("onclick", "qaboot.selectManyDropDown('dd_"+id.replace(":", "\\\\:")+"');", null);
+					+ getDisplayType(component, context)+(fill?" btn-block":"")
+					+ (styleClass != null ? " " + styleClass : ""), null);
+			writer.writeAttribute("onclick", "qaboot.selectManyDropDown('dd_"+idjs+"');", null);
 			writer.writeAttribute("type", "button", null);
-        	writer.writeText(label!=null?label:"",null);
+			renderPassThruAttributes(context, writer, component,
+					attributes, getNonOnChangeBehaviors(component));
+			renderXHTMLStyleBooleanAttributes(writer, component);
+
+			writer.writeText(label!=null?label:"",null);
     		writer.write("\n");
     		writer.startElement("span", component);
     		writer.writeAttribute("class", "caret", null);
@@ -236,6 +256,11 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
     		writer.write("\n");
     		writer.endElement("button");
     		writer.write("\n");
+		} else {
+			renderPassThruAttributes(context, writer, component,
+					attributes, getNonOnChangeBehaviors(component));
+			renderXHTMLStyleBooleanAttributes(writer, component);
+			writer.write("\n");
 		}
 		
 		Iterator<SelectItem> items = getSelectItems(context, component);
@@ -243,10 +268,63 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 	
 		writer.startElement("div", component);
 		writer.writeAttribute("id", "dd_"+id, null);
-		writer.writeAttribute("class", "list-group"+(isDropDown && holder.options.isEmpty()?" collapse":""), null);
+		if(limit && holder.total>size){
+			writer.writeAttribute("class", (isDropDown && holder.options.isEmpty()?" collapse":""), null);
+
+    		writer.write("\n");
+			writer.startElement("button", component);
+			writer.writeAttribute("id", "up_"+id, null);
+			writer.writeAttribute("type", "button", null);
+			writer.writeAttribute("class", "btn btn-default btn-xs btn-block", null);
+			if(holder.options.isEmpty())
+				writer.writeAttribute("disabled", "disabled", null);
+			writer.writeAttribute("onclick", "qaboot.scrollUp('ddi_"+idjs+"',this,'dwn_"+idjs+"');", null);
+			
+			writer.startElement("span", component);
+			writer.writeAttribute("class", "glyphicon glyphicon-chevron-up", null);
+			writer.write(" ");
+			writer.endElement("span");
+			writer.endElement("button");
+						
+    		writer.write("\n");
+			writer.startElement("div", component);
+			writer.writeAttribute("id", "ddi_"+id, null);
+			writer.writeAttribute("class", "list-group list-container", null);
+			if(size!=5 || !holder.options.isEmpty()){
+				StringBuilder styleBuilder = new StringBuilder();
+				if(size!=5)
+					styleBuilder.append("max-height:").append(size*44).append("px");
+				
+				if(holder.firstIndex>0)
+					addScriptContent("$('#ddi_"+idjs+"').scrollTop("+(holder.firstIndex*44)+");\n", context);
+
+				writer.writeAttribute("style", styleBuilder.toString(), null);
+			}
+		} else {
+			writer.writeAttribute("class", "list-group"+(isDropDown && holder.options.isEmpty()?" collapse":""), null);
+		}
 		
 		writer.write("\n");	
 		writer.write(holder.buffer);
+
+		if(limit && holder.total>size){
+			writer.endElement("div");
+			writer.write("\n");		
+			
+    		writer.write("\n");
+			writer.startElement("button", component);
+			writer.writeAttribute("id", "dwn_"+id, null);
+			writer.writeAttribute("class", "btn btn-default btn-xs btn-block", null);
+			writer.writeAttribute("type", "button", null);
+			writer.writeAttribute("onclick", "qaboot.scrollDown('ddi_"+idjs+"',this,'up_"+idjs+"');", null);
+			
+			writer.startElement("span", component);
+			writer.writeAttribute("class", "glyphicon glyphicon-chevron-down", null);
+			writer.write(" ");
+			writer.endElement("span");
+			writer.endElement("button");
+		}
+
 		writer.endElement("div");
 		writer.write("\n");
 		if(!componentDisabled)
@@ -265,9 +343,13 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 	protected class Holder {
 		Map<String, String> options;
 		char[] buffer;
-		public Holder(Map<String, String> values, char[] rendered) {
+		int total;
+		int firstIndex;
+		public Holder(Map<String, String> values, char[] rendered, int total, int firstIndex) {
 			this.options = values;
 			this.buffer = rendered;
+			this.total = total;
+			this.firstIndex = firstIndex;
 		}		
 	}
 	
@@ -292,24 +374,31 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 				(String) attributes.get("enabledClass"), componentDisabled,
 				isHideNoSelection(component));
 
+		int index = 0;
+		int firstIndex = -1;
 		while (items.hasNext()) {
 			SelectItem item = items.next();
 	
 			if (item instanceof SelectItemGroup) {	
 				SelectItem[] itemsArray = ((SelectItemGroup) item)
 						.getSelectItems();
-				for (int i = 0; i < itemsArray.length; ++i) {
-					renderOption(context, component, converter, itemsArray[i],
+				for (int i = 0; i < itemsArray.length; ++i) 
+					if(renderOption(context, component, converter, itemsArray[i],
 							currentSelections, submittedValues, optionInfo,
-							values, isManySelect,writer);
-				}
+							values, isManySelect,writer,index)){
+						if(firstIndex==-1&& !values.isEmpty()) firstIndex= index;
+						index++;
+					}
 			} else {
-				renderOption(context, component, converter, item,
+				if(renderOption(context, component, converter, item,
 						currentSelections, submittedValues, optionInfo,
-						values, isManySelect,writer);
+						values, isManySelect,writer,index)){
+					if(firstIndex==-1&& !values.isEmpty()) firstIndex= index;
+					index++;
+				}
 			}
 		}
-		return new Holder(values, charWriter.toCharArray());
+		return new Holder(values, charWriter.toCharArray(), index, firstIndex);
 	}
 
     private static String getDisplayType(UIComponent button, FacesContext context){
@@ -326,10 +415,11 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
     	return displayType;
     }
 	
-	protected void renderOption(FacesContext context, UIComponent component,
+	protected boolean renderOption(FacesContext context, UIComponent component,
 			Converter converter, SelectItem curItem, Object currentSelections,
 			Object[] submittedValues, OptionComponentInfo optionInfo,
-			Map<String, String> values, boolean isManySelect, ResponseWriter writer)
+			Map<String, String> values, boolean isManySelect, 
+			ResponseWriter writer, int index)
 			throws IOException {
 	
 		Object valuesArray;
@@ -355,7 +445,7 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 				valuesArray, converter);
 		if (optionInfo.isHideNoSelection() && curItem.isNoSelectionOption()
 				&& currentSelections != null && !isSelected) {
-			return;
+			return false;
 		}
 	
 		String labelClass;
@@ -394,8 +484,9 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 		writer.endElement("a");
 		writer.writeText("\n", component, null);
 		if (isSelected) {
-			values.put(label,valueString);
+			values.put(label, valueString);
 		}
+		return true;
 	}
 
 	protected Object convertSelectManyValuesForModel(FacesContext context,
@@ -749,4 +840,14 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 		return ((result != null) ? (Boolean) result : false);
 	}
 	
+	public String get(String attribute, UIComponent component) {
+		String attributeValue = ObjectExtractor
+				.extractString(component.getValueExpression(attribute), FacesContext.getCurrentInstance()
+						.getELContext());
+		
+		if (attributeValue == null)
+			attributeValue = (String) component.getAttributes().get(attribute);
+		
+		return attributeValue;
+	}
 }

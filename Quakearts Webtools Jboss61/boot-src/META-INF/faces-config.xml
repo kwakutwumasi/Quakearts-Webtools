@@ -17,6 +17,10 @@
 		<component-class>com.quakearts.webapp.facelets.bootstrap.common.BootHeaderComponent</component-class>
 	</component>
 	<component>
+		<component-type>com.quakearts.bootstrap.footer</component-type>
+		<component-class>com.quakearts.webapp.facelets.bootstrap.common.BootOnLoadComponent</component-class>
+	</component>
+	<component>
 		<component-type>com.quakearts.bootstrap.ajaxloader</component-type>
 		<component-class>com.quakearts.webapp.facelets.bootstrap.components.BootAjaxLoaderComponent</component-class>		
 	</component>
@@ -146,218 +150,166 @@
 			<renderer-type>com.quakearts.bootstrap.header.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.common.BootHeaderRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
+		<renderer>
+			<component-family>com.quakearts.bootstrap.footer</component-family>
+			<renderer-type>com.quakearts.bootstrap.footer.renderer</renderer-type>
+			<renderer-class>com.quakearts.webapp.facelets.bootstrap.common.BootOnLoadRenderer</renderer-class>
+		</renderer>
+		<renderer>
+			<component-family>com.quakearts.bootstrap.header</component-family>
+			<renderer-type>com.quakearts.bootstrap.header.renderer</renderer-type>
+			<renderer-class>com.quakearts.webapp.facelets.bootstrap.common.BootHeaderRenderer</renderer-class>
+		</renderer>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.ajaxloader</component-family>
 			<renderer-type>com.quakearts.bootstrap.ajaxloader.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootAjaxLoaderRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.ajaxscriptloader</component-family>
 			<renderer-type>com.quakearts.bootstrap.ajaxscriptloader.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootAjaxLoaderScriptRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.breadcrumbs</component-family>
 			<renderer-type>com.quakearts.bootstrap.breadcrumbs.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootBreadCrumbRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.breadcrumbitem</component-family>
 			<renderer-type>com.quakearts.bootstrap.breadcrumbitem.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootBreadCrumbItemRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.btngroup</component-family>
 			<renderer-type>com.quakearts.bootstrap.btngroup.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootButtonGroupRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.btntoolbar</component-family>
 			<renderer-type>com.quakearts.bootstrap.btntoolbar.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootButtonToolbarRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.checkbox</component-family>
 			<renderer-type>com.quakearts.bootstrap.checkbox.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootCheckboxRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.bootcolumn</component-family>
 			<renderer-type>com.quakearts.bootstrap.bootcolumn.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootColumnRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.btn</component-family>
 			<renderer-type>com.quakearts.bootstrap.btn.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootCommandButtonRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.bootcontainer</component-family>
 			<renderer-type>com.quakearts.bootstrap.bootcontainer.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootContainerRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.date</component-family>
 			<renderer-type>com.quakearts.bootstrap.date.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootDateButtonRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.datescript</component-family>
 			<renderer-type>com.quakearts.bootstrap.datescript.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootDateScriptRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.menu</component-family>
 			<renderer-type>com.quakearts.bootstrap.menu.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootMenuRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.fileinput</component-family>
 			<renderer-type>com.quakearts.bootstrap.fileinput.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootFileInputRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.form</component-family>
 			<renderer-type>com.quakearts.bootstrap.form.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootFormRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.formgroup</component-family>
 			<renderer-type>com.quakearts.bootstrap.formgroup.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootFormGroupRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.glyph</component-family>
 			<renderer-type>com.quakearts.bootstrap.glyph.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootGlyphRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.textinput</component-family>
 			<renderer-type>com.quakearts.bootstrap.textinput.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootInputRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.label</component-family>
 			<renderer-type>com.quakearts.bootstrap.label.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootLabelRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.messages</component-family>
 			<renderer-type>com.quakearts.bootstrap.messages.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootMessagesRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.nav</component-family>
 			<renderer-type>com.quakearts.bootstrap.nav.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootNavRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.navbar</component-family>
 			<renderer-type>com.quakearts.bootstrap.navbar.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootNavBarRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.outputpanel</component-family>
 			<renderer-type>com.quakearts.bootstrap.outputpanel.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootOutputPanelRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.pagination</component-family>
 			<renderer-type>com.quakearts.bootstrap.pagination.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootPaginationRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.bootrow</component-family>
 			<renderer-type>com.quakearts.bootstrap.bootrow.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootRowRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.selectManyListBox</component-family>
 			<renderer-type>com.quakearts.bootstrap.select.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootSelectMenuRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.selectManyMenu</component-family>
 			<renderer-type>com.quakearts.bootstrap.select.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootSelectMenuRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.selectOneListbox</component-family>
 			<renderer-type>com.quakearts.bootstrap.select.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootSelectMenuRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.selectOneMenu</component-family>
 			<renderer-type>com.quakearts.bootstrap.select.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootSelectMenuRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.selectOneInputGroup</component-family>
 			<renderer-type>com.quakearts.bootstrap.selectinputgroup.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootSelectInputGroupRenderer</renderer-class>
 		</renderer>
-	</render-kit>
-	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.datatable</component-family>
 			<renderer-type>com.quakearts.bootstrap.datatable.renderer</renderer-type>

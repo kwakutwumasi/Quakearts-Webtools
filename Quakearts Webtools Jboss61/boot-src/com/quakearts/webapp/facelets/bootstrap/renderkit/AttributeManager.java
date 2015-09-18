@@ -162,9 +162,29 @@ public class AttributeManager {
             ,attr("onmouseover","mouseover")
             ,attr("onmouseup","mouseup")
             ,attr("onselect","select")
-            ,attr("style")
             ,attr("tabindex")
             ,attr("title")
+        ))
+        .add("SelectManyList",ar(
+                attr("accesskey")
+                ,attr("dir")
+                ,attr("lang")
+                ,attr("onblur","blur")
+                ,attr("onclick","click")
+                ,attr("ondblclick","dblclick")
+                ,attr("onfocus","focus")
+                ,attr("onkeydown","keydown")
+                ,attr("onkeypress","keypress")
+                ,attr("onkeyup","keyup")
+                ,attr("onmousedown","mousedown")
+                ,attr("onmousemove","mousemove")
+                ,attr("onmouseout","mouseout")
+                ,attr("onmouseover","mouseover")
+                ,attr("onmouseup","mouseup")
+                ,attr("onselect","select")
+                ,attr("style")
+                ,attr("tabindex")
+                ,attr("title")
         ))
         .add("BootNav",ar(attr("onclick","click")
             ,attr("ondblclick","dblclick")
@@ -227,6 +247,7 @@ public class AttributeManager {
         MESSAGESMESSAGES("MessagesMessages"),
         SELECTBOOLEANCHECKBOX("SelectBooleanCheckbox"),
         SELECTMANYMENU("SelectManyMenu"),
+        SELECTMANYLIST("SelectManyList"),
         BOOTNAV("BootNav"),
         DATATABLE("DataTable"),
         BOOTBREADCRUMB("BootBreadCrumb"),
