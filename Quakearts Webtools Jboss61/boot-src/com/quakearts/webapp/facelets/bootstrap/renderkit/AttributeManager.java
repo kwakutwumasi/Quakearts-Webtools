@@ -165,6 +165,23 @@ public class AttributeManager {
             ,attr("tabindex")
             ,attr("title")
         ))
+        .add("SelectInputGroup",ar(
+                attr("accesskey")
+                ,attr("dir")
+                ,attr("lang")
+                ,attr("onblur","blur")
+                ,attr("onclick","click")
+                ,attr("ondblclick","dblclick")
+                ,attr("onfocus","focus")
+                ,attr("onmousedown","mousedown")
+                ,attr("onmousemove","mousemove")
+                ,attr("onmouseout","mouseout")
+                ,attr("onmouseover","mouseover")
+                ,attr("onmouseup","mouseup")
+                ,attr("onselect","select")
+                ,attr("tabindex")
+                ,attr("title")
+            ))
         .add("SelectManyList",ar(
                 attr("accesskey")
                 ,attr("dir")
@@ -251,7 +268,8 @@ public class AttributeManager {
         BOOTNAV("BootNav"),
         DATATABLE("DataTable"),
         BOOTBREADCRUMB("BootBreadCrumb"),
-        BOOTPANEL("BootPanel");
+        BOOTPANEL("BootPanel"),
+        SELECTINPUTGROUP("SelectInputGroup");
 
         private String key;
         Key(String key) {

@@ -65,6 +65,7 @@ import javax.faces.context.ResponseWriter;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.render.Renderer;
+
 import static com.quakearts.webapp.facelets.util.UtilityMethods.*;
 import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.*;
 
@@ -604,18 +605,19 @@ public abstract class HtmlBasicRenderer extends Renderer {
         String unselectedClass;
         boolean disabled;
         boolean hideNoSelection;
+        String jqueryId;
 
 		public OptionComponentInfo(String disabledClass, String enabledClass,
-				boolean disabled, boolean hideNoSelection) {
+				boolean disabled, boolean hideNoSelection, String jqueryId) {
 
 			this(disabledClass, enabledClass, null, null, disabled,
-					hideNoSelection);
+					hideNoSelection, jqueryId);
 
 		}
 
 		public OptionComponentInfo(String disabledClass, String enabledClass,
 				String unselectedClass, String selectedClass, boolean disabled,
-				boolean hideNoSelection) {
+				boolean hideNoSelection, String jqueryId) {
 
 			this.disabledClass = disabledClass;
 			this.enabledClass = enabledClass;
@@ -623,7 +625,7 @@ public abstract class HtmlBasicRenderer extends Renderer {
 			this.selectedClass = selectedClass;
 			this.disabled = disabled;
 			this.hideNoSelection = hideNoSelection;
-
+			setJqueryId(jqueryId);
 		}
 
         public String getDisabledClass() {
@@ -650,5 +652,12 @@ public abstract class HtmlBasicRenderer extends Renderer {
             return unselectedClass;
         }
         
+        public void setJqueryId(String jqueryId) {
+			this.jqueryId = jqueryId.replace(":", "\\\\:");
+		}
+        
+        public String getJqueryId() {
+			return jqueryId;
+		}
     }
  } 

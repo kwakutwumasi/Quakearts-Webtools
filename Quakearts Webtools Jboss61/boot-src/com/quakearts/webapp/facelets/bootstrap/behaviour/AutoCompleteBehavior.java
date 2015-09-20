@@ -10,6 +10,8 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.AjaxBehaviorListener;
 import javax.faces.event.BehaviorEvent;
 
+import com.quakearts.webapp.facelets.util.ObjectExtractor;
+
 public class AutoCompleteBehavior extends ClientBehaviorBase {
 	
 	/**
@@ -110,6 +112,34 @@ public class AutoCompleteBehavior extends ClientBehaviorBase {
 			}
 		}
 		component.queueEvent(new AjaxBehaviorEvent(component, this));
+	}
+	
+	public void loadFromComponent(UIComponent component, FacesContext context){
+		render = ObjectExtractor.extractString(component.getValueExpression("render"), context.getELContext());
+		if(render==null)
+			render = (String) component.getAttributes().get("render");
+		
+		execute = ObjectExtractor.extractString(component.getValueExpression("execute"), context.getELContext());
+		if(execute==null)
+			execute = (String) component.getAttributes().get("execute");
+
+		onerror = ObjectExtractor.extractString(component.getValueExpression("onerror"), context.getELContext());
+		if(onerror==null)
+			onerror = (String) component.getAttributes().get("onerror");
+
+		onevent = ObjectExtractor.extractString(component.getValueExpression("onevent"), context.getELContext());
+		if(onevent==null)
+			onevent = (String) component.getAttributes().get("onevent");
+		
+		ValueExpression delayExpression;
+		if((delayExpression=component.getValueExpression("delay"))!=null){
+			 delay = ObjectExtractor.extractInteger(delayExpression, context.getELContext());
+		} else {
+			try {
+				delay = Integer.parseInt((String)component.getAttributes().get("delay"));
+			} catch (Exception e) {
+			}
+		}
 	}
 	
 	@Override

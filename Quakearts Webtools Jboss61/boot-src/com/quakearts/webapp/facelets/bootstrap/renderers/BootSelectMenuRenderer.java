@@ -31,6 +31,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
+
 import com.quakearts.webapp.facelets.bootstrap.components.BootSelectManyListbox;
 import com.quakearts.webapp.facelets.bootstrap.components.BootSelectManyMenu;
 import com.quakearts.webapp.facelets.bootstrap.components.BootSelectOneListbox;
@@ -264,7 +265,7 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 		}
 		
 		Iterator<SelectItem> items = getSelectItems(context, component);
-		Holder holder = renderOptions(context, component, items,componentDisabled);
+		Holder holder = renderOptions(context, component, items,componentDisabled, id);
 	
 		writer.startElement("div", component);
 		writer.writeAttribute("id", "dd_"+id, null);
@@ -354,7 +355,7 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 	}
 	
 	protected Holder renderOptions(FacesContext context, UIComponent component,
-			Iterator<SelectItem> items, boolean componentDisabled) throws IOException {
+			Iterator<SelectItem> items, boolean componentDisabled, String id) throws IOException {
 		
 		Map<String, String> values = new HashMap<String,String>();
 		CharArrayWriter charWriter = new CharArrayWriter();
@@ -372,7 +373,7 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 		OptionComponentInfo optionInfo = new OptionComponentInfo(
 				(String) attributes.get("disabledClass"),
 				(String) attributes.get("enabledClass"), componentDisabled,
-				isHideNoSelection(component));
+				isHideNoSelection(component), id);
 
 		int index = 0;
 		int firstIndex = -1;
@@ -468,7 +469,7 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 		
 		if (!optionInfo.isDisabled() && !curItem.isDisabled()) 
 			writer.writeAttribute("onclick", function+"(this,'"
-				+ component.getClientId(context).replace(":", "\\\\:") + "','" + valueString+"');",
+				+ optionInfo.getJqueryId() + "','" + valueString+"');",
 				null);
 			
 		String label = curItem.getLabel();

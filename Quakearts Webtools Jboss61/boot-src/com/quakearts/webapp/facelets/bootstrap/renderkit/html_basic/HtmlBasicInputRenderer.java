@@ -45,7 +45,6 @@ package com.quakearts.webapp.facelets.bootstrap.renderkit.html_basic;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-
 import javax.el.ValueExpression;
 import javax.faces.application.Application;
 import javax.faces.component.UIComponent;
@@ -55,6 +54,7 @@ import javax.faces.component.behavior.ClientBehavior;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
+
 import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.*;
 
 /**
@@ -190,7 +190,6 @@ public abstract class HtmlBasicInputRenderer extends HtmlBasicRenderer {
     }
 
     private boolean hasStringConverter(FacesContext context) {
-
         if (!hasStringConverterSet) {
             hasStringConverter = (null !=
                                   context.getApplication()
@@ -198,7 +197,6 @@ public abstract class HtmlBasicInputRenderer extends HtmlBasicRenderer {
             hasStringConverterSet = true;
         }
         return hasStringConverter;
-
     }
-
+    
 } 

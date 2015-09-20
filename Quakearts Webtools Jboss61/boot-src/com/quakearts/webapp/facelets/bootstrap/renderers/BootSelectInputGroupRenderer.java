@@ -3,26 +3,18 @@ package com.quakearts.webapp.facelets.bootstrap.renderers;
 import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.*;
 import static com.quakearts.webapp.facelets.util.UtilityMethods.componentIsDisabled;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-
-import javax.el.ValueExpression;
 import javax.faces.component.UIComponent;
-import javax.faces.component.behavior.ClientBehavior;
 import javax.faces.component.behavior.ClientBehaviorContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.convert.Converter;
 import javax.faces.model.SelectItem;
-
 import com.quakearts.webapp.facelets.bootstrap.behaviour.AutoCompleteBehavior;
 import com.quakearts.webapp.facelets.bootstrap.components.BootSelectManyMenu;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.Attribute;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.AttributeManager;
-import com.quakearts.webapp.facelets.util.ObjectExtractor;
 
 
 public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
@@ -34,33 +26,13 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 			throw new IOException("Component cannot be of type "+BootSelectManyMenu.class.getName());
 
 		Attribute[] attributes = AttributeManager
-				.getAttributes(AttributeManager.Key.SELECTMANYLIST);
+				.getAttributes(AttributeManager.Key.SELECTINPUTGROUP);
 
 		ResponseWriter writer = context.getResponseWriter();
 		
 		String id = component.getClientId(context);
 		boolean componentDisabled = componentIsDisabled(component);
-		AutoCompleteBehavior autocompleteBehavior = null;
-		Map<String, List<ClientBehavior>> nonAutoCompleteMap = new HashMap<>();
-		Map<String, List<ClientBehavior>> behaviorsMap = getNonOnChangeBehaviors(component);
-		if(behaviorsMap!=null && behaviorsMap.size()>0 && !componentDisabled)
-			for(String key:behaviorsMap.keySet()){
-				List<ClientBehavior> behaviors = behaviorsMap.get(key);
-				if(key.equals("keyup")){
-					List<ClientBehavior> nonAutocompleteList = new ArrayList<>();
-					for(ClientBehavior behavior:behaviors){
-						if(behavior instanceof AutoCompleteBehavior){
-							autocompleteBehavior = (AutoCompleteBehavior) behavior;
-						} else {
-							nonAutocompleteList.add(behavior);
-						}
-					}
-					if(autocompleteBehavior==null)
-						nonAutoCompleteMap.put(key, nonAutocompleteList);
-				} else {
-					nonAutoCompleteMap.put(key, behaviors);
-				}
-			}
+		AutoCompleteBehavior autocompleteBehavior = findClientBehavior(AutoCompleteBehavior.class, "keyup", component);
 		
 		writer.startElement("div", component);
 		writer.writeAttribute("id", id, "clientId");
@@ -68,14 +40,27 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 			renderOnchange(context, component, false);
 		
 		renderPassThruAttributes(context, writer, component,
-				attributes,nonAutoCompleteMap);
+				attributes, getNonOnChangeBehaviors(component));
 		renderXHTMLStyleBooleanAttributes(writer, component);
+
+		String keyup = get("onkeyup", component);
+		if(keyup!=null)
+			writer.writeAttribute("onkeyup", keyup, null);			
+
+		String keydown = get("onkeydown", component);
+		if(keydown!=null)
+			writer.writeAttribute("onkeydown", keydown, null);			
+
+		String keypressed = get("onkeypressed", component);
+		if(keypressed!=null)
+			writer.writeAttribute("onkeypressed", keypressed, null);
+		
 		writer.write("\n");
 		String label = (String) component.getAttributes().get("label");
 		String styleClass = (String) component.getAttributes().get("styleClass");
 		
 		Iterator<SelectItem> items = getSelectItems(context, component);
-		Holder holder = renderOptions(context, component, items,componentDisabled);
+		Holder holder = renderOptions(context, component, items,componentDisabled,id);
 		String display = holder.options.size()>0?holder.options.keySet().iterator().next():null;
 		String value = display!=null ? holder.options.get(display):null;
 
@@ -99,36 +84,7 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		String element = autocompleteBehavior!=null?"input":"span";
 		writer.startElement(element, component);
 		if(autocompleteBehavior!=null){
-			String render = ObjectExtractor.extractString(component.getValueExpression("render"), context.getELContext());
-			if(render==null)
-				render = (String) component.getAttributes().get("render");
-			
-			String execute = ObjectExtractor.extractString(component.getValueExpression("execute"), context.getELContext());
-			if(execute==null)
-				execute = (String) component.getAttributes().get("execute");
-
-			String onerror = ObjectExtractor.extractString(component.getValueExpression("onerror"), context.getELContext());
-			if(onerror==null)
-				onerror = (String) component.getAttributes().get("onerror");
-
-			String onevent = ObjectExtractor.extractString(component.getValueExpression("onevent"), context.getELContext());
-			if(onevent==null)
-				onevent = (String) component.getAttributes().get("onevent");
-			
-			ValueExpression delayExpression;
-			if((delayExpression=component.getValueExpression("delay"))!=null){
-				autocompleteBehavior.setDelay(ObjectExtractor.extractInteger(delayExpression, context.getELContext()));
-			} else {
-				try {
-					autocompleteBehavior.setDelay(Integer.parseInt((String)component.getAttributes().get("delay")));
-				} catch (Exception e) {
-				}
-			}
-			autocompleteBehavior.setRender(render);
-			autocompleteBehavior.setExecute(execute);
-			autocompleteBehavior.setOnerror(onerror);
-			autocompleteBehavior.setOnevent(onevent);
-
+			autocompleteBehavior.loadFromComponent(component, context);
 			autocompleteBehavior.setId(id+"_display");
 			writer.writeAttribute("class", "auto-complete", null);
 			writer.writeAttribute("autocomplete", "off", null);
@@ -138,6 +94,7 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 					null);
 			writer.writeAttribute("onfocus", "$(this).select();", null);
 		}
+		
 		writer.writeAttribute("id", id+"_display", null);
 		writer.writeAttribute("name", id+"_display", null);
 		if(autocompleteBehavior==null)

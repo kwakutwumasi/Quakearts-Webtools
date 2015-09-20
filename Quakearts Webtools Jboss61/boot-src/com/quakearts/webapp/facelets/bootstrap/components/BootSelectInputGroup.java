@@ -3,7 +3,7 @@ package com.quakearts.webapp.facelets.bootstrap.components;
 import java.util.ArrayList;
 
 public class BootSelectInputGroup extends BootSelectOneMenu {
-	public static final String COMPONENT_FAMILY="com.quakearts.bootstrap.selectOneInputGroup";
+	public static final String COMPONENT_FAMILY="com.quakearts.bootstrap.selectinputgroup";
 	public static final String RENDERER_TYPE="com.quakearts.bootstrap.selectinputgroup.renderer";
 
 	public BootSelectInputGroup() {

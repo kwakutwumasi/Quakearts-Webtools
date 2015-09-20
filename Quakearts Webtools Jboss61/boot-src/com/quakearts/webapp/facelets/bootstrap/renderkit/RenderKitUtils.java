@@ -227,18 +227,39 @@ public class RenderKitUtils {
 	    if ((lastChar != ',') && (lastChar != '{'))
 	        builder.append(',');
 	
-	    RenderKitUtils.appendQuotedValue(builder, name);
+	    appendQuotedValue(builder, name);
 	    builder.append(":");
 	
 	    if (value == null) {
 	        builder.append("''");
 	    } else if (quoteValue) {
-	        RenderKitUtils.appendQuotedValue(builder, value.toString());
+	        appendQuotedValue(builder, value.toString());
 	    } else {
 	        builder.append(value.toString());
 	    }
 	}
 
+	public static<T extends ClientBehavior> T findClientBehavior(Class<T> behaviorClass, String eventName, UIComponent component){
+		if(!(component instanceof ClientBehaviorHolder))
+			return null;
+		
+		T foundBehavior = null;
+		
+		Map<String, List<ClientBehavior>> behaviorsMap = ((ClientBehaviorHolder)component).getClientBehaviors();
+		if(behaviorsMap!=null && behaviorsMap.size()>0 && !componentIsDisabled(component)){
+			List<ClientBehavior> behaviors = behaviorsMap.get(eventName);
+			if(behaviors!=null)
+				for(ClientBehavior behavior:behaviors){
+					if(behaviorClass.isInstance(behavior)){
+						foundBehavior = behaviorClass.cast(behavior);
+					}	
+				}
+		}
+		
+		return foundBehavior;
+	}
+
+	
 	private static void renderPassThruAttributesOptimized(FacesContext context,
 			ResponseWriter writer, UIComponent component,
 			Attribute[] knownAttributes, List<String> setAttributes,

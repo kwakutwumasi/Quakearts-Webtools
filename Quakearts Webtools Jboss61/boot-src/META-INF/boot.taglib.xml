@@ -1718,7 +1718,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 	<tag>
 		<tag-name>selectOneInputGroup</tag-name>
 		<component>
-			<component-type>com.quakearts.bootstrap.selectOneInputGroup</component-type>
+			<component-type>com.quakearts.bootstrap.selectinputgroup</component-type>
 			<renderer-type>com.quakearts.bootstrap.selectinputgroup.renderer</renderer-type>
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootInputGroupHandler</handler-class>
 		</component>
