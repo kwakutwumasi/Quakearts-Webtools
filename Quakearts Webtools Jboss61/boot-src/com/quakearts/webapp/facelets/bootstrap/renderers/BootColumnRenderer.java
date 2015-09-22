@@ -22,7 +22,7 @@ public class BootColumnRenderer extends HtmlBasicRenderer {
         
         BootColumn column = (BootColumn) component;
         
-        boolean offset = Boolean.parseBoolean(column.get("offset"));
+        boolean offset = Boolean.parseBoolean(column.get("offsetxs"));
         
         StringBuilder classString = new StringBuilder();
         boolean space =false;
@@ -30,7 +30,9 @@ public class BootColumnRenderer extends HtmlBasicRenderer {
         	classString.append("col-xs-"+(offset?"offset-":"")+column.xsSize());
         	space=true;
         }
-
+        
+        offset = Boolean.parseBoolean(column.get("offsetsm"));
+        
         if(column.smSize()>0){
         	if(!space) space=true;
         	else classString.append(" ");
@@ -38,13 +40,15 @@ public class BootColumnRenderer extends HtmlBasicRenderer {
         	classString.append("col-sm-"+(offset?"offset-":"")+column.smSize());
         }
 
+        offset = Boolean.parseBoolean(column.get("offsetmd"));
         if(column.mdSize()>0){
         	if(!space) space=true;
         	else classString.append(" ");
         	
         	classString.append("col-md-"+(offset?"offset-":"")+column.mdSize());
         }
-
+        
+        offset = Boolean.parseBoolean(column.get("offsetlg"));
         if(column.lgSize()>0){
         	if(!space) space=true;
         	else classString.append(" ");

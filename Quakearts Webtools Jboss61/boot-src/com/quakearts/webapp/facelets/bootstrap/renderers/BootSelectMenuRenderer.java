@@ -233,6 +233,9 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 		if(!componentDisabled)
 			renderOnchange(context, component, false);
 
+		boolean opened = Boolean.parseBoolean(get("opened", component));
+		boolean hasSuggestions = false;
+		
 		if(isDropDown){			
 			writer.write("\n");
 			String label = get("label", component);
@@ -259,8 +262,10 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 				writer.writeAttribute("name", id+"_filter", null);
 				writer.writeAttribute("onfocus", "$(this).select();", null);
 				
-				if(behavior.hasSuggestion())
+				if(behavior.hasSuggestion()){
 					writer.writeAttribute("value", behavior.getSuggest(), null);
+					hasSuggestions = true;
+				}
 				
 				writer.writeAttribute("onkeyup", behavior.getScript(ClientBehaviorContext
 						.createClientBehaviorContext(context, component, "keyup", id, null)), null);
@@ -272,6 +277,7 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 			writer.writeAttribute("id", id+"_button", null);
 			writer.writeAttribute("class", "select-many-dropdown btn btn-"
 					+ getDisplayType(component, context)
+					+ (fill && behavior==null?" btn-block":"")
 					+ (styleClass != null ? " " + styleClass : ""), null);
 			writer.writeAttribute("onclick", "qaboot.selectManyDropDown('dd_"+idjs+"');", null);
 			writer.writeAttribute("type", "button", null);
@@ -289,7 +295,6 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 			String keypressed = get("onkeypressed", component);
 			if(keypressed!=null)
 				writer.writeAttribute("onkeypressed", keypressed, null);
-
 			
 			writer.writeText(label!=null?label:"",null);
     		writer.write("\n");
@@ -316,8 +321,9 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 	
 		writer.startElement("div", component);
 		writer.writeAttribute("id", "dd_"+id, null);
+		opened = opened || !holder.options.isEmpty() || (hasSuggestions && holder.total>0);
 		if(limit && holder.total>size){
-			writer.writeAttribute("class", (isDropDown && holder.options.isEmpty()?" collapse":""), null);
+			writer.writeAttribute("class", (isDropDown && !opened?" collapse":""), null);
 
     		writer.write("\n");
 			writer.startElement("button", component);
@@ -349,7 +355,7 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 				writer.writeAttribute("style", styleBuilder.toString(), null);
 			}
 		} else {
-			writer.writeAttribute("class", "list-group"+(isDropDown && holder.options.isEmpty()?" collapse":""), null);
+			writer.writeAttribute("class", "list-group"+(isDropDown && !opened?" collapse":""), null);
 		}
 		
 		writer.write("\n");	

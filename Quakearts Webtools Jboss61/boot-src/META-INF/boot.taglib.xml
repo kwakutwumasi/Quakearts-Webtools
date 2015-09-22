@@ -333,7 +333,16 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<name>offset</name>
+			<name>offsetxs</name>
+		</attribute>
+		<attribute>
+			<name>offsetsm</name>
+		</attribute>
+		<attribute>
+			<name>offsetmd</name>
+		</attribute>
+		<attribute>
+			<name>offsetlg</name>
 		</attribute>
 	</tag>
 	<tag>
@@ -1497,6 +1506,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		<attribute>
 			<name>delay</name>
 		</attribute>
+		<attribute>
+			<name>opened</name>
+		</attribute>
 	</tag>
 	<tag>
 		<tag-name>selectOneListbox</tag-name>
@@ -1770,6 +1782,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		</attribute>
 		<attribute>
 			<name>delay</name>
+		</attribute>
+		<attribute>
+			<name>opened</name>
 		</attribute>
 	</tag>
 	<tag>
