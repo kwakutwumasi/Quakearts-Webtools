@@ -18,6 +18,13 @@
 			<trait id="valid-minimum"><value xsi:type="mdt:StringValue">0</value></trait>
 			<trait id="valid-maximum"><value xsi:type="mdt:StringValue">12</value></trait>
 		</entity>
+		<entity id="offset">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.BooleanType
+				</value>
+			</trait>
+		</entity>
 	</entity>
 
 	<entity id="button" type="tag">
@@ -712,6 +719,30 @@
 				</value>
 			</trait>
 		</entity>
+		<entity id="autocomplete">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.BooleanType
+				</value>
+			</trait>
+		</entity>
+		<entity id="listener">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">org.eclipse.jst.jsf.core.attributevalues.MethodBindingType</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">void</value>
+			</trait>
+			<trait id="runtime-param-types">
+				<value xsi:type="mdt:StringValue">javax.faces.event.AjaxBehaviorEvent</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
 	</entity>
 	
 	<entity id="selectOneListbox" type="tag">
@@ -750,6 +781,30 @@
 					<item>warning</item>
 					<item>danger</item>
 				</value>
+			</trait>
+		</entity>
+		<entity id="autocomplete">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.BooleanType
+				</value>
+			</trait>
+		</entity>
+		<entity id="listener">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">org.eclipse.jst.jsf.core.attributevalues.MethodBindingType</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">void</value>
+			</trait>
+			<trait id="runtime-param-types">
+				<value xsi:type="mdt:StringValue">javax.faces.event.AjaxBehaviorEvent</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
 			</trait>
 		</entity>
 	</entity>

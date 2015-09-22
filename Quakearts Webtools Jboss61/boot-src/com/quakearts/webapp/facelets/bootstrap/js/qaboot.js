@@ -23,8 +23,8 @@ qaboot.selectManyDropDown = function(drid){
 	
 	if(obj.is(':hidden'))
 		obj.slideDown('slow', function(){
-			if($(window).scrollTop()<(obj.offset().top+obj.height()))
-			$(window).scrollTop(obj.offset().top+obj.height());
+			if($(window).height()<(obj.offset().top+obj.height()))
+				$(window).scrollTop(obj.parent().offset().top);
 		});
 	else
 		obj.slideUp('fast');	
@@ -48,7 +48,7 @@ qaboot.oneListItemSelected = function (obj,ipid,val,dspid){
 	var input = $('#'+ipid);
 	
 	input.find('input').each(function(){
-		if(dspid && $(this).attr("id")==dspid.replace(/\\:/g,":"))
+		if($(this).attr("id"))
 			return;
 		
 		$(this).remove();

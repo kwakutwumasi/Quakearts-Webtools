@@ -22,10 +22,12 @@ public class BootColumnRenderer extends HtmlBasicRenderer {
         
         BootColumn column = (BootColumn) component;
         
+        boolean offset = Boolean.parseBoolean(column.get("offset"));
+        
         StringBuilder classString = new StringBuilder();
         boolean space =false;
         if(column.xsSize()>0){
-        	classString.append("col-xs-"+column.xsSize());
+        	classString.append("col-xs-"+(offset?"offset-":"")+column.xsSize());
         	space=true;
         }
 
@@ -33,21 +35,21 @@ public class BootColumnRenderer extends HtmlBasicRenderer {
         	if(!space) space=true;
         	else classString.append(" ");
         	
-        	classString.append("col-sm-"+column.smSize());
+        	classString.append("col-sm-"+(offset?"offset-":"")+column.smSize());
         }
 
         if(column.mdSize()>0){
         	if(!space) space=true;
         	else classString.append(" ");
         	
-        	classString.append("col-md-"+column.mdSize());
+        	classString.append("col-md-"+(offset?"offset-":"")+column.mdSize());
         }
 
         if(column.lgSize()>0){
         	if(!space) space=true;
         	else classString.append(" ");
         	
-        	classString.append("col-lg-"+column.lgSize());
+        	classString.append("col-lg-"+(offset?"offset-":"")+column.lgSize());
         }
         
         String style = ((BootColumn)component).get("style");

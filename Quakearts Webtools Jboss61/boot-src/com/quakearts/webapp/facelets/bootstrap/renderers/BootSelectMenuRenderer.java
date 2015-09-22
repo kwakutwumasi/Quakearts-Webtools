@@ -25,6 +25,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UISelectMany;
 import javax.faces.component.UISelectOne;
 import javax.faces.component.ValueHolder;
+import javax.faces.component.behavior.ClientBehaviorContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.convert.Converter;
@@ -32,6 +33,7 @@ import javax.faces.convert.ConverterException;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 
+import com.quakearts.webapp.facelets.bootstrap.behaviour.AutoCompleteBehavior;
 import com.quakearts.webapp.facelets.bootstrap.components.BootSelectManyListbox;
 import com.quakearts.webapp.facelets.bootstrap.components.BootSelectManyMenu;
 import com.quakearts.webapp.facelets.bootstrap.components.BootSelectOneListbox;
@@ -231,23 +233,64 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 		if(!componentDisabled)
 			renderOnchange(context, component, false);
 
-		if(isDropDown){
+		if(isDropDown){			
 			writer.write("\n");
-			String label = (String) get("label", component);
-			String styleClass = (String) get("styleClass", component);
+			String label = get("label", component);
+			String styleClass = get("styleClass", component);
+			String autoClass = get("autoClass", component);
+			
 			boolean fill = Boolean.parseBoolean(get("fill", component));
+			
+			AutoCompleteBehavior behavior = findClientBehavior(AutoCompleteBehavior.class, "keyup", component);
+			if(behavior!=null){
+				behavior.loadFromComponent(component, context);
+				behavior.setId(id+"_filter");
+				
+				writer.startElement("div", component);
+				writer.writeAttribute("class", "btn-group"
+						+(fill?" fill100":""), null);
+				writer.writeAttribute("role", "group", null);
+				writer.writeAttribute("aria-label", "Filter", null);
+				
+				writer.startElement("input", component);
+				writer.writeAttribute("class", "btn btn-default menu-input "
+						+(autoClass!=null?" "+autoClass:""), null);
+				writer.writeAttribute("id", id+"_filter", null);
+				writer.writeAttribute("name", id+"_filter", null);
+				writer.writeAttribute("onfocus", "$(this).select();", null);
+				
+				if(behavior.hasSuggestion())
+					writer.writeAttribute("value", behavior.getSuggest(), null);
+				
+				writer.writeAttribute("onkeyup", behavior.getScript(ClientBehaviorContext
+						.createClientBehaviorContext(context, component, "keyup", id, null)), null);
+				
+				writer.endElement("input");
+			}
 			
 			writer.startElement("button", component);
 			writer.writeAttribute("id", id+"_button", null);
 			writer.writeAttribute("class", "select-many-dropdown btn btn-"
-					+ getDisplayType(component, context)+(fill?" btn-block":"")
+					+ getDisplayType(component, context)
 					+ (styleClass != null ? " " + styleClass : ""), null);
 			writer.writeAttribute("onclick", "qaboot.selectManyDropDown('dd_"+idjs+"');", null);
 			writer.writeAttribute("type", "button", null);
 			renderPassThruAttributes(context, writer, component,
 					attributes, getNonOnChangeBehaviors(component));
 			renderXHTMLStyleBooleanAttributes(writer, component);
+			String keyup = get("onkeyup", component);
+			if(keyup!=null)
+				writer.writeAttribute("onkeyup", keyup, null);			
 
+			String keydown = get("onkeydown", component);
+			if(keydown!=null)
+				writer.writeAttribute("onkeydown", keydown, null);			
+
+			String keypressed = get("onkeypressed", component);
+			if(keypressed!=null)
+				writer.writeAttribute("onkeypressed", keypressed, null);
+
+			
 			writer.writeText(label!=null?label:"",null);
     		writer.write("\n");
     		writer.startElement("span", component);
@@ -257,6 +300,10 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
     		writer.write("\n");
     		writer.endElement("button");
     		writer.write("\n");
+    		
+    		if(behavior!=null){
+    			writer.endElement("div");
+    		}
 		} else {
 			renderPassThruAttributes(context, writer, component,
 					attributes, getNonOnChangeBehaviors(component));
@@ -465,7 +512,8 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 		writer.startElement("a", component);
 		writer.writeAttribute("class", "list-group-item select-list"
 				+ (isSelected ? " active" : "")
-				+ (labelClass != null ? " " + labelClass : ""), null);	
+				+ (labelClass != null ? " " + labelClass : "")
+				+(optionInfo.isDisabled() || curItem.isDisabled()?" disabled":""), null);	
 		
 		if (!optionInfo.isDisabled() && !curItem.isDisabled()) 
 			writer.writeAttribute("onclick", function+"(this,'"

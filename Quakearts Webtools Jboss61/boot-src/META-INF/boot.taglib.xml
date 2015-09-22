@@ -332,6 +332,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		<attribute>
 			<name>style</name>
 		</attribute>
+		<attribute>
+			<name>offset</name>
+		</attribute>
 	</tag>
 	<tag>
 		<tag-name>button</tag-name>
@@ -1345,7 +1348,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		<component>
 			<component-type>com.quakearts.bootstrap.selectManyMenu</component-type>
 			<renderer-type>com.quakearts.bootstrap.select.renderer</renderer-type>
-			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
+			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootSelectMenuHandler</handler-class>
 		</component>
 		<attribute>
 			<name>id</name>
@@ -1465,7 +1468,34 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 			<name>displayType</name>
 		</attribute>
 		<attribute>
+			<name>autoClass</name>
+		</attribute>
+		<attribute>
 			<name>fill</name>
+		</attribute>
+		<attribute>
+			<name>autocomplete</name>
+		</attribute>
+		<attribute>
+			<name>listener</name>
+		</attribute>
+		<attribute>
+			<name>render</name>
+		</attribute>
+		<attribute>
+			<name>execute</name>
+		</attribute>
+		<attribute>
+			<name>onevent</name>
+		</attribute>
+		<attribute>
+			<name>onerror</name>
+		</attribute>
+		<attribute>
+			<name>suggestion</name>
+		</attribute>
+		<attribute>
+			<name>delay</name>
 		</attribute>
 	</tag>
 	<tag>
@@ -1592,7 +1622,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		<component>
 			<component-type>com.quakearts.bootstrap.selectOneMenu</component-type>
 			<renderer-type>com.quakearts.bootstrap.select.renderer</renderer-type>
-			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
+			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootSelectMenuHandler</handler-class>
 		</component>
 		<attribute>
 			<name>id</name>
@@ -1712,7 +1742,34 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 			<name>displayType</name>
 		</attribute>
 		<attribute>
+			<name>autoClass</name>
+		</attribute>
+		<attribute>
 			<name>fill</name>
+		</attribute>
+		<attribute>
+			<name>autocomplete</name>
+		</attribute>
+		<attribute>
+			<name>listener</name>
+		</attribute>
+		<attribute>
+			<name>render</name>
+		</attribute>
+		<attribute>
+			<name>execute</name>
+		</attribute>
+		<attribute>
+			<name>onevent</name>
+		</attribute>
+		<attribute>
+			<name>onerror</name>
+		</attribute>
+		<attribute>
+			<name>suggestion</name>
+		</attribute>
+		<attribute>
+			<name>delay</name>
 		</attribute>
 	</tag>
 	<tag>
@@ -1720,7 +1777,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		<component>
 			<component-type>com.quakearts.bootstrap.selectinputgroup</component-type>
 			<renderer-type>com.quakearts.bootstrap.selectinputgroup.renderer</renderer-type>
-			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootInputGroupHandler</handler-class>
+			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootSelectMenuHandler</handler-class>
 		</component>
 		<attribute>
 			<name>id</name>

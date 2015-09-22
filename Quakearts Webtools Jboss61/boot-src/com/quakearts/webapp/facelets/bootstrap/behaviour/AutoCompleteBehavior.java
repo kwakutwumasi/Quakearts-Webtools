@@ -160,8 +160,8 @@ public class AutoCompleteBehavior extends ClientBehaviorBase {
 	public String getScript(ClientBehaviorContext behaviorContext) {	
 		String compId = behaviorContext.getComponent().getClientId();
 
-		return "if(this.value.length>3) qaboot.queueAction(function(){ jsf.ajax.request($(qaboot.escape('#"
-				+compId+"'))[0]"
+		return "if(this.value.length>3) qaboot.queueAction(function(){ jsf.ajax.request($('#"
+				+compId.replace(":", "\\\\:")+"')[0]"
 				+", event, {execute:'"+compId+(execute!=null?" "+execute:"")+"',render: '"+compId
 				+(render!=null&&render.length()>0? " "+render:"")+"'"
 				+(onevent!=null&&onevent.length()>0? ", onevent: "+onevent+"":"")

@@ -83,7 +83,7 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		
 		String element = autocompleteBehavior!=null?"input":"span";
 		writer.startElement(element, component);
-		if(autocompleteBehavior!=null){
+		if(autocompleteBehavior!=null && !componentDisabled){
 			autocompleteBehavior.loadFromComponent(component, context);
 			autocompleteBehavior.setId(id+"_display");
 			writer.writeAttribute("class", "auto-complete", null);
@@ -93,10 +93,10 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 							ClientBehaviorContext.createClientBehaviorContext(context, component, "keyup", id, null)),
 					null);
 			writer.writeAttribute("onfocus", "$(this).select();", null);
+			writer.writeAttribute("name", id+"_display", null);
 		}
 		
 		writer.writeAttribute("id", id+"_display", null);
-		writer.writeAttribute("name", id+"_display", null);
 		if(autocompleteBehavior==null)
 			writer.write(display!=null?display:" ");
 		else {
