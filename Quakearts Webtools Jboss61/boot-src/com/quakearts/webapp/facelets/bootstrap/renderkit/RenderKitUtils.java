@@ -246,7 +246,7 @@ public class RenderKitUtils {
 		T foundBehavior = null;
 		
 		Map<String, List<ClientBehavior>> behaviorsMap = ((ClientBehaviorHolder)component).getClientBehaviors();
-		if(behaviorsMap!=null && behaviorsMap.size()>0 && !componentIsDisabled(component)){
+		if(behaviorsMap!=null && behaviorsMap.size()>0){
 			List<ClientBehavior> behaviors = behaviorsMap.get(eventName);
 			if(behaviors!=null)
 				for(ClientBehavior behavior:behaviors){

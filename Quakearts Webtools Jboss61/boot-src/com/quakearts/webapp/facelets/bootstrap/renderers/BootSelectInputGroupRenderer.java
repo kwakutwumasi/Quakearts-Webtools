@@ -81,7 +81,7 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		if(!componentDisabled)
 			writer.writeAttribute("onclick", "qaboot.selectInputDropDown('dd_"+id.replace(":", "\\\\:")+"');", null);
 		
-		String element = autocompleteBehavior!=null?"input":"span";
+		String element = autocompleteBehavior!=null && !componentDisabled?"input":"span";
 		writer.startElement(element, component);
 		if(autocompleteBehavior!=null && !componentDisabled){
 			autocompleteBehavior.loadFromComponent(component, context);
@@ -97,10 +97,10 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		}
 		
 		writer.writeAttribute("id", id+"_display", null);
-		if(autocompleteBehavior==null)
+		if(autocompleteBehavior==null || componentDisabled)
 			writer.write(display!=null?display:" ");
 		else {
-			writer.writeAttribute("value", (autocompleteBehavior != null && autocompleteBehavior.hasSuggestion()
+			writer.writeAttribute("value", (autocompleteBehavior.hasSuggestion()
 					? autocompleteBehavior.getSuggest() : (display != null ? display : "")), null);
 		}
 		writer.endElement(element);
@@ -115,7 +115,7 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		writer.startElement("div", component);
 		writer.writeAttribute("id", "dd_"+id, null);
 		writer.writeAttribute("class", "dropdown-menu input-list-group", null);
-		if(autocompleteBehavior!=null && autocompleteBehavior.hasSuggestion())
+		if(autocompleteBehavior!=null && autocompleteBehavior.hasSuggestion() && !componentDisabled)
 			writer.writeAttribute("style", "display: inline-block;", null);
 			
 		writer.writeAttribute("role", "menu", null);

@@ -260,15 +260,18 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 						+(autoClass!=null?" "+autoClass:""), null);
 				writer.writeAttribute("id", id+"_filter", null);
 				writer.writeAttribute("name", id+"_filter", null);
-				writer.writeAttribute("onfocus", "$(this).select();", null);
+				if(componentDisabled)
+					writer.writeAttribute("disabled", "disabled", null);
+				else {
+					writer.writeAttribute("onkeyup", behavior.getScript(ClientBehaviorContext
+							.createClientBehaviorContext(context, component, "keyup", id, null)), null);
+					writer.writeAttribute("onfocus", "$(this).select();", null);
+				}
 				
 				if(behavior.hasSuggestion()){
 					writer.writeAttribute("value", behavior.getSuggest(), null);
 					hasSuggestions = true;
 				}
-				
-				writer.writeAttribute("onkeyup", behavior.getScript(ClientBehaviorContext
-						.createClientBehaviorContext(context, component, "keyup", id, null)), null);
 				
 				writer.endElement("input");
 			}
@@ -504,27 +507,27 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 	
 		String labelClass;
 		if (optionInfo.isDisabled() || curItem.isDisabled()) {
-			labelClass = optionInfo.getDisabledClass()+" disabled";
+			labelClass = (optionInfo.getDisabledClass()==null?"":optionInfo.getDisabledClass()+" ")+"disabled";
 		} else {
 			labelClass = optionInfo.getEnabledClass();
 		}	
 
-		String function; 
-		if(isManySelect)
-			function="qaboot.manyListItemSelected";
-		else
-			function="qaboot.oneListItemSelected";
-
 		writer.startElement("a", component);
 		writer.writeAttribute("class", "list-group-item select-list"
 				+ (isSelected ? " active" : "")
-				+ (labelClass != null ? " " + labelClass : "")
-				+(optionInfo.isDisabled() || curItem.isDisabled()?" disabled":""), null);	
+				+ (labelClass != null ? " " + labelClass : ""), null);	
 		
-		if (!optionInfo.isDisabled() && !curItem.isDisabled()) 
+		if (!optionInfo.isDisabled() && !curItem.isDisabled()){
+			String function; 
+			if(isManySelect)
+				function="qaboot.manyListItemSelected";
+			else
+				function="qaboot.oneListItemSelected";
+
 			writer.writeAttribute("onclick", function+"(this,'"
 				+ optionInfo.getJqueryId() + "','" + valueString+"');",
 				null);
+		}
 			
 		String label = curItem.getLabel();
 		if (label == null) {
