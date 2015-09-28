@@ -276,13 +276,16 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 				writer.endElement("input");
 			}
 			
+			String onclick = get("onclick", component);
+			
 			writer.startElement("button", component);
 			writer.writeAttribute("id", id+"_button", null);
 			writer.writeAttribute("class", "select-many-dropdown btn btn-"
 					+ getDisplayType(component, context)
 					+ (fill && behavior==null?" btn-block":"")
 					+ (styleClass != null ? " " + styleClass : ""), null);
-			writer.writeAttribute("onclick", "qaboot.selectManyDropDown('dd_"+idjs+"');", null);
+			writer.writeAttribute("onclick", "qaboot.selectManyDropDown('dd_"+idjs+"');"
+					+(onclick!=null?onclick:""), null);
 			writer.writeAttribute("type", "button", null);
 			renderPassThruAttributes(context, writer, component,
 					attributes, getNonOnChangeBehaviors(component));
