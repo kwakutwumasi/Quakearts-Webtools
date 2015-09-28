@@ -21,43 +21,63 @@ public class BootColumnRenderer extends HtmlBasicRenderer {
         }
         
         BootColumn column = (BootColumn) component;
-        
-        boolean offset = Boolean.parseBoolean(column.get("offsetxs"));
-        
+             
         StringBuilder classString = new StringBuilder();
-        boolean space =false;
         if(column.xsSize()>0){
-        	classString.append("col-xs-"+(offset?"offset-":"")+column.xsSize());
-        	space=true;
+        	classString.append("col-xs-").append(column.xsSize());
         }
         
-        offset = Boolean.parseBoolean(column.get("offsetsm"));
+        if(column.offsetxsSize()>0){
+        	if(classString.length()>0)
+        		classString.append(" ");
+        	
+        	classString.append("col-xs-offset-").append(column.offsetxsSize());
+        }
         
         if(column.smSize()>0){
-        	if(!space) space=true;
-        	else classString.append(" ");
+        	if(classString.length()>0)
+        		classString.append(" ");
         	
-        	classString.append("col-sm-"+(offset?"offset-":"")+column.smSize());
+        	classString.append("col-sm-").append(column.smSize());
+        }
+        
+        if(column.offsetsmSize()>0){
+        	if(classString.length()>0)
+        		classString.append(" ");
+        	
+        	classString.append("col-sm-offset-").append(column.offsetsmSize());
         }
 
-        offset = Boolean.parseBoolean(column.get("offsetmd"));
         if(column.mdSize()>0){
-        	if(!space) space=true;
-        	else classString.append(" ");
+        	if(classString.length()>0)
+        		classString.append(" ");
         	
-        	classString.append("col-md-"+(offset?"offset-":"")+column.mdSize());
+        	classString.append("col-md-").append(column.mdSize());
         }
-        
-        offset = Boolean.parseBoolean(column.get("offsetlg"));
+
+        if(column.offsetmdSize()>0){
+        	if(classString.length()>0)
+        		classString.append(" ");
+        	
+        	classString.append("col-md-offset-").append(column.offsetmdSize());
+        }
+
         if(column.lgSize()>0){
-        	if(!space) space=true;
-        	else classString.append(" ");
+        	if(classString.length()>0)
+        		classString.append(" ");
         	
-        	classString.append("col-lg-"+(offset?"offset-":"")+column.lgSize());
+        	classString.append("col-lg-").append(column.lgSize());
         }
+
+        if(column.offsetlgSize()>0){
+        	if(classString.length()>0)
+        		classString.append(" ");
+        	
+        	classString.append("col-lg-offset-").append(column.offsetlgSize());
+        }        
         
-        String style = ((BootColumn)component).get("style");
-        String styleClass = ((BootColumn)component).get("styleClass");
+        String style = column.get("style");
+        String styleClass = column.get("styleClass");
         
 		ResponseWriter writer = context.getResponseWriter();
 		writer.startElement("div",component);

@@ -8,7 +8,7 @@ public class BootColumn extends UIOutput {
 	
 	public static final String COMPONENT_FAMILY="com.quakearts.bootstrap.bootcolumn";
 	public static final String RENDERER_TYPE="com.quakearts.bootstrap.bootcolumn.renderer";
-	private int xs=-1, sm=-1, md=-1, lg=-1;
+	private int xs=-1, sm=-1, md=-1, lg=-1, offsetxs=-1, offsetsm=-1, offsetmd=-1, offsetlg=-1;
 	
 	@Override
 	public String getFamily() {
@@ -46,6 +46,30 @@ public class BootColumn extends UIOutput {
 		if(lg<0)
 			lg = getSize("lg");
 		return lg;
+	}
+	
+	public int offsetxsSize(){
+		if(offsetxs<0)
+			offsetxs = getSize("offsetxs");
+		return offsetxs;
+	}
+
+	public int offsetsmSize(){
+		if(offsetsm<0)
+			offsetsm = getSize("offsetsm");
+		return offsetsm;
+	}
+	
+	public int offsetmdSize(){
+		if(offsetmd<0)
+			offsetmd = getSize("offsetmd");
+		return offsetmd;
+	}
+	
+	public int offsetlgSize(){
+		if(offsetlg<0)
+			offsetlg = getSize("offsetlg");
+		return offsetlg;
 	}
 	
 	private int getSize(String attribute){
