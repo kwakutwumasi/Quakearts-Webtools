@@ -325,11 +325,14 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 		Iterator<SelectItem> items = getSelectItems(context, component);
 		Holder holder = renderOptions(context, component, items,componentDisabled, id);
 	
+		String dropClass = get("dropClass", component);
+		
 		writer.startElement("div", component);
 		writer.writeAttribute("id", "dd_"+id, null);
 		opened = opened || !holder.options.isEmpty() || (hasSuggestions && holder.total>0);
 		if(limit && holder.total>size){
-			writer.writeAttribute("class", (isDropDown && !opened?" collapse":""), null);
+			writer.writeAttribute("class", (isDropDown && !opened?" collapse":"")
+					+(dropClass!=null?" "+dropClass:""), null);
 
     		writer.write("\n");
 			writer.startElement("button", component);
@@ -361,7 +364,8 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 				writer.writeAttribute("style", styleBuilder.toString(), null);
 			}
 		} else {
-			writer.writeAttribute("class", "list-group"+(isDropDown && !opened?" collapse":""), null);
+			writer.writeAttribute("class", "list-group"+(isDropDown && !opened?" collapse":"")
+					+(dropClass!=null?" "+dropClass:""), null);
 		}
 		
 		writer.write("\n");	

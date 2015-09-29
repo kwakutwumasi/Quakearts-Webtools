@@ -1509,6 +1509,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		<attribute>
 			<name>opened</name>
 		</attribute>
+		<attribute>
+			<name>dropClass</name>
+		</attribute>
 	</tag>
 	<tag>
 		<tag-name>selectOneListbox</tag-name>
@@ -1785,6 +1788,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		</attribute>
 		<attribute>
 			<name>opened</name>
+		</attribute>
+		<attribute>
+			<name>dropClass</name>
 		</attribute>
 	</tag>
 	<tag>
