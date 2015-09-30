@@ -27,9 +27,6 @@ public class HibernateTransactionPhaseListener implements PhaseListener {
 		try {
 			if(ctx.getResponseComplete()){
 				commitTrx();
-			}else if(event.getPhaseId() == PhaseId.INVOKE_APPLICATION){
-				commitTrx();
-				beginTrx();
 			} else if(event.getPhaseId() == PhaseId.RENDER_RESPONSE){//response complete has yet to be called
 				commitTrx();				
 			}
@@ -39,13 +36,6 @@ public class HibernateTransactionPhaseListener implements PhaseListener {
 					+ ". Exception occured whiles commiting transaction", e);
 			return;
 		}
-	}
-
-	private void beginTrx() throws Exception{
-		InitialContext icx = UtilityMethods.getInitialContext();
-		UserTransaction tran= (UserTransaction) icx.lookup("java:comp/UserTransaction");
-		if(tran.getStatus() == Status.STATUS_NO_TRANSACTION)
-			tran.begin();
 	}
 
 	private void commitTrx() throws Exception{
@@ -61,7 +51,10 @@ public class HibernateTransactionPhaseListener implements PhaseListener {
 	public void beforePhase(PhaseEvent event) {
 		if(event.getPhaseId() == PhaseId.RESTORE_VIEW){//start a transaction
 			try {
-				beginTrx();
+				InitialContext icx = UtilityMethods.getInitialContext();
+				UserTransaction tran= (UserTransaction) icx.lookup("java:comp/UserTransaction");
+				if(tran.getStatus() == Status.STATUS_NO_TRANSACTION)
+					tran.begin();
 			} catch (Exception e) {
 				log.error("Exception of type " + e.getClass().getName()
 						+ " was thrown. Message is " + e.getMessage()
