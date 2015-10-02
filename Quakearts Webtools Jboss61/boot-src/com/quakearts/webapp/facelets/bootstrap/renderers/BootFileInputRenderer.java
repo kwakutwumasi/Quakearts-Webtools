@@ -174,8 +174,8 @@ public class BootFileInputRenderer extends Renderer {
 		writer.writeAttribute("onclick", "$('#iframe_"+id_js+"').contents().find('#upload-button').click();", null);
 		writer.writeAttribute("onchange", "jsf.ajax.request(this, event, {execute:'"+id+(execute!=null?" "+execute:"")+"'"
 				+(render!=null&&render.length()>0? ",render: '"+render+"'":"")
-				+(onevent!=null&&onevent.length()>0? ",onevent: '"+onevent+"'":"")
-				+(onerror!=null&&onerror.length()>0?",onerror: '"+onerror+"'":"")+"});", null);
+				+(onevent!=null&&onevent.length()>0? ",onevent: "+onevent+"":"")
+				+(onerror!=null&&onerror.length()>0?",onerror: "+onerror+"":"")+"});", null);
         writer.write(label!=null?label:"Browse");
 		writer.endElement("button");
         writer.write("\n");
