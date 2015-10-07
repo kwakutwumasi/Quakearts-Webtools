@@ -253,7 +253,28 @@ public class AttributeManager {
             ,attr("onmouseup","mouseup")
             ,attr("style")
             ,attr("title")
-        )).fix();
+        )).add("ResponsiveImage",ar(
+            attr("onclick","click","action")
+            ,attr("ondblclick","dblclick")
+            ,attr("onmousedown","mousedown")
+            ,attr("onmousemove","mousemove")
+            ,attr("onmouseout","mouseout")
+            ,attr("onmouseover","mouseover")
+            ,attr("onmouseup","mouseup")
+            ,attr("style")
+            ,attr("title")
+            ,attr("align")
+            ,attr("alt")
+            ,attr("border")
+            ,attr("crossorigin")
+            ,attr("height")
+            ,attr("hspace")
+            ,attr("ismap")
+            ,attr("longdesc")
+            ,attr("usemap")
+            ,attr("vspace")
+            ,attr("width")
+         )).fix();
     public enum Key {
         COMMANDBUTTON("CommandButton"),
         FORMFORM("FormForm"),
@@ -266,7 +287,8 @@ public class AttributeManager {
         DATATABLE("DataTable"),
         BOOTBREADCRUMB("BootBreadCrumb"),
         BOOTPANEL("BootPanel"),
-        SELECTINPUTGROUP("SelectInputGroup");
+        SELECTINPUTGROUP("SelectInputGroup"),
+        RESPONSIVEIMAGE("ResponsiveImage");
 
         private String key;
         Key(String key) {

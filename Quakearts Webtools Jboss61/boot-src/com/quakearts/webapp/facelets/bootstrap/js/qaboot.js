@@ -171,3 +171,11 @@ qaboot.scrollUp = function (drid,obj,dnid){
 	}})
 	return false;
 }
+
+qaboot.resizeElements = [];
+qaboot.resizeImages = function () {
+	var windowWidth = $(window).width();
+	for(var i=0;i<qaboot.resizeElements.length;i++){
+		qaboot.resizeElements[i].resizeImage(windowWidth);
+	}
+}
