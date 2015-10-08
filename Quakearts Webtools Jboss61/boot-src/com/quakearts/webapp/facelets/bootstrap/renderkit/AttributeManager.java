@@ -159,7 +159,6 @@ public class AttributeManager {
             ,attr("onmouseup","mouseup")
             ,attr("onselect","select")
             ,attr("tabindex")
-            ,attr("style")
             ,attr("title")
         ))
         .add("SelectInputGroup",ar(
@@ -196,7 +195,6 @@ public class AttributeManager {
                 ,attr("onmouseover","mouseover")
                 ,attr("onmouseup","mouseup")
                 ,attr("onselect","select")
-                ,attr("style")
                 ,attr("tabindex")
                 ,attr("title")
         ))

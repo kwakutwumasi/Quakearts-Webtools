@@ -1331,10 +1331,16 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>
-			<name>style</name>
+			<name>mainStyle</name>
 		</attribute>
 		<attribute>
-			<name>styleClass</name>
+			<name>mainClass</name>
+		</attribute>
+		<attribute>
+			<name>selectStyle</name>
+		</attribute>
+		<attribute>
+			<name>selectClass</name>
 		</attribute>
 		<attribute>
 			<name>title</name>
@@ -1453,12 +1459,6 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>
-			<name>style</name>
-		</attribute>
-		<attribute>
-			<name>styleClass</name>
-		</attribute>
-		<attribute>
 			<name>title</name>
 		</attribute>
 		<attribute>
@@ -1475,9 +1475,6 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		</attribute>
 		<attribute>
 			<name>displayType</name>
-		</attribute>
-		<attribute>
-			<name>autoClass</name>
 		</attribute>
 		<attribute>
 			<name>fill</name>
@@ -1510,7 +1507,34 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 			<name>opened</name>
 		</attribute>
 		<attribute>
-			<name>dropClass</name>
+			<name>mainStyle</name>
+		</attribute>
+		<attribute>
+			<name>mainClass</name>
+		</attribute>
+		<attribute>
+			<name>buttonStyle</name>
+		</attribute>
+		<attribute>
+			<name>buttonClass</name>
+		</attribute>
+		<attribute>
+			<name>autoStyle</name>
+		</attribute>
+		<attribute>
+			<name>autoClass</name>
+		</attribute>
+		<attribute>
+			<name>groupStyle</name>
+		</attribute>
+		<attribute>
+			<name>groupClass</name>
+		</attribute>
+		<attribute>
+			<name>selectStyle</name>
+		</attribute>
+		<attribute>
+			<name>selectClass</name>
 		</attribute>
 	</tag>
 	<tag>
@@ -1611,10 +1635,16 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>
-			<name>style</name>
+			<name>mainStyle</name>
 		</attribute>
 		<attribute>
-			<name>styleClass</name>
+			<name>mainClass</name>
+		</attribute>
+		<attribute>
+			<name>selectStyle</name>
+		</attribute>
+		<attribute>
+			<name>selectClass</name>
 		</attribute>
 		<attribute>
 			<name>title</name>
@@ -1733,16 +1763,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>
-			<name>style</name>
-		</attribute>
-		<attribute>
-			<name>styleClass</name>
-		</attribute>
-		<attribute>
 			<name>title</name>
-		</attribute>
-		<attribute>
-			<name>readonly</name>
 		</attribute>
 		<attribute>
 			<name>size</name>
@@ -1755,9 +1776,6 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		</attribute>
 		<attribute>
 			<name>displayType</name>
-		</attribute>
-		<attribute>
-			<name>autoClass</name>
 		</attribute>
 		<attribute>
 			<name>fill</name>
@@ -1790,7 +1808,34 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 			<name>opened</name>
 		</attribute>
 		<attribute>
-			<name>dropClass</name>
+			<name>mainStyle</name>
+		</attribute>
+		<attribute>
+			<name>mainClass</name>
+		</attribute>
+		<attribute>
+			<name>buttonStyle</name>
+		</attribute>
+		<attribute>
+			<name>buttonClass</name>
+		</attribute>
+		<attribute>
+			<name>autoStyle</name>
+		</attribute>
+		<attribute>
+			<name>autoClass</name>
+		</attribute>
+		<attribute>
+			<name>groupStyle</name>
+		</attribute>
+		<attribute>
+			<name>groupClass</name>
+		</attribute>
+		<attribute>
+			<name>selectStyle</name>
+		</attribute>
+		<attribute>
+			<name>selectClass</name>
 		</attribute>
 	</tag>
 	<tag>
