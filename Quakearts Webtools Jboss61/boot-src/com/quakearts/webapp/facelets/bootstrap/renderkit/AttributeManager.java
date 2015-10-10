@@ -161,7 +161,7 @@ public class AttributeManager {
             ,attr("tabindex")
             ,attr("title")
         ))
-        .add("SelectInputGroup",ar(
+        .add("SelectInput",ar(
                 attr("accesskey")
                 ,attr("dir")
                 ,attr("lang")
@@ -175,7 +175,6 @@ public class AttributeManager {
                 ,attr("onmouseup","mouseup")
                 ,attr("onselect","select")
                 ,attr("tabindex")
-                ,attr("style")
                 ,attr("title")
             ))
         .add("SelectManyList",ar(
@@ -285,7 +284,7 @@ public class AttributeManager {
         DATATABLE("DataTable"),
         BOOTBREADCRUMB("BootBreadCrumb"),
         BOOTPANEL("BootPanel"),
-        SELECTINPUTGROUP("SelectInputGroup"),
+        SELECTINPUT("SelectInput"),
         RESPONSIVEIMAGE("ResponsiveImage");
 
         private String key;

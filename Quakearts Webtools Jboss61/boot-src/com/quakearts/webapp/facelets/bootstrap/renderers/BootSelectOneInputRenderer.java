@@ -1,23 +1,27 @@
 package com.quakearts.webapp.facelets.bootstrap.renderers;
 
-import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.*;
+import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.findClientBehavior;
+import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.getSelectItems;
+import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.renderOnchange;
+import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.renderPassThruAttributes;
+import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.renderXHTMLStyleBooleanAttributes;
 import static com.quakearts.webapp.facelets.util.UtilityMethods.componentIsDisabled;
+
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Map;
+
 import javax.faces.component.UIComponent;
 import javax.faces.component.behavior.ClientBehaviorContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
-import javax.faces.convert.Converter;
 import javax.faces.model.SelectItem;
+
 import com.quakearts.webapp.facelets.bootstrap.behaviour.AutoCompleteBehavior;
 import com.quakearts.webapp.facelets.bootstrap.components.BootSelectManyMenu;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.Attribute;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.AttributeManager;
 
-
-public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
+public class BootSelectOneInputRenderer extends BootSelectInputGroupRenderer {
 	@Override
 	protected void renderSelect(FacesContext context, UIComponent component)
 			throws IOException {
@@ -58,7 +62,6 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 			writer.writeAttribute("onkeypressed", keypressed, null);
 		
 		writer.write("\n");
-		String label = (String) component.getAttributes().get("label");
 		
 		Iterator<SelectItem> items = getSelectItems(context, component);
 		Holder holder = renderOptions(context, component, items,componentDisabled,id);
@@ -67,21 +70,12 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 
 		writer.startElement("div", component);
 		writer.writeAttribute("id", id+"_group", null);
-		writer.writeAttribute("class", "input-group"
+		
+		String wrapClass = get("wrapClass", component);
+		writer.writeAttribute("class", (wrapClass!=null?" "+wrapClass:"input-group form-control")
 				+ (componentDisabled ? " disabled" : ""), null);
-		writeAttributeIfPresent("groupStyle", "style", component, writer);
-		
-		writer.startElement("span", component);
-		writer.writeAttribute("class", "input-group-addon", null);
-		writeAttributeIfPresent("addonStyle", "style", component, writer);
-		
-    	writer.writeText(label!=null?label:" ",null);
-		writer.endElement("span");
-		
-		writer.startElement("div", component);
-		writer.writeAttribute("class", "form-control form-select" +(componentDisabled?" disabled":""), null);
-		String controlStyle = get("controlStyle", component);
-		writer.writeAttribute("style", "z-index: auto;"+(controlStyle!=null?"; "+controlStyle:""), null);
+		String wrapStyle = get("wrapStyle", component);
+		writer.writeAttribute("style",(wrapStyle!=null?" "+wrapStyle:"z-index: auto;"), null);
 		
 		if(!componentDisabled)
 			writer.writeAttribute("onclick", "qaboot.selectInputDropDown('"+id.replace(":", "\\\\:")+"_drop');", null);
@@ -119,9 +113,15 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 	
 		writer.startElement("div", component);
 		writer.writeAttribute("id", id+"_drop", null);
-		writer.writeAttribute("class", "dropdown-menu input-list-group", null);
+		String dropClass = get("dropClass", component);
+		writer.writeAttribute("class", (dropClass!=null?dropClass:"dropdown-menu input-list-group"), null);
+		String dropStyle = get("dropStyle", component);
+		
 		if(autocompleteBehavior!=null && autocompleteBehavior.hasSuggestion() && !componentDisabled)
-			writer.writeAttribute("style", "display: inline-block;", null);
+			dropStyle = (dropStyle!=null?dropStyle+";":"")+"display: inline-block;";
+		
+		if(dropStyle!=null)
+			writer.writeAttribute("style", dropStyle, null);
 			
 		writer.writeAttribute("role", "menu", null);
 		
@@ -130,10 +130,7 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 			writer.write(holder.buffer);
 		
 		writer.endElement("div");
-		writer.write("\n");
-		writer.endElement("div");
-		writer.write("\n");
-				
+		writer.write("\n");				
 		writer.endElement("div");
 		writer.write("\n");
 		if(value!=null && !componentDisabled){
@@ -146,81 +143,5 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		}
 		writer.endElement("div");
 		writer.write("\n");
-	}
-	
-	@Override
-	protected boolean renderOption(FacesContext context, UIComponent component,
-			Converter converter, SelectItem curItem, Object currentSelections,
-			Object[] submittedValues, OptionComponentInfo optionInfo,
-			Map<String, String> values, boolean isManySelect, 
-			ResponseWriter writer, int index)
-			throws IOException {
-	
-		Object valuesArray;
-		Object itemValue;
-		String valueString = getFormattedValue(context, component,
-				curItem.getValue(), converter);
-		boolean containsValue;
-		if (submittedValues != null) {
-			containsValue = containsaValue(submittedValues);
-			if (containsValue) {
-				valuesArray = submittedValues;
-				itemValue = valueString;
-			} else {
-				valuesArray = currentSelections;
-				itemValue = curItem.getValue();
-			}
-		} else {
-			valuesArray = currentSelections;
-			itemValue = curItem.getValue();
-		}
-	
-		boolean isSelected = isSelected(context, component, itemValue,
-				valuesArray, converter);
-		if (optionInfo.isHideNoSelection() && curItem.isNoSelectionOption()
-				&& currentSelections != null && !isSelected) {
-			return false;
-		}
-	
-		String labelClass;
-		if (optionInfo.isDisabled() || curItem.isDisabled()) {
-			labelClass = optionInfo.getDisabledClass()+" disabled";
-		} else {
-			labelClass = optionInfo.getEnabledClass();
-		}
-		
-		String jqId = component.getClientId(context).replace(":", "\\\\:");
-
-		writer.startElement("a", component);
-		writer.writeAttribute("class", "list-group-item select-list"
-				+ (isSelected ? " active" : "")
-				+ (labelClass != null ? " " + labelClass : ""), null);	
-		
-		if(!curItem.isDisabled() && !optionInfo.isDisabled())
-			writer.writeAttribute("onclick", "qaboot.oneListItemSelected(this,'"
-				+ jqId + "','" + valueString+"','"+jqId+"_display');", null);
-			
-		String label = curItem.getLabel();
-		if (label == null) {
-			label = valueString;
-		}
-		
-		if (curItem.isEscape()) {
-			writer.writeText(label, component, "label");
-		} else {
-			writer.write(label);
-		}
-		writer.endElement("a");
-		writer.writeText("\n", component, null);
-		if (isSelected) {
-			values.put(label,valueString);
-		}
-		return false;
-	}
-	
-	protected void writeAttributeIfPresent(String name, String attribute, UIComponent component, ResponseWriter writer) throws IOException{		
-		String styleClass = get(name, component);
-		if(styleClass!=null)
-			writer.writeAttribute(attribute, styleClass, null);
 	}
 }

@@ -306,7 +306,7 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 			if(buttonStyle!=null)
 				writer.writeAttribute("style", buttonStyle, null);			
 			
-			writer.writeAttribute("onclick", "qaboot.selectManyDropDown('dd_"+idjs+"');"
+			writer.writeAttribute("onclick", "qaboot.selectManyDropDown('"+idjs+"_list');"
 					+(onclick!=null?onclick:""), null);
 			writer.writeAttribute("type", "button", null);
 			renderPassThruAttributes(context, writer, component,
@@ -350,7 +350,7 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 		String dropClass = get("dropClass", component);
 		
 		writer.startElement("div", component);
-		writer.writeAttribute("id", "dd_"+id, null);
+		writer.writeAttribute("id", id+"_list", null);
 		opened = opened || !holder.options.isEmpty() || (hasSuggestions && holder.total>0);
 		if(limit && holder.total>size){
 			writer.writeAttribute("class", (isDropDown && !opened?" collapse":"")

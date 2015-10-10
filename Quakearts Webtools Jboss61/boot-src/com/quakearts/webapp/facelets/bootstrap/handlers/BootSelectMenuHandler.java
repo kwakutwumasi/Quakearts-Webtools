@@ -12,6 +12,7 @@ import javax.faces.view.facelets.TagAttribute;
 
 import com.quakearts.webapp.facelets.bootstrap.behaviour.AutoCompleteBehavior;
 import com.quakearts.webapp.facelets.bootstrap.behaviour.AutoCompleteListener;
+import com.quakearts.webapp.facelets.bootstrap.components.BootSelectOneInput;
 import com.quakearts.webapp.facelets.bootstrap.components.BootSelectInputGroup;
 import com.quakearts.webapp.facelets.bootstrap.components.BootSelectManyMenu;
 import com.quakearts.webapp.facelets.bootstrap.components.BootSelectOneMenu;
@@ -29,7 +30,8 @@ public class BootSelectMenuHandler extends BootBaseHandler {
 	public void onComponentCreated(FaceletContext ctx, UIComponent c, UIComponent parent) {
 		if(!(c instanceof BootSelectInputGroup 
 				|| c instanceof BootSelectManyMenu
-				|| c instanceof BootSelectOneMenu))
+				|| c instanceof BootSelectOneMenu
+				|| c instanceof BootSelectOneInput))
 			throw new AbortProcessingException("Component must be of type "+BootSelectInputGroup.class.getName());
 		
 		ValueExpression expression = c.getValueExpression("autocomplete");

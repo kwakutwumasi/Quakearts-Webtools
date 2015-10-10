@@ -1936,10 +1936,159 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>
-			<name>style</name>
+			<name>mainStyle</name>
 		</attribute>
 		<attribute>
-			<name>styleClass</name>
+			<name>mainClass</name>
+		</attribute>
+		<attribute>
+			<name>groupStyle</name>
+		</attribute>
+		<attribute>
+			<name>addonStyle</name>
+		</attribute>
+		<attribute>
+			<name>controlStyle</name>
+		</attribute>
+		<attribute>
+			<name>title</name>
+		</attribute>
+		<attribute>
+			<name>tabindex</name>
+		</attribute>
+		<attribute>
+			<name>autocomplete</name>
+		</attribute>
+		<attribute>
+			<name>listener</name>
+		</attribute>
+		<attribute>
+			<name>render</name>
+		</attribute>
+		<attribute>
+			<name>execute</name>
+		</attribute>
+		<attribute>
+			<name>onevent</name>
+		</attribute>
+		<attribute>
+			<name>onerror</name>
+		</attribute>
+		<attribute>
+			<name>suggestion</name>
+		</attribute>
+	</tag>
+	<tag>
+		<tag-name>selectOneInput</tag-name>
+		<component>
+			<component-type>com.quakearts.bootstrap.selectoneinput</component-type>
+			<renderer-type>com.quakearts.bootstrap.selectoneinput.renderer</renderer-type>
+			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootSelectMenuHandler</handler-class>
+		</component>
+		<attribute>
+			<name>id</name>
+		</attribute>
+		<attribute>
+			<name>rendered</name>
+		</attribute>
+		<attribute>
+			<name>binding</name>
+		</attribute>
+		<attribute>
+			<name>value</name>
+		</attribute>
+		<attribute>
+			<name>converter</name>
+		</attribute>
+		<attribute>
+			<name>converterMessage</name>
+		</attribute>
+		<attribute>
+			<name>validator</name>
+		</attribute>
+		<attribute>
+			<name>validatorMessage</name>
+		</attribute>
+		<attribute>
+			<name>valueChangeListener</name>
+		</attribute>
+		<attribute>
+			<name>required</name>
+		</attribute>
+		<attribute>
+			<name>requiredMessage</name>
+		</attribute>
+		<attribute>
+			<name>collectionType</name>
+		</attribute>
+		<attribute>
+			<name>disabled</name>
+		</attribute>
+		<attribute>
+			<name>hideNoSelectionOption</name>
+		</attribute>
+		<attribute>
+			<name>dir</name>
+		</attribute>
+		<attribute>
+			<name>lang</name>
+		</attribute>
+		<attribute>
+			<name>maxlength</name>
+		</attribute>
+		<attribute>
+			<name>onblur</name>
+		</attribute>
+		<attribute>
+			<name>onchange</name>
+		</attribute>
+		<attribute>
+			<name>onfocus</name>
+		</attribute>
+		<attribute>
+			<name>onclick</name>
+		</attribute>
+		<attribute>
+			<name>ondblclick</name>
+		</attribute>
+		<attribute>
+			<name>onkeydown</name>
+		</attribute>
+		<attribute>
+			<name>onkeypress</name>
+		</attribute>
+		<attribute>
+			<name>onkeyup</name>
+		</attribute>
+		<attribute>
+			<name>onmousedown</name>
+		</attribute>
+		<attribute>
+			<name>onmousemove</name>
+		</attribute>
+		<attribute>
+			<name>onmouseout</name>
+		</attribute>
+		<attribute>
+			<name>onmouseover</name>
+		</attribute>
+		<attribute>
+			<name>mainStyle</name>
+		</attribute>
+		<attribute>
+			<name>mainClass</name>
+		</attribute>
+		<attribute>
+			<name>wrapClass</name>
+		</attribute>
+		<attribute>
+			<name>wrapStyle</name>
+		</attribute>
+		<attribute>
+			<name>dropClass</name>
+		</attribute>
+		<attribute>
+			<name>dropStyle</name>
 		</attribute>
 		<attribute>
 			<name>title</name>
@@ -1952,9 +2101,6 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		</attribute>
 		<attribute>
 			<name>tabindex</name>
-		</attribute>
-		<attribute>
-			<name>displayType</name>
 		</attribute>
 		<attribute>
 			<name>autocomplete</name>
@@ -2197,6 +2343,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		</attribute>
 		<attribute>
 			<name>style</name>
+		</attribute>
+		<attribute>
+			<name>styleClass</name>
 		</attribute>
 		<attribute>
 			<name>title</name>

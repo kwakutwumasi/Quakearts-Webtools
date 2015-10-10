@@ -14,7 +14,4 @@ public class BootSelectInputGroup extends BootSelectOneMenu {
 		return RENDERER_TYPE;
 	}
 	
-	@Override
-	public void setRendererType(String rendererType) {
-	}
 }
