@@ -198,3 +198,9 @@
 .fill100 {
 	width: 100%;
 }
+
+.select-one-input{
+	z-index: auto;
+	height: 34px;
+	width: 100%;
+}

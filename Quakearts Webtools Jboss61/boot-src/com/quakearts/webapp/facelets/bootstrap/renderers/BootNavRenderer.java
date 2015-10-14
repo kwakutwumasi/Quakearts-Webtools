@@ -52,7 +52,8 @@ public class BootNavRenderer extends HtmlBasicRenderer {
 
 		boolean stacked = Boolean.parseBoolean(nav.get("stacked"));
 		boolean justified = Boolean.parseBoolean(nav.get("justified"));
-
+		String styleClass = nav.get("styleClass");
+		
 		ResponseWriter writer = context.getResponseWriter();		
 		writer.write("\n");
 		writer.startElement("ul", component);
@@ -60,7 +61,8 @@ public class BootNavRenderer extends HtmlBasicRenderer {
 				+ ("none".equals(type) ? ""
 						:("bar".equals(type)?" navbar-nav"
 								:("pills".equals(type) ? " nav-pills" : " nav-tabs")
-								+ (stacked ? " nav-stacked" : "")+(justified ? " nav-justified" : ""))), null);
+								+ (stacked ? " nav-stacked" : "")+(justified ? " nav-justified" : "")))
+				+(styleClass!=null?" "+styleClass:""), null);
 		writeIdAttributeIfNecessary(context, writer, component);
 		renderPassThruAttributes(context, writer, component, ATTRIBUTES);
 	}

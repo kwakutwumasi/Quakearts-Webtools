@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIOutput;
+import javax.faces.component.html.HtmlCommandLink;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import com.quakearts.webapp.facelets.bootstrap.components.BootButtonGroup;
@@ -114,15 +115,16 @@ public class BootMenuRenderer extends HtmlBasicRenderer {
         	Iterator<UIComponent> kids = component.getChildren().iterator();
         	while (kids.hasNext()) {
         	    UIComponent kid = kids.next();
-        	    
-        	    if(kid instanceof UIOutput && kid.isRendered()){
-        	    	context.getResponseWriter().write("\n");    	
-        	        context.getResponseWriter().startElement("li", component);
-            	    kid.encodeAll(context);
-            		context.getResponseWriter().endElement("li");
-        	    	context.getResponseWriter().write("\n");    	
-        	    } else {
-        	    	kid.encodeAll(context);
+        	    if(kid.isRendered()){
+	        	    if(kid instanceof UIOutput ||  kid instanceof HtmlCommandLink){
+	        	    	context.getResponseWriter().write("\n");    	
+	        	        context.getResponseWriter().startElement("li", component);
+	            	    kid.encodeAll(context);
+	            		context.getResponseWriter().endElement("li");
+	        	    	context.getResponseWriter().write("\n");    	
+	        	    } else {
+	        	    	kid.encodeAll(context);
+	        	    }
         	    }
         	}
         }

@@ -487,7 +487,7 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 		return new Holder(values, charWriter.toCharArray(), index, firstIndex);
 	}
 
-    private static String getDisplayType(UIComponent button, FacesContext context){
+    protected static String getDisplayType(UIComponent button, FacesContext context){
     	String displayType = ObjectExtractor.extractString(button.getValueExpression("displayType"), context.getELContext());
     	if(displayType==null)
     		displayType =(String) button.getAttributes().get("displayType");

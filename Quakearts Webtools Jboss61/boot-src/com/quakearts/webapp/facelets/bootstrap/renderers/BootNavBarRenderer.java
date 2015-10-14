@@ -34,6 +34,7 @@ public class BootNavBarRenderer extends HtmlBasicRenderer {
 		boolean responsive = Boolean.parseBoolean(navbar.get("responsive"));
 		
         String id = navbar.getClientId(context);
+        String idJs = id.replace(":", "_");
         
 		ResponseWriter writer = context.getResponseWriter();
 		writer.startElement("div", component);
@@ -54,7 +55,7 @@ public class BootNavBarRenderer extends HtmlBasicRenderer {
 			writer.writeAttribute("type", "button", null);
 			writer.writeAttribute("class", "navbar-toggle collapsed", null);
 			writer.writeAttribute("data-toggle", "collapse", null);
-			writer.writeAttribute("data-target", "div_"+id, null);
+			writer.writeAttribute("data-target", "#div_"+idJs, null);
     		writer.write("\n");
 			writer.write("<span class=\"icon-bar\"></span><span class=\"icon-bar\"></span><span class=\"icon-bar\"></span>");
     		writer.write("\n");
@@ -71,8 +72,8 @@ public class BootNavBarRenderer extends HtmlBasicRenderer {
 		writer.write("\n");
 		writer.startElement("div", component);
 		if(responsive){
-			writer.writeAttribute("class", "collapse navbar-collapse", null);
-			writer.writeAttribute("id", "div_"+id, null);
+			writer.writeAttribute("class", "navbar-collapse collapse", null);
+			writer.writeAttribute("id", "div_"+idJs, null);
 		}
 		writer.write("\n");
 		

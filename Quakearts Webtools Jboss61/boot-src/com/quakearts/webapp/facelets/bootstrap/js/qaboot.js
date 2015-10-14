@@ -32,6 +32,11 @@ qaboot.selectManyDropDown = function(drid){
 
 qaboot.selectInputDropDown =function(drid){
 	var obj = $('#'+drid);
+	$('.input-list-group').each(function(){
+		if(!$(this).is(':hidden'))
+			$(this).slideUp('fast');			
+	});
+	
 	if(obj.is(':hidden'))
 		obj.slideDown('slow');
 	else

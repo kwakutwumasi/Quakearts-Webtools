@@ -2109,6 +2109,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 			<name>listener</name>
 		</attribute>
 		<attribute>
+			<name>displayType</name>
+		</attribute>
+		<attribute>
 			<name>render</name>
 		</attribute>
 		<attribute>
