@@ -272,7 +272,7 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 				writer.writeAttribute("aria-label", "Filter", null);
 				
 				writer.startElement("input", component);
-				writer.writeAttribute("class", "btn btn-default menu-input "
+				writer.writeAttribute("class", "btn btn-default menu-input"
 						+(autoClass!=null?" "+autoClass:""), null);
 				if(autoStyle!=null)
 					writer.writeAttribute("style", autoStyle, null);

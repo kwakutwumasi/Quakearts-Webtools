@@ -32,16 +32,15 @@ public class BootBreadCrumbRenderer extends HtmlBasicRenderer {
 		String styleClass =  ((BootBreadCrumb)component).get("styleClass");				
 		ResponseWriter writer = context.getResponseWriter();
 		
-		writer.startElement("div", component);
 		if(styleClass != null)
 			writer.writeAttribute("class", styleClass, null);
-
-		writeIdAttributeIfNecessary(context, writer, component);
-		renderPassThruAttributes(context, writer, component, ATTRIBUTES);
 		
 		writer.write("\n");
 		writer.startElement("ol", component);
-		writer.writeAttribute("class", "breadcrumb", null);
+		writer.writeAttribute("class", "breadcrumb"+(styleClass!=null?" "+styleClass:""), null);
+		writeIdAttributeIfNecessary(context, writer, component);
+		renderPassThruAttributes(context, writer, component, ATTRIBUTES);
+
 	}
 	
 	@Override
@@ -76,8 +75,6 @@ public class BootBreadCrumbRenderer extends HtmlBasicRenderer {
 		
 	    ResponseWriter writer = context.getResponseWriter();
 		writer.endElement("ol");
-		writer.write("\n");
-		writer.endElement("div");
 		writer.write("\n");
 	}
 
