@@ -75,7 +75,8 @@ public class BootSelectOneInputRenderer extends BootSelectInputGroupRenderer {
 		writer.writeAttribute("class","input-group select-one-input btn btn-"+getDisplayType(component, context)+(wrapClass!=null?" "+wrapClass:"")
 				+ (componentDisabled ? " disabled" : ""), null);
 		String wrapStyle = get("wrapStyle", component);
-		writer.writeAttribute("style",(wrapStyle!=null?" "+wrapStyle:"z-index: auto;"), null);
+		if(wrapStyle!=null)
+			writer.writeAttribute("style", wrapStyle, null);
 		
 		if(!componentDisabled)
 			writer.writeAttribute("onclick", "qaboot.selectInputDropDown('"+id.replace(":", "\\\\:")+"_drop');", null);
