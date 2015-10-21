@@ -15,8 +15,9 @@ public class BootAjaxLoaderScriptRenderer extends HtmlBasicRenderer {
 	private static final String LOADERSCRIPT = "qaboot.mainLoaderHandler = function(data){\r\n" + 
 			"    switch(data.status){\r\n" + 
 			"    case \"begin\":\r\n" + 
-			"        $(qaboot.escape(\"#$ajaxdiv\")).removeClass(\"collapse\").addClass(\"overlay\");\r\n" + 
-			"        $(qaboot.escape(\"#$ajaxdiv\")).animate({\r\n" + 
+			"        var obj = $(qaboot.escape(\"#$ajaxdiv\"));\r\n" +
+			"		 obj.removeClass(\"collapse\").addClass(\"overlay\");\r\n" + 
+			"        obj.animate({\r\n" + 
 			"            opacity: 0.8\r\n" + 
 			"            }, $stime, function() {\r\n" + 
 			"               \r\n" + 

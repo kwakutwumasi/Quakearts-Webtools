@@ -74,6 +74,22 @@ public class HibernateBean {
 		}
 	}
 	
+	public static class VariableString{
+		private String value;
+
+		public VariableString(String value) {
+			this.value = value;
+		}
+		
+		public String getValue() {
+			return value;
+		}
+		
+		public void setValue(String value) {
+			this.value = value;
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	protected <T> List<T> findObjects(Class<T> clazz,Map<String, Serializable> parameters, Session session) throws HibernateException, IOException{
 		Criteria query = session.createCriteria(clazz);
@@ -104,8 +120,8 @@ public class HibernateBean {
 		if(value instanceof Range){
 			Range range = (Range) value;
 			return Restrictions.between(key, range.from, range.to);
-		} else if(value instanceof String) {
-			return Restrictions.ilike(key, value);
+		} else if(value instanceof VariableString) {
+			return Restrictions.ilike(key, ((VariableString)value).value);
 		} else {
 			return Restrictions.eq(key, value);
 		}
