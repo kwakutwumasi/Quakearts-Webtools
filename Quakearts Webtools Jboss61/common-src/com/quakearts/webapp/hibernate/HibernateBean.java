@@ -74,7 +74,11 @@ public class HibernateBean {
 		}
 	}
 	
-	public static class VariableString{
+	public static class VariableString implements Serializable {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 5170445172572016710L;
 		private String value;
 
 		public VariableString(String value) {
