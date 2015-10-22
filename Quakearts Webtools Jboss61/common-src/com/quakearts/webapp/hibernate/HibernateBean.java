@@ -123,6 +123,11 @@ public class HibernateBean {
 	private Criterion getCriterion(String key, Serializable value){
 		if(value instanceof Range){
 			Range range = (Range) value;
+			if(range.from!=null && range.to==null)
+				return Restrictions.gt(key, ((Range)value).from);
+			else if(range.from==null && range.to!=null)
+				return Restrictions.lt(key, ((Range)value).to);
+			
 			return Restrictions.between(key, range.from, range.to);
 		} else if(value instanceof VariableString) {
 			return Restrictions.ilike(key, ((VariableString)value).value);
