@@ -111,6 +111,7 @@ public class HibernateBean {
 					for(int i=2; i<choice.choices.size()-1;i++){
 						criterion=Restrictions.or(criterion, getCriterion(entry.getKey(), choice.choices.get(i)));
 					}
+					query.add(criterion);
 				}
 			} else {
 				query.add(getCriterion(entry.getKey(), entry.getValue()));
