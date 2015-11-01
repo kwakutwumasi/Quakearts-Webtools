@@ -14,6 +14,10 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<name>overlayloaderimage</name>
+			<required>true</required>
+		</attribute>
+		<attribute>
 			<name>miniloaderimage</name>
 			<required>true</required>
 		</attribute>
@@ -22,6 +26,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		</attribute>
 		<attribute>
 			<name>miniimagestyle</name>
+		</attribute>
+		<attribute>
+			<name>overlayimagestyle</name>
 		</attribute>
 		<attribute>
 			<name>startTimeout</name>
