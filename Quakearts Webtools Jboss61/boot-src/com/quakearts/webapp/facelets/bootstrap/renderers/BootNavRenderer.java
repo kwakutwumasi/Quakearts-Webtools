@@ -91,6 +91,8 @@ public class BootNavRenderer extends HtmlBasicRenderer {
         	    	if(classString.length()>0)
         	    		writer.writeAttribute("class", classString.toString(), null);   	    	
         	    	
+        	    	writer.writeAttribute("role", "presentation", null);
+        	    	
         	    	writer.write("\n");
             	    kid.encodeAll(context);
             	    writer.endElement("li");
