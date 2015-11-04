@@ -85,8 +85,13 @@ public class BootNavRenderer extends HtmlBasicRenderer {
         	    	if(kid instanceof BootMenu)
         	    		classString.append("dropdown");
         	    	
-        	    	if(nav.getValue()!=null && nav.getValue().equals(((UIOutput)kid).getValue()))
-        	    		classString.append(classString.length()>0?" ":"").append("active");
+        	    	if(kid instanceof UIOutput){
+	        	    	if(nav.getValue()!=null && nav.getValue().equals(((UIOutput)kid).getValue()))
+	        	    		classString.append(classString.length()>0?" ":"").append("active");
+        	    	} else if(kid instanceof UICommand){
+	        	    	if(nav.getValue()!=null && nav.getValue().equals(((UICommand)kid).getValue()))
+	        	    		classString.append(classString.length()>0?" ":"").append("active");
+        	    	}
         	    	
         	    	if(classString.length()>0)
         	    		writer.writeAttribute("class", classString.toString(), null);   	    	
