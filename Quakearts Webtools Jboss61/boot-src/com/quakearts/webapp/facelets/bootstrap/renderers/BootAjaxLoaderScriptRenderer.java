@@ -57,7 +57,7 @@ public class BootAjaxLoaderScriptRenderer extends HtmlBasicRenderer {
 			"					obj.removeClass(\"collapse\").addClass(\"overlay\");\r\n" + 
 			"					obj.animate({\r\n" + 
 			"						opacity : 0.8\r\n" + 
-			"					}, 1000, function() {\r\n" + 
+			"					}, $stime, function() {\r\n" + 
 			"\r\n" + 
 			"					});\r\n" + 
 			"\r\n" + 
@@ -73,7 +73,7 @@ public class BootAjaxLoaderScriptRenderer extends HtmlBasicRenderer {
 			"					{\r\n" + 
 			"						opacity : 0.0\r\n" + 
 			"					},\r\n" + 
-			"					500,\r\n" + 
+			"					$etime,\r\n" + 
 			"					function() {\r\n" + 
 			"						var obj= $(qaboot.escape(\"#\"+data.source.id+\"_overlay\"));\r\n" + 
 			"						obj.removeClass(\"overlay\")\r\n" + 

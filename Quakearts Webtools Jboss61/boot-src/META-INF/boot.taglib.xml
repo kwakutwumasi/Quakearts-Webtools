@@ -1984,6 +1984,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		<attribute>
 			<name>suggestion</name>
 		</attribute>
+		<attribute>
+			<name>delay</name>
+		</attribute>
 	</tag>
 	<tag>
 		<tag-name>selectOneInput</tag-name>
@@ -2132,6 +2135,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		</attribute>
 		<attribute>
 			<name>suggestion</name>
+		</attribute>
+		<attribute>
+			<name>delay</name>
 		</attribute>
 	</tag>
 	<tag>
