@@ -100,7 +100,7 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
         	String dayClass = button.get("dayClass");
         	
 			generateSelectDay(idJs, dayInt,
-					MONTHDAYS[Calendar.MONTH], writer, button,
+					MONTHDAYS[date.get(Calendar.MONTH)], writer, button,
 					currentValue==null,
 					getDisplayType(button, context, "dayType"), dayClass, componentDisabled);
         }
