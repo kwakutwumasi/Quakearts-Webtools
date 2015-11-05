@@ -100,7 +100,7 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
         	String dayClass = button.get("dayClass");
         	
 			generateSelectDay(idJs, dayInt,
-					getDaysMap(date.get(Calendar.MONTH)), writer, button,
+					MONTHDAYS[Calendar.MONTH], writer, button,
 					currentValue==null,
 					getDisplayType(button, context, "dayType"), dayClass, componentDisabled);
         }
@@ -137,7 +137,7 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
     }
     
     private void generateSelectDay(String idJs, int value,
-			Map<Integer, String> options, ResponseWriter writer,
+			int days, ResponseWriter writer,
 			BootDateButton component, boolean isnull,
 			String type, String styleClass, boolean componentDisabled) throws IOException {
     	
@@ -156,7 +156,7 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
         writer.write("\n");
         writer.startElement("span", component);
     	writer.writeAttribute("id", idJs+"_day",null);
-        writer.write(isnull?"&nbsp;":options.get(value)+"");
+        writer.write(isnull?"&nbsp;":value+"");
         writer.endElement("span");
         writer.write("\n");
         writer.startElement("span", component);
@@ -183,14 +183,16 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
 	            writer.write("\n");    	
 	    	}
 	    	
-	    	for(Integer option:options.keySet()){
+	    	for(int i=1;i<=31;i++){
 	    		writer.startElement("a", component);
-	            writer.writeAttribute("class", "day", null);
+	            writer.writeAttribute("class", i<=days?"day":"collapse", null);
 	    		writer.writeAttribute("onclick",onChangeEvent, null);
-	    		writer.writeText(options.get(option), null);
+	    		writer.writeText(i, null);
 	    		writer.endElement("a");
 	            writer.write("\n");    	
 	    	}
+	    	
+	    	//for(int i=0;i<31-options.size())
         }
     	writer.endElement("div");
         writer.write("\n");    	
@@ -277,14 +279,6 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
     		yearsMap.put(yearInt, ""+yearInt);
     	
     	return yearsMap;
-    }
-
-    private Map<Integer, String> getDaysMap(int month){
-    	Map<Integer, String> daysMap = new TreeMap<Integer, String>();  	
-    	for(int i=1;i<=MONTHDAYS[month];i++){
-    		daysMap.put(i, ""+i);
-    	}
-    	return daysMap;
     }
     
     private static String getDisplayType(BootDateButton button, FacesContext context, String partType){
