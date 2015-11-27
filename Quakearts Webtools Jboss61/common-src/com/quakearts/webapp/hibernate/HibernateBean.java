@@ -107,6 +107,11 @@ public class HibernateBean {
 		private String property;
 		private boolean ascending;
 		
+		public QueryOrder(String property, boolean ascending) {
+			this.property = property;
+			this.ascending = ascending;
+		}
+
 		public String getProperty() {
 			return property;
 		}
