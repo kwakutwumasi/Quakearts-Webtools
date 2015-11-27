@@ -8,7 +8,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.naming.NamingException;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
@@ -17,6 +20,7 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import com.quakearts.webapp.facelets.util.UtilityMethods;
@@ -94,8 +98,34 @@ public class HibernateBean {
 		}
 	}
 	
+	public static class QueryOrder implements Serializable {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 7468698834542995985L;
+		private String property;
+		private boolean ascending;
+		
+		public String getProperty() {
+			return property;
+		}
+		
+		public void setProperty(String property) {
+			this.property = property;
+		}
+		
+		public boolean isAscending() {
+			return ascending;
+		}
+		
+		public void setAscending(boolean ascending) {
+			this.ascending = ascending;
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
-	protected <T> List<T> findObjects(Class<T> clazz,Map<String, Serializable> parameters, Session session) throws HibernateException, IOException{
+	protected <T> List<T> findObjects(Class<T> clazz,Map<String, Serializable> parameters, Session session, QueryOrder... orders) throws HibernateException, IOException{
 		Criteria query = session.createCriteria(clazz);
 		for(Entry<String, Serializable> entry:parameters.entrySet()){
 			if(entry.getValue() instanceof Choice) {
@@ -115,6 +145,15 @@ public class HibernateBean {
 				}
 			} else {
 				query.add(getCriterion(entry.getKey(), entry.getValue()));
+			}
+		}
+		
+		if(orders!=null){
+			for(QueryOrder order:orders){
+				if(order.ascending)
+					query.addOrder(Order.asc(order.property));
+				else
+					query.addOrder(Order.desc(order.property));
 			}
 		}
 		
@@ -153,10 +192,9 @@ public class HibernateBean {
 				transaction.rollback();
 			else
 				if(transaction.getStatus()==Status.STATUS_ACTIVE){
-					transaction.begin();
+					transaction.commit();
 				}
-		} catch (SystemException | NotSupportedException e) {
-			
+		} catch (SystemException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
 		}
 	}
 
