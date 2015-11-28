@@ -85,11 +85,7 @@ public class BootPaginationRenderer extends HtmlBasicRenderer {
 		
 		tableId = dataComponent.getClientId(context);
 		
-		int currentPage;
-		if(currentValue==null || !currentValue.matches("[\\d]+"))
-			currentPage = 1;
-		else
-			currentPage= Integer.parseInt(currentValue);
+		int currentPage = pagination.currentPage();
 		
 		int totalPages = pagination.calculatedTotalPages();		
 		int limit = pagination.calculatedLimit();
@@ -122,13 +118,15 @@ public class BootPaginationRenderer extends HtmlBasicRenderer {
 		
 		ResponseWriter writer = context.getResponseWriter();
 		
+		String styleClass = pagination.getStyleClass();
+		
 		writer.startElement("div", component);
 		writer.writeAttribute("id", id, null);
         if(style!=null)
         	writer.writeAttribute("stlye", style, null);
     	writer.write("\n");
 		writer.startElement("ul", component);
-		writer.writeAttribute("class", "pagination", null);
+		writer.writeAttribute("class", "pagination"+(styleClass!=null?" "+styleClass:""), null);
     	writer.write("\n");
 		writer.startElement("li", component);
 		if(currentPage==1)

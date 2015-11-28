@@ -16,7 +16,7 @@ import com.quakearts.webapp.facelets.util.ObjectExtractor;
 
 public class BootPagination extends HtmlCommandButton {
 
-	private int totalPages, pageSize, limit;
+	private int totalPages, pageSize, limit, currentPage=1;
 	public static final String COMPONENT_FAMILY="com.quakearts.bootstrap.pagination";
 	public static final String RENDERER_TYPE="com.quakearts.bootstrap.pagination.renderer";
 	public static final String PAGINATION_KEY="com.quakearts.bootstrap.pagination.key";
@@ -43,6 +43,10 @@ public class BootPagination extends HtmlCommandButton {
 		return limit;
 	}
 
+	public int currentPage() {
+		return currentPage;
+	}
+	
 	public void updateDataModel(FacesContext context) {
 		if(!isRendered())
 			return;
@@ -102,12 +106,16 @@ public class BootPagination extends HtmlCommandButton {
 		if(totalRows>pageSize)
 			totalPages = (totalRows/pageSize)+1;
 		
-		int currentPage; 
-		if(getValue()!=null)
-			currentPage = Integer.parseInt(getValue().toString());
-		else
-			currentPage = 1;
 		
+		if(ObjectExtractor.extractBoolean(getValueExpression("reset"),
+				context.getELContext())){
+			currentPage =1;
+		} else if(getValue()!=null)
+			currentPage = Integer.parseInt(getValue().toString());
+		else {
+			currentPage = 1;
+		}
+			
 		int first = (currentPage-1) * pageSize;
 		int end = first+pageSize;
 		if(end>totalRows)

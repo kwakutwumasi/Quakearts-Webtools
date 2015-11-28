@@ -21,6 +21,7 @@ public class BootGlyphRenderer extends HtmlBasicRenderer {
 
 		String label = bootGlyph.get("label");
 		String style = bootGlyph.get("style");
+		String title = bootGlyph.get("title");
 		
 		ResponseWriter writer = context.getResponseWriter();
 		String type = (String) bootGlyph.getValue();
@@ -36,9 +37,15 @@ public class BootGlyphRenderer extends HtmlBasicRenderer {
 		if(label!=null){
 			writer.writeAttribute("aria-label",label, null);
 		}
+		
 		if(style!=null){
 			writer.writeAttribute("style",style, null);
 		}
+		
+		if(title!=null){
+			writer.writeAttribute("title", title, null);
+		}
+		
 		writer.writeAttribute("aria-hidden", "true", null);
 		writer.endElement("span");
 		writer.write("\n");

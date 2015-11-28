@@ -789,6 +789,9 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 			<name>style</name>
 		</attribute>
 		<attribute>
+			<name>title</name>
+		</attribute>
+		<attribute>
 			<name>converter</name>
 		</attribute>
 		<attribute>
@@ -1215,6 +1218,12 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		</attribute>
 		<attribute>
 			<name>style</name>
+		</attribute>
+		<attribute>
+			<name>styleClass</name>
+		</attribute>
+		<attribute>
+			<name>reset</name>
 		</attribute>
 	</tag>
 	<tag>
