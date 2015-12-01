@@ -103,9 +103,9 @@ public class BootPagination extends HtmlCommandButton {
 			totalRows = ((PaginationBean)forObject).getSize();
 		}
 		
-		if(totalRows>pageSize)
-			totalPages = (totalRows/pageSize)+1;
-		
+		if(totalRows>pageSize){
+			totalPages = (totalRows/pageSize) + (totalRows % pageSize!=0?1:0);
+		}		
 		
 		if(ObjectExtractor.extractBoolean(getValueExpression("reset"),
 				context.getELContext())){
