@@ -11,17 +11,17 @@
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
-        <javaElement handleIdentifier="=Quakearts Webtools Jboss61/wf-src&lt;com.quakearts.workflowapp.jbpm.tag.listener"/>
-        <javaElement handleIdentifier="=Quakearts Webtools Jboss61/wf-src&lt;com.quakearts.workflowapp.jbpm.audit"/>
-        <javaElement handleIdentifier="=Quakearts Webtools Jboss61/wf-src&lt;com.quakearts.workflowapp.jbpm.tag"/>
-        <javaElement handleIdentifier="=Quakearts Webtools Jboss61/wf-src&lt;com.quakearts.workflowapp.jbpm.tag.handler"/>
-        <javaElement handleIdentifier="=Quakearts Webtools Jboss61/wf-src&lt;com.quakearts.workflowapp.jbpm.tag.validator"/>
-        <javaElement handleIdentifier="=Quakearts Webtools Jboss61/wf-src&lt;com.quakearts.workflowapp.jbpm.tag.output"/>
-        <javaElement handleIdentifier="=Quakearts Webtools Jboss61/wf-src&lt;com.quakearts.workflowapp.jbpm.audit.converters"/>
         <javaElement handleIdentifier="=Quakearts Webtools Jboss61/wf-src&lt;com.quakearts.workflowapp.jbpm.servlets"/>
-        <javaElement handleIdentifier="=Quakearts Webtools Jboss61/wf-src&lt;com.quakearts.workflowapp.jbpm.tag.xml.searchform"/>
-        <javaElement handleIdentifier="=Quakearts Webtools Jboss61/wf-src&lt;com.quakearts.workflowapp.jbpm.tag.listener.beans"/>
         <javaElement handleIdentifier="=Quakearts Webtools Jboss61/wf-src&lt;com.quakearts.workflowapp.jbpm.audit.converter"/>
+        <javaElement handleIdentifier="=Quakearts Webtools Jboss61/wf-src&lt;com.quakearts.workflowapp.jbpm.audit"/>
+        <javaElement handleIdentifier="=Quakearts Webtools Jboss61/wf-src&lt;com.quakearts.workflowapp.jbpm.audit.converters"/>
+        <javaElement handleIdentifier="=Quakearts Webtools Jboss61/wf-src&lt;com.quakearts.workflowapp.jbpm.tag.listener.beans"/>
+        <javaElement handleIdentifier="=Quakearts Webtools Jboss61/wf-src&lt;com.quakearts.workflowapp.jbpm.tag.handler"/>
+        <javaElement handleIdentifier="=Quakearts Webtools Jboss61/wf-src&lt;com.quakearts.workflowapp.jbpm.tag"/>
+        <javaElement handleIdentifier="=Quakearts Webtools Jboss61/wf-src&lt;com.quakearts.workflowapp.jbpm.tag.validator"/>
+        <javaElement handleIdentifier="=Quakearts Webtools Jboss61/wf-src&lt;com.quakearts.workflowapp.jbpm.tag.listener"/>
+        <javaElement handleIdentifier="=Quakearts Webtools Jboss61/wf-src&lt;com.quakearts.workflowapp.jbpm.tag.output"/>
         <folder path="/Quakearts Webtools Jboss61/wf-src/META-INF"/>
+        <javaElement handleIdentifier="=Quakearts Webtools Jboss61/wf-src&lt;com.quakearts.workflowapp.jbpm.tag.xml.searchform"/>
     </selectedElements>
 </jardesc>

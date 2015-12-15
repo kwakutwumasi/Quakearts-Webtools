@@ -1,5 +1,7 @@
 package com.quakearts.workflowapp.jbpm.tag.listener;
 
+import java.util.Set;
+
 import javax.el.ValueExpression;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -10,6 +12,7 @@ import org.jboss.logging.Logger;
 
 import org.jbpm.jsf.JbpmActionListener;
 import org.jbpm.jsf.JbpmJsfContext;
+import org.jbpm.taskmgmt.exe.PooledActor;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 
 public final class SecureLoadTasksActionListener
@@ -84,6 +87,24 @@ public final class SecureLoadTasksActionListener
                     context.selectOutcome("error");
                     return;                    
                 }
+            } else {
+            	Set<?> pooledActors = taskInstance.getPooledActors();
+            	
+            	if(pooledActors !=null && !pooledActors.isEmpty()){
+            		boolean ispooled = false;
+            		for(Object obj:pooledActors){
+            			if(obj instanceof PooledActor && ((PooledActor)obj).getActorId().equals(actorID)){
+            				ispooled=true;
+            				break;
+            			} 
+            		}
+            		if(!ispooled){
+	                    context.setError("Error loading task instance", (new StringBuffer()).append("Current user ").append(actorID).append(" has not been assigned this task.").toString());
+	                    targetExpression.setValue(elContext, new TaskInstance("null task","no actor"));
+	                    context.selectOutcome("error");
+	                    return;
+            		}
+            	}
             }
         }
         targetExpression.setValue(elContext, taskInstance);
