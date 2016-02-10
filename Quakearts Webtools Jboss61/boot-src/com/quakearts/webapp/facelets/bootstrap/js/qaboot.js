@@ -21,11 +21,11 @@ qaboot.manyListItemSelected = function (obj, ipid, val){
 qaboot.selectManyDropDown = function(drid){
 	var obj = $('#'+drid);
 	
-	if(obj.is(':hidden'))
+	if(obj.is(':hidden') && obj.find('a').length>0)	
 		obj.slideDown('slow', function(){
 			if($(window).height()<(obj.offset().top+obj.height()))
 				$(window).scrollTop(obj.parent().offset().top);
-		});
+		});		
 	else
 		obj.slideUp('fast');	
 }
@@ -37,7 +37,7 @@ qaboot.selectInputDropDown =function(drid){
 			$(this).slideUp('fast');			
 	});
 	
-	if(obj.is(':hidden'))
+	if(obj.is(':hidden') && obj.find('a').length>0)
 		obj.slideDown('slow');
 	else
 		obj.slideUp('fast');	

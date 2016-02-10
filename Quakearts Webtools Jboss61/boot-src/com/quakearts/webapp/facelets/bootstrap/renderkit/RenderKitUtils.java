@@ -252,6 +252,7 @@ public class RenderKitUtils {
 				for(ClientBehavior behavior:behaviors){
 					if(behaviorClass.isInstance(behavior)){
 						foundBehavior = behaviorClass.cast(behavior);
+						break;
 					}	
 				}
 		}
