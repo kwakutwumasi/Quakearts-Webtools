@@ -1,9 +1,9 @@
 package com.quakearts.webapp.facelets.bootstrap.beans;
 
 public class LoaderBean {
-	private static final String MAINAJAXLOADER = "qaboot.mainLoaderHandler";
-	private static final String MINIAJAXLOADER = "qaboot.miniLoaderHandler";
-	private static final String OVERLAYAJAXLOADER = "qaboot.overlayHandler";
+	private static final String MAINAJAXLOADER = "qab.mainLoaderHandler";
+	private static final String MINIAJAXLOADER = "qab.miniLoaderHandler";
+	private static final String OVERLAYAJAXLOADER = "qab.overlayHandler";
 	private static final String OVERLAYCLASS = "ajax-container";
 	
 	
@@ -19,7 +19,7 @@ public class LoaderBean {
 		return OVERLAYAJAXLOADER;
 	}
 	
-	public static String getOverlayClass() {
+	public String getOverlayClass() {
 		return OVERLAYCLASS;
 	}
 }

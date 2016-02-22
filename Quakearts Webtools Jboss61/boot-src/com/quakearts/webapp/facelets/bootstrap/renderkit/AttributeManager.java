@@ -67,6 +67,9 @@ public class AttributeManager {
             ,attr("onmouseover","mouseover")
             ,attr("onmouseup","mouseup")
             ,attr("onselect","select")
+            ,attr("onmouseenter","mouseenter")
+            ,attr("onmouseleave","mouseleave")
+            ,attr("onmousewheel","mousewheel")
             ,attr("disabled")
             ,attr("style")
             ,attr("tabindex")
@@ -87,6 +90,9 @@ public class AttributeManager {
             ,attr("onmouseout","mouseout")
             ,attr("onmouseover","mouseover")
             ,attr("onmouseup","mouseup")
+            ,attr("onmouseenter","mouseenter")
+            ,attr("onmouseleave","mouseleave")
+            ,attr("onmousewheel","mousewheel")
             ,attr("onreset")
             ,attr("onsubmit")
             ,attr("style")
@@ -111,6 +117,9 @@ public class AttributeManager {
             ,attr("onmouseout","mouseout")
             ,attr("onmouseover","mouseover")
             ,attr("onmouseup","mouseup")
+            ,attr("onmouseenter","mouseenter")
+            ,attr("onmouseleave","mouseleave")
+            ,attr("onmousewheel","mousewheel")
             ,attr("onselect","select")
             ,attr("disabled")
             ,attr("size")
@@ -139,6 +148,9 @@ public class AttributeManager {
             ,attr("onmouseout","mouseout")
             ,attr("onmouseover","mouseover")
             ,attr("onmouseup","mouseup")
+            ,attr("onmouseenter","mouseenter")
+            ,attr("onmouseleave","mouseleave")
+            ,attr("onmousewheel","mousewheel")
             ,attr("onselect","select")
             ,attr("disabled")
             ,attr("style")
@@ -157,6 +169,9 @@ public class AttributeManager {
             ,attr("onmouseout","mouseout")
             ,attr("onmouseover","mouseover")
             ,attr("onmouseup","mouseup")
+            ,attr("onmouseenter","mouseenter")
+            ,attr("onmouseleave","mouseleave")
+            ,attr("onmousewheel","mousewheel")
             ,attr("onselect","select")
             ,attr("tabindex")
             ,attr("title")
@@ -173,6 +188,9 @@ public class AttributeManager {
                 ,attr("onmouseout","mouseout")
                 ,attr("onmouseover","mouseover")
                 ,attr("onmouseup","mouseup")
+                ,attr("onmouseenter","mouseenter")
+                ,attr("onmouseleave","mouseleave")
+                ,attr("onmousewheel","mousewheel")
                 ,attr("onselect","select")
                 ,attr("tabindex")
                 ,attr("title")
@@ -193,6 +211,9 @@ public class AttributeManager {
                 ,attr("onmouseout","mouseout")
                 ,attr("onmouseover","mouseover")
                 ,attr("onmouseup","mouseup")
+                ,attr("onmouseenter","mouseenter")
+                ,attr("onmouseleave","mouseleave")
+                ,attr("onmousewheel","mousewheel")
                 ,attr("onselect","select")
                 ,attr("tabindex")
                 ,attr("title")
@@ -204,6 +225,7 @@ public class AttributeManager {
             ,attr("onmouseout","mouseout")
             ,attr("onmouseover","mouseover")
             ,attr("onmouseup","mouseup")
+            ,attr("onmousewheel","mousewheel")
             ,attr("style")
             ,attr("title")
         ))
@@ -225,6 +247,9 @@ public class AttributeManager {
             ,attr("onmouseout","mouseout")
             ,attr("onmouseover","mouseover")
             ,attr("onmouseup","mouseup")
+            ,attr("onmouseenter","mouseenter")
+            ,attr("onmouseleave","mouseleave")
+            ,attr("onmousewheel","mousewheel")
             ,attr("rules")
             ,attr("style")
             ,attr("summary")
@@ -238,6 +263,9 @@ public class AttributeManager {
             ,attr("onmouseout","mouseout")
             ,attr("onmouseover","mouseover")
             ,attr("onmouseup","mouseup")
+            ,attr("onmouseenter","mouseenter")
+            ,attr("onmouseleave","mouseleave")
+            ,attr("onmousewheel","mousewheel")
             ,attr("style")
             ,attr("title")
         )).add("BootPanel",ar(
@@ -248,6 +276,9 @@ public class AttributeManager {
             ,attr("onmouseout","mouseout")
             ,attr("onmouseover","mouseover")
             ,attr("onmouseup","mouseup")
+            ,attr("onmouseenter","mouseenter")
+            ,attr("onmouseleave","mouseleave")
+            ,attr("onmousewheel","mousewheel")
             ,attr("style")
             ,attr("title")
         )).add("ResponsiveImage",ar(
@@ -258,6 +289,9 @@ public class AttributeManager {
             ,attr("onmouseout","mouseout")
             ,attr("onmouseover","mouseover")
             ,attr("onmouseup","mouseup")
+            ,attr("onmouseenter","mouseenter")
+            ,attr("onmouseleave","mouseleave")
+            ,attr("onmousewheel","mousewheel")
             ,attr("style")
             ,attr("title")
             ,attr("align")
@@ -271,7 +305,16 @@ public class AttributeManager {
             ,attr("usemap")
             ,attr("vspace")
             ,attr("width")
-         )).fix();
+         )).add("SideMenu", ar(
+             attr("onmousedown","mousedown")
+             ,attr("onmousemove","mousemove")
+             ,attr("onmouseout","mouseout")
+             ,attr("onmouseover","mouseover")
+             ,attr("onmouseup","mouseup")
+             ,attr("onmousewheel","mousewheel")
+             ,attr("style")
+             ,attr("title")
+        	)).fix();
     public enum Key {
         COMMANDBUTTON("CommandButton"),
         FORMFORM("FormForm"),
@@ -285,7 +328,8 @@ public class AttributeManager {
         BOOTBREADCRUMB("BootBreadCrumb"),
         BOOTPANEL("BootPanel"),
         SELECTINPUT("SelectInput"),
-        RESPONSIVEIMAGE("ResponsiveImage");
+        RESPONSIVEIMAGE("ResponsiveImage"),
+        SIDEMENU("SideMenu");
 
         private String key;
         Key(String key) {

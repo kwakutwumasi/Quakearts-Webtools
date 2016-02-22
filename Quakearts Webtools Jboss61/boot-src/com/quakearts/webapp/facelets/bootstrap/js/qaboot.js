@@ -1,8 +1,13 @@
-var qaboot = qaboot || {};
+var qab = qab || {};
 
-qaboot.manyListItemSelected = function (obj, ipid, val){
-	var input = $('#'+ipid);
+qab.mlis = function (obj){
+	if($(obj).hasClass("disabled"))
+		return;
+
 	var select = $(obj);
+	var val = select.data("item-value");
+	var ipid = select.data("dropdown-input");
+	var input = $('#'+ ipid);
 	if(select.hasClass('active')){
 		input.find('input').each(function(){
 			if($(this).val() == val){
@@ -11,40 +16,53 @@ qaboot.manyListItemSelected = function (obj, ipid, val){
 		});
 		select.removeClass('active');
 	} else {
-		input.append('<input name="'+ipid.replace(/\\:/g,":")+'" value="'+val+'" type="hidden"></input>');
+		input.append('<input name="'+ipid+'" value="'+val+'" type="hidden"></input>');
 		select.addClass('active');
 	}
 	//trigger change event
 	input.change();
 }
 
-qaboot.selectManyDropDown = function(drid){
-	var obj = $('#'+drid);
+qab.ssdd = function(obj){
+	if($(obj).hasClass("disabled"))
+		return;
+
+	var drop = $('#'+$(obj).data('dropdown'));
 	
-	if(obj.is(':hidden') && obj.find('a').length>0)	
-		obj.slideDown('slow', function(){
-			if($(window).height()<(obj.offset().top+obj.height()))
-				$(window).scrollTop(obj.parent().offset().top);
+	if(drop.is(':hidden') && drop.find('a').length>0)	
+		drop.slideDown('slow', function(){
+			if(($(window).scrollTop() + $(window).height())<(drop.offset().top+drop.height()))
+				$(window).scrollTop($(window).scrollTop()+drop.height());
 		});		
 	else
-		obj.slideUp('fast');	
+		drop.slideUp('fast');
 }
 
-qaboot.selectInputDropDown =function(drid){
-	var obj = $('#'+drid);
+qab.ssidd =function(obj){
+	if($(obj).hasClass("disabled"))
+		return;
+	
+	var drop = $('#'+$(obj).data('dropdown'));
 	$('.input-list-group').each(function(){
 		if(!$(this).is(':hidden'))
 			$(this).slideUp('fast');			
 	});
 	
-	if(obj.is(':hidden') && obj.find('a').length>0)
-		obj.slideDown('slow');
+	if(drop.is(':hidden') && drop.find('a').length>0)
+		drop.slideDown('slow');
 	else
-		obj.slideUp('fast');	
+		drop.slideUp('fast');	
 }
 
-qaboot.oneListItemSelected = function (obj,ipid,val,dspid){
+qab.olis = function (obj){
+	if($(obj).hasClass("disabled"))
+		return;
+
 	var select = $(obj);
+	var ipid = select.data('dropdown-input');
+	var val = select.data('item-value');
+	var dspid = select.data('display-span');
+	
 	select.parent().children().each(function(){
 		if($(this).hasClass('active'))
 			$(this).removeClass('active');
@@ -59,11 +77,7 @@ qaboot.oneListItemSelected = function (obj,ipid,val,dspid){
 		$(this).remove();
 	});
 	
-	input.append('<input name="'
-			+ipid.replace(/\\:/g,":")
-			+'" value="'
-			+val
-			+'" type="hidden"></input>');
+	input.append('<input name="'+ipid+'" value="'+val+'" type="hidden"></input>');
 	
 	if(dspid){
 		var element = $('#'+dspid);
@@ -77,26 +91,30 @@ qaboot.oneListItemSelected = function (obj,ipid,val,dspid){
 	input.change();
 }
 
-qaboot.prevPage = function(id){
+qab.pp = function(obj){
+	var id = $(obj).data("page-input");
 	var input= $('#'+id);
 	input.val(parseInt(input.val())-1);
 	input.change();
 }
 
-qaboot.nextPage = function(id){
+qab.np = function(obj){
+	var id = $(obj).data("page-input");
 	var input= $('#'+id);
 	input.val(parseInt(input.val())+1);
 	input.change();
 }
 
-qaboot.gotoPage = function(id,val){
+qab.gp = function(obj){
+	var id = $(obj).data("page-input");
+	var val = $(obj).data("page-value");
 	var input= $('#'+id);
 	input.val(val);
 	input.change();
 }
 
-qaboot.submitForm = function(fo, nvpair, newTarget) {
-	qaboot.addFormValues(fo, nvpair);
+qab.sf = function(fo, nvpair, newTarget) {
+	qab.afv(fo, nvpair);
     var ft = fo.target;
     if (newTarget) {
         fo.target = newTarget;
@@ -113,7 +131,7 @@ qaboot.submitForm = function(fo, nvpair, newTarget) {
     mojarra.dpf(fo);
 };
 
-qaboot.addFormValues = function(fo, nvpair) {
+qab.afv = function(fo, nvpair) {
     var pairs = new Array();
     fo.pairs = pairs;
     var i = 0;
@@ -129,7 +147,7 @@ qaboot.addFormValues = function(fo, nvpair) {
     }
 };
 
-qaboot.removeFormValues = function(fo) {
+qab.rfv = function(fo) {
     var pairs = fo.pairs;
     if (pairs !== null) {
         for (var i = 0; i < pairs.length; i++) {
@@ -138,49 +156,62 @@ qaboot.removeFormValues = function(fo) {
     }
 };
 
-qaboot.escape = function(text) {
+qab.escape = function(text) {
 	return text.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 };
 
-qaboot.queueAction = function(obj,delay){
-	if(qaboot.tmid>0)
-		clearTimeout(qaboot.tmid);
+qab.qact = function(obj,delay){
+	if(qab.tmid>0)
+		clearTimeout(qab.tmid);
 	
-	qaboot.tmid = setTimeout(obj, delay);
+	qab.tmid = setTimeout(obj, delay);
 };
 
-qaboot.tmid =0;
+qab.tmid =0;
 
-qaboot.scrollDown = function (drid,obj,upid){
-	var dropDown = $('#'+drid);
+qab.sdn = function (obj){
+	var dropDown = $('#'+$(obj).data("dropdown"));
 	dropDown.animate({scrollTop:dropDown.scrollTop()+dropDown.height()},{duration:500,queue:true,done:function(){
 		if(dropDown.scrollTop()+dropDown.height()==dropDown.prop('scrollHeight')){
 			$(obj).prop("disabled",true);
 		}
-		var upbtn = $('#'+upid);
+		var upbtn = $('#'+$(obj).data("up-button"));
 		if(upbtn.prop("disabled"))
 			upbtn.prop("disabled",false);										
 	}})
 	return false;
 }
 
-qaboot.scrollUp = function (drid,obj,dnid){
-	var dropDown = $('#'+drid);
+qab.sup = function (obj){
+	var dropDown = $('#'+$(obj).data("dropdown"));
 	dropDown.animate({scrollTop:dropDown.scrollTop()-dropDown.height()},{duration:500,queue:true, done:function(){
 		if(dropDown.scrollTop()==0){
 			$(obj).prop("disabled",true);
 		}
-		var dnbtn = $('#'+dnid);
+		var dnbtn = $('#'+$(obj).data("down-button"));
 		if(dnbtn.prop("disabled"))
 			dnbtn.prop("disabled",false);										
 	}})
 	return false;
 }
 
-qaboot.resizeElements = [];
-qaboot.resizeImages = function () {
+qab.rsel = [];
+qab.rsi = function () {
 	var windowWidth = $(window).width();
-	for(var i=0;i<qaboot.resizeElements.length;i++){
-		qaboot.resizeElements[i].resizeImage(windowWidth);
+	for(var i=0;i<qab.rsel.length;i++){
+		qab.rsel[i].resizeImage(windowWidth);
 	}
 }
+
+qab.op = false;
+qab.tm = function(obj){
+	var sidemenu = $(obj);
+	
+	var left=this.op?"-13em":"0";
+	sidemenu.animate({
+		left:left
+	});
+	
+	this.op = !this.op;
+}
+

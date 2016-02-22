@@ -596,7 +596,6 @@ public abstract class HtmlBasicRenderer extends Renderer {
 
     }
 
-
     public static class OptionComponentInfo {
 
         String disabledClass;
@@ -605,19 +604,19 @@ public abstract class HtmlBasicRenderer extends Renderer {
         String unselectedClass;
         boolean disabled;
         boolean hideNoSelection;
-        String jqueryId;
+        String id;
 
 		public OptionComponentInfo(String disabledClass, String enabledClass,
-				boolean disabled, boolean hideNoSelection, String jqueryId) {
+				boolean disabled, boolean hideNoSelection, String id) {
 
 			this(disabledClass, enabledClass, null, null, disabled,
-					hideNoSelection, jqueryId);
+					hideNoSelection, id);
 
 		}
 
 		public OptionComponentInfo(String disabledClass, String enabledClass,
 				String unselectedClass, String selectedClass, boolean disabled,
-				boolean hideNoSelection, String jqueryId) {
+				boolean hideNoSelection, String id) {
 
 			this.disabledClass = disabledClass;
 			this.enabledClass = enabledClass;
@@ -625,7 +624,7 @@ public abstract class HtmlBasicRenderer extends Renderer {
 			this.selectedClass = selectedClass;
 			this.disabled = disabled;
 			this.hideNoSelection = hideNoSelection;
-			setJqueryId(jqueryId);
+			this.id = id;
 		}
 
         public String getDisabledClass() {
@@ -652,12 +651,8 @@ public abstract class HtmlBasicRenderer extends Renderer {
             return unselectedClass;
         }
         
-        public void setJqueryId(String jqueryId) {
-			this.jqueryId = jqueryId.replace(":", "\\\\:");
-		}
-        
-        public String getJqueryId() {
-			return jqueryId;
+        public String getId() {
+			return id;
 		}
     }
  } 

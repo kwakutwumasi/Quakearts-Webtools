@@ -503,7 +503,7 @@ public class RenderKitUtils {
         String formClientId = getFormClientId(component, context);
         String componentClientId = component.getClientId(context);
 
-        builder.append("qaboot.submitForm(document.getElementById('");
+        builder.append("qab.sf(document.getElementById('");
         builder.append(formClientId);
         builder.append("'),{");
 

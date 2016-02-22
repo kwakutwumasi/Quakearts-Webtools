@@ -100,6 +100,14 @@ public class BootNavRenderer extends HtmlBasicRenderer {
         	    	
         	    	writer.write("\n");
             	    kid.encodeAll(context);
+            	    UIComponent iconFacet = kid.getFacet("nav-icon");
+            	    if(iconFacet !=null){
+            	    	writer.startElement("span", component);
+            	    	writer.writeAttribute("class", "navitem-icon", null);
+            	    	iconFacet.encodeAll(context);
+            	    	writer.endElement("span");
+            	    }
+            	    
             	    writer.endElement("li");
         	    	writer.write("\n");
         	    } else {

@@ -44,10 +44,10 @@ public class BootResponsiveImageRenderer extends HtmlBasicRenderer {
 		
 		if(!context.getAttributes().containsKey(RESIZEWRITTEN)){
 			context.getAttributes().put(RESIZEWRITTEN,"");
-			addScriptContent("\t$(window).resize(qaboot.resizeImages);\n", context);
+			addScriptContent("\t$(window).resize(qab.rsi);\n", context);
 		}
 		
-		StringBuilder builder = new StringBuilder("\tqaboot.resizeElements.push({\"resizeImage\":function(windowWidth){\n\t\tvar src = \"\";\n");
+		StringBuilder builder = new StringBuilder("\tqab.rsel.push({\"resizeImage\":function(windowWidth){\n\t\tvar src = \"\";\n");
 
 		for(int i=0; i<entries.size(); i++) {
 			ImageEntry entry = entries.get(i);
@@ -67,7 +67,7 @@ public class BootResponsiveImageRenderer extends HtmlBasicRenderer {
 		builder.append("\t\t$(\"#")
 			.append(component.getClientId(context).replace(":", "\\\\:"))
 			.append("\").attr(\"src\",src);\n\t}});\n")
-			.append("\tqaboot.resizeElements[qaboot.resizeElements.length-1].resizeImage($(window).width());\n");
+			.append("\tqab.rsel[qab.rsel.length-1].resizeImage($(window).width());\n");
 		
 		addScriptContent(builder.toString(), context);
 	}

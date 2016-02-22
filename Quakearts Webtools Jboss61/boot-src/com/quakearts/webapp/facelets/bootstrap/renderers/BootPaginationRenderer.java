@@ -112,12 +112,9 @@ public class BootPaginationRenderer extends HtmlBasicRenderer {
 			execute = findClientIds(execute, component, context);
 		
         String style = pagination.get("style");
-
         String id = pagination.getClientId(context);
-		String id_jq = id.replace(":", "\\\\:")+"_input";
 		
 		ResponseWriter writer = context.getResponseWriter();
-		
 		String styleClass = pagination.getStyleClass();
 		
 		writer.startElement("div", component);
@@ -131,8 +128,11 @@ public class BootPaginationRenderer extends HtmlBasicRenderer {
 		writer.startElement("li", component);
 		if(currentPage==1)
 			writer.writeAttribute("class", "disabled",null);
-		else
-			writer.writeAttribute("onclick", "qaboot.prevPage('"+id_jq+"');", null);
+		else {
+			writer.writeAttribute("onclick", "qab.pp(this)", null);
+			writer.writeAttribute("data-page-input", id+"_input", null);
+		}
+		
     	writer.write("\n");
 		writer.startElement("a", component);
 		writer.writeAttribute("aria-label", "Previous", null);
@@ -167,9 +167,12 @@ public class BootPaginationRenderer extends HtmlBasicRenderer {
 				writer.startElement("li", component);
 				if(i==currentPage)
 					writer.writeAttribute("class","active",null);
+				writer.writeAttribute("onclick","qab.gp(this)",null);
+				
 		    	writer.write("\n");
 				writer.startElement("a", component);			
-				writer.writeAttribute("onclick", "qaboot.gotoPage('"+id_jq+"',"+i+");", null);
+				writer.writeAttribute("data-page-input", id+"_input", null);
+				writer.writeAttribute("data-page-value", i, null);
 				writer.writeText(""+i, null);
 				writer.endElement("a");
 		    	writer.write("\n");
@@ -196,8 +199,11 @@ public class BootPaginationRenderer extends HtmlBasicRenderer {
 		writer.writeAttribute("aria-label", "Next", null);
 		if(currentPage==totalPages || totalPages==0)
 			writer.writeAttribute("class", "disabled",null);
-		else
-			writer.writeAttribute("onclick", "qaboot.nextPage('"+id_jq+"');", null);
+		else {
+			writer.writeAttribute("onclick","qab.np(this)",null);
+			writer.writeAttribute("data-page-input", id+"_input", null);
+		}
+		
     	writer.write("\n");
 		writer.startElement("a", component);
 		writer.startElement("span", component);

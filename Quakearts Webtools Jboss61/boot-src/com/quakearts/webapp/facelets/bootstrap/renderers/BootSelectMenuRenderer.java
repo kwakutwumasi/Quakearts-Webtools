@@ -204,7 +204,7 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 	
 		ResponseWriter writer = context.getResponseWriter();
 		
-		String id = component.getClientId(context), idjs=id.replace(":", "\\\\:");
+		String id = component.getClientId(context);
 		boolean isDropDown = component instanceof BootSelectManyMenu || component instanceof BootSelectOneMenu;
 		Attribute[] attributes;
 		if(isDropDown){
@@ -238,8 +238,8 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 
 		if(mainStyle!=null)
 			writer.writeAttribute("style", mainStyle, null);
-		if(mainClass!=null)
-			writer.writeAttribute("class", mainClass, null);
+		
+		writer.writeAttribute("class", "select-container"+(mainClass==null?"":" "+mainClass), null);
 		
 		boolean opened = Boolean.parseBoolean(get("opened", component));
 		boolean hasSuggestions = false;
@@ -295,34 +295,23 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 				writer.endElement("input");
 			}
 			
-			String onclick = get("onclick", component);
-			
 			writer.startElement("button", component);
 			writer.writeAttribute("id", id+"_button", null);
-			writer.writeAttribute("class", "select-many-dropdown btn btn-"
+			writer.writeAttribute("class", "btn-select-dropdown btn btn-"
 					+ getDisplayType(component, context)
 					+ (fill && behavior==null?" btn-block":"")
 					+ (buttonClass != null ? " " + buttonClass : ""), null);
+			
+			writer.writeAttribute("onclick", "qab.ssdd(this)", null);
+			
 			if(buttonStyle!=null)
 				writer.writeAttribute("style", buttonStyle, null);			
 			
-			writer.writeAttribute("onclick", "qaboot.selectManyDropDown('"+idjs+"_list');"
-					+(onclick!=null?onclick:""), null);
+			writer.writeAttribute("data-dropdown", id+"_list",null);
 			writer.writeAttribute("type", "button", null);
 			renderPassThruAttributes(context, writer, component,
 					attributes, getNonOnChangeBehaviors(component));
 			renderXHTMLStyleBooleanAttributes(writer, component);
-			String keyup = get("onkeyup", component);
-			if(keyup!=null)
-				writer.writeAttribute("onkeyup", keyup, null);			
-
-			String keydown = get("onkeydown", component);
-			if(keydown!=null)
-				writer.writeAttribute("onkeydown", keydown, null);			
-
-			String keypressed = get("onkeypressed", component);
-			if(keypressed!=null)
-				writer.writeAttribute("onkeypressed", keypressed, null);
 			
 			writer.writeText(label!=null?label:"",null);
     		writer.write("\n");
@@ -358,12 +347,16 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 
     		writer.write("\n");
 			writer.startElement("button", component);
-			writer.writeAttribute("id", "up_"+id, null);
+			writer.writeAttribute("id", "up_btn_"+id, null);
 			writer.writeAttribute("type", "button", null);
 			writer.writeAttribute("class", "btn btn-default btn-xs btn-block", null);
+
 			if(holder.options.isEmpty())
 				writer.writeAttribute("disabled", "disabled", null);
-			writer.writeAttribute("onclick", "qaboot.scrollUp('ddi_"+idjs+"',this,'dwn_"+idjs+"');", null);
+			
+			writer.writeAttribute("data-dropdown", "list_"+id, null);
+			writer.writeAttribute("data-down-button", "down_btn_"+id, null);
+			writer.writeAttribute("onclick", "qab.sup(this)", null);
 			
 			writer.startElement("span", component);
 			writer.writeAttribute("class", "glyphicon glyphicon-chevron-up", null);
@@ -373,7 +366,7 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 						
     		writer.write("\n");
 			writer.startElement("div", component);
-			writer.writeAttribute("id", "ddi_"+id, null);
+			writer.writeAttribute("id", "list_"+id, null);
 			writer.writeAttribute("class", "list-group list-container", null);
 			if(size!=5 || !holder.options.isEmpty()){
 				StringBuilder styleBuilder = new StringBuilder();
@@ -381,7 +374,7 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 					styleBuilder.append("max-height:").append(size*44).append("px");
 				
 				if(holder.firstIndex>0)
-					addScriptContent("$('#ddi_"+idjs+"').scrollTop("+(holder.firstIndex*44)+");\n", context);
+					addScriptContent("$('#list_"+id+"').scrollTop("+(holder.firstIndex*44)+");\n", context);
 
 				writer.writeAttribute("style", styleBuilder.toString(), null);
 			}
@@ -399,11 +392,13 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 			
     		writer.write("\n");
 			writer.startElement("button", component);
-			writer.writeAttribute("id", "dwn_"+id, null);
+			writer.writeAttribute("id", "down_btn_"+id, null);
 			writer.writeAttribute("class", "btn btn-default btn-xs btn-block", null);
 			writer.writeAttribute("type", "button", null);
-			writer.writeAttribute("onclick", "qaboot.scrollDown('ddi_"+idjs+"',this,'up_"+idjs+"');", null);
-			
+			writer.writeAttribute("data-dropdown", "list_"+id, null);
+			writer.writeAttribute("data-up-button", "up_btn_"+id, null);
+			writer.writeAttribute("onclick", "qab.sdn(this)", null);
+
 			writer.startElement("span", component);
 			writer.writeAttribute("class", "glyphicon glyphicon-chevron-down", null);
 			writer.write(" ");
@@ -541,21 +536,21 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 			labelClass = optionInfo.getEnabledClass();
 		}	
 
+		String function;
+		if(isManySelect)
+			function="qab.mlis(this)";
+		else
+			function="qab.olis(this)";
+
 		writer.startElement("a", component);
 		writer.writeAttribute("class", "list-group-item select-list"
 				+ (isSelected ? " active" : "")
 				+ (labelClass != null ? " " + labelClass : ""), null);	
 		
-		if (!optionInfo.isDisabled() && !curItem.isDisabled()){
-			String function; 
-			if(isManySelect)
-				function="qaboot.manyListItemSelected";
-			else
-				function="qaboot.oneListItemSelected";
-
-			writer.writeAttribute("onclick", function+"(this,'"
-				+ optionInfo.getJqueryId() + "','" + valueString+"');",
-				null);
+		if (!curItem.isDisabled()){
+			writer.writeAttribute("data-dropdown-input", optionInfo.getId(), null);
+			writer.writeAttribute("data-item-value", valueString, null);
+			writer.writeAttribute("onclick", function, null);
 		}
 			
 		String label = curItem.getLabel();

@@ -47,20 +47,7 @@ public class BootSelectOneInputRenderer extends BootSelectInputGroupRenderer {
 		
 		renderPassThruAttributes(context, writer, component,
 				attributes, getNonOnChangeBehaviors(component));
-		renderXHTMLStyleBooleanAttributes(writer, component);
-
-		String keyup = get("onkeyup", component);
-		if(keyup!=null)
-			writer.writeAttribute("onkeyup", keyup, null);			
-
-		String keydown = get("onkeydown", component);
-		if(keydown!=null)
-			writer.writeAttribute("onkeydown", keydown, null);			
-
-		String keypressed = get("onkeypressed", component);
-		if(keypressed!=null)
-			writer.writeAttribute("onkeypressed", keypressed, null);
-		
+		renderXHTMLStyleBooleanAttributes(writer, component);		
 		writer.write("\n");
 		
 		Iterator<SelectItem> items = getSelectItems(context, component);
@@ -72,14 +59,13 @@ public class BootSelectOneInputRenderer extends BootSelectInputGroupRenderer {
 		writer.writeAttribute("id", id+"_group", null);
 		
 		String wrapClass = get("wrapClass", component);
-		writer.writeAttribute("class","input-group select-one-input btn btn-"+getDisplayType(component, context)+(wrapClass!=null?" "+wrapClass:"")
+		writer.writeAttribute("class","input-group select-one-input form-control"+(wrapClass!=null?" "+wrapClass:"")
 				+ (componentDisabled ? " disabled" : ""), null);
 		String wrapStyle = get("wrapStyle", component);
 		if(wrapStyle!=null)
 			writer.writeAttribute("style", wrapStyle, null);
-		
-		if(!componentDisabled)
-			writer.writeAttribute("onclick", "qaboot.selectInputDropDown('"+id.replace(":", "\\\\:")+"_drop');", null);
+		writer.writeAttribute("data-dropdown", id+"_drop", null);
+		writer.writeAttribute("onclick","qab.ssdd(this)", null);
 		
 		String element = autocompleteBehavior!=null && !componentDisabled?"input":"span";
 		writer.startElement(element, component);

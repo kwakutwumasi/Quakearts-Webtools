@@ -12,10 +12,10 @@ import com.sun.faces.renderkit.html_basic.HtmlBasicRenderer;
 
 
 public class BootAjaxLoaderScriptRenderer extends HtmlBasicRenderer {
-	private static final String LOADERSCRIPT = "qaboot.mainLoaderHandler = function(data){\r\n" + 
+	private static final String LOADERSCRIPT = "qab.mainLoaderHandler = function(data){\r\n" + 
 			"    switch(data.status){\r\n" + 
 			"    case \"begin\":\r\n" + 
-			"        var obj = $(qaboot.escape(\"#$ajaxdiv\"));\r\n" +
+			"        var obj = $(\"#$ajaxdiv\");\r\n" +
 			"		 obj.removeClass(\"collapse\").addClass(\"overlay\");\r\n" + 
 			"        obj.animate({\r\n" + 
 			"            opacity: 0.8\r\n" + 
@@ -24,10 +24,10 @@ public class BootAjaxLoaderScriptRenderer extends HtmlBasicRenderer {
 			"            });\r\n" + 
 			"        break;\r\n" + 
 			"    case \"complete\":\r\n" + 
-			"		$(qaboot.escape(\"#$ajaxdiv\")).animate({\r\n" + 
+			"		$(\"#$ajaxdiv\").animate({\r\n" + 
 			"			opacity: 0.0\r\n" + 
 			"			}, $etime, function() {\r\n" + 
-			"			 	$(qaboot.escape(\"#$ajaxdiv\")).removeClass(\"overlay\").addClass(\"collapse\");\r\n" + 
+			"			 	$(\"#$ajaxdiv\").removeClass(\"overlay\").addClass(\"collapse\");\r\n" + 
 			"			});\r\n" + 
 			"        break;\r\n" + 
 			"    case \"success\":\r\n" + 
@@ -36,17 +36,17 @@ public class BootAjaxLoaderScriptRenderer extends HtmlBasicRenderer {
 			"    }\r\n" + 
 			"}\r\n" + 
 			"\r\n" + 
-			"qaboot.overlayHandler = function(data){\r\n" + 
+			"qab.overlayHandler = function(data){\r\n" + 
 			"    switch (data.status) {\r\n" + 
 			"		case \"begin\":\r\n" + 
-			"			var idobj = $(qaboot.escape(\"#\" + data.source.id));\r\n" + 
-			"			var idparent = idobj.parent();\r\n" + 
+			"			var idobj = $(\"#\" + data.source.id);\r\n" + 
+			"			var idparent = idobj;\r\n" + 
 			"			while (idparent.parent().length > 0) {\r\n" + 
 			"				if (idparent.hasClass(\"ajax-container\")) {\r\n" + 
 			"					$('body').append(\"<div id='\"+data.source.id+\"_overlay' class='collapse'>\"+\r\n" + 
 			"							\"<img src='$overlayimg' border='0' $overlayimagestyle/>\"+\r\n" + 
 			"								\"</div>\"); \r\n" + 
-			"					var obj= $(qaboot.escape(\"#\"+data.source.id+\"_overlay\"));\r\n" + 
+			"					var obj= $(\"#\"+data.source.id+\"_overlay\");\r\n" + 
 			"					obj.css({\r\n" + 
 			"						position : 'absolute',\r\n" + 
 			"						top : idparent.offset().top,\r\n" + 
@@ -67,7 +67,7 @@ public class BootAjaxLoaderScriptRenderer extends HtmlBasicRenderer {
 			"			}\r\n" + 
 			"			break;\r\n" + 
 			"		case \"complete\":\r\n" + 
-			"			var obj= $(qaboot.escape(\"#\"+data.source.id+\"_overlay\"));\r\n" + 
+			"			var obj= $(\"#\"+data.source.id+\"_overlay\");\r\n" + 
 			"			if(obj.length>0){					\r\n" + 
 			"				obj.animate(\r\n" + 
 			"					{\r\n" + 
@@ -75,7 +75,7 @@ public class BootAjaxLoaderScriptRenderer extends HtmlBasicRenderer {
 			"					},\r\n" + 
 			"					$etime,\r\n" + 
 			"					function() {\r\n" + 
-			"						var obj= $(qaboot.escape(\"#\"+data.source.id+\"_overlay\"));\r\n" + 
+			"						var obj= $(\"#\"+data.source.id+\"_overlay\");\r\n" + 
 			"						obj.removeClass(\"overlay\")\r\n" + 
 			"								.addClass(\"collapse\");\r\n" + 
 			"						obj.remove();\r\n" + 
@@ -88,14 +88,14 @@ public class BootAjaxLoaderScriptRenderer extends HtmlBasicRenderer {
 			"		}\r\n" + 
 			"	}\r\n"+
 			"\r\n" + 
-			"qaboot.miniLoaderHandler = function(data){\r\n" + 
+			"qab.miniLoaderHandler = function(data){\r\n" + 
 			"    switch(data.status){\r\n" + 
 			"        case \"begin\":\r\n" + 
-			"            var parent = $(qaboot.escape(\"#\"+data.source.id)).parent();\r\n" + 
+			"            var parent = $(\"#\"+data.source.id).parent();\r\n" + 
 			"            parent.append(\"<img src='$miniimg' id='\"+data.source.id+\"_img' $miniimagestyle/>\");\r\n" + 
 			"            break;\r\n" + 
 			"        case \"complete\":\r\n" + 
-			"            $(qaboot.escape(\"#\"+data.source.id+\"_img\")).remove();\r\n" + 
+			"            $(\"#\"+data.source.id+\"_img\").remove();\r\n" + 
 			"            break;\r\n" + 
 			"        case \"success\":\r\n" + 
 			"            break;\r\n" + 

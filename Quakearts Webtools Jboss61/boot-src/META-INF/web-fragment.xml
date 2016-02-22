@@ -24,6 +24,11 @@
 	<servlet-name>Bootstrap Servlet</servlet-name>
 	<url-pattern>/boot-services/*</url-pattern>
 </servlet-mapping>
+<context-param>
+	<description>Change default separator character for JSF to</description>
+	<param-name>javax.faces.SEPARATOR_CHAR</param-name>
+	<param-value>-</param-value>
+</context-param>
 <session-config>
 	<session-timeout>15</session-timeout>
 	<tracking-mode>COOKIE</tracking-mode>

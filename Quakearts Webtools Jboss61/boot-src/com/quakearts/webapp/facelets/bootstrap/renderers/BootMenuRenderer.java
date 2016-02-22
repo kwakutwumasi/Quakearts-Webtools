@@ -79,8 +79,14 @@ public class BootMenuRenderer extends HtmlBasicRenderer {
 					+" dropdown-toggle", null);
 			writer.writeAttribute("data-toggle", "dropdown", null);
 			writer.writeAttribute("aria-expanded", "false", null);
-			writer.write(value!=null?value.toString():"");
-	        writer.write("\n");    	
+			if(value!=null)
+				writer.write(value.toString());
+			else {
+				UIComponent header = menu.getFacet("header");
+				if(header!=null)
+					header.encodeAll(context);
+			}
+	        writer.write("\n");
 			writer.startElement("span", component);
 			writer.writeAttribute("class", "caret", null);
 			writer.write(" ");
