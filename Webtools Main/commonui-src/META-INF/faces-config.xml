@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config version="2.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd ">
+	<component>
+		<component-type>com.quakearts.facelets.input.date</component-type>
+		<component-class>com.quakearts.webapp.facelets.tag.input.DateComponent</component-class>
+	</component>
+	<render-kit>
+		<renderer>
+			<component-family>com.quakearts.facelets.input.date</component-family>
+			<renderer-type>com.quakearts.facelets.input.date.renderer</renderer-type>
+			<renderer-class>com.quakearts.webapp.facelets.tag.input.DateRenderer</renderer-class>
+		</renderer>
+	</render-kit>
+	<component>
+		<component-type>com.quakearts.facelets.input.datescript</component-type>
+		<component-class>com.quakearts.webapp.facelets.tag.input.DateScriptComponent</component-class>
+	</component>
+	<render-kit>
+		<renderer>
+			<component-family>com.quakearts.facelets.input.datescript</component-family>
+			<renderer-type>com.quakearts.facelets.input.datescript.renderer</renderer-type>
+			<renderer-class>com.quakearts.webapp.facelets.tag.input.DateScriptRenderer</renderer-class>
+		</renderer>
+	</render-kit>
+</faces-config>

@@ -1,0 +1,979 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<md:metadatamodel
+	xmlns:md="http://org.eclipse.jst.jsf.common.metadata/metadata.ecore"
+	xmlns:cnst="http://org.eclipse.jst.jsf.core/constraints.ecore"
+	xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+	xmlns:mdt="http://org.eclipse.jst.jsf.common.metadata/metadataTraitTypes.ecore"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	id="http://quakearts.com/2.0/common"
+	type="tagFile">
+
+	<entity id="getBytes" type="tag">
+		<entity id="stream">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">java.io.InputStream</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+		<entity id="maxSize">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.IntegerType
+				</value>
+			</trait>
+			<trait id="valid-minimum"><value xsi:type="mdt:StringValue">0</value></trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+		<entity id="var">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="removeProp" type="tag">
+		<entity id="name">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="properties">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="autoComplete" type="tag">
+		<entity id="column">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="jndi">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="bean">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">com.quakearts.webapp.facelets.util.AutoCompleteBean</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+		<entity id="like">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.BooleanType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="set" type="tag">
+		<entity id="as">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">java.lang.Object</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+		<entity id="var">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">java.lang.Object</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="merge" type="tag">
+		<entity id="object">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">java.lang.Object</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+		<entity id="delete">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.BooleanType
+				</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+		<entity id="message">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="autoCompleteSelect" type="tag">
+		<entity id="column">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="jndi">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="label">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="table">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="key">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.BooleanType
+				</value>
+			</trait>
+		</entity>
+		<entity id="bean">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">com.quakearts.webapp.facelets.util.AutoCompleteSelectItemsBean</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+		<entity id="like">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.BooleanType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="saveProps" type="tag">
+		<entity id="file">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="properties">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="removeFromList" type="tag">
+		<entity id="list">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">java.util.List</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+		<entity id="index">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.IntegerType
+				</value>
+			</trait>
+			<trait id="valid-minimum"><value xsi:type="mdt:StringValue">0</value></trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="var">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="addTolist" type="tag">
+		<entity id="target">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">java.util.List</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+		<entity id="object">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">java.lang.Object</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="list" type="tag">
+		<entity id="properties">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="var">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="copyFile" type="tag">
+		<entity id="file">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="newFile">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="createFile" type="tag">
+		<entity id="file">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.BooleanType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="removeFromMap" type="tag">
+		<entity id="map">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">java.util.Map</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+		<entity id="keys">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="var">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="session" type="tag">
+		<entity id="var">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">java.lang.Object</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+		<entity id="key">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+		<entity id="action">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>get</item>
+					<item>save</item>
+					<item>remove</item>
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="loadProps" type="tag">
+		<entity id="file">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+		</entity>
+		<entity id="var">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="stream">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">java.io.InputStream</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="delete" type="tag">
+		<entity id="message">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+		</entity>
+		<entity id="object">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">java.lang.Object</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="addMessage" type="tag">
+		<entity id="message">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="title">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+		</entity>
+		<entity id="type">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>error</item>
+					<item>warn</item>
+					<item>info</item>
+				</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="addProp" type="tag">
+		<entity id="name">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="properties">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="value">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="responseAction" type="tag">
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.BooleanType
+				</value>
+			</trait>
+		</entity>
+		<entity id="listener">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">org.eclipse.jst.jsf.core.attributevalues.MethodBindingType</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">void</value>
+			</trait>
+			<trait id="runtime-param-types">
+				<value xsi:type="mdt:StringValue">javax.faces.event.ActionEvent</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="createSelectItems" type="tag">
+		<entity id="list">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="var">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">java.util.List</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="saveUpdate" type="tag">
+		<entity id="message">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+		</entity>
+		<entity id="object">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">java.lang.Object</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+		<entity id="action">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>save</item>
+					<item>update</item>
+				</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="profile" type="tag">
+		<entity id="var">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">com.quakearts.webapp.facelets.tag.utils.SubjectHelper</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="deleteFile" type="tag">
+		<entity id="file">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="executeAction" type="tag">
+		<entity id="listener">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">org.eclipse.jst.jsf.core.attributevalues.MethodBindingType</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">void</value>
+			</trait>
+			<trait id="runtime-param-types">
+				<value xsi:type="mdt:StringValue">javax.faces.event.ActionEvent</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+	</entity>
+
+	<entity id="saveFile" type="tag">
+		<entity id="stream">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+			<trait id="runtime-return-type">
+				<value xsi:type="mdt:StringValue">java.io.InputStream</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+			<trait id="category">
+				<value xsi:type="mdt:StringValue">%property.category.jsf</value>
+			</trait>
+		</entity>
+		<entity id="fileName">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="required">
+				<value xsi:type="mdt:BooleanValue">true</value>
+			</trait>
+		</entity>
+		<entity id="overwrite">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.BooleanType
+				</value>
+			</trait>
+		</entity>
+		<entity id="unless">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.ValueBindingType
+				</value>
+			</trait>
+		</entity>
+		<entity id="root">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+		</entity>
+	</entity>
+
+</md:metadatamodel>

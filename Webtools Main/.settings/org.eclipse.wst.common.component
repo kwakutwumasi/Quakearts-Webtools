@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="Quakearts JSF Webtools">
+        <wb-resource deploy-path="/" source-path="/boot-src"/>
+        <wb-resource deploy-path="/" source-path="/auth-src"/>
+        <wb-resource deploy-path="/" source-path="/common-ext"/>
+        <wb-resource deploy-path="/" source-path="/common-src"/>
+        <wb-resource deploy-path="/" source-path="/commonui-src"/>
+        <wb-resource deploy-path="/" source-path="/crypt-src"/>
+        <wb-resource deploy-path="/" source-path="/dbloader-src"/>
+        <wb-resource deploy-path="/" source-path="/logging-src"/>
+        <wb-resource deploy-path="/" source-path="/wf-src"/>
+        <property name="context-root" value="Quakearts_Webtools_Jboss61"/>
+        <property name="java-output-path" value="/Quakearts JSF Webtools/build"/>
+    </wb-module>
+</project-modules>
