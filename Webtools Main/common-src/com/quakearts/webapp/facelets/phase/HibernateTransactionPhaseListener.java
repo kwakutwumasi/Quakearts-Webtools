@@ -20,6 +20,9 @@ public class HibernateTransactionPhaseListener implements PhaseListener {
 	 */
 	private static final long serialVersionUID = -2366733998857516126L;
 	private static final Logger log = Logger.getLogger(HibernateTransactionPhaseListener.class.getName());
+	private boolean useJTA = true;
+	
+	
 		
 	@Override
 	public void afterPhase(PhaseEvent event) {
@@ -51,11 +54,16 @@ public class HibernateTransactionPhaseListener implements PhaseListener {
 	@Override
 	public void beforePhase(PhaseEvent event) {
 		if(event.getPhaseId() == PhaseId.RESTORE_VIEW){//start a transaction
+			
+			
+			
 			try {
 				InitialContext icx = UtilityMethods.getInitialContext();
 				UserTransaction tran= (UserTransaction) icx.lookup("java:comp/UserTransaction");
 				if(tran.getStatus() == Status.STATUS_NO_TRANSACTION)
 					tran.begin();
+			} catch (NullPointerException e) {
+				
 			} catch (Exception e) {
 				log.log(Level.SEVERE, "Exception of type " + e.getClass().getName()
 						+ " was thrown. Message is " + e.getMessage()

@@ -2,7 +2,7 @@ package com.quakearts.webapp.facelets.bootstrap.renderers;
 
 import com.quakearts.webapp.facelets.bootstrap.components.BootDateButton;
 import com.quakearts.webapp.facelets.bootstrap.components.BootDateButton.DateFormat;
-import com.sun.faces.renderkit.RenderKitUtils;
+import com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.html_basic.HtmlBasicInputRenderer;
 
 import java.io.IOException;
@@ -82,7 +82,7 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
 
         yearInt = date.get(Calendar.YEAR);
 		
-		String id=component.getClientId(context), idJs = id.replace(":", "_");
+		String id=component.getClientId(context), idJs = id.replace("-", "_");
         
         ResponseWriter writer = context.getResponseWriter();
         
@@ -96,23 +96,28 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
     		writer.writeAttribute("style", style, null);
     	writeIdAttributeIfNecessary(context, writer, component);
         writer.write("\n");
+        int offset = 0;
+        
+    	GregorianCalendar firstDay = new GregorianCalendar(date.get(Calendar.YEAR), date.get(Calendar.MONTH), 1);
+    	offset = firstDay.get(Calendar.DAY_OF_WEEK)-1;
+        
         if(button.formatVal()== DateFormat.DAYMONTH || button.formatVal()== DateFormat.DAYMONTHYEAR){
         	String dayClass = button.get("dayClass");
         	
 			generateSelectDay(idJs, dayInt,
-					MONTHDAYS[date.get(Calendar.MONTH)], writer, button,
+					MONTHDAYS[date.get(Calendar.MONTH)], offset, writer, button,
 					currentValue==null,
 					getDisplayType(button, context, "dayType"), dayClass, componentDisabled);
         }
        writer.write("\n");
-        if(!(button.formatVal()== DateFormat.YEAR)){
+       if(!(button.formatVal()== DateFormat.YEAR)){
         	String monthClass = button.get("monthClass");
 
         	generateSelect("month", idJs, monthInt, months, writer, button,
         			currentValue==null,
 					getDisplayType(button, context, "monthType"),monthClass, componentDisabled);
-        }
-        writer.write("\n");
+       }
+       writer.write("\n");
         if((button.formatVal()!= DateFormat.DAYMONTH) && (button.formatVal()!= DateFormat.MONTH)){
         	String yearClass = button.get("yearClass");
 
@@ -121,7 +126,18 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
 					writer, button, currentValue==null,
 					getDisplayType(button, context, "yearType"),yearClass, componentDisabled);
         }
-        writer.write("\n");        
+        writer.write("\n");
+        if(button.nullable()){
+ 			writer.startElement("a", component);
+ 	        writer.writeAttribute("class", "btn-group day", null);
+ 	        writer.writeAttribute("title", "Clear date", null);
+ 			writer.writeAttribute("onclick","dateComponent_"+idJs
+ 					+".clearComponent();", null);
+ 			writer.write("&times;");
+ 			writer.endElement("a");
+ 	        writer.write("\n");    	
+ 		}
+        writer.write("\n");
         writer.startElement("input", button);
         writer.writeAttribute("name", id, null);
         writer.writeAttribute("id", idJs+"_input", null);
@@ -137,7 +153,7 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
     }
     
     private void generateSelectDay(String idJs, int value,
-			int days, ResponseWriter writer,
+			int days, int offset, ResponseWriter writer,
 			BootDateButton component, boolean isnull,
 			String type, String styleClass, boolean componentDisabled) throws IOException {
     	
@@ -171,18 +187,15 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
         writer.writeAttribute("role", "menu", null);
         
         if(!componentDisabled){
-	    	String onChangeEvent = "dateComponent_"+idJs+".updateDay(this);";
-	    	
-	    	if(component.nullable()){
-	    		writer.startElement("a", component);
-	            writer.writeAttribute("class", "day", null);
-	    		writer.writeAttribute("onclick","dateComponent_"+idJs
-	    				+".clearComponent();", null);
-	    		writer.write("&times;");
-	    		writer.endElement("a");
-	            writer.write("\n");    	
-	    	}
-	    	
+	    	String onChangeEvent = "dateComponent_"+idJs+".updateDay(this);";	    	
+	    	writer.write("<span class=\"day-header\">S</span>\r\n" + 
+	    			"<span class=\"day-header\">M</span>\r\n" + 
+	    			"<span class=\"day-header\">T</span>\r\n" + 
+	    			"<span class=\"day-header\">W</span>\r\n" + 
+	    			"<span class=\"day-header\">T</span>\r\n" + 
+	    			"<span class=\"day-header\">F</span>\r\n" + 
+	    			"<span class=\"day-header\">S</span>");
+	    	writer.write("<span class=\"day-header buffer\" style=\"width:"+(39*offset)+"px;\"></span>");
 	    	for(int i=1;i<=31;i++){
 	    		writer.startElement("a", component);
 	            writer.writeAttribute("class", i<=days?"day":"collapse", null);
@@ -192,7 +205,6 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
 	            writer.write("\n");    	
 	    	}
 	    	
-	    	//for(int i=0;i<31-options.size())
         }
     	writer.endElement("div");
         writer.write("\n");    	
@@ -239,16 +251,6 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
 	    				+(component.formatVal()==DateFormat.DAYMONTH||component.formatVal()==DateFormat.DAYMONTHYEAR?"dateComponent_"+idJs+".showDays(val);":"");   		
 	    	} else {
 	    		onChangeEvent = "dateComponent_"+idJs+".updateYear(this);";    		
-	    	}
-	    	    	
-	    	if(component.nullable()){
-	    		writer.startElement("a", component);
-	    		writer.writeAttribute("class","other-date",null);
-	    		writer.writeAttribute("onclick","dateComponent_"+idJs
-	    				+".clearComponent();", null);
-	    		writer.write("&times;");
-	    		writer.endElement("a");
-	            writer.write("\n"); 
 	    	}
 	    	
 	    	for(Integer option:options.keySet()){

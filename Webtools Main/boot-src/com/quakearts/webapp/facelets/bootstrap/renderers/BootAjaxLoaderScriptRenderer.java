@@ -8,8 +8,7 @@ import javax.faces.context.ResponseWriter;
 
 import com.quakearts.webapp.facelets.bootstrap.components.BootAjaxLoaderComponent;
 import com.quakearts.webapp.facelets.bootstrap.components.BootAjaxLoaderScriptComponent;
-import com.sun.faces.renderkit.html_basic.HtmlBasicRenderer;
-
+import com.quakearts.webapp.facelets.bootstrap.renderkit.html_basic.HtmlBasicRenderer;
 
 public class BootAjaxLoaderScriptRenderer extends HtmlBasicRenderer {
 	private static final String LOADERSCRIPT = "qab.mainLoaderHandler = function(data){\r\n" + 

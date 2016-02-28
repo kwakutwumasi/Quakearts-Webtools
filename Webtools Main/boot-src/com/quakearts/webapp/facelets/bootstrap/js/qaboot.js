@@ -54,6 +54,22 @@ qab.ssidd =function(obj){
 		drop.slideUp('fast');	
 }
 
+qab.ssime = function(obj,s,e){
+	var fc = $(obj);
+	if(!fc.hasClass('form-control')){
+		if(fc.is(":focus") && e.type!="blur")
+			return;
+		
+		fc = fc.parent();	
+	}
+	
+	if(s){
+		fc.addClass('form-select-focus');
+	} else {
+		fc.removeClass('form-select-focus');
+	}
+}
+
 qab.olis = function (obj){
 	if($(obj).hasClass("disabled"))
 		return;
@@ -214,4 +230,99 @@ qab.tm = function(obj){
 	
 	this.op = !this.op;
 }
+
+qab.dc = function(day,month,year,dsel,
+		msel,ysel,insel,dbsel,type){
+	return  {
+		"day":day,
+		"month":month,
+		"year":year,
+		"dsel":dsel,
+		"msel":msel,
+		"ysel":ysel,
+		"insel":insel,
+		"dbsel":dbsel,
+		"type":type,
+		"updateDay" : function(obj) {
+			this.day = obj.innerHTML;
+			this.updateComponent();
+			$(this.dsel).html($(obj).html());
+		},
+		"updateMonth" : function(obj, val) {
+			this.month = val;
+			var totalDays = MonthDays[val - 1];
+			if (this.day > totalDays) {
+				this.day = totalDays;
+				$(this.dsel).html(totalDays + '');
+			}
+			this.updateComponent();
+			$(this.msel).html($(obj).html());
+			this.showDays();
+		},
+		"updateYear" : function(obj) {
+			this.year = obj.innerHTML;
+			$(this.ysel).html($(obj).html());
+			if(this.month)
+				this.showDays();
+			else {
+				$(this.msel).html("Jan");
+				this.month = 1;
+				this.showDays();
+			}
+			this.updateComponent();
+		},
+		"showDays" : function() {
+			if(this.type !="dm" && this.type!="dmy")
+				return;
+
+			var totalDays = MonthDays[this.month - 1];
+			var count = -8;
+			var offset = new Date(this.year?this.year:new Date().getFullYear(), this.month-1, 1, 0, 0, 0, 0).getDay();
+			$(this.dbsel).parent().find('.buffer').width(offset*39);
+			$(this.dbsel).parent().find('div.dropdown-menu')
+					.children().each(function() {
+						count++;
+						if (totalDays < count) {
+							$(this).addClass('collapse');
+							$(this).removeClass('day');
+						} else {
+							if ($(this).hasClass('collapse')) {
+								$(this).removeClass('collapse');
+								$(this).addClass('day');
+							}
+						}
+					});
+		},
+		"clearComponent" : function() {
+			$(this.insel).val('');
+			$(this.dsel).html('&nbsp;');
+			$(this.msel).html('&nbsp;');
+			$(this.ysel).html('&nbsp;');
+		},
+		"updateComponent" : function() {
+			var mnStr = this.month + "";
+			switch(this.type){
+			case "dm":
+					$(this.insel).val((this.day.length == 1 ? "0" + this.day : this.day)
+							+ "/"+ (mnStr.length == 1 ? "0" + mnStr: mnStr));
+					break;
+			case "m":
+					$(this.insel).val(mnStr.length == 1 ? "0" + mnStr: mnStr);
+					break;
+			case "my":
+					$(this.insel).val((mnStr.length == 1 ? "0" + mnStr: this.month) 
+							+ "/" + this.year);
+					break;
+			case "y":
+					$(this.insel).val(this.year);
+					break;
+			default:
+				$(this.insel).val((this.day.length == 1 ? "0" + this.day : this.day)
+									+ "/"+ (mnStr.length == 1 ? "0" + mnStr: mnStr) 
+									+ "/" + this.year);
+			}
+			$(this.insel).change();
+		}
+	};
+};
 

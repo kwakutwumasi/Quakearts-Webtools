@@ -17,11 +17,17 @@ public class BootDateButton extends HtmlInputText {
     private boolean checkedNullable = false, nullable = false;
     
     public static enum DateFormat{
-    	DAYMONTH,
-    	MONTH,
-    	MONTHYEAR,
-    	YEAR,
-    	DAYMONTHYEAR;
+    	DAYMONTH("dd/MM","dm"),
+    	MONTH("MM","m"),
+    	MONTHYEAR("MM/yyyy","my"),
+    	YEAR("yyyy","y"),
+    	DAYMONTHYEAR("dd/MM/yyyy","dmy");
+    	
+    	private String formatString, formatValue;
+    	private DateFormat(String formatString, String formatValue) {
+			this.formatString = formatString;
+			this.formatValue = formatValue;
+		}
     	
     	public static DateFormat getFormat(String format){
     		if(format == null)
@@ -41,19 +47,12 @@ public class BootDateButton extends HtmlInputText {
     	}
     	
     	public String getFormatString(){
-    		switch(this){
-	    		case DAYMONTH:
-	    			return "dd/MM";
-	    		case DAYMONTHYEAR:
-	    			return "dd/MM/yyyy";
-	    		case MONTH:
-	    			return "MM";
-	    		case MONTHYEAR:
-	    			return "MM/yyyy";
-	    		default:
-	    			return "yyyy";
-    		}
+    		return formatString;
     	}
+    	
+    	public String getFormatValue() {
+			return formatValue;
+		}
     }
        
     public String getFamily()

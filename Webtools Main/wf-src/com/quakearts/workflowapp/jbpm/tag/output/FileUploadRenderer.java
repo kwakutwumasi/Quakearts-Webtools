@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
-import com.sun.faces.renderkit.html_basic.HtmlBasicRenderer;
+import com.quakearts.webapp.facelets.bootstrap.renderkit.html_basic.HtmlBasicRenderer;
 
 public class FileUploadRenderer extends HtmlBasicRenderer {
 

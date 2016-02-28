@@ -21,62 +21,8 @@ public class BootDateScriptRenderer extends HtmlBasicRenderer {
 
     public static final String RENDERER_TYPE = "com.quakearts.facelets.input.datescript.renderer";
 	public static final String DATE_SCRIPT_TOP = "var MonthDays = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);";
-    public static final String DATE_SCRIPT_FUNCTION = "var dateComponent_idVal = {"
-											+"\n	\"required\":true,";
-    public static final String DATE_SCRIPT_DAY = "\n	\"day\":\"dayVal\",";
-    public static final String DATE_SCRIPT_MONTH = "\n	\"month\":\"monthVal\",";
-    public static final String DATE_SCRIPT_YEAR = "\n	\"year\":\"yearVal\",";
-    public static final String DATE_SCRIPT_BODY = "\n	\"updateDay\": function(obj){"
-											+"\n		this.day=obj.innerHTML;"
-											+"\n		this.updateComponent();"
-											+"\n		$('#dayId').html($(obj).html());"
-											+"\n	},"
-											+"\n	\"updateMonth\": function(obj,val){"
-											+"\n		this.month=val;"
-											+"\n		var totalDays = MonthDays[val-1];"
-											+"\n		if(this.day>totalDays){"
-											+"\n			this.day=totalDays;"
-											+"\n			$('#dayId').html(totalDays+'');"
-											+"\n		}"
-											+"\n		this.updateComponent();"
-											+"\n		$('#monId').html($(obj).html());"
-											+"\n	},"
-											+"\n	\"updateYear\": function(obj){"
-											+"\n		this.year=obj.innerHTML;"
-											+"\n		this.updateComponent();"
-											+"\n		$('#yrId').html($(obj).html());"
-											+"\n	},"
-											+"\n	\"showDays\": function(month){"
-											+"\n		var totalDays = MonthDays[month-1];"
-											+"\n		var count=#off;"
-											+"\n		$('#dayBtnId').parent().find('div.dropdown-menu').children().each(function()"
-											+"\n		{"
-											+"\n			count++;"
-											+"\n			if(totalDays<count){"
-											+"\n				$(this).addClass('collapse');"
-											+"\n				$(this).removeClass('day');"
-											+"\n			} else {"
-											+"\n				if($(this).hasClass('collapse')){"
-											+"\n					$(this).removeClass('collapse');"
-											+"\n					$(this).addClass('day');"
-											+"\n				}"
-											+"\n			}"
-											+"\n		});"
-											+"\n	},"
-											+"\n	\"clearComponent\": function(){" 
-											+"\n		$('#idVal').val('');"
-											+"\n		$('#dayId').html('&nbsp;');"
-											+"\n		$('#monId').html('&nbsp;');"
-											+"\n		$('#yrId').html('&nbsp;');"
-											+"\n	},"
-											+"\n	\"updateComponent\": function(){";
-    public static final String DATE_SCRIPT_FORMAT = "\n		$(\"#idVal\").val([d][m][y]);"
-											+"\n		$(\"#idVal\").change();"
-											+"\n	}"
-											+"\n};";
-    public static final String DAY = "(this.day.length==1?\"0\"+this.day:this.day)";
-    public static final String MONTH = "(this.month.length==1?\"0\"+this.month:this.month)";
-    public static final String YEAR = "this.year";
+    public static final String DATE_SCRIPT_FUNCTION = "var dateComponent_idVal = qab.dc('dayVal',monthVal,'yearVal','#dayId',"
+    								+ "'#monId','#yrId','#ipId','#dayBtnId','type');";
     	
 	@Override
 	protected void getEndTextToRender(FacesContext context,
@@ -111,7 +57,7 @@ public class BootDateScriptRenderer extends HtmlBasicRenderer {
 	}
 
 	private String getContents(BootDateButton dateComponent, FacesContext context) {
-		String ids= dateComponent.getClientId(context), idJs = ids.replace(":", "_");
+		String idJs=dateComponent.getClientId(context).replace("-", "_");
 	    int dayInt,monthInt,yearInt;
 	    Calendar date;
         date = new GregorianCalendar();
@@ -143,35 +89,19 @@ public class BootDateScriptRenderer extends HtmlBasicRenderer {
 
         yearInt = date.get(Calendar.YEAR);
 		
-		String tail = DATE_SCRIPT_FORMAT.replace("idVal", idJs+"_input");
-		if(dateComponent.formatVal() == DateFormat.DAYMONTH || dateComponent.formatVal() == DateFormat.DAYMONTHYEAR){
-			tail = tail.replace("[d]", DAY);
-		}else{
-			tail = tail.replace("[d]", "");
-		}
-		if(dateComponent.formatVal() != DateFormat.YEAR){
-			tail = tail.replace("[m]", (dateComponent.formatVal()==DateFormat.DAYMONTH||dateComponent.formatVal() == DateFormat.DAYMONTHYEAR?"+\"/\"+":"")+MONTH);
-		}else{
-			tail = tail.replace("[m]", "");
-		}
-		if(dateComponent.formatVal() != DateFormat.DAYMONTH && dateComponent.formatVal() != DateFormat.MONTH){
-			tail = tail.replace("[y]", (dateComponent.formatVal()!=DateFormat.YEAR?"+\"/\"+":"")+YEAR);
-		} else {
-			tail = tail.replace("[y]", "");
-		}
 		
-		String script = DATE_SCRIPT_FUNCTION.replace("idVal", idJs)+
-				DATE_SCRIPT_DAY.replace("dayVal",isNull?"":(dayInt<10?"0"+dayInt:""+dayInt))+
-				DATE_SCRIPT_MONTH.replace("monthVal",isNull?"":(monthInt<10?"0"+monthInt:""+monthInt))+
-				DATE_SCRIPT_YEAR.replace("yearVal", isNull?"":(""+yearInt))+
-				DATE_SCRIPT_BODY.replace("idVal", idJs+"_input")
-					.replace("dayId", idJs+"_day")
-					.replace("dayBtnId", idJs+"_btn_day")
-					.replace("monId", idJs+"_month")
-					.replace("yrId", idJs+"_year")
-					.replace("#off", dateComponent.nullable()?"-1":"0")
-					+tail;
-		return script;
+		return DATE_SCRIPT_FUNCTION
+				.replace("idVal", idJs)
+				.replace("dayVal",isNull?"":(dayInt<10?"0"+dayInt:""+dayInt))
+				.replace("monthVal",isNull?"0":(monthInt+""))
+				.replace("yearVal", isNull?"":(""+yearInt))
+				.replace("ipId", idJs+"_input")
+				.replace("dayId", idJs+"_day")
+				.replace("dayBtnId", idJs+"_btn_day")
+				.replace("monId", idJs+"_month")
+				.replace("yrId", idJs+"_year")
+				.replace("type", dateComponent.formatVal()
+						.getFormatValue());
 	}
 	
 	@Override

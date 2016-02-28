@@ -46,9 +46,10 @@ public class BootServlet extends HttpServlet {
 		bootResources.put("/css/images/loading-error.png",null); 
 		bootResources.put("/css/images/loaded.png",null); 
 		
-		for(String forbiddenExt:getServletConfig().getInitParameter("com.quakearts.bootstrap.FORBIDDEN").split(",")){
+		for(String forbiddenExt:getServletContext().getInitParameter("com.quakearts.bootstrap.FORBIDDEN").split(",")){
 			forbidden.put(forbiddenExt.trim(), "");
 		}
+		
 		String exempt;
 		if((exempt=getServletContext().getInitParameter("com.quakearts.bootstrap.EXEMPT"))!=null){
 			for(String exemptExt:exempt.split(",")){

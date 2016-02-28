@@ -8,7 +8,6 @@ import javax.crypto.NoSuchPaddingException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.jboss.naming.NonSerializableFactory;
 import org.jboss.system.ServiceMBeanSupport;
 
 import com.quakearts.security.cryptography.CryptoResource;
@@ -106,7 +105,7 @@ public class CryptoService extends ServiceMBeanSupport implements CryptoServiceM
 	private void rebind() throws NamingException
     {
         InitialContext rootCtx = CryptoUtils.getInitialContext();
-        NonSerializableFactory.rebind(rootCtx, jndiName, new CryptoProxyImpl(this));
+        rootCtx.bind(jndiName, new CryptoProxyImpl(this));
         log.info("Bound CryptoService to jndi name "+jndiName);
     }
 
@@ -115,7 +114,6 @@ public class CryptoService extends ServiceMBeanSupport implements CryptoServiceM
         try {
             InitialContext rootCtx = CryptoUtils.getInitialContext();
             rootCtx.unbind(jndiName);
-            NonSerializableFactory.unbind(jndiName);
             log.info("Unbound CryptoService");
         } catch(NamingException e) {
             log.error(e.getMessage(),e);

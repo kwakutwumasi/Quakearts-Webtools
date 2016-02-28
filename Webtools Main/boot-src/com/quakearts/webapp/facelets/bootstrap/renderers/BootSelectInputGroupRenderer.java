@@ -72,8 +72,16 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		writer.endElement("span");
 		
 		writer.startElement("div", component);
-		writer.writeAttribute("class", "form-control form-select" +(componentDisabled?" disabled":""), null);
-		writer.writeAttribute("onclick", "qab.ssidd(this)", null);
+		writer.writeAttribute("class", "form-control form-select" +(componentDisabled?" disabled":"")+(autocompleteBehavior!=null 
+				&& autocompleteBehavior.hasSuggestion()?" form-select-focus":""), null);
+
+		if(!componentDisabled){
+			writer.writeAttribute("onclick", "qab.ssidd(this)", null);
+			if(autocompleteBehavior==null){
+				writer.writeAttribute("onmouseenter", "qab.ssime(this,true)", null);
+				writer.writeAttribute("onmouseleave", "qab.ssime(this,false)", null);
+			}
+		}
 		String controlStyle = get("controlStyle", component);
 		writer.writeAttribute("style", "z-index: auto;"+(controlStyle!=null?"; "+controlStyle:""), null);
 		writer.writeAttribute("data-dropdown", id+"_drop", null);
@@ -89,7 +97,10 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 					autocompleteBehavior.getScript(
 							ClientBehaviorContext.createClientBehaviorContext(context, component, "keyup", id, null)),
 					null);
-			writer.writeAttribute("onfocus", "$(this).select();", null);
+			writer.writeAttribute("onfocus", "$(this).select(); qab.ssime(this,true,event);", null);
+			writer.writeAttribute("onblur", "qab.ssime(this,false,event);", null);
+			writer.writeAttribute("onmouseenter", "qab.ssime(this,true,event)", null);
+			writer.writeAttribute("onmouseleave", "qab.ssime(this,false,event)", null);
 			writer.writeAttribute("name", id+"_display", null);
 		}
 		

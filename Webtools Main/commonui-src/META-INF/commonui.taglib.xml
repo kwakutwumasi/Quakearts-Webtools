@@ -3,56 +3,6 @@
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee web-facelettaglibrary_2_0.xsd ">
 	<namespace>http://quakearts.com/2.0/commonui</namespace>
 	<tag>
-		<tag-name>date</tag-name>
-		<component>
-			<component-type>com.quakearts.facelets.input.date</component-type>
-			<renderer-type>com.quakearts.facelets.input.date.renderer</renderer-type>
-			<handler-class>com.quakearts.webapp.facelets.tag.input.DateTagHandler</handler-class>
-		</component>
-		<attribute>
-			<name>format</name>
-		</attribute>
-		<attribute>
-			<name>min</name>
-		</attribute>
-		<attribute>
-			<name>max</name>
-		</attribute>
-		<attribute>
-			<name>nullable</name>
-		</attribute>
-		<attribute>
-			<name>value</name>
-		</attribute>
-		<attribute>
-			<name>dayStyle</name>
-		</attribute>
-		<attribute>
-			<name>monthStyle</name>
-		</attribute>
-		<attribute>
-			<name>yearStyle</name>
-		</attribute>
-		<attribute>
-			<name>binding</name>
-		</attribute>
-		<attribute>
-			<name>validator</name>
-		</attribute>
-		<attribute>
-			<name>validatorMessage</name>
-		</attribute>
-		<attribute>
-			<name>required</name>
-		</attribute>
-		<attribute>
-			<name>requiredMessage</name>
-		</attribute>
-		<attribute>
-			<name>immediate</name>
-		</attribute>
-	</tag>
-	<tag>
 		<tag-name>convertTimeStamp</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.input.converter.TimeStampTagHandler</handler-class>
 		<attribute>

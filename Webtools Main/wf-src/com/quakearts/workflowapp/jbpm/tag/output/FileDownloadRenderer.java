@@ -7,8 +7,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
+import com.quakearts.webapp.facelets.bootstrap.renderkit.html_basic.HtmlBasicRenderer;
 import com.quakearts.workflowapp.jbpm.util.process.ProcessFile;
-import com.sun.faces.renderkit.html_basic.HtmlBasicRenderer;
 
 public class FileDownloadRenderer extends HtmlBasicRenderer {
 

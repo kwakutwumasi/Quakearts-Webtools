@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <facelet-taglib version="2.0" xmlns="http://java.sun.com/xml/ns/javaee"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee web-facelettaglibrary_2_0.xsd ">
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facelettaglibrary_2_0.xsd">
 	<namespace>http://quakearts.com/2.0/boot</namespace>
 	<tag>
+		<description><![CDATA[
+			A tag for rendering an AJAX loader component.
+
+			Decode Behavior: None
+
+			Encode Behavior: render a <div> element with class of
+			]]>
+		</description>
+		<display-name>Ajax Loader</display-name>
 		<tag-name>ajaxLoader</tag-name>
 		<component>
 			<component-type>com.quakearts.bootstrap.ajaxloader</component-type>
@@ -11,7 +21,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http:/
 		</component>
 		<attribute>
 			<name>mainloaderimage</name>
-			<required>true</required>
+			<required>true</required>	
 		</attribute>
 		<attribute>
 			<name>overlayloaderimage</name>

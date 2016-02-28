@@ -17,19 +17,17 @@
 
 .day-container {
 	padding: 8px 0px 8px 12px;
-	min-width: 300px;
-	max-width: 300px;
+	width: 300px;
 }
 
 .date-container {
 	padding: 8px 0px 8px 12px;
-	min-width: 150px;
-	max-width: 150px;
+	width: 150px;
 }
 
-.day {
+.day, .day-header {
 	width: 35px;
-	height: 35px;
+	height: 34px;
 	padding: 6px 0px 0px 0px;
 	display: inline-block;
 	text-align: center;
@@ -38,19 +36,13 @@
 	cursor: pointer;
 }
 
-.day:hover {
-	text-decoration: none;
-	background-color: #31708F;
-	color: white;
-	border-top-left-radius: 3px;
-	border-top-right-radius: 3px;
-	border-bottom-right-radius: 3px;
-	border-bottom-left-radius: 3px;
+.day-header {
+	cursor: default;
 }
 
 .other-date {
 	width: 60px;
-	height: 35px;
+	height: 34px;
 	padding: 6px 0px 0px 0px;
 	display: inline-block;
 	text-align: center;
@@ -59,7 +51,7 @@
 	cursor: pointer;
 }
 
-.other-date:hover {
+.other-date:hover, .day:hover {
 	text-decoration: none;
 	background-color: #31708F;
 	color: white;
@@ -110,7 +102,7 @@
 
 .auto-complete {
 	border: none;
-	min-width: 95%;
+	min-width: 100%;
 	background-color: transparent;
 }
 
@@ -232,4 +224,11 @@
 	position: absolute;
 	right: 10px;
 	top: 30%;
+}
+
+.form-select-focus {
+  border-color: #66afe9;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+          box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
 }

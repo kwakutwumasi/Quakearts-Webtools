@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SessionImplementor;
 
 import com.quakearts.security.cryptography.IllegalCryptoActionException;
 
@@ -30,9 +31,8 @@ public class EncryptedBytesType extends MutableUserType
 	}
 
 	@Override
-	public Object nullSafeGet(ResultSet rs, String[] names, Object owner)
-			throws HibernateException, SQLException {
-		
+	public Object nullSafeGet(ResultSet rs, String[] names, SessionImplementor session, Object owner)
+			throws HibernateException, SQLException {		
 		byte[] encrypted = rs.getBytes(names[0]);
 		
 		if(rs.wasNull()){
@@ -48,9 +48,8 @@ public class EncryptedBytesType extends MutableUserType
 	}
 
 	@Override
-	public void nullSafeSet(PreparedStatement ps, Object value, int index)
-			throws HibernateException, SQLException {
-		
+	public void nullSafeSet(PreparedStatement ps, Object value, int index, SessionImplementor session)
+			throws HibernateException, SQLException {	
 		if(value == null){
 			ps.setNull(index, Types.VARCHAR);
 		}else {

@@ -1,11 +1,11 @@
 package com.quakearts.webapp.logging.monitor.impl;
 
+import java.lang.management.ManagementFactory;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.management.JMX;
 import javax.management.ObjectName;
-import org.jboss.mx.util.MBeanServerLocator;
 import org.jboss.system.ServiceMBean;
 
 public class JbossSystemMonitor extends GenericMonitor{
@@ -19,7 +19,7 @@ public class JbossSystemMonitor extends GenericMonitor{
 
 		if(service==null)
 			try {
-				service = JMX.newMBeanProxy(MBeanServerLocator.locateJBoss(), new ObjectName(name), ServiceMBean.class, false);
+				service = JMX.newMBeanProxy(ManagementFactory.getPlatformMBeanServer(), new ObjectName(name), ServiceMBean.class, false);
 				cache.put(name, service);
 			} catch (Exception e) {
 				System.err.println("["+this.getClass().getName()+"] Exception of type " + e.getClass().getName()
