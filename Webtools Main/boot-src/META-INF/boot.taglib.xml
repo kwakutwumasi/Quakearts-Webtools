@@ -5,14 +5,16 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
 	<namespace>http://quakearts.com/2.0/boot</namespace>
 	<tag>
 		<description><![CDATA[
-			A tag for rendering an AJAX loader component.
+A tag for rendering an AJAX loader components.
 
-			Decode Behavior: None
+Decode Behavior: None
 
-			Encode Behavior: render a <div> element with class of
-			]]>
+Encode Behavior: render a &gt;div&lt; element collapsed containing image to render on full page.
+Creates javascript methods for calling on jsf.ajax events;
+
+There must be only one of these components per page. Multiple components will result in unpredicatable behavior 
+]]>
 		</description>
-		<display-name>Ajax Loader</display-name>
 		<tag-name>ajaxLoader</tag-name>
 		<component>
 			<component-type>com.quakearts.bootstrap.ajaxloader</component-type>
@@ -20,46 +22,59 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootAjaxLoaderHandler</handler-class>
 		</component>
 		<attribute>
+			<description>Image for full page loader</description>
 			<name>mainloaderimage</name>
-			<required>true</required>	
+			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>Image for overlay on a components. The parent component to be overlaid should have the class 'ajax-container'.</description>
 			<name>overlayloaderimage</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>Image for rendering a mini image at the right of a component.</description>
 			<name>miniloaderimage</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>HTML style to render on the &gt;img&lt; tag of the mainloaderimage.</description>
 			<name>mainimagestyle</name>
 		</attribute>
 		<attribute>
+			<description>HTML style to render on the &gt;img&lt; tag of the overlayloaderimage.</description>
 			<name>miniimagestyle</name>
 		</attribute>
 		<attribute>
+			<description>HTML style to render on the &gt;img&lt; tag of the miniloaderimage.</description>
 			<name>overlayimagestyle</name>
 		</attribute>
 		<attribute>
+			<description>Start timeout for loader image animation</description>
 			<name>startTimeout</name>
 		</attribute>
 		<attribute>
+			<description>End timeout for loader image animation</description>
 			<name>endTimeout</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>ValueExpression or attribute for controlling component rendering</description>
 			<name>rendered</name>
-		</attribute>
-		<attribute>
-			<name>binding</name>
+			<type>java.lang.Boolean</type>
 		</attribute>
 	</tag>
 	<tag>
+		<description><![CDATA[
+A tag for rendering an Bootstrap Breadcrumb component.
+]]>
+		</description>
 		<tag-name>breadCrumb</tag-name>
 		<component>
 			<component-type>com.quakearts.bootstrap.breadcrumbs</component-type>
@@ -67,6 +82,7 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
