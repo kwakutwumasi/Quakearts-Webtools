@@ -8,6 +8,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -125,6 +127,11 @@ public abstract class BaseRESTClientBean extends BaseBean {
 	
 	protected RESTResponse sendRequest(String file, String requestValue, String method, String contentType) 
 			throws MalformedURLException, IOException {
+		return sendRequest(file, requestValue, method, contentType, null);
+	}
+		
+	protected RESTResponse sendRequest(String file, String requestValue, String method, String contentType,
+			Map<String, String> additionalHeaders) throws MalformedURLException, IOException {
 		HttpURLConnection con;
 		
 		if(secured){
@@ -137,7 +144,7 @@ public abstract class BaseRESTClientBean extends BaseBean {
 				}
 			});
 			con = scon;
-		} else{
+		} else {
 			con = (HttpURLConnection) new URL("http", host, port, file).openConnection();
 		}		
 		
@@ -150,6 +157,12 @@ public abstract class BaseRESTClientBean extends BaseBean {
 		con.addRequestProperty("Accept-Language", "en-US");
 		if(cookie!=null)
 			con.addRequestProperty("Cookie", cookie);
+
+		if(additionalHeaders!=null){
+			for(Entry<String, String> entry:additionalHeaders.entrySet()){
+				con.addRequestProperty(entry.getKey(), entry.getValue());
+			}
+		}
 		
 		con.setRequestMethod(method);
 		con.setDoInput(true);
