@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Set;
 import javax.naming.InitialContext;
@@ -230,6 +231,7 @@ public class DatabaseLoginModule implements LoginModule {
 							sharedpass);
 				}
 			}
+			
 			if (!load_profile_only) {
 				if (username == null || password == null)
 					throw new LoginException("Login/Password is null.");
@@ -377,6 +379,12 @@ public class DatabaseLoginModule implements LoginModule {
 							buffer.append("OtherPrincipal Attribute: default - Name:"
 									+ role + "\n\t\t");
 					}
+			}
+
+			Enumeration<? extends Principal> members = rolesgrp.members();
+			while (members.hasMoreElements()) {
+				Principal type = members.nextElement();
+				principalset.add(type);				
 			}
 
 			if (log.isLoggable(Level.FINE))

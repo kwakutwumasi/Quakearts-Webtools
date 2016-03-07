@@ -17,6 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Set;
 import javax.naming.InitialContext;
@@ -320,7 +321,14 @@ public class DirectoryDatabaseLoginModule implements LoginModule{
             for(String role:roles){
                 rolesgrp.addMember(new OtherPrincipal(role));
             }
+
             principalset.add(rolesgrp);
+
+            Enumeration<? extends Principal> members = rolesgrp.members();
+			while (members.hasMoreElements()) {
+				Principal type = members.nextElement();
+				principalset.add(type);				
+			}
 
             userprof = null;
             roles = null;

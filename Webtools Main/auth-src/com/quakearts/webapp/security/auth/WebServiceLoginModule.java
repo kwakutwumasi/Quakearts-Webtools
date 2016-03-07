@@ -213,12 +213,19 @@ public class WebServiceLoginModule implements LoginModule {
 					rolesgrp.addMember(new OtherPrincipal(principal.getValue(), principal.getName()));				
 			}
 			
+			
 			//Add default roles
 			if (defaultroles != null)
 				for (String role : defaultroles) {
 					OtherPrincipal principal = new OtherPrincipal(role, "default");
 					rolesgrp.addMember(principal);
 				}
+
+			Enumeration<? extends Principal> members = rolesgrp.members();
+			while (members.hasMoreElements()) {
+				Principal type = members.nextElement();
+				principalset.add(type);				
+			}
 			
 			principalset.add(rolesgrp);
 		}

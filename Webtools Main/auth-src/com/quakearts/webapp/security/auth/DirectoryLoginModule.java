@@ -10,6 +10,7 @@ import com.novell.ldap.*;
 import com.quakearts.webapp.security.auth.util.AttemptChecker;
 
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Set;
 import javax.security.auth.callback.Callback;
@@ -346,6 +347,12 @@ public class DirectoryLoginModule implements LoginModule{
             for(int i=0;i<defaultroles.length;i++){
                 rolesgrp.addMember(new OtherPrincipal(defaultroles[i]));
             }
+            
+			Enumeration<? extends Principal> members = rolesgrp.members();
+			while (members.hasMoreElements()) {
+				Principal type = members.nextElement();
+				principalset.add(type);				
+			}
             
             userprof = null;
             return true;           

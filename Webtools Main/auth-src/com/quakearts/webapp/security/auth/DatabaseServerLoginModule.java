@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Set;
 import javax.naming.InitialContext;
@@ -299,24 +300,27 @@ public class DatabaseServerLoginModule implements LoginModule {
 
 			String name;
 			OtherPrincipal principal;
-				for (String key : userprof.keySet()) {
-					name = userprof.get(key);
-					principal = new OtherPrincipal(name != null ? name : "",
-							key);
+			for (String key : userprof.keySet()) {
+				name = userprof.get(key);
+				principal = new OtherPrincipal(name != null ? name : "", key);
+				rolesgrp.addMember(principal);
+				if (log.isLoggable(Level.FINE))
+					buffer.append("OtherPrincipal Attribute: " + key + " - Name:" + name + "\n\t\t");
+			}
+
+			if (defaultroles != null)
+				for (String role : defaultroles) {
+					principal = new OtherPrincipal(role, "default");
 					rolesgrp.addMember(principal);
 					if (log.isLoggable(Level.FINE))
-						buffer.append("OtherPrincipal Attribute: " + key
-								+ " - Name:" + name + "\n\t\t");
+						buffer.append("OtherPrincipal Attribute: default - Name:" + role + "\n\t\t");
 				}
 
-				if (defaultroles != null)
-					for (String role : defaultroles) {
-						principal = new OtherPrincipal(role, "default");
-						rolesgrp.addMember(principal);
-						if (log.isLoggable(Level.FINE))
-							buffer.append("OtherPrincipal Attribute: default - Name:"
-									+ role + "\n\t\t");
-					}
+			Enumeration<? extends Principal> members = rolesgrp.members();
+			while (members.hasMoreElements()) {
+				Principal type = members.nextElement();
+				principalset.add(type);				
+			}
 
 			principalset.add(rolesgrp);
 			if (log.isLoggable(Level.FINE))

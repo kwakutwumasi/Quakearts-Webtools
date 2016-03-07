@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Set;
 import javax.naming.InitialContext;
@@ -215,7 +216,13 @@ public class LoadProfileLoginModule implements LoginModule{
 		                	buffer.append("OtherPrincipal Attribute: default - Name:"+role+"\n\t\t");
 		            }
             }
-                        
+
+			Enumeration<? extends Principal> members = rolesgrp.members();
+			while (members.hasMoreElements()) {
+				Principal type = members.nextElement();
+				principalset.add(type);				
+			}
+
             principalset.add(rolesgrp);
             if(log.isLoggable(Level.FINE))
             	log.fine("Added \n\t\t" +buffer+"\n\t\tto rolesgrp "+rolesgrp.getName());

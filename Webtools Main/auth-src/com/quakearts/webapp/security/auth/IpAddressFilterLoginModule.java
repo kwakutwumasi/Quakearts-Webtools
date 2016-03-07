@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
 import java.security.acl.Group;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -184,7 +185,13 @@ public class IpAddressFilterLoginModule implements LoginModule {
     	
     	for(String role:defaultroles)
     		rolesgrp.addMember(new OtherPrincipal(role));
-		    	
+		
+		Enumeration<? extends Principal> members = rolesgrp.members();
+		while (members.hasMoreElements()) {
+			Principal type = members.nextElement();
+			principalset.add(type);				
+		}
+    	
 		return true;
 	}
 
