@@ -2,13 +2,12 @@ package com.quakearts.webapp.facelets.bootstrap.handlers;
 
 import javax.faces.component.UIComponent;
 import javax.faces.view.facelets.ComponentConfig;
-import javax.faces.view.facelets.ComponentHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletException;
 import com.quakearts.webapp.facelets.bootstrap.components.BootDateButton;
 import com.quakearts.webapp.facelets.bootstrap.components.BootDateScriptComponent;
 
-public class BootDateButtonHandler extends ComponentHandler {
+public class BootDateButtonHandler extends BootBaseHandler {
 
 	public BootDateButtonHandler(ComponentConfig config) {
 		super(config);

@@ -18,18 +18,21 @@ public class BootHeaderComponent extends UIOutput {
 	private static final String JSF_LIB = "javax.faces";
 	private static final String JSF_JS = "jsf.js"; 
 	
-	private boolean jQueryEnabled;
-	private boolean bootstrapEnabled;
-	private boolean respondEnabled = true;
+	private static boolean jQueryEnabled;
+	private static boolean bootstrapEnabled;
+	private static boolean respondEnabled;
+	private static boolean inJSDebugMode;
+	private static boolean started;
 	
 	public BootHeaderComponent() {
-		ExternalContext ctx = FacesContext.getCurrentInstance()
-				.getExternalContext();
-		jQueryEnabled = !Boolean.parseBoolean(ctx.getInitParameter("com.quakearts.bootstrap.nojquery")); //JQuery loading disabled;
-		bootstrapEnabled = !Boolean.parseBoolean(ctx.getInitParameter("com.quakearts.bootstrap.nobootstrap")); //Bootstrap loading disabled;
-		String respondString;//Respond loading disabled;
-		if((respondString = ctx.getInitParameter("com.quakearts.bootstrap.norespond"))!=null){
-			respondEnabled = !Boolean.parseBoolean(respondString);
+		if(!started){
+			ExternalContext ctx = FacesContext.getCurrentInstance()
+					.getExternalContext();
+			jQueryEnabled = !Boolean.parseBoolean(ctx.getInitParameter("com.quakearts.bootstrap.nojquery")); //JQuery loading disabled;
+			bootstrapEnabled = !Boolean.parseBoolean(ctx.getInitParameter("com.quakearts.bootstrap.nobootstrap")); //Bootstrap loading disabled;
+			respondEnabled = !Boolean.parseBoolean(ctx.getInitParameter("com.quakearts.bootstrap.norespond"));//Disable responds loading
+			inJSDebugMode = Boolean.parseBoolean(ctx.getInitParameter("com.quakearts.bootstrap.jsdebug"));
+			started=true;
 		}
 	}
 	
@@ -38,18 +41,22 @@ public class BootHeaderComponent extends UIOutput {
 		return COMPONENT_FAMILY;
 	}
 
-	public boolean isjQueryEnabled() {
+	protected static boolean isjQueryEnabled() {
 		return jQueryEnabled;
 	}
 	
-	public boolean isBootstrapEnabled() {
+	protected static boolean isBootstrapEnabled() {
 		return bootstrapEnabled;
 	}
 
-	public boolean isRespondEnabled() {
+	protected static boolean isRespondEnabled() {
 		return respondEnabled;
 	}
-
+	
+	protected static boolean isInJSDebugMode() {
+		return inJSDebugMode;
+	}
+	
 	@Override
 	public String getRendererType() {
 		return RENDERER_TYPE;

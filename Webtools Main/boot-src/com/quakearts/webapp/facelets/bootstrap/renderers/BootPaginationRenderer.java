@@ -11,11 +11,16 @@ import javax.faces.context.ResponseWriter;
 
 import com.quakearts.webapp.facelets.bootstrap.beans.PaginationBean;
 import com.quakearts.webapp.facelets.bootstrap.components.BootPagination;
+import com.quakearts.webapp.facelets.bootstrap.renderkit.Attribute;
+import com.quakearts.webapp.facelets.bootstrap.renderkit.AttributeManager;
+import com.quakearts.webapp.facelets.bootstrap.renderkit.AttributeManager.Key;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.html_basic.HtmlBasicRenderer;
 
 import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.*;
 
 public class BootPaginationRenderer extends HtmlBasicRenderer {
+	
+	private static final Attribute[] ATTRIBUTES = AttributeManager.getAttributes(Key.PAGINATION);
 	
 	@Override
 	public void decode(FacesContext context, UIComponent component) {
@@ -167,12 +172,14 @@ public class BootPaginationRenderer extends HtmlBasicRenderer {
 				writer.startElement("li", component);
 				if(i==currentPage)
 					writer.writeAttribute("class","active",null);
-				writer.writeAttribute("onclick","qab.gp(this)",null);
+				else {
+					writer.writeAttribute("onclick","qab.gp(this)",null);
+					writer.writeAttribute("data-page-input", id+"_input", null);
+					writer.writeAttribute("data-page-value", i, null);
+				}
 				
 		    	writer.write("\n");
-				writer.startElement("a", component);			
-				writer.writeAttribute("data-page-input", id+"_input", null);
-				writer.writeAttribute("data-page-value", i, null);
+				writer.startElement("a", component);
 				writer.writeText(""+i, null);
 				writer.endElement("a");
 		    	writer.write("\n");
@@ -225,6 +232,7 @@ public class BootPaginationRenderer extends HtmlBasicRenderer {
 				+tableId+(render!=null?" "+render:"")+"'"
 				+(onevent!=null&&onevent.length()>0? ",onevent: "+onevent:"")
 				+(onerror!=null&&onerror.length()>0?",onerror: "+onerror:"")+"});", null);
+		renderPassThruAttributes(context, writer, component, ATTRIBUTES);
 		writer.endElement("input");
     	writer.write("\n");
 		writer.endElement("div");

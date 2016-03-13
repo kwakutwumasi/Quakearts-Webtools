@@ -39,6 +39,7 @@ public class BootServlet extends HttpServlet {
 		bootResources.put("/js/bootstrap.js",null);
 		bootResources.put("/js/bootstrap.min.js",null);
 		bootResources.put("/js/qaboot.min.js",null);
+		bootResources.put("/js/qaboot.js",null);
 		bootResources.put("/js/jquery-1.11.2.min.js",null);
 		bootResources.put("/js/npm.js",null); 
 		bootResources.put("/js/respond.min.js",null); 

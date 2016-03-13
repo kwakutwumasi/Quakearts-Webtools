@@ -80,7 +80,7 @@ public class BootInputRenderer extends HtmlBasicInputRenderer {
         renderPassThruAttributes(context, writer, component, INPUT_ATTRIBUTES, getNonOnChangeBehaviors(component));
         renderXHTMLStyleBooleanAttributes(writer, component);
 
-        renderOnchange(context, component, false);
+        renderOnchange(context, component);
         writer.endElement("input");
 		writer.write("\n");
         writer.endElement("div");

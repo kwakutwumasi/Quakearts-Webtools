@@ -92,7 +92,7 @@ public class BootCommandButtonRenderer extends HtmlBasicRenderer {
 			writer.writeAttribute("class", "btn btn-"+displayType, "styleClass");			
 		}
 		
-		renderOnclick(context, component, getBehaviorParameters(component), null, false);
+		renderOnclick(context, component, getBehaviorParameters(component));
         writer.write("\n");
         
         String imageSrc = command.get("image");

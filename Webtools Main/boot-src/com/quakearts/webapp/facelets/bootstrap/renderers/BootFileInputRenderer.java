@@ -14,6 +14,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.render.Renderer;
 
 import com.quakearts.webapp.facelets.bootstrap.components.BootFileInput;
+import com.quakearts.webapp.facelets.bootstrap.renderkit.Attribute;
 import com.quakearts.webapp.facelets.bootstrap.servlet.BootServlet;
 import com.quakearts.webapp.facelets.bootstrap.utils.BootFileUpload;
 import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.*;
@@ -123,6 +124,7 @@ public class BootFileInputRenderer extends Renderer {
 		writer.writeAttribute("id", id, "clientId");
         if(style!=null)
         	writer.writeAttribute("stlye", style, null);    
+        renderPassThruAttributes(context, writer, component, new Attribute[0]);
 		writer.write("\n");    	
 		writer.startElement("div", component);
 		writer.writeAttribute("id", "div_"+id_js, null);

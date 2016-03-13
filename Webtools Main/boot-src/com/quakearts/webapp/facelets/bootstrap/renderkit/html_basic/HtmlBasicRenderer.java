@@ -407,34 +407,31 @@ public abstract class HtmlBasicRenderer extends Renderer {
 
     }
 
-    protected Collection<ClientBehaviorContext.Parameter> getBehaviorParameters(
-        UIComponent command) {
+	protected Collection<ClientBehaviorContext.Parameter> getBehaviorParameters(UIComponent command) {
 
-        ArrayList<ClientBehaviorContext.Parameter> params = null;
-        int childCount = command.getChildCount();
+		ArrayList<ClientBehaviorContext.Parameter> params = null;
+		int childCount = command.getChildCount();
+		if (childCount > 0) {
 
-        if (childCount > 0) {
+			for (UIComponent kid : command.getChildren()) {
+				if (kid instanceof UIParameter) {
+					UIParameter uiParam = (UIParameter) kid;
+					String name = uiParam.getName();
+					Object value = uiParam.getValue();
 
-            for (UIComponent kid : command.getChildren()) {
-                if (kid instanceof UIParameter) {
-                    UIParameter uiParam = (UIParameter) kid;
-                    String name = uiParam.getName();
-                    Object value = uiParam.getValue();
+					if ((name != null) && (name.length() > 0)) {
 
-                    if ((name != null) && (name.length() > 0)) {
+						if (params == null) {
+							params = new ArrayList<ClientBehaviorContext.Parameter>(childCount);
+						}
 
-                        if (params == null) {
-                            params = new ArrayList<ClientBehaviorContext.Parameter>(childCount);
-                        }
-
-                        params.add(new ClientBehaviorContext.Parameter(name, value));
-                    }
-                }
-            }
-        }
-
-        return (params == null) ? Collections.<ClientBehaviorContext.Parameter>emptyList() : params;
-    }
+						params.add(new ClientBehaviorContext.Parameter(name, value));
+					}
+				}
+			}
+		}
+		return (params == null) ? Collections.<ClientBehaviorContext.Parameter> emptyList() : params;
+	}
 
     protected Object getValue(UIComponent component) {
 

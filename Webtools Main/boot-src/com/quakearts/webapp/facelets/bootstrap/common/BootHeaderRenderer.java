@@ -4,8 +4,8 @@ import java.io.IOException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
-
 import com.quakearts.webapp.facelets.bootstrap.renderkit.html_basic.HtmlBasicRenderer;
+import static com.quakearts.webapp.facelets.bootstrap.common.BootHeaderComponent.*;
 
 public class BootHeaderRenderer extends HtmlBasicRenderer {
 	
@@ -20,6 +20,8 @@ public class BootHeaderRenderer extends HtmlBasicRenderer {
 	public static String HEADERJQUERY = "<script src=\"@root/boot-services/js/jquery-1.11.2.min.js\" type=\"text/javascript\"></script>\r\n";
 	public static String HEADERJS = "<script src=\"@root/boot-services/js/bootstrap.min.js\" type=\"text/javascript\"></script>\r\n"+
 									"<script src=\"@root/boot-services/js/qaboot.min.js\" type=\"text/javascript\"></script>\r\n";
+	public static String HEADERJSDEBUG = "<script src=\"@root/boot-services/js/bootstrap.js\" type=\"text/javascript\"></script>\r\n"+
+			"<script src=\"@root/boot-services/js/qaboot.js\" type=\"text/javascript\"></script>\r\n";
 	
 	@Override
 	public void encodeBegin(FacesContext context, UIComponent component)
@@ -32,17 +34,19 @@ public class BootHeaderRenderer extends HtmlBasicRenderer {
 			if(topComponent !=null)
 				topComponent.encodeAll(context);
 			
-			BootHeaderComponent bootComponent = (BootHeaderComponent) component;
-			if(bootComponent.isBootstrapEnabled()){
+			if(isBootstrapEnabled()){
 				String contextPath = context.getExternalContext().getRequestContextPath();
 				ResponseWriter writer = context.getResponseWriter();
 				writer.write(HEADERCSS.replaceAll("@root", contextPath));
 				writer.write(METAINFO);
-				if(bootComponent.isRespondEnabled())
+				if(isRespondEnabled())
 					writer.write(HEADERRESPOND.replaceAll("@root", contextPath));
-				if(bootComponent.isjQueryEnabled())
+				if(isjQueryEnabled())
 					writer.write(HEADERJQUERY.replaceAll("@root", contextPath));
-				writer.write(HEADERJS.replaceAll("@root", contextPath));
+				if(isInJSDebugMode())
+					writer.write(HEADERJSDEBUG.replaceAll("@root", contextPath));
+				else
+					writer.write(HEADERJS.replaceAll("@root", contextPath));
 			}
 			context.getAttributes().put(BOOTSTRAP_HEADER,Boolean.TRUE);
 			

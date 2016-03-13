@@ -66,7 +66,6 @@ public class AttributeManager {
             ,attr("onmouseout","mouseout")
             ,attr("onmouseover","mouseover")
             ,attr("onmouseup","mouseup")
-            ,attr("onselect","select")
             ,attr("onmouseenter","mouseenter")
             ,attr("onmouseleave","mouseleave")
             ,attr("onmousewheel","mousewheel")
@@ -314,7 +313,25 @@ public class AttributeManager {
              ,attr("onmousewheel","mousewheel")
              ,attr("style")
              ,attr("title")
-        	)).fix();
+          )).add("DateButton", ar(
+             attr("onmousedown","mousedown")
+             ,attr("onmousemove","mousemove")
+             ,attr("onmouseout","mouseout")
+             ,attr("onmouseover","mouseover")
+             ,attr("onmouseup","mouseup")
+             ,attr("onmousewheel","mousewheel")
+             ,attr("onmouseenter","mouseenter")
+             ,attr("onmouseleave","mouseleave")
+          )).add("Pagination", ar(
+             attr("onmousedown","mousedown")
+             ,attr("onmousemove","mousemove")
+             ,attr("onmouseout","mouseout")
+             ,attr("onmouseover","mouseover")
+             ,attr("onmouseup","mouseup")
+             ,attr("onmousewheel","mousewheel")
+             ,attr("onmouseenter","mouseenter")
+             ,attr("onmouseleave","mouseleave")
+          )).fix();
     public enum Key {
         COMMANDBUTTON("CommandButton"),
         FORMFORM("FormForm"),
@@ -329,7 +346,9 @@ public class AttributeManager {
         BOOTPANEL("BootPanel"),
         SELECTINPUT("SelectInput"),
         RESPONSIVEIMAGE("ResponsiveImage"),
-        SIDEMENU("SideMenu");
+        SIDEMENU("SideMenu"),
+        DATEBUTTON("DateButton"),
+        PAGINATION("Pagination");
 
         private String key;
         Key(String key) {

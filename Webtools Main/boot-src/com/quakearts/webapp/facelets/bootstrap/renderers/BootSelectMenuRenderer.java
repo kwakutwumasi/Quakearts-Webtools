@@ -234,7 +234,7 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 		writer.startElement("div", component);
 		writer.writeAttribute("id", id, "clientId");
 		if(!componentDisabled)
-			renderOnchange(context, component, false);
+			renderOnchange(context, component);
 
 		if(mainStyle!=null)
 			writer.writeAttribute("style", mainStyle, null);

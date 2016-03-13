@@ -11,7 +11,6 @@ public class BootFileInputHandler extends BootBaseHandler {
 		super(config);
 	}
 
-	
 	@Override
 	public void onComponentCreated(FaceletContext ctx, UIComponent c,
 			UIComponent parent) {

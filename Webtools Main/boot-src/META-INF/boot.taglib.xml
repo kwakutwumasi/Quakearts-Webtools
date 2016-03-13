@@ -13,8 +13,7 @@ Encode Behavior: render a &gt;div&lt; element collapsed containing image to rend
 Creates javascript methods for calling on jsf.ajax events;
 
 There must be only one of these components per page. Multiple components will result in unpredicatable behavior 
-]]>
-		</description>
+		]]></description>
 		<tag-name>ajaxLoader</tag-name>
 		<component>
 			<component-type>com.quakearts.bootstrap.ajaxloader</component-type>
@@ -72,9 +71,16 @@ There must be only one of these components per page. Multiple components will re
 	</tag>
 	<tag>
 		<description><![CDATA[
-A tag for rendering an Bootstrap Breadcrumb component.
-]]>
-		</description>
+A tag for rendering a Bootstrap Breadcrumb component. This tag nests breadCrumbItems, stacked in a tree structure to indicate navigation routes
+for the application.
+<br />
+Decode behviour: none
+<br />
+Encode behavior: This compoenent handles the rendering of its child components. The component iterates over the child components, testing each
+child component to determine which ones to render. The test can be one of two things: if the child component has a value, that value is 
+compared to this components value. If it is true, it and all parent components (up to this component) are added to a stack to be evaluated.
+The second test evaluates a ValueExpression to determine if it should be rendred. If true the same process applies.
+		]]></description>
 		<tag-name>breadCrumb</tag-name>
 		<component>
 			<component-type>com.quakearts.bootstrap.breadcrumbs</component-type>
@@ -86,52 +92,77 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>The HTML click event handler. This attribute can hold ValueExpressions</description>
 			<name>onclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML double click event handler. This attribute can hold ValueExpressions</description>
 			<name>ondblclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse down event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousedown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousemove</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse out event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseout</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse up event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseup</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse wheel event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousewheel</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse enter event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseenter</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse enter event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "title" element of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description><![CDATA[
+A tag for rendering a Bootstrap Breadcrumb component. This component can be nested within a breadCrumb tag (the root of the tree)
+or within another breadCrumbItem. The value attribute of this component is compared to the parent component's value to determine
+activation. Alternatively the activate attribute is evaluated to determine activation. This enables two patterns for bread crumb
+creation: as a tree, representing the navigational paths the app can take, or as a stack that can be activated arbitraily.
+
+Decode behavior: None
+
+Encode behavior: Renders any UIOutput child component.
+		]]></description>
 		<tag-name>breadCrumbItem</tag-name>
 		<component>
 			<component-type>com.quakearts.bootstrap.breadcrumbitem</component-type>
@@ -139,70 +170,99 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the breadcrumbitem will be rendered as active</description>
 			<name>activate</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression for rendering the component's label</description>
 			<name>label</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that holds the UIOutput or UIInput component's value</description>
 			<name>value</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Converter implementation for converting the UIInput or UIOutput component's value</description>
 			<name>converter</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a conversion error</description>
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
+			<description>The HTML click event handler. This attribute can hold ValueExpressions</description>
 			<name>onclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML double click event handler. This attribute can hold ValueExpressions</description>
 			<name>ondblclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse down event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousedown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousemove</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse out event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseout</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse up event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseup</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse wheel event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousewheel</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse enter event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseenter</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse leave event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "title" element of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description><![CDATA[
+Bootstrap Button Group tag renderer. This tag must only have button components as children. Any other component will lead to
+unpredictable behavior
+
+Decode behavior: None
+
+Encode behavior: Renders a &lt;div&gt; element with the button group classes. Renders child components within the div
+		]]></description>
 		<tag-name>buttonGroup</tag-name>
 		<component>
 			<component-type>com.quakearts.bootstrap.btngroup</component-type>
@@ -210,25 +270,39 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression for rendering the component's label</description>
 			<name>label</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description><![CDATA[
+Bootstrap Button Toolbar tag renderer. This tag must only have button components as children. Any other component will lead to
+unpredictable behavior
+
+Decode behavior: None
+
+Encode behavior: Renders a &lt;div&gt; element with the button group classes. Renders child components within the div
+		]]></description>
 		<tag-name>buttonToolbar</tag-name>
 		<component>
 			<component-type>com.quakearts.bootstrap.btntoolbar</component-type>
@@ -236,25 +310,40 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression for rendering the component's label</description>
 			<name>label</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description><![CDATA[
+Bootstrap Input Group with a checkbox in the label portion. This component can nest inputText tags and provide a check box to activate or
+deactivate the component. It can also render a label for the checkbox in the "form-control" classed element.
+
+Decode behavior: None
+
+Encode behavior: Renders a Bootstrap input group element with a checkbox at the label (input-group-addon) portion. Renders an inputText 
+child component if present
+		]]></description>
 		<tag-name>checkbox</tag-name>
 		<component>
 			<component-type>com.quakearts.bootstrap.checkbox</component-type>
@@ -262,100 +351,135 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that holds the UIOutput or UIInput component's value</description>
 			<name>value</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Converter implementation for converting the UIInput or UIOutput component's value</description>
 			<name>converter</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a conversion error</description>
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Validator implementation for validating the UIInput component's value</description>
 			<name>validator</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a validator error</description>
 			<name>validatorMessage</name>
 		</attribute>
 		<attribute>
+			<description>A MethodExpression executed when the UIInput component's value changes</description>
 			<name>valueChangeListener</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the JSf lifecycle will end at the process validations stage and return an error to the view if value of the component is null</description>
 			<name>required</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed when the component's value is required and fails validation</description>
 			<name>requiredMessage</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression for rendering the component's label</description>
 			<name>label</name>
 		</attribute>
 		<attribute>
+			<description>The HTML blur event handler. This attribute can hold ValueExpressions</description>
 			<name>onblur</name>
 		</attribute>
 		<attribute>
+			<description>The HTML change event handler. This attribute can hold ValueExpressions</description>
 			<name>onchange</name>
 		</attribute>
 		<attribute>
+			<description>The HTML focus event handler. This attribute can hold ValueExpressions</description>
 			<name>onfocus</name>
 		</attribute>
 		<attribute>
+			<description>The HTML click event handler. This attribute can hold ValueExpressions</description>
 			<name>onclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML double click event handler. This attribute can hold ValueExpressions</description>
 			<name>ondblclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key down event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeydown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key press event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeypress</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key up event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeyup</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse down event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousedown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousemove</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse out event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseout</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse wheel event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousewheel</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse enter event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseenter</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse leave event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "title" element of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
 			<name>tabindex</name>
 		</attribute>
 		<attribute>
-			<name>disabled</name>
+			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
+			<name>required</name>
+		</attribute>
+		<attribute>
+			<description>The target for the overlay during AJAX calls. Used by the onevent handler of f:ajax to find the right target to overlay</description>
+			<name>data-overlay-target</name>
 		</attribute>
 	</tag>
 	<tag>
@@ -366,12 +490,15 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootColumnHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
@@ -387,9 +514,11 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>lg</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
@@ -413,21 +542,27 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that holds the UIOutput or UIInput component's value</description>
 			<name>value</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Converter implementation for converting the UIInput or UIOutput component's value</description>
 			<name>converter</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a conversion error</description>
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
@@ -437,6 +572,7 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>image</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
@@ -455,70 +591,91 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>alt</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute for internationalization support. Indicates the writing direction of the components text</description>
 			<name>dir</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute used to declare the language of a Web page or a portion of a Web page</description>
 			<name>lang</name>
 		</attribute>
 		<attribute>
+			<description>The HTML blur event handler. This attribute can hold ValueExpressions</description>
 			<name>onblur</name>
 		</attribute>
 		<attribute>
+			<description>The HTML change event handler. This attribute can hold ValueExpressions</description>
 			<name>onchange</name>
 		</attribute>
 		<attribute>
+			<description>The HTML double click event handler. This attribute can hold ValueExpressions</description>
 			<name>ondblclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML focus event handler. This attribute can hold ValueExpressions</description>
 			<name>onfocus</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key down event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeydown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key press event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeypress</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key up event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeyup</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse down event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousedown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousemove</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse out event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseout</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse up event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseup</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse wheel event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousewheel</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse enter event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseenter</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse leave event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
-			<name>onselect</name>
-		</attribute>
-		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
 			<name>tabindex</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "title" element of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
-			<name>disabled</name>
+			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
+			<name>required</name>
+		</attribute>
+		<attribute>
+			<description>The target for the overlay during AJAX calls. Used by the onevent handler of f:ajax to find the right target to overlay</description>
+			<name>data-overlay-target</name>
 		</attribute>
 	</tag>
 	<tag>
@@ -529,18 +686,22 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
 			<name>fluid</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 	</tag>
@@ -552,36 +713,47 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootDateButtonHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that holds the UIOutput or UIInput component's value</description>
 			<name>value</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Converter implementation for converting the UIInput or UIOutput component's value</description>
 			<name>converter</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a conversion error</description>
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Validator implementation for validating the UIInput component's value</description>
 			<name>validator</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a validator error</description>
 			<name>validatorMessage</name>
 		</attribute>
 		<attribute>
+			<description>A MethodExpression executed when the UIInput component's value changes</description>
 			<name>valueChangeListener</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the JSf lifecycle will end at the process validations stage and return an error to the view if value of the component is null</description>
 			<name>required</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed when the component's value is required and fails validation</description>
 			<name>requiredMessage</name>
 		</attribute>
 		<attribute>
@@ -615,13 +787,52 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>yearType</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<name>disabled</name>
+			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
+			<name>required</name>
+		</attribute>
+		<attribute>
+			<description>The target for the overlay during AJAX calls. Used by the onevent handler of f:ajax to find the right target to overlay</description>
+			<name>data-overlay-target</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse down event handler. This attribute can hold ValueExpressions</description>
+			<name>onmousedown</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
+			<name>onmousemove</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse out event handler. This attribute can hold ValueExpressions</description>
+			<name>onmouseout</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
+			<name>onmouseover</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse up event handler. This attribute can hold ValueExpressions</description>
+			<name>onmouseup</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse wheel event handler. This attribute can hold ValueExpressions</description>
+			<name>onmousewheel</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse enter event handler. This attribute can hold ValueExpressions</description>
+			<name>onmouseenter</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse leave event handler. This attribute can hold ValueExpressions</description>
+			<name>onmouseleave</name>
 		</attribute>
 	</tag>
 	<tag>
@@ -632,21 +843,27 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that holds the UIOutput or UIInput component's value</description>
 			<name>value</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Converter implementation for converting the UIInput or UIOutput component's value</description>
 			<name>converter</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a conversion error</description>
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
@@ -656,9 +873,11 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>type</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
@@ -676,9 +895,11 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootFileInputHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
@@ -688,9 +909,11 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>execute</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression for rendering the component's label</description>
 			<name>label</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
@@ -710,16 +933,23 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>name</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that holds the UIOutput or UIInput component's value</description>
 			<name>value</name>
 		</attribute>
 		<attribute>
 			<name>allowMultiple</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<name>disabled</name>
+			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
+			<name>required</name>
+		</attribute>
+		<attribute>
+			<description>The target for the overlay during AJAX calls. Used by the onevent handler of f:ajax to find the right target to overlay</description>
+			<name>data-overlay-target</name>
 		</attribute>
 	</tag>
 	<tag>
@@ -730,12 +960,15 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
@@ -754,45 +987,59 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>enctype</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute for internationalization support. Indicates the writing direction of the components text</description>
 			<name>dir</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute used to declare the language of a Web page or a portion of a Web page</description>
 			<name>lang</name>
 		</attribute>
 		<attribute>
+			<description>The HTML click event handler. This attribute can hold ValueExpressions</description>
 			<name>onclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML double click event handler. This attribute can hold ValueExpressions</description>
 			<name>ondblclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key down event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeydown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key press event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeypress</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key up event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeyup</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse down event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousedown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousemove</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse out event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseout</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse wheel event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousewheel</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse enter event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseenter</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse leave event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
@@ -802,12 +1049,15 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>onsubmit</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "title" element of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
@@ -822,18 +1072,23 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 	</tag>
@@ -845,27 +1100,35 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that holds the UIOutput or UIInput component's value</description>
 			<name>value</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "title" element of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Converter implementation for converting the UIInput or UIOutput component's value</description>
 			<name>converter</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a conversion error</description>
 			<name>converterMessage</name>
 		</attribute>
 	</tag>
@@ -877,36 +1140,47 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that holds the UIOutput or UIInput component's value</description>
 			<name>value</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Converter implementation for converting the UIInput or UIOutput component's value</description>
 			<name>converter</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a conversion error</description>
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Validator implementation for validating the UIInput component's value</description>
 			<name>validator</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a validator error</description>
 			<name>validatorMessage</name>
 		</attribute>
 		<attribute>
+			<description>A MethodExpression executed when the UIInput component's value changes</description>
 			<name>valueChangeListener</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the JSf lifecycle will end at the process validations stage and return an error to the view if value of the component is null</description>
 			<name>required</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed when the component's value is required and fails validation</description>
 			<name>requiredMessage</name>
 		</attribute>
 		<attribute>
@@ -922,72 +1196,95 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>autocomplete</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute for internationalization support. Indicates the writing direction of the components text</description>
 			<name>dir</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute used to declare the language of a Web page or a portion of a Web page</description>
 			<name>lang</name>
 		</attribute>
 		<attribute>
-			<name>disabled</name>
+			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
+			<name>required</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression for rendering the component's label</description>
 			<name>label</name>
 		</attribute>
 		<attribute>
+			<description>The maximum number of characters this input can take</description>
 			<name>maxlength</name>
 		</attribute>
 		<attribute>
+			<description>The HTML blur event handler. This attribute can hold ValueExpressions</description>
 			<name>onblur</name>
 		</attribute>
 		<attribute>
+			<description>The HTML change event handler. This attribute can hold ValueExpressions</description>
 			<name>onchange</name>
 		</attribute>
 		<attribute>
+			<description>The HTML focus event handler. This attribute can hold ValueExpressions</description>
 			<name>onfocus</name>
 		</attribute>
 		<attribute>
+			<description>The HTML click event handler. This attribute can hold ValueExpressions</description>
 			<name>onclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML double click event handler. This attribute can hold ValueExpressions</description>
 			<name>ondblclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key down event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeydown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key press event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeypress</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key up event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeyup</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse down event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousedown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousemove</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse out event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseout</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse wheel event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousewheel</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse enter event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseenter</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse leave event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "title" element of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
@@ -1002,6 +1299,10 @@ A tag for rendering an Bootstrap Breadcrumb component.
 		<attribute>
 			<name>placeholder</name>
 		</attribute>
+		<attribute>
+			<description>The target for the overlay during AJAX calls. Used by the onevent handler of f:ajax to find the right target to overlay</description>
+			<name>data-overlay-target</name>
+		</attribute>
 	</tag>
 	<tag>
 		<tag-name>label</tag-name>
@@ -1011,24 +1312,31 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that holds the UIOutput or UIInput component's value</description>
 			<name>value</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Converter implementation for converting the UIInput or UIOutput component's value</description>
 			<name>converter</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a conversion error</description>
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
@@ -1043,12 +1351,15 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
@@ -1061,9 +1372,11 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>globalOnly</name>
 		</attribute>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
@@ -1073,6 +1386,7 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>showSummary</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute for internationalization support. Indicates the writing direction of the components text</description>
 			<name>dir</name>
 		</attribute>
 		<attribute>
@@ -1100,18 +1414,22 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>warnStyle</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute used to declare the language of a Web page or a portion of a Web page</description>
 			<name>lang</name>
 		</attribute>
 		<attribute>
 			<name>layout</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "title" element of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
@@ -1129,12 +1447,15 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
@@ -1147,42 +1468,55 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>type</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
+			<description>The HTML click event handler. This attribute can hold ValueExpressions</description>
 			<name>onclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML double click event handler. This attribute can hold ValueExpressions</description>
 			<name>ondblclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse down event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousedown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousemove</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse out event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseout</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse up event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseup</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse wheel event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousewheel</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse enter event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseenter</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse leave event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "title" element of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 	</tag>
@@ -1194,12 +1528,15 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
@@ -1215,6 +1552,7 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>responsive</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 	</tag>
@@ -1226,54 +1564,70 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
 			<name>type</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
+			<description>The HTML click event handler. This attribute can hold ValueExpressions</description>
 			<name>onclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML double click event handler. This attribute can hold ValueExpressions</description>
 			<name>ondblclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse down event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousedown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousemove</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse out event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseout</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse up event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseup</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse wheel event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousewheel</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse enter event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseenter</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse leave event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "title" element of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 	</tag>
@@ -1285,12 +1639,15 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootPaginationHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
@@ -1315,13 +1672,51 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>execute</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
 			<name>reset</name>
+		</attribute>
+		<attribute>
+			<description>The target for the overlay during AJAX calls. Used by the onevent handler of f:ajax to find the right target to overlay</description>
+			<name>data-overlay-target</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse down event handler. This attribute can hold ValueExpressions</description>
+			<name>onmousedown</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
+			<name>onmousemove</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse out event handler. This attribute can hold ValueExpressions</description>
+			<name>onmouseout</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
+			<name>onmouseover</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse up event handler. This attribute can hold ValueExpressions</description>
+			<name>onmouseup</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse wheel event handler. This attribute can hold ValueExpressions</description>
+			<name>onmousewheel</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse enter event handler. This attribute can hold ValueExpressions</description>
+			<name>onmouseenter</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse leave event handler. This attribute can hold ValueExpressions</description>
+			<name>onmouseleave</name>
 		</attribute>
 	</tag>
 	<tag>
@@ -1332,18 +1727,23 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 	</tag>
@@ -1355,102 +1755,131 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that holds the UIOutput or UIInput component's value</description>
 			<name>value</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Converter implementation for converting the UIInput or UIOutput component's value</description>
 			<name>converter</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a conversion error</description>
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Validator implementation for validating the UIInput component's value</description>
 			<name>validator</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a validator error</description>
 			<name>validatorMessage</name>
 		</attribute>
 		<attribute>
+			<description>A MethodExpression executed when the UIInput component's value changes</description>
 			<name>valueChangeListener</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the JSf lifecycle will end at the process validations stage and return an error to the view if value of the component is null</description>
 			<name>required</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed when the component's value is required and fails validation</description>
 			<name>requiredMessage</name>
 		</attribute>
 		<attribute>
+			<description>A string indicating the java.util.Collecton implementation class of the component's value</description>
 			<name>collectionType</name>
 		</attribute>
 		<attribute>
-			<name>disabled</name>
+			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
+			<name>required</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine the processing of javax.faces.component.SelectItem's marked as a hideNoSelection. A value of true prevents such components from being rendered</description>
 			<name>hideNoSelectionOption</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute for internationalization support. Indicates the writing direction of the components text</description>
 			<name>dir</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute used to declare the language of a Web page or a portion of a Web page</description>
 			<name>lang</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression for rendering the component's label</description>
 			<name>label</name>
 		</attribute>
 		<attribute>
-			<name>maxlength</name>
-		</attribute>
-		<attribute>
+			<description>The HTML blur event handler. This attribute can hold ValueExpressions</description>
 			<name>onblur</name>
 		</attribute>
 		<attribute>
+			<description>The HTML change event handler. This attribute can hold ValueExpressions</description>
 			<name>onchange</name>
 		</attribute>
 		<attribute>
+			<description>The HTML focus event handler. This attribute can hold ValueExpressions</description>
 			<name>onfocus</name>
 		</attribute>
 		<attribute>
+			<description>The HTML click event handler. This attribute can hold ValueExpressions</description>
 			<name>onclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML double click event handler. This attribute can hold ValueExpressions</description>
 			<name>ondblclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key down event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeydown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key press event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeypress</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key up event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeyup</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse down event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousedown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousemove</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse out event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseout</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse wheel event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousewheel</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse enter event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseenter</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse leave event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
@@ -1466,6 +1895,7 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>selectClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "title" element of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
@@ -1479,6 +1909,10 @@ A tag for rendering an Bootstrap Breadcrumb component.
 		</attribute>
 		<attribute>
 			<name>tabindex</name>
+		</attribute>
+		<attribute>
+			<description>The target for the overlay during AJAX calls. Used by the onevent handler of f:ajax to find the right target to overlay</description>
+			<name>data-overlay-target</name>
 		</attribute>
 	</tag>
 	<tag>
@@ -1489,105 +1923,135 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootSelectMenuHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that holds the UIOutput or UIInput component's value</description>
 			<name>value</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Converter implementation for converting the UIInput or UIOutput component's value</description>
 			<name>converter</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a conversion error</description>
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Validator implementation for validating the UIInput component's value</description>
 			<name>validator</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a validator error</description>
 			<name>validatorMessage</name>
 		</attribute>
 		<attribute>
+			<description>A MethodExpression executed when the UIInput component's value changes</description>
 			<name>valueChangeListener</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the JSf lifecycle will end at the process validations stage and return an error to the view if value of the component is null</description>
 			<name>required</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed when the component's value is required and fails validation</description>
 			<name>requiredMessage</name>
 		</attribute>
 		<attribute>
+			<description>A string indicating the java.util.Collecton implementation class of the component's value</description>
 			<name>collectionType</name>
 		</attribute>
 		<attribute>
-			<name>disabled</name>
+			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
+			<name>required</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine the processing of javax.faces.component.SelectItem's marked as a hideNoSelection. A value of true prevents such components from being rendered</description>
 			<name>hideNoSelectionOption</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute for internationalization support. Indicates the writing direction of the components text</description>
 			<name>dir</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute used to declare the language of a Web page or a portion of a Web page</description>
 			<name>lang</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression for rendering the component's label</description>
 			<name>label</name>
 		</attribute>
 		<attribute>
-			<name>maxlength</name>
-		</attribute>
-		<attribute>
+			<description>The HTML blur event handler. This attribute can hold ValueExpressions</description>
 			<name>onblur</name>
 		</attribute>
 		<attribute>
+			<description>The HTML change event handler. This attribute can hold ValueExpressions</description>
 			<name>onchange</name>
 		</attribute>
 		<attribute>
+			<description>The HTML focus event handler. This attribute can hold ValueExpressions</description>
 			<name>onfocus</name>
 		</attribute>
 		<attribute>
+			<description>The HTML click event handler. This attribute can hold ValueExpressions</description>
 			<name>onclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML double click event handler. This attribute can hold ValueExpressions</description>
 			<name>ondblclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key down event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeydown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key press event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeypress</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key up event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeyup</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse down event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousedown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousemove</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse out event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseout</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse wheel event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousewheel</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse enter event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseenter</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse leave event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "title" element of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
@@ -1633,6 +2097,9 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>delay</name>
 		</attribute>
 		<attribute>
+			<name>minchars</name>
+		</attribute>
+		<attribute>
 			<name>opened</name>
 		</attribute>
 		<attribute>
@@ -1664,6 +2131,10 @@ A tag for rendering an Bootstrap Breadcrumb component.
 		</attribute>
 		<attribute>
 			<name>selectClass</name>
+		</attribute>
+		<attribute>
+			<description>The target for the overlay during AJAX calls. Used by the onevent handler of f:ajax to find the right target to overlay</description>
+			<name>data-overlay-target</name>
 		</attribute>
 	</tag>
 	<tag>
@@ -1674,102 +2145,131 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that holds the UIOutput or UIInput component's value</description>
 			<name>value</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Converter implementation for converting the UIInput or UIOutput component's value</description>
 			<name>converter</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a conversion error</description>
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Validator implementation for validating the UIInput component's value</description>
 			<name>validator</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a validator error</description>
 			<name>validatorMessage</name>
 		</attribute>
 		<attribute>
+			<description>A MethodExpression executed when the UIInput component's value changes</description>
 			<name>valueChangeListener</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the JSf lifecycle will end at the process validations stage and return an error to the view if value of the component is null</description>
 			<name>required</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed when the component's value is required and fails validation</description>
 			<name>requiredMessage</name>
 		</attribute>
 		<attribute>
+			<description>A string indicating the java.util.Collecton implementation class of the component's value</description>
 			<name>collectionType</name>
 		</attribute>
 		<attribute>
-			<name>disabled</name>
+			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
+			<name>required</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine the processing of javax.faces.component.SelectItem's marked as a hideNoSelection. A value of true prevents such components from being rendered</description>
 			<name>hideNoSelectionOption</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute for internationalization support. Indicates the writing direction of the components text</description>
 			<name>dir</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute used to declare the language of a Web page or a portion of a Web page</description>
 			<name>lang</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression for rendering the component's label</description>
 			<name>label</name>
 		</attribute>
 		<attribute>
-			<name>maxlength</name>
-		</attribute>
-		<attribute>
+			<description>The HTML blur event handler. This attribute can hold ValueExpressions</description>
 			<name>onblur</name>
 		</attribute>
 		<attribute>
+			<description>The HTML change event handler. This attribute can hold ValueExpressions</description>
 			<name>onchange</name>
 		</attribute>
 		<attribute>
+			<description>The HTML focus event handler. This attribute can hold ValueExpressions</description>
 			<name>onfocus</name>
 		</attribute>
 		<attribute>
+			<description>The HTML click event handler. This attribute can hold ValueExpressions</description>
 			<name>onclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML double click event handler. This attribute can hold ValueExpressions</description>
 			<name>ondblclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key down event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeydown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key press event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeypress</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key up event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeyup</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse down event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousedown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousemove</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse out event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseout</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse wheel event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousewheel</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse enter event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseenter</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse leave event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
@@ -1785,6 +2285,7 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>selectClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "title" element of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
@@ -1799,6 +2300,10 @@ A tag for rendering an Bootstrap Breadcrumb component.
 		<attribute>
 			<name>tabindex</name>
 		</attribute>
+		<attribute>
+			<description>The target for the overlay during AJAX calls. Used by the onevent handler of f:ajax to find the right target to overlay</description>
+			<name>data-overlay-target</name>
+		</attribute>
 	</tag>
 	<tag>
 		<tag-name>selectOneMenu</tag-name>
@@ -1808,105 +2313,135 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootSelectMenuHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that holds the UIOutput or UIInput component's value</description>
 			<name>value</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Converter implementation for converting the UIInput or UIOutput component's value</description>
 			<name>converter</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a conversion error</description>
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Validator implementation for validating the UIInput component's value</description>
 			<name>validator</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a validator error</description>
 			<name>validatorMessage</name>
 		</attribute>
 		<attribute>
+			<description>A MethodExpression executed when the UIInput component's value changes</description>
 			<name>valueChangeListener</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the JSf lifecycle will end at the process validations stage and return an error to the view if value of the component is null</description>
 			<name>required</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed when the component's value is required and fails validation</description>
 			<name>requiredMessage</name>
 		</attribute>
 		<attribute>
+			<description>A string indicating the java.util.Collecton implementation class of the component's value</description>
 			<name>collectionType</name>
 		</attribute>
 		<attribute>
-			<name>disabled</name>
+			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
+			<name>required</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine the processing of javax.faces.component.SelectItem's marked as a hideNoSelection. A value of true prevents such components from being rendered</description>
 			<name>hideNoSelectionOption</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute for internationalization support. Indicates the writing direction of the components text</description>
 			<name>dir</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute used to declare the language of a Web page or a portion of a Web page</description>
 			<name>lang</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression for rendering the component's label</description>
 			<name>label</name>
 		</attribute>
 		<attribute>
-			<name>maxlength</name>
-		</attribute>
-		<attribute>
+			<description>The HTML blur event handler. This attribute can hold ValueExpressions</description>
 			<name>onblur</name>
 		</attribute>
 		<attribute>
+			<description>The HTML change event handler. This attribute can hold ValueExpressions</description>
 			<name>onchange</name>
 		</attribute>
 		<attribute>
+			<description>The HTML focus event handler. This attribute can hold ValueExpressions</description>
 			<name>onfocus</name>
 		</attribute>
 		<attribute>
+			<description>The HTML click event handler. This attribute can hold ValueExpressions</description>
 			<name>onclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML double click event handler. This attribute can hold ValueExpressions</description>
 			<name>ondblclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key down event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeydown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key press event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeypress</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key up event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeyup</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse down event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousedown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousemove</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse out event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseout</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse wheel event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousewheel</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse enter event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseenter</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse leave event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "title" element of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
@@ -1949,6 +2484,9 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>delay</name>
 		</attribute>
 		<attribute>
+			<name>minchars</name>
+		</attribute>
+		<attribute>
 			<name>opened</name>
 		</attribute>
 		<attribute>
@@ -1981,6 +2519,10 @@ A tag for rendering an Bootstrap Breadcrumb component.
 		<attribute>
 			<name>selectClass</name>
 		</attribute>
+		<attribute>
+			<description>The target for the overlay during AJAX calls. Used by the onevent handler of f:ajax to find the right target to overlay</description>
+			<name>data-overlay-target</name>
+		</attribute>
 	</tag>
 	<tag>
 		<tag-name>selectOneInputGroup</tag-name>
@@ -1990,102 +2532,131 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootSelectMenuHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that holds the UIOutput or UIInput component's value</description>
 			<name>value</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Converter implementation for converting the UIInput or UIOutput component's value</description>
 			<name>converter</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a conversion error</description>
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Validator implementation for validating the UIInput component's value</description>
 			<name>validator</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a validator error</description>
 			<name>validatorMessage</name>
 		</attribute>
 		<attribute>
+			<description>A MethodExpression executed when the UIInput component's value changes</description>
 			<name>valueChangeListener</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the JSf lifecycle will end at the process validations stage and return an error to the view if value of the component is null</description>
 			<name>required</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed when the component's value is required and fails validation</description>
 			<name>requiredMessage</name>
 		</attribute>
 		<attribute>
+			<description>A string indicating the java.util.Collecton implementation class of the component's value</description>
 			<name>collectionType</name>
 		</attribute>
 		<attribute>
-			<name>disabled</name>
+			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
+			<name>required</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine the processing of javax.faces.component.SelectItem's marked as a hideNoSelection. A value of true prevents such components from being rendered</description>
 			<name>hideNoSelectionOption</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute for internationalization support. Indicates the writing direction of the components text</description>
 			<name>dir</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute used to declare the language of a Web page or a portion of a Web page</description>
 			<name>lang</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression for rendering the component's label</description>
 			<name>label</name>
 		</attribute>
 		<attribute>
-			<name>maxlength</name>
-		</attribute>
-		<attribute>
+			<description>The HTML blur event handler. This attribute can hold ValueExpressions</description>
 			<name>onblur</name>
 		</attribute>
 		<attribute>
+			<description>The HTML change event handler. This attribute can hold ValueExpressions</description>
 			<name>onchange</name>
 		</attribute>
 		<attribute>
+			<description>The HTML focus event handler. This attribute can hold ValueExpressions</description>
 			<name>onfocus</name>
 		</attribute>
 		<attribute>
+			<description>The HTML click event handler. This attribute can hold ValueExpressions</description>
 			<name>onclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML double click event handler. This attribute can hold ValueExpressions</description>
 			<name>ondblclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key down event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeydown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key press event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeypress</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key up event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeyup</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse down event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousedown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousemove</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse out event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseout</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse wheel event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousewheel</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse enter event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseenter</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse leave event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
@@ -2104,6 +2675,7 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>controlStyle</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "title" element of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
@@ -2133,6 +2705,13 @@ A tag for rendering an Bootstrap Breadcrumb component.
 		<attribute>
 			<name>delay</name>
 		</attribute>
+		<attribute>
+			<name>minchars</name>
+		</attribute>
+		<attribute>
+			<description>The target for the overlay during AJAX calls. Used by the onevent handler of f:ajax to find the right target to overlay</description>
+			<name>data-overlay-target</name>
+		</attribute>
 	</tag>
 	<tag>
 		<tag-name>selectOneInput</tag-name>
@@ -2142,99 +2721,127 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootSelectMenuHandler</handler-class>
 		</component>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that holds the UIOutput or UIInput component's value</description>
 			<name>value</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Converter implementation for converting the UIInput or UIOutput component's value</description>
 			<name>converter</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a conversion error</description>
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Validator implementation for validating the UIInput component's value</description>
 			<name>validator</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed on a validator error</description>
 			<name>validatorMessage</name>
 		</attribute>
 		<attribute>
+			<description>A MethodExpression executed when the UIInput component's value changes</description>
 			<name>valueChangeListener</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the JSf lifecycle will end at the process validations stage and return an error to the view if value of the component is null</description>
 			<name>required</name>
 		</attribute>
 		<attribute>
+			<description>Error message to be displayed when the component's value is required and fails validation</description>
 			<name>requiredMessage</name>
 		</attribute>
 		<attribute>
+			<description>A string indicating the java.util.Collecton implementation class of the component's value</description>
 			<name>collectionType</name>
 		</attribute>
 		<attribute>
-			<name>disabled</name>
+			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
+			<name>required</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine the processing of javax.faces.component.SelectItem's marked as a hideNoSelection. A value of true prevents such components from being rendered</description>
 			<name>hideNoSelectionOption</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute for internationalization support. Indicates the writing direction of the components text</description>
 			<name>dir</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute used to declare the language of a Web page or a portion of a Web page</description>
 			<name>lang</name>
 		</attribute>
 		<attribute>
-			<name>maxlength</name>
-		</attribute>
-		<attribute>
+			<description>The HTML blur event handler. This attribute can hold ValueExpressions</description>
 			<name>onblur</name>
 		</attribute>
 		<attribute>
+			<description>The HTML change event handler. This attribute can hold ValueExpressions</description>
 			<name>onchange</name>
 		</attribute>
 		<attribute>
+			<description>The HTML focus event handler. This attribute can hold ValueExpressions</description>
 			<name>onfocus</name>
 		</attribute>
 		<attribute>
+			<description>The HTML click event handler. This attribute can hold ValueExpressions</description>
 			<name>onclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML double click event handler. This attribute can hold ValueExpressions</description>
 			<name>ondblclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key down event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeydown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key press event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeypress</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key up event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeyup</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse down event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousedown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousemove</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse out event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseout</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse wheel event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousewheel</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse enter event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseenter</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse leave event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
@@ -2256,6 +2863,7 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>dropStyle</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "title" element of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
@@ -2294,6 +2902,13 @@ A tag for rendering an Bootstrap Breadcrumb component.
 		<attribute>
 			<name>delay</name>
 		</attribute>
+		<attribute>
+			<name>minchars</name>
+		</attribute>
+		<attribute>
+			<description>The target for the overlay during AJAX calls. Used by the onevent handler of f:ajax to find the right target to overlay</description>
+			<name>data-overlay-target</name>
+		</attribute>
 	</tag>
 	<tag>
 		<tag-name>dataTable</tag-name>
@@ -2306,15 +2921,18 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>first</name>
 		</attribute>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
 			<name>rendered</name>
 		</attribute>
 		<attribute>
 			<name>rows</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that holds the UIOutput or UIInput component's value</description>
 			<name>value</name>
 		</attribute>
 		<attribute>
@@ -2345,6 +2963,7 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>columnClasses</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute for internationalization support. Indicates the writing direction of the components text</description>
 			<name>dir</name>
 		</attribute>
 		<attribute>
@@ -2360,45 +2979,59 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>headerClasses</name>
 		</attribute>
 		<attribute>
+			<description>HTML attribute used to declare the language of a Web page or a portion of a Web page</description>
 			<name>lang</name>
 		</attribute>
 		<attribute>
+			<description>The HTML click event handler. This attribute can hold ValueExpressions</description>
 			<name>onclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML double click event handler. This attribute can hold ValueExpressions</description>
 			<name>ondblclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key down event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeydown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key press event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeypress</name>
 		</attribute>
 		<attribute>
+			<description>The HTML key up event handler. This attribute can hold ValueExpressions</description>
 			<name>onkeyup</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse down event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousedown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousemove</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse out event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseout</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse up event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseup</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse wheel event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousewheel</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse enter event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseenter</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse leave event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
@@ -2408,21 +3041,25 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>rules</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
 			<name>summary</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "title" element of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
 			<name>width</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
 		</attribute>
 		<attribute>
@@ -2501,96 +3138,64 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<name>width</name>
 		</attribute>
 		<attribute>
+			<description>The HTML click event handler. This attribute can hold ValueExpressions</description>
 			<name>onclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML double click event handler. This attribute can hold ValueExpressions</description>
 			<name>ondblclick</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse down event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousedown</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousemove</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse out event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseout</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse up event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseup</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse wheel event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousewheel</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse enter event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseenter</name>
 		</attribute>
 		<attribute>
+			<description>The HTML mouse leave event handler. This attribute can hold ValueExpressions</description>
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "title" element of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
+			<description>the ID of the component</description>
 			<name>id</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
 			<name>binding</name>
-		</attribute>
-	</tag>
-	<tag>
-		<tag-name>sideMenu</tag-name>
-		<component>
-			<component-type>com.quakearts.bootstrap.sidemenu</component-type>
-			<renderer-type>com.quakearts.bootstrap.sidemenu.renderer</renderer-type>
-			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
-		</component>
-		<attribute>
-			<name>style</name>
-		</attribute>
-		<attribute>
-			<name>styleClass</name>
-		</attribute>
-		<attribute>
-			<name>title</name>
-		</attribute>
-		<attribute>
-			<name>id</name>
-		</attribute>
-		<attribute>
-			<name>binding</name>
-		</attribute>
-		<attribute>
-			<name>onclick</name>
-		</attribute>
-		<attribute>
-			<name>ondblclick</name>
-		</attribute>
-		<attribute>
-			<name>onmousedown</name>
-		</attribute>
-		<attribute>
-			<name>onmousemove</name>
-		</attribute>
-		<attribute>
-			<name>onmouseout</name>
-		</attribute>
-		<attribute>
-			<name>onmouseover</name>
-		</attribute>
-		<attribute>
-			<name>onmouseup</name>
-		</attribute>
-		<attribute>
-			<name>onmousewheel</name>
 		</attribute>
 	</tag>
 	<tag>
@@ -2605,4 +3210,64 @@ A tag for rendering an Bootstrap Breadcrumb component.
 			<required>true</required>
 		</attribute>
 	</tag>
+	<tag>
+		<tag-name>sideMenu</tag-name>
+		<component>
+			<component-type>com.quakearts.bootstrap.sidemenu</component-type>
+			<renderer-type>com.quakearts.bootstrap.sidemenu.renderer</renderer-type>
+			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
+		</component>
+		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<name>style</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<name>styleClass</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<name>title</name>
+		</attribute>
+		<attribute>
+			<description>the ID of the component</description>
+			<name>id</name>
+		</attribute>
+		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
+			<name>binding</name>
+		</attribute>
+		<attribute>
+			<description>The HTML click event handler. This attribute can hold ValueExpressions</description>
+			<name>onclick</name>
+		</attribute>
+		<attribute>
+			<description>The HTML double click event handler. This attribute can hold ValueExpressions</description>
+			<name>ondblclick</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse down event handler. This attribute can hold ValueExpressions</description>
+			<name>onmousedown</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
+			<name>onmousemove</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse out event handler. This attribute can hold ValueExpressions</description>
+			<name>onmouseout</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
+			<name>onmouseover</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse up event handler. This attribute can hold ValueExpressions</description>
+			<name>onmouseup</name>
+		</attribute>
+		<attribute>
+			<description>The HTML mouse wheel event handler. This attribute can hold ValueExpressions</description>
+			<name>onmousewheel</name>
+		</attribute>
+	</tag>	
 </facelet-taglib>

@@ -4,9 +4,13 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 import javax.faces.component.behavior.*;
+import javax.faces.component.behavior.ClientBehaviorContext.Parameter;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.model.SelectItem;
+
+import com.quakearts.webapp.facelets.bootstrap.handlers.HTML5DataRule;
+
 import javax.faces.component.*;
 import static com.quakearts.webapp.facelets.util.UtilityMethods.*;
 
@@ -83,10 +87,27 @@ public class RenderKitUtils {
 			renderPassThruAttributesUnoptimized(context, writer, component,
 					attributes, behaviors);
         }
+        
+		List<String> html5PassThru = (List<String>) component.getAttributes().get(HTML5DataRule.HTML5DATAATTRIBUTES);
+		if(html5PassThru!=null){
+			for(String attribute:html5PassThru){
+				String value;
+				if(component.getValueExpression(attribute)!=null){
+					Object valueObject = component.getValueExpression(attribute).getValue(context.getELContext());
+					value = valueObject!=null?valueObject.toString():null;
+				} else{
+					value = (String) component.getAttributes().get(attribute);
+				}
+				
+				if(value!=null){
+					writer.writeAttribute(attribute, value, null);
+				}
+			}
+		}
     }
 
     @SuppressWarnings("rawtypes")
-	public static void renderOnchange(FacesContext context, UIComponent component, boolean incExec)
+	public static void renderOnchange(FacesContext context, UIComponent component)
         throws IOException {
 
         final String handlerName = "onchange";
@@ -99,20 +120,12 @@ public class RenderKitUtils {
             }
         }
 
-
-        List<ClientBehaviorContext.Parameter> params;
-        if (!incExec) {
-            params = Collections.emptyList();
-        } else {
-            params = new LinkedList<ClientBehaviorContext.Parameter>();
-            params.add(new ClientBehaviorContext.Parameter("incExec",true));
-        }
-		renderHandler(context, component, params, handlerName, userHandler,
-				behaviorEventName, null, false, incExec);
+		renderHandler(context, component, Collections.<Parameter> emptyList(), handlerName, userHandler,
+				behaviorEventName);
     }
 
     @SuppressWarnings("rawtypes")
-	public static void renderSelectOnclick(FacesContext context, UIComponent component, boolean incExec)
+	public static void renderSelectOnclick(FacesContext context, UIComponent component)
         throws IOException {
 
         final String handlerName = "onclick";
@@ -125,22 +138,13 @@ public class RenderKitUtils {
             }
         }
 
-        List<ClientBehaviorContext.Parameter> params;
-        if (!incExec) {
-            params = Collections.emptyList();
-        } else {
-            params = new LinkedList<ClientBehaviorContext.Parameter>();
-            params.add(new ClientBehaviorContext.Parameter("incExec",true));
-        }
-		renderHandler(context, component, params, handlerName, userHandler,
-				behaviorEventName, null, false, incExec);
+		renderHandler(context, component, Collections.<Parameter> emptyList(), handlerName, userHandler,
+				behaviorEventName);
     }
 
     @SuppressWarnings("rawtypes")
-	public static void renderOnclick(FacesContext context,
-			UIComponent component,
-			Collection<ClientBehaviorContext.Parameter> params,
-			String submitTarget, boolean needsSubmit) throws IOException {
+	public static void renderOnclick(FacesContext context, UIComponent component, 
+			Collection<ClientBehaviorContext.Parameter> params) throws IOException {
 
         final String handlerName = "onclick";
         final Object userHandler = component.getAttributes().get(handlerName);
@@ -153,7 +157,7 @@ public class RenderKitUtils {
         }
 
 		renderHandler(context, component, params, handlerName, userHandler,
-				behaviorEventName, submitTarget, needsSubmit, false);
+				behaviorEventName);
     }
 
     public static String prefixAttribute(final String attrName,
@@ -285,7 +289,7 @@ public class RenderKitUtils {
 
                     if (isBehaviorEventAttribute(attr, behaviorEventName)) {
 						renderHandler(context, component, null, name, value,
-								behaviorEventName, null, false, false);
+								behaviorEventName);
 
                         renderedBehavior = true;
                     } else {
@@ -306,7 +310,7 @@ public class RenderKitUtils {
                     (behaviorEventName.equals(events[0]))) {
 
 					renderHandler(context, component, null, attr.getName(),
-							null, behaviorEventName, null, false, false);
+							null, behaviorEventName);
                 }
             }
  
@@ -338,7 +342,7 @@ public class RenderKitUtils {
             } else if (hasBehavior) {
 
 				renderHandler(context, component, null, attrName, value,
-						events[0], null, false, false);
+						events[0]);
             }
         }
     }
@@ -494,9 +498,8 @@ public class RenderKitUtils {
     }
 
 	private static String getSubmitHandler(FacesContext context,
-			UIComponent component,
-			Collection<ClientBehaviorContext.Parameter> params,
-			String submitTarget, boolean preventDefault) {
+			UIComponent component, Collection<ClientBehaviorContext.Parameter> params, 
+			boolean preventDefault) {
 
         StringBuilder builder = new StringBuilder(256);
 
@@ -515,13 +518,7 @@ public class RenderKitUtils {
             }
         }
 
-        builder.append("},'");
-
-        if (submitTarget != null) {
-            builder.append(submitTarget);
-        }
-
-        builder.append("')");
+        builder.append("})");
 
         if (preventDefault) {
             builder.append(";return false");
@@ -533,8 +530,7 @@ public class RenderKitUtils {
 	private static String getChainedHandler(FacesContext context,
 			UIComponent component, List<ClientBehavior> behaviors,
 			Collection<ClientBehaviorContext.Parameter> params,
-			String behaviorEventName, String userHandler, String submitTarget,
-			boolean needsSubmit) {
+			String behaviorEventName, String userHandler) {
 
         StringBuilder builder = new StringBuilder(100);
         builder.append("jsf.util.chain(this,event,");
@@ -546,9 +542,8 @@ public class RenderKitUtils {
 
 		boolean hasParams = ((null != params) && !params.isEmpty());
 
-        if (!submitting && (hasParams || needsSubmit)) {
-			String submitHandler = getSubmitHandler(context, component, params,
-					submitTarget, false);
+        if (!submitting && hasParams) {
+			String submitHandler = getSubmitHandler(context, component, params, false);
 
             appendScriptToChain(builder, submitHandler);
 
@@ -569,23 +564,17 @@ public class RenderKitUtils {
 	private static String getSingleBehaviorHandler(FacesContext context,
 			UIComponent component, ClientBehavior behavior,
 			Collection<ClientBehaviorContext.Parameter> params,
-			String behaviorEventName, String submitTarget, boolean needsSubmit) {
+			String behaviorEventName) {
 
 		ClientBehaviorContext bContext = createClientBehaviorContext(context,
 				component, behaviorEventName, params);
 
         String script = behavior.getScript(bContext);
 
-        boolean preventDefault = ((needsSubmit || isSubmitting(behavior)) &&
+        boolean preventDefault = ((isSubmitting(behavior)) &&
                                   ("action".equals(behaviorEventName) || "click".equals(behaviorEventName)));
 
-         if (script == null) {
-             if (needsSubmit) {
-				script = getSubmitHandler(context, component, params,
-						submitTarget, preventDefault);
-             }
-         }
-         else if (preventDefault) {
+        if (preventDefault) {
              script = script +  ";return false";
          }
 
@@ -608,8 +597,7 @@ public class RenderKitUtils {
 	private static void renderHandler(FacesContext context,
 			UIComponent component,
 			Collection<ClientBehaviorContext.Parameter> params,
-			String handlerName, Object handlerValue, String behaviorEventName,
-			String submitTarget, boolean needsSubmit, boolean includeExec)
+			String handlerName, Object handlerValue, String behaviorEventName)
         throws IOException {
 
         ResponseWriter writer = context.getResponseWriter();
@@ -626,7 +614,7 @@ public class RenderKitUtils {
             params = Collections.emptyList();
         }
         String handler = null;
-        switch (getHandlerType(behaviors, params, userHandler, needsSubmit, includeExec)) {
+        switch (getHandlerType(behaviors, params, userHandler)) {
         
             case USER_HANDLER_ONLY:
                 handler = userHandler;
@@ -634,18 +622,16 @@ public class RenderKitUtils {
 
             case SINGLE_BEHAVIOR_ONLY:
 			handler = getSingleBehaviorHandler(context, component,
-					behaviors.get(0), params, behaviorEventName, submitTarget,
-					needsSubmit);
+					behaviors.get(0), params, behaviorEventName);
                break;
 
             case SUBMIT_ONLY:
-			handler = getSubmitHandler(context, component, params,
-					submitTarget, true);
+			handler = getSubmitHandler(context, component, params, true);
                break;
 
             case CHAIN:
 			handler = getChainedHandler(context, component, behaviors, params,
-					behaviorEventName, userHandler, submitTarget, needsSubmit);
+					behaviorEventName, userHandler);
                 break;
             default:
                 assert(false);
@@ -656,21 +642,20 @@ public class RenderKitUtils {
 
 	private static HandlerType getHandlerType(List<ClientBehavior> behaviors,
 			Collection<ClientBehaviorContext.Parameter> params,
-			String userHandler, boolean needsSubmit, boolean includeExec) {
+			String userHandler) {
 
         if ((behaviors == null) || (behaviors.isEmpty())) {
 
-            if ((params.isEmpty() && !needsSubmit) || includeExec)
+            if (params.isEmpty())
                 return HandlerType.USER_HANDLER_ONLY;
 
-            return (userHandler == null) ? HandlerType.SUBMIT_ONLY :
-                                           HandlerType.CHAIN;
+            return (userHandler == null) ? HandlerType.SUBMIT_ONLY:HandlerType.CHAIN;
         }
 
         if ((behaviors.size() == 1) && (userHandler == null)) {
             ClientBehavior behavior = behaviors.get(0);
 
-            if (isSubmitting(behavior) || ((params.isEmpty()) && !needsSubmit))
+            if (isSubmitting(behavior) || params.isEmpty())
                 return HandlerType.SINGLE_BEHAVIOR_ONLY;            
         }
 

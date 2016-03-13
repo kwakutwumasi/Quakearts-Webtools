@@ -24,6 +24,7 @@ public class AutoCompleteBehavior extends ClientBehaviorBase {
 	private String onevent;
 	private String execute;
 	private int delay = 5;
+	private int minchars = 3;
 	private static final String ATTRIBUTE = "suggestion";
 	private boolean hasSuggestion=false;
 	private String suggest;
@@ -68,6 +69,14 @@ public class AutoCompleteBehavior extends ClientBehaviorBase {
 		this.delay = delay;
 	}
 
+	public int getMinchars() {
+		return minchars;
+	}
+	
+	public void setMinchars(int minchars) {
+		this.minchars = minchars;
+	}
+	
 	public String getId() {
 		return id;
 	}
@@ -140,6 +149,16 @@ public class AutoCompleteBehavior extends ClientBehaviorBase {
 			} catch (Exception e) {
 			}
 		}
+		
+		ValueExpression mincharsExpression;
+		if((mincharsExpression=component.getValueExpression("minchars"))!=null){
+			 minchars = ObjectExtractor.extractInteger(mincharsExpression, context.getELContext());
+		} else {
+			try {
+				minchars = Integer.parseInt((String)component.getAttributes().get("minchars"));
+			} catch (Exception e) {
+			}
+		}
 	}
 	
 	@Override
@@ -160,14 +179,14 @@ public class AutoCompleteBehavior extends ClientBehaviorBase {
 	public String getScript(ClientBehaviorContext behaviorContext) {	
 		String compId = behaviorContext.getComponent().getClientId();
 
-		return "if(this.value.length>3) qab.qact(function(){ jsf.ajax.request($('#"
+		return "if(this.value.length>="+minchars+") qab.qact(function(){ jsf.ajax.request($('#"
 				+compId+"')[0]"
 				+", event, {execute:'"+compId+(execute!=null?" "+execute:"")+"', render: '"+compId
 				+(render!=null&&render.length()>0? " "+render:"")+"'"
 				+(onevent!=null&&onevent.length()>0? ", onevent: "+onevent+"":"")
 				+(onerror!=null&&onerror.length()>0?", onerror: "+onerror+"":"")
 				+",'javax.faces.behavior.event':'"+event+"'});},"
-				+(delay*1000)+");";
+				+(delay*100)+");";
 	}
 	
 	@Override

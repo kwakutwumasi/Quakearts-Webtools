@@ -1,10 +1,12 @@
 package com.quakearts.webapp.facelets.bootstrap.renderers;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.convert.ConverterException;
@@ -20,6 +22,7 @@ public class BootCheckboxRenderer extends HtmlBasicInputRenderer {
 
     private static final Attribute[] ATTRIBUTES =
           AttributeManager.getAttributes(AttributeManager.Key.SELECTBOOLEANCHECKBOX);
+	private static final String HASINPUTCHILD = "com.quakearts.bootstrap.HASINPUTCHILD";
 
     @Override
     public void decode(FacesContext context, UIComponent component) {
@@ -37,6 +40,18 @@ public class BootCheckboxRenderer extends HtmlBasicInputRenderer {
         Map<String, String> requestParameterMap = context.getExternalContext()
               .getRequestParameterMap();
         boolean isChecked = isChecked(requestParameterMap.get(clientId));
+        Iterator<UIComponent> children = getChildren(component);
+        while (children.hasNext()) {
+			UIComponent child = (UIComponent) children.next();
+			if(child instanceof UIInput){
+				if(isChecked){
+					child.getAttributes().put("disabled", false);
+				} else {
+					child.getAttributes().put("disabled", true);
+				}
+			}
+		}
+        
         setSubmittedValue(component, isChecked);
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE,
@@ -50,6 +65,77 @@ public class BootCheckboxRenderer extends HtmlBasicInputRenderer {
     @Override
     public void encodeBegin(FacesContext context, UIComponent component)
           throws IOException {
+    	if (!shouldEncode(component)) {
+            return;
+        }
+
+        String currentValue = getCurrentValue(context, component);
+                
+    	if (context == null)
+        	throw new NullPointerException();
+        
+        if(!(component instanceof BootCheckbox))
+    		throw new IOException("Component must be of type "+BootCheckbox.class.getName());
+    	    	
+        
+        ResponseWriter writer = context.getResponseWriter();
+        assert(writer != null);
+        String styleClass;
+        String id = component.getClientId(context);
+        writer.startElement("div", component);
+        writeIdAttributeIfNecessary(context, writer, component);
+        writer.writeAttribute("class", "input-group", null);
+        writer.write("\n");    	
+        writer.startElement("span", component);
+        writer.writeAttribute("class", "input-group-addon", null);
+        writer.write("\n");    	
+        writer.startElement("input", component);
+
+        Iterator<UIComponent> children = getChildren(component);
+        while (children.hasNext()) {
+			UIComponent child = (UIComponent) children.next();
+			if(child instanceof UIInput){
+				component.getAttributes().put(HASINPUTCHILD, "true");
+				String inputEnableHandler = "qab.icbe(this)";
+				String userHandler = (String) component.getAttributes().get("onclick");
+				if(userHandler!=null){
+					userHandler = inputEnableHandler+"; "+userHandler;
+				} else {
+					userHandler = inputEnableHandler;
+				}
+				component.getAttributes().put("onclick", userHandler);
+				writer.writeAttribute("data-input-control", child.getClientId(context), null);
+				String childClass = (String) child.getAttributes().get("styleClass");
+				childClass = (childClass!=null?childClass+" ":"")+"form-control";
+				
+				if(!isChecked(currentValue)){
+					child.getAttributes().put("disabled", true);
+				}
+				break;
+			}
+		}
+        
+        writer.writeAttribute("type", "checkbox", "type");
+        writer.writeAttribute("id", id+"_sub_input", null);      
+        writer.writeAttribute("name", id, "clientId");
+        if (isChecked(currentValue)) {
+            writer.writeAttribute("checked", Boolean.TRUE, "value");
+        }
+        if (null != (styleClass = (String)
+        	component.getAttributes().get("styleClass"))) {
+        	writer.writeAttribute("class", styleClass, "styleClass");
+        }
+        
+		renderPassThruAttributes(context, writer, component, ATTRIBUTES,
+				getNonOnClickSelectBehaviors(component));
+        renderXHTMLStyleBooleanAttributes(writer, component);
+        renderSelectOnclick(context, component);
+
+        writer.endElement("input");
+        writer.write("\n");    	
+        writer.endElement("span");
+        writer.write("\n");    	
+   	
     }
 
 
@@ -65,65 +151,33 @@ public class BootCheckboxRenderer extends HtmlBasicInputRenderer {
 
     }
 
-    // ------------------------------------------------------- Protected Methods
-
-
     @Override
-    protected void getEndTextToRender(FacesContext context,
-                                      UIComponent component,
-                                      String currentValue) throws IOException {
-
-    	if (context == null)
-        	throw new NullPointerException();
-        
-        if(!(component instanceof BootCheckbox))
-    		throw new IOException("Component must be of type "+BootCheckbox.class.getName());
-    	
-    	String label = ((BootCheckbox)component).getLabel();
-    	
-        ResponseWriter writer = context.getResponseWriter();
-        assert(writer != null);
-        String styleClass;
-        String id = component.getClientId(context);
-        writer.startElement("div", component);
-        writeIdAttributeIfNecessary(context, writer, component);
-        writer.writeAttribute("class", "input-group", null);
-        writer.write("\n");    	
-        writer.startElement("span", component);
-        writer.writeAttribute("class", "input-group-addon", null);
-        writer.write("\n");    	
-        writer.startElement("input", component);
-        writer.writeAttribute("type", "checkbox", "type");
-        writer.writeAttribute("id", id+"_sub_input", null);      
-        writer.writeAttribute("name", id, "clientId");
-
-        if (Boolean.valueOf(currentValue)) { 
-            writer.writeAttribute("checked", Boolean.TRUE, "value");
-        }
-        
-        if (null != (styleClass = (String)
-        	component.getAttributes().get("styleClass"))) {
-        	writer.writeAttribute("class", styleClass, "styleClass");
-        }
-        
-		renderPassThruAttributes(context, writer, component, ATTRIBUTES,
-				getNonOnClickSelectBehaviors(component));
-        renderXHTMLStyleBooleanAttributes(writer, component);
-        renderSelectOnclick(context, component, false);
-
-        writer.endElement("input");
-        writer.write("\n");    	
-        writer.endElement("span");
-        writer.write("\n");    	
-        writer.startElement("span", component);
-        writer.writeAttribute("class", "form-control", null);
-        writer.writeText(label !=null? label:"", null);
-        writer.endElement("span");
-        writer.write("\n");    	
-        writer.endElement("div");
-        writer.write("\n");    	
+    public boolean getRendersChildren() {
+    	return true;
     }
 
+    @Override
+    public void encodeEnd(FacesContext context, UIComponent component) throws IOException {
+    	String label = ((BootCheckbox)component).getLabel();
+        if(!(component instanceof BootCheckbox))
+    		throw new IOException("Component must be of type "+BootCheckbox.class.getName());
+
+        ResponseWriter writer = context.getResponseWriter();
+        assert(writer != null);
+
+        if(!component.getAttributes().containsKey(HASINPUTCHILD)){
+	        writer.startElement("span", component);
+	        writer.writeAttribute("class", "form-control", null);
+	        writer.writeText(label !=null? label:"", null);
+	        writer.endElement("span");
+	        writer.write("\n");    	
+        }
+        
+        writer.endElement("div");
+        writer.write("\n");    	
+
+    }
+    
     /**
      * @param value the submitted value
      * @return "true" if the component was checked, otherise "false"

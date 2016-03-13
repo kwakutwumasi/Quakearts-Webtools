@@ -11,96 +11,13 @@ import com.quakearts.webapp.facelets.bootstrap.components.BootAjaxLoaderScriptCo
 import com.quakearts.webapp.facelets.bootstrap.renderkit.html_basic.HtmlBasicRenderer;
 
 public class BootAjaxLoaderScriptRenderer extends HtmlBasicRenderer {
-	private static final String LOADERSCRIPT = "qab.mainLoaderHandler = function(data){\r\n" + 
-			"    switch(data.status){\r\n" + 
-			"    case \"begin\":\r\n" + 
-			"        var obj = $(\"#$ajaxdiv\");\r\n" +
-			"		 obj.removeClass(\"collapse\").addClass(\"overlay\");\r\n" + 
-			"        obj.animate({\r\n" + 
-			"            opacity: 0.8\r\n" + 
-			"            }, $stime, function() {\r\n" + 
-			"               \r\n" + 
-			"            });\r\n" + 
-			"        break;\r\n" + 
-			"    case \"complete\":\r\n" + 
-			"		$(\"#$ajaxdiv\").animate({\r\n" + 
-			"			opacity: 0.0\r\n" + 
-			"			}, $etime, function() {\r\n" + 
-			"			 	$(\"#$ajaxdiv\").removeClass(\"overlay\").addClass(\"collapse\");\r\n" + 
-			"			});\r\n" + 
-			"        break;\r\n" + 
-			"    case \"success\":\r\n" + 
-			"        break;\r\n" + 
-			"    default:\r\n" + 
-			"    }\r\n" + 
-			"}\r\n" + 
-			"\r\n" + 
-			"qab.overlayHandler = function(data){\r\n" + 
-			"    switch (data.status) {\r\n" + 
-			"		case \"begin\":\r\n" + 
-			"			var idobj = $(\"#\" + data.source.id);\r\n" + 
-			"			var idparent = idobj;\r\n" + 
-			"			while (idparent.parent().length > 0) {\r\n" + 
-			"				if (idparent.hasClass(\"ajax-container\")) {\r\n" + 
-			"					$('body').append(\"<div id='\"+data.source.id+\"_overlay' class='collapse'>\"+\r\n" + 
-			"							\"<img src='$overlayimg' border='0' $overlayimagestyle/>\"+\r\n" + 
-			"								\"</div>\"); \r\n" + 
-			"					var obj= $(\"#\"+data.source.id+\"_overlay\");\r\n" + 
-			"					obj.css({\r\n" + 
-			"						position : 'absolute',\r\n" + 
-			"						top : idparent.offset().top,\r\n" + 
-			"						left : idparent.offset().left,\r\n" + 
-			"						width : idparent.css('width'),\r\n" + 
-			"						height : idparent.css('height')\r\n" + 
-			"					});\r\n" + 
-			"					obj.removeClass(\"collapse\").addClass(\"overlay\");\r\n" + 
-			"					obj.animate({\r\n" + 
-			"						opacity : 0.8\r\n" + 
-			"					}, $stime, function() {\r\n" + 
-			"\r\n" + 
-			"					});\r\n" + 
-			"\r\n" + 
-			"					break;\r\n" + 
-			"				}\r\n" + 
-			"				idparent = idparent.parent();\r\n" + 
-			"			}\r\n" + 
-			"			break;\r\n" + 
-			"		case \"complete\":\r\n" + 
-			"			var obj= $(\"#\"+data.source.id+\"_overlay\");\r\n" + 
-			"			if(obj.length>0){					\r\n" + 
-			"				obj.animate(\r\n" + 
-			"					{\r\n" + 
-			"						opacity : 0.0\r\n" + 
-			"					},\r\n" + 
-			"					$etime,\r\n" + 
-			"					function() {\r\n" + 
-			"						var obj= $(\"#\"+data.source.id+\"_overlay\");\r\n" + 
-			"						obj.removeClass(\"overlay\")\r\n" + 
-			"								.addClass(\"collapse\");\r\n" + 
-			"						obj.remove();\r\n" + 
-			"					});\r\n" + 
-			"			}\r\n" + 
-			"			break;\r\n" + 
-			"		case \"success\":\r\n" + 
-			"			break;\r\n" + 
-			"		default:\r\n" + 
-			"		}\r\n" + 
-			"	}\r\n"+
-			"\r\n" + 
-			"qab.miniLoaderHandler = function(data){\r\n" + 
-			"    switch(data.status){\r\n" + 
-			"        case \"begin\":\r\n" + 
-			"            var parent = $(\"#\"+data.source.id).parent();\r\n" + 
-			"            parent.append(\"<img src='$miniimg' id='\"+data.source.id+\"_img' $miniimagestyle/>\");\r\n" + 
-			"            break;\r\n" + 
-			"        case \"complete\":\r\n" + 
-			"            $(\"#\"+data.source.id+\"_img\").remove();\r\n" + 
-			"            break;\r\n" + 
-			"        case \"success\":\r\n" + 
-			"            break;\r\n" + 
-			"        default:\r\n" + 
-			"    }\r\n" + 
-			"}\r\n";
+	private static final String LOADERSCRIPT = "qab.adid =\"$ajaxdiv\";\r\n"
+			+ "qab.sd=$stime;\r\n"
+			+ "qab.ed=$etime;\r\n"
+			+ "qab.ovlimg=\"$overlayimg\";\r\n"
+			+ "qab.ovlimgcss=\"$overlayimagestyle\";\r\n"
+			+ "qab.miniimg=\"$miniimg\";\r\n"
+			+ "qab.miniimgcss=\"$miniimagestyle\";";
 	
 	@Override
 	public void encodeBegin(FacesContext context, UIComponent component)
@@ -130,9 +47,9 @@ public class BootAjaxLoaderScriptRenderer extends HtmlBasicRenderer {
 			
 			writer.write(LOADERSCRIPT.replace("$ajaxdiv", loaderComponent.getClientId(context))
 					.replace("$miniimg", loaderComponent.get("miniloaderimage"))
+					.replace("$miniimagestyle", miniimagestyle!=null?("style=\\\""+miniimagestyle+"\\\" "):"")
 					.replace("$overlayimg", loaderComponent.get("overlayloaderimage"))
-					.replace("$miniimagestyle", miniimagestyle!=null?("style=\""+miniimagestyle+"\" "):"")
-					.replace("$overlayimagestyle", overlayimagestyle!=null?("style=\""+overlayimagestyle+"\" "):"")
+					.replace("$overlayimagestyle", overlayimagestyle!=null?("style=\\\""+overlayimagestyle+"\\\" "):"")
 					.replace("$stime", startTimeout)
 					.replace("$etime", endTimeout));
 			writer.endElement("script");

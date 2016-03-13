@@ -2,6 +2,9 @@ package com.quakearts.webapp.facelets.bootstrap.renderers;
 
 import com.quakearts.webapp.facelets.bootstrap.components.BootDateButton;
 import com.quakearts.webapp.facelets.bootstrap.components.BootDateButton.DateFormat;
+import com.quakearts.webapp.facelets.bootstrap.renderkit.Attribute;
+import com.quakearts.webapp.facelets.bootstrap.renderkit.AttributeManager;
+import com.quakearts.webapp.facelets.bootstrap.renderkit.AttributeManager.Key;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.html_basic.HtmlBasicInputRenderer;
 
@@ -24,6 +27,7 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
     public static final String RENDERER_TYPE = "com.quakearts.bootstrap.date.renderer";
     public static final int[] MONTHDAYS = new int[]{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     private static final Map<Integer,String> months = new TreeMap<Integer, String>();
+    private static final Attribute[] ATTRIBUTES = AttributeManager.getAttributes(Key.DATEBUTTON);
     
     static{
     	months.put(1,"Jan");
@@ -87,7 +91,11 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
         ResponseWriter writer = context.getResponseWriter();
         
     	writer.startElement("div", component);
-
+        writeIdAttributeIfNecessary(context, writer, component);
+        RenderKitUtils.renderPassThruAttributes(context, writer, component, ATTRIBUTES);
+        RenderKitUtils.renderXHTMLStyleBooleanAttributes(writer, component);
+        RenderKitUtils.renderOnchange(context, component);
+        
     	String styleClass= button.get("styleClass");
     	if(styleClass!=null)
     		writer.writeAttribute("class", styleClass, null);
@@ -142,10 +150,7 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
         writer.writeAttribute("name", id, null);
         writer.writeAttribute("id", idJs+"_input", null);
         writer.writeAttribute("type", "hidden", null);
-        writer.writeAttribute("value", currentValue!=null?currentValue:"", "value");
-        RenderKitUtils.renderXHTMLStyleBooleanAttributes(writer, component);
-        RenderKitUtils.renderOnchange(context, component, false);
-        
+        writer.writeAttribute("value", currentValue!=null?currentValue:"", "value");        
         writer.endElement("input");
         writer.write("\n");
         writer.endElement("div");
