@@ -168,11 +168,6 @@
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.common.BootOnLoadRenderer</renderer-class>
 		</renderer>
 		<renderer>
-			<component-family>com.quakearts.bootstrap.header</component-family>
-			<renderer-type>com.quakearts.bootstrap.header.renderer</renderer-type>
-			<renderer-class>com.quakearts.webapp.facelets.bootstrap.common.BootHeaderRenderer</renderer-class>
-		</renderer>
-		<renderer>
 			<component-family>com.quakearts.bootstrap.ajaxloader</component-family>
 			<renderer-type>com.quakearts.bootstrap.ajaxloader.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootAjaxLoaderRenderer</renderer-class>

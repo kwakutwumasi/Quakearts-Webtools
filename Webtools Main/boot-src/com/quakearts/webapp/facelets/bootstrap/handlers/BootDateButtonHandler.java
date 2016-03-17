@@ -20,9 +20,13 @@ public class BootDateButtonHandler extends BootBaseHandler {
 		if(!(c instanceof BootDateButton))
 			throw new FaceletException("Component must be of type "+BootDateButton.class.getName());
 		
-		BootDateScriptComponent dateScriptComponent = new BootDateScriptComponent();
-		dateScriptComponent.setDateComponent((BootDateButton)c);		
-		ctx.getFacesContext().getViewRoot().addComponentResource(ctx.getFacesContext(), dateScriptComponent);		
+		if(!ctx.getFacesContext().getPartialViewContext().isPartialRequest()){
+			BootDateScriptComponent dateScriptComponent = new BootDateScriptComponent();
+			dateScriptComponent.setDateComponent((BootDateButton)c);		
+			ctx.getFacesContext().getViewRoot()
+				.addComponentResource(ctx.getFacesContext(), dateScriptComponent);					
+		}
+		
 	}
 	
 	

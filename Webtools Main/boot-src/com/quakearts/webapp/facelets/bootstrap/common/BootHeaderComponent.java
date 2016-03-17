@@ -95,6 +95,10 @@ public class BootHeaderComponent extends UIOutput {
 	}
 	
 	public static void addBootComponentToHead(FacesContext ctx){
+		if(ctx.getPartialViewContext().isPartialRequest()){
+			return;
+		}
+			
         if(ctx.getAttributes().get(BOOT_LIBRARY_LOADED)==null){
             if(!hasJSFResourceBeenInstalled(ctx)){
             	UIOutput jsfJsComp = new UIOutput();

@@ -142,7 +142,6 @@ public class BootPaginationRenderer extends HtmlBasicRenderer {
 		writer.startElement("a", component);
 		writer.writeAttribute("aria-label", "Previous", null);
 		writer.startElement("span", component);
-    	writer.write("\n");
 		writer.writeAttribute("aria-hidden", "true", null);
 		writer.write("&laquo;");
 		writer.endElement("span");

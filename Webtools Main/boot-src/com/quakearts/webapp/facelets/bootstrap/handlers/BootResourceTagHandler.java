@@ -28,6 +28,9 @@ public class BootResourceTagHandler extends TagHandler {
 	@Override
 	public void apply(FaceletContext ctx, UIComponent parent)
 			throws IOException {
+		if(ctx.getFacesContext().getPartialViewContext().isPartialRequest())
+			return;
+			
 		if(!parent.getRendererType().equals("javax.faces.Head"))
 			throw new IOException("Component must be nested within a javax.faces.Head buffer component");
 		

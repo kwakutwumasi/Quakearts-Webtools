@@ -29,14 +29,16 @@ public class BootAjaxLoaderHandler extends BootBaseHandler {
 		if(component.getValueExpression("miniloaderimage")==null && component.getAttributes().get("miniloaderimage")==null)
 			throw new AbortProcessingException("Attribute miniloaderimage is required");
 		
-		BootHeaderComponent headerComponent = (BootHeaderComponent) ctx
-				.getFacesContext().getAttributes()
-				.get(BOOT_LIBRARY_LOADED);
-		
-		BootAjaxLoaderScriptComponent scriptComponent = new BootAjaxLoaderScriptComponent();
-		
-		scriptComponent.setLoaderComponent((BootAjaxLoaderComponent)component);
-		headerComponent.addToBottom(scriptComponent);
+		if(!ctx.getFacesContext().getPartialViewContext().isPartialRequest()){
+			BootHeaderComponent headerComponent = (BootHeaderComponent) ctx
+					.getFacesContext().getAttributes()
+					.get(BOOT_LIBRARY_LOADED);
+			
+			BootAjaxLoaderScriptComponent scriptComponent = new BootAjaxLoaderScriptComponent();
+			
+			scriptComponent.setLoaderComponent((BootAjaxLoaderComponent)component);
+			headerComponent.addToBottom(scriptComponent);
+		}
 	}
 	
 

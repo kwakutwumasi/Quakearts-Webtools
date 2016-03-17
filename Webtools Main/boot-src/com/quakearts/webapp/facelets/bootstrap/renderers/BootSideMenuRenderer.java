@@ -34,8 +34,8 @@ public class BootSideMenuRenderer extends HtmlBasicRenderer {
 		writer.writeAttribute("class", "side-menu"+(styleClass!=null?" "+styleClass:"")+(disabled?" disabled":""), null);		
 		
 		if(!disabled){
-			writer.writeAttribute("onmouseenter", "qab.tm(this)", null);
-			writer.writeAttribute("onmouseleave", "qab.tm(this)", null);
+			writer.writeAttribute("onmouseenter", "qab.tm(this,true)", null);
+			writer.writeAttribute("onmouseleave", "qab.tm(this,false)", null);
 		}
 		writer.write("\n");
 	}

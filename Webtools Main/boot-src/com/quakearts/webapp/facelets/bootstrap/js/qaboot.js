@@ -226,15 +226,13 @@ qab.rsi = function () {
 	}
 };
 
-qab.op = false;
-qab.tm = function(obj){
+qab.tm = function(obj,opst){
 	var sm = $(obj);
 	
-	var val=qab.op?"-13em":"0";
+	var val=opst?"0":"-13em";
 	sm.animate({
 		left:val
 	});
-	qab.op = !qab.op;
 };
 
 qab.icbe = function(obj){
@@ -247,8 +245,12 @@ qab.icbe = function(obj){
 	}
 };
 
-qab.dc = function(day,month,year,dsel,
-		msel,ysel,insel,dbsel,type){
+qab.dc = function(day,month,year,idBase,type){
+	var dsel=idBase+"_day",
+	msel=idBase+"_month",
+	ysel=idBase+"_year",
+	insel=idBase+"_input",
+	dbsel=idBase+"_btn_day";
 	return  {
 		"day":day,
 		"month":month,
@@ -292,6 +294,14 @@ qab.dc = function(day,month,year,dsel,
 				return;
 
 			var totalDays = MonthDays[this.month - 1];
+			if(this.month==2){
+				if(this.year % 100==0 && this.year % 400==0){
+					totalDays+=1;
+				} else if(this.year % 4==0){
+					totalDays+=1;
+				}
+			}
+			
 			var count = -8;
 			var offset = new Date(this.year?this.year:new Date().getFullYear(), this.month-1, 1, 0, 0, 0, 0).getDay();
 			$(this.dbsel).parent().find('.buffer').width(offset*39);
@@ -406,22 +416,53 @@ qab.ovh = function(data){
 
 			break;
 		case "complete":
-			var obj= $("#"+data.source.id+"_overlay");
-			if(obj.length>0){
-				obj.animate(
-					{
-						opacity : 0.0
-					},
-					qab.ed,
-					function() {
-						var obj= $("#"+data.source.id+"_overlay");
-						obj.removeClass("overlay")
-								.addClass("collapse");
-						obj.remove();
-					});
+			if(!data.responseCode || data.responseCode !=200){
+				var obj= $("#"+data.source.id+"_overlay");
+				
+				if(obj.length>0){
+					obj.animate(
+						{
+							opacity : 0.0
+						},
+						qab.ed,
+						function() {
+							$("#"+data.source.id+"_overlay").remove();
+						});
+				}
 			}
 			break;
 		case "success":
+			var obj= $("#"+data.source.id+"_overlay");
+			if(obj.length>0){
+				var idobj = $("#" + data.source.id);
+				var ovtarget;
+				var targid = idobj.data("overlay-target");
+				if(targid){
+					ovtarget = $("#"+targid);
+				} else {
+					ovtarget = idobj;
+					while (ovtarget.parent().length > 0 && ovtarget.prop("tagName") !="BODY") {
+						if (ovtarget.hasClass("ajax-container")) {
+							break;
+						}
+						ovtarget = ovtarget.parent();
+					}
+				}
+				obj.css({
+					width : ovtarget.css('width'),
+					height : ovtarget.css('height')
+				});
+				if(obj.length>0){
+					obj.animate(
+						{
+							opacity : 0.0
+						},
+						qab.ed,
+						function() {
+							$("#"+data.source.id+"_overlay").remove();
+						});
+				}				
+			}
 			break;
 		default:
 		}
@@ -433,7 +474,7 @@ qab.mnh = function(data){
     switch(data.status){
         case "begin":
             var parent = $("#"+data.source.id).parent();
-            parent.append("<img src='"+this.miniimg+"' id='"+data.source.id+"_img' "+this.miniimgcss+"/>");
+            parent.append("<img src='"+qab.miniimg+"' id='"+data.source.id+"_img' "+qab.miniimgcss+"/>");
             break;
         case "complete":
             $("#"+data.source.id+"_img").remove();

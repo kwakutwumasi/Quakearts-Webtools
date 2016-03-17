@@ -343,7 +343,7 @@ public class DatabaseLoginModule implements LoginModule {
                         log.fine("Found existing roles group: "+rolesgrp.getName());
 						break;
 					}
-				}				
+				}
 			}
 			
 			if (rolesgrp == null) {

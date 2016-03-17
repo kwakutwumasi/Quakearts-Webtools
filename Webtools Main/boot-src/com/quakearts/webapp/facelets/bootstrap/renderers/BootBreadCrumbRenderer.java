@@ -29,14 +29,11 @@ public class BootBreadCrumbRenderer extends HtmlBasicRenderer {
             throw new IOException("Component must be of type "+BootBreadCrumb.class.getName());
         }
         
-		String styleClass =  ((BootBreadCrumb)component).get("styleClass");				
 		ResponseWriter writer = context.getResponseWriter();
-		
-		if(styleClass != null)
-			writer.writeAttribute("class", styleClass, null);
-		
+				
 		writer.write("\n");
 		writer.startElement("ol", component);
+		String styleClass =  ((BootBreadCrumb)component).get("styleClass");				
 		writer.writeAttribute("class", "breadcrumb"+(styleClass!=null?" "+styleClass:""), null);
 		writeIdAttributeIfNecessary(context, writer, component);
 		renderPassThruAttributes(context, writer, component, ATTRIBUTES);

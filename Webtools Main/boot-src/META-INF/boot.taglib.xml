@@ -2914,7 +2914,7 @@ child component if present
 		<tag-name>dataTable</tag-name>
 		<component>
 			<component-type>com.quakearts.bootstrap.datatable</component-type>
-			<renderer-type>com.quakearts.bootstrap.breadcrumbs.datatable</renderer-type>
+			<renderer-type>com.quakearts.bootstrap.datatable.renderer</renderer-type>
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>

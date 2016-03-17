@@ -21,8 +21,8 @@ public class BootDateScriptRenderer extends HtmlBasicRenderer {
 
     public static final String RENDERER_TYPE = "com.quakearts.facelets.input.datescript.renderer";
 	public static final String DATE_SCRIPT_TOP = "var MonthDays = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);";
-    public static final String DATE_SCRIPT_FUNCTION = "var dateComponent_idVal = qab.dc('dayVal',monthVal,'yearVal','#dayId',"
-    								+ "'#monId','#yrId','#ipId','#dayBtnId','type');";
+    public static final String DATE_SCRIPT_FUNCTION = "var dateComponent_idVal = qab.dc('#dayVal',#monthVal,'#yearVal',"
+    		+ "'#idVal','#type');";
     	
 	@Override
 	protected void getEndTextToRender(FacesContext context,
@@ -92,15 +92,10 @@ public class BootDateScriptRenderer extends HtmlBasicRenderer {
 		
 		return DATE_SCRIPT_FUNCTION
 				.replace("idVal", idJs)
-				.replace("dayVal",isNull?"":(dayInt<10?"0"+dayInt:""+dayInt))
-				.replace("monthVal",isNull?"0":(monthInt+""))
-				.replace("yearVal", isNull?"":(""+yearInt))
-				.replace("ipId", idJs+"_input")
-				.replace("dayId", idJs+"_day")
-				.replace("dayBtnId", idJs+"_btn_day")
-				.replace("monId", idJs+"_month")
-				.replace("yrId", idJs+"_year")
-				.replace("type", dateComponent.formatVal()
+				.replace("#dayVal",isNull?"":(dayInt<10?"0"+dayInt:""+dayInt))
+				.replace("#monthVal",isNull?"0":(monthInt+""))
+				.replace("#yearVal", isNull?"":(""+yearInt))
+				.replace("#type", dateComponent.formatVal()
 						.getFormatValue());
 	}
 	
