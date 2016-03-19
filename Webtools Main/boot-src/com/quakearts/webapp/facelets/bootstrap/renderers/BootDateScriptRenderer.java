@@ -20,8 +20,7 @@ import static com.quakearts.webapp.facelets.util.UtilityMethods.*;
 public class BootDateScriptRenderer extends HtmlBasicRenderer {
 
     public static final String RENDERER_TYPE = "com.quakearts.facelets.input.datescript.renderer";
-	public static final String DATE_SCRIPT_TOP = "var MonthDays = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);";
-    public static final String DATE_SCRIPT_FUNCTION = "var dateComponent_idVal = qab.dc('#dayVal',#monthVal,'#yearVal',"
+    public static final String DATE_SCRIPT_FUNCTION = "var dc_idVal = qab.dc('#dayVal',#monthVal,'#yearVal',"
     		+ "'#idVal','#type');";
     	
 	@Override
@@ -34,18 +33,6 @@ public class BootDateScriptRenderer extends HtmlBasicRenderer {
 		BootDateScriptComponent dateScriptComponent = (BootDateScriptComponent) component;
 		if(!componentIsDisabled(dateScriptComponent.getDateComponent())){
 			ResponseWriter writer = context.getResponseWriter();
-			context.getAttributes().get("com.quakearts.bootstrap.DATE_COMMON");
-			if(context.getAttributes().get("com.quakearts.bootstrap.DATE_COMMON")==null){
-		        writer.startElement("script", dateScriptComponent);
-				writer.writeAttribute("type", "text/javascript", null);
-		        writer.write("\n");    	
-				writer.writeText(DATE_SCRIPT_TOP, null);
-		        writer.write("\n");    	
-				writer.endElement("script");
-		        writer.write("\n");    	
-				context.getAttributes().put("com.quakearts.bootstrap.DATE_COMMON","");
-			}
-			
 			writer.startElement("script", dateScriptComponent);
 			writer.writeAttribute("type", "text/javascript", null);
 	        writer.write("\n");    	

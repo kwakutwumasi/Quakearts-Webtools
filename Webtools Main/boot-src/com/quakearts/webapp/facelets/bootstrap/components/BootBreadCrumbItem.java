@@ -11,8 +11,10 @@ import com.quakearts.webapp.facelets.util.ObjectExtractor;
 public class BootBreadCrumbItem extends UIOutput implements ClientBehaviorHolder {
 	public static final String COMPONENT_FAMILY="com.quakearts.bootstrap.breadcrumbitem";
 	public static final String RENDERER_TYPE="com.quakearts.bootstrap.breadcrumbitem.renderer";
-	private boolean active;
 	private HtmlCommandLink commandLink;
+	enum PropertyKeys{
+		ACTIVE
+	}
 	
 	public void setCommandLink(HtmlCommandLink commandLink) {
 		this.commandLink = commandLink;
@@ -23,7 +25,7 @@ public class BootBreadCrumbItem extends UIOutput implements ClientBehaviorHolder
 	}
 	
 	public boolean isActive() {
-		return active;
+		return (boolean) getTransientStateHelper().getTransient(PropertyKeys.ACTIVE,false);
 	}
 	
 	@Override
@@ -44,13 +46,16 @@ public class BootBreadCrumbItem extends UIOutput implements ClientBehaviorHolder
 		Object valueObject = getValue();
 		String viewId = context.getViewRoot().getViewId();
     	if(valueObject!=null && viewId.contains(valueObject.toString())){
-    		active = true;
+    		getTransientStateHelper().putTransient(PropertyKeys.ACTIVE, true);
     	} else {
     		ValueExpression activateExpression;
+    		boolean active;
     		if((activateExpression = getValueExpression("activate"))!=null)
     			active = ObjectExtractor.extractBoolean(activateExpression, context.getELContext());
     		else
     			active = Boolean.parseBoolean((String) getAttributes().get("activate"));
+
+    		getTransientStateHelper().putTransient(PropertyKeys.ACTIVE, active);
     	}
 	}
 	

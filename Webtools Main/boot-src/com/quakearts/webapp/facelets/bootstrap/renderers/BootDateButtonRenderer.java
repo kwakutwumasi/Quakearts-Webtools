@@ -139,8 +139,8 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
  			writer.startElement("a", component);
  	        writer.writeAttribute("class", "btn-group day", null);
  	        writer.writeAttribute("title", "Clear date", null);
- 			writer.writeAttribute("onclick","dateComponent_"+idJs
- 					+".clearComponent();", null);
+ 			writer.writeAttribute("onclick","dc_"+idJs
+ 					+".cc();", null);
  			writer.write("&times;");
  			writer.endElement("a");
  	        writer.write("\n");    	
@@ -192,7 +192,7 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
         writer.writeAttribute("role", "menu", null);
         
         if(!componentDisabled){
-	    	String onChangeEvent = "dateComponent_"+idJs+".updateDay(this);";	    	
+	    	String onChangeEvent = "dc_"+idJs+".ud(this);";	    	
 	    	writer.write("<span class=\"day-header\">S</span>\r\n" + 
 	    			"<span class=\"day-header\">M</span>\r\n" + 
 	    			"<span class=\"day-header\">T</span>\r\n" + 
@@ -218,7 +218,8 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
 
 	private void generateSelect(String part, String idJs, int value,
 			Map<Integer, String> options, ResponseWriter writer,
-			BootDateButton component, boolean isnull, String type, String styleClass, boolean componentDisabled)
+			BootDateButton component, boolean isnull, String type,
+			String styleClass, boolean componentDisabled)
 			throws IOException {
     	writer.startElement("div", component);
         writer.writeAttribute("class", "btn-group", null);
@@ -252,19 +253,28 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
         if(!componentDisabled){
 	    	String onChangeEvent;
 	    	if(part.equals("month")){
-	    		onChangeEvent = "dateComponent_"+idJs+".updateMonth(this,val);"
-	    				+(component.formatVal()==DateFormat.DAYMONTH||component.formatVal()==DateFormat.DAYMONTHYEAR?"dateComponent_"+idJs+".showDays(val);":"");   		
+	    		onChangeEvent = "dc_"+idJs+".um(this,val);"
+	    				+(component.formatVal()==DateFormat.DAYMONTH||component.formatVal()==DateFormat.DAYMONTHYEAR?"dc_"+idJs+".sd(val);":"");   		
 	    	} else {
-	    		onChangeEvent = "dateComponent_"+idJs+".updateYear(this);";    		
+	    		onChangeEvent = "dc_"+idJs+".uy(this);";    		
 	    	}
 	    	
 	    	for(Integer option:options.keySet()){
-	    		writer.startElement("a", component);
-	    		writer.writeAttribute("class","other-date",null);
-	    		writer.writeAttribute("onclick",part.equals("month")?onChangeEvent.replace("val",option.toString()):onChangeEvent, null);
-	    		writer.writeText(options.get(option), null);
-	    		writer.endElement("a");
-	            writer.write("\n");    	
+	    		if(option==9999 && part.equals("year")) {
+	    			writer.startElement("input", component);
+	    			writer.writeAttribute("class", "form-control year-inp", null);
+	    			writer.writeAttribute("maxlength", "4", null);
+	    			writer.writeAttribute("onkeyup", "dc_"+idJs+".yi(this);", null);
+	    			writer.endElement("input");
+		            writer.write("\n");
+	    		} else {
+		    		writer.startElement("a", component);
+		    		writer.writeAttribute("class","other-date",null);
+		    		writer.writeAttribute("onclick",part.equals("month")?onChangeEvent.replace("val",option.toString()):onChangeEvent, null);
+		    		writer.writeText(options.get(option), null);
+		    		writer.endElement("a");
+		            writer.write("\n");
+	    		}
 	    	}
         }
     	writer.endElement("div");
@@ -277,13 +287,24 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
     	Calendar cal = new GregorianCalendar();
     	int minYear = cal.get(Calendar.YEAR)+min;
     	int range = max - min;
+    	boolean addVarInput = range>9;
+    	if(addVarInput){
+    		range=9;
+    	}
+    	
+    	if(yearInt<minYear || yearInt>minYear+range){
+    		yearsMap.put(yearInt, ""+yearInt);
+    		if(range==9)
+    			range=8;
+    	}
+    	
     	String year;
     	for(int i=0;i<=range;i++){
     		year = ""+(minYear+i);
     		yearsMap.put(minYear+i,year);
     	}
-    	if(!yearsMap.containsKey(yearInt))
-    		yearsMap.put(yearInt, ""+yearInt);
+    	if(addVarInput)
+    		yearsMap.put(9999, "");
     	
     	return yearsMap;
     }

@@ -244,7 +244,7 @@ qab.icbe = function(obj){
 		input.prop("disabled",true);		
 	}
 };
-
+qab.mons=new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 qab.dc = function(day,month,year,idBase,type){
 	var dsel=idBase+"_day",
 	msel=idBase+"_month",
@@ -261,39 +261,44 @@ qab.dc = function(day,month,year,idBase,type){
 		"insel":insel,
 		"dbsel":dbsel,
 		"type":type,
-		"updateDay" : function(obj) {
+		"ud" : function(obj) {
 			this.day = obj.innerHTML;
-			this.updateComponent();
+			this.uc();
 			$(this.dsel).html($(obj).html());
 		},
-		"updateMonth" : function(obj, val) {
+		"um" : function(obj, val) {
 			this.month = val;
-			var totalDays = MonthDays[val - 1];
+			var totalDays = qab.mons[val - 1];
 			if (this.day > totalDays) {
 				this.day = totalDays;
 				$(this.dsel).html(totalDays + '');
 			}
-			this.updateComponent();
+			this.uc();
 			$(this.msel).html($(obj).html());
-			this.showDays();
+			this.sd();
 		},
-		"updateYear" : function(obj) {
+		"uy" : function(obj) {
 			this.year = obj.innerHTML;
-			$(this.ysel).html($(obj).html());
+			$(this.ysel).html(this.year);
 			if(this.month)
-				this.showDays();
+				this.sd();
 			else {
 				$(this.msel).html("Jan");
 				this.month = 1;
-				this.showDays();
+				this.sd();
 			}
-			this.updateComponent();
+			this.uc();
 		},
-		"showDays" : function() {
+		"yi": function(obj){
+			if(obj.value.length==4 && obj.value.match(/[1-2][\d]{3}/)){
+			  	this.uy({innerHTML:obj.value});
+			}
+		},
+		"sd" : function() {
 			if(this.type !="dm" && this.type!="dmy")
 				return;
 
-			var totalDays = MonthDays[this.month - 1];
+			var totalDays = qab.mons[this.month - 1];
 			if(this.month==2){
 				if(this.year % 100==0 && this.year % 400==0){
 					totalDays+=1;
@@ -319,13 +324,13 @@ qab.dc = function(day,month,year,idBase,type){
 						}
 					});
 		},
-		"clearComponent" : function() {
+		"cc" : function() {
 			$(this.insel).val('');
 			$(this.dsel).html('&nbsp;');
 			$(this.msel).html('&nbsp;');
 			$(this.ysel).html('&nbsp;');
 		},
-		"updateComponent" : function() {
+		"uc" : function() {
 			var mnStr = this.month + "";
 			switch(this.type){
 			case "dm":

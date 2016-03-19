@@ -25,7 +25,7 @@ import org.hibernate.criterion.Restrictions;
 
 import com.quakearts.webapp.facelets.util.UtilityMethods;
 
-public class HibernateBean {
+public abstract class HibernateBean {
 
 	public static class Range implements Serializable{
 		/**
@@ -130,7 +130,7 @@ public class HibernateBean {
 	}
 	
 	@SuppressWarnings("unchecked")
-	protected <T> List<T> findObjects(Class<T> clazz,Map<String, Serializable> parameters, Session session, QueryOrder... orders) throws HibernateException, IOException{
+	protected <T> List<T> findObjects(Class<T> clazz, Map<String, Serializable> parameters, Session session, QueryOrder... orders) throws HibernateException, IOException{
 		Criteria query = session.createCriteria(clazz);
 		for(Entry<String, Serializable> entry:parameters.entrySet()){
 			if(entry.getValue() instanceof Choice) {
