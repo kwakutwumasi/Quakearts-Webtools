@@ -1,6 +1,7 @@
 package com.quakearts.webapp.facelets.bootstrap.components;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.el.ValueExpression;
@@ -8,6 +9,7 @@ import javax.faces.component.UIData;
 import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
+import javax.faces.model.DataModel;
 
 import com.quakearts.webapp.facelets.bootstrap.beans.PaginationBean;
 import com.quakearts.webapp.facelets.bootstrap.listeners.PaginationActionListener;
@@ -47,6 +49,7 @@ public class BootPagination extends HtmlCommandButton {
 		return currentPage;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public void updateDataModel(FacesContext context) {
 		if(!isRendered())
 			return;
@@ -98,7 +101,16 @@ public class BootPagination extends HtmlCommandButton {
 		int totalRows;
 		
 		if(forObject instanceof UIData){
-			totalRows = ((UIData)forObject).getRowCount();
+			Object value = ((UIData)forObject).getValue();
+			if(value instanceof DataModel){
+				totalRows = ((DataModel)value).getRowCount();
+			} else if(value instanceof Collection){
+				totalRows = ((Collection)value).size();
+			} else if(value!=null && value.getClass().isArray()){
+				totalRows = ((Object[])value).length;
+			} else {
+				totalRows=1;
+			}
 		} else {
 			totalRows = ((PaginationBean)forObject).getSize();
 		}

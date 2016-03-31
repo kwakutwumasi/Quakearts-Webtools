@@ -30,20 +30,38 @@ public class BootOutputPanelRenderer extends HtmlBasicRenderer {
  
 		String type = panel.get("type");
 		String styleClass = panel.get("styleClass");
-
+		boolean isPopup = Boolean.parseBoolean(panel.get("popup"));
+		
+		if(isPopup){
+			Object onclick = panel.getAttributes().get("onclick");			
+			onclick = (onclick==null?"":onclick.toString()+"; ")+"qab.pclk(event)";
+			panel.getAttributes().put("onclick", onclick);
+			
+			Object onmousemove = panel.getAttributes().get("onmousemove");
+			onmousemove = (onmousemove==null?"":onmousemove+"; ")+"qab.pmv(event)";
+			panel.getAttributes().put("onmousemove", onmousemove);
+		}
+		
 		ResponseWriter writer = context.getResponseWriter();
 		writer.startElement("div", component);
 		writer.writeAttribute("class", "panel panel-" + type
-				+ (styleClass != null ? " "+styleClass : ""), null);
+				+ (styleClass != null ? " "+styleClass : "")+(isPopup?" popup":""), null);
 		writeIdAttributeIfNecessary(context, writer, component);
 		renderPassThruAttributes(context, writer, component, ATTRIBUTES);
 		writer.write("\n");
 		
 		UIComponent facet = panel.getFacet("header");
-		if(facet!=null && facet.isRendered()){
+		if((facet!=null && facet.isRendered()) || isPopup){
 			writer.startElement("div", component);
 			writer.writeAttribute("class", "panel-heading", null);
-			facet.encodeAll(context);
+			if(facet!=null)
+				facet.encodeAll(context);
+			else{
+				writer.write("&nbsp");
+			}
+			if(isPopup){
+				writer.write("<span class=\"glyphicon glyphicon-remove close-btn\" onclick=\"qab.cls(this);\"></span>");
+			}
 		   	writer.write("\n");
 			writer.endElement("div");
  		}

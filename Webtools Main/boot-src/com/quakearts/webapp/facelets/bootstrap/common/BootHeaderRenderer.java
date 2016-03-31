@@ -17,7 +17,8 @@ public class BootHeaderRenderer extends HtmlBasicRenderer {
 				+"<link href=\"@root/boot-services/css/bootstrap-theme.min.css\" rel=\"stylesheet\" type=\"text/css\" />\r\n"
 				+"<link href=\"@root/boot-services/css/qaboot.min.css\" rel=\"stylesheet\" type=\"text/css\" />\r\n";
 	public static String HEADERRESPOND = "<script src=\"@root/boot-services/js/respond.min.js\" type=\"text/javascript\"></script>\r\n";
-	public static String HEADERJQUERY = "<script src=\"@root/boot-services/js/jquery-1.11.2.min.js\" type=\"text/javascript\"></script>\r\n";
+	public static String HEADERJQUERY = "<script src=\"@root/boot-services/js/jquery-1.12.2.min.js\" type=\"text/javascript\"></script>\r\n";
+	public static String HEADERJQUERYDEBUG = "<script src=\"@root/boot-services/js/jquery-1.12.2.js\" type=\"text/javascript\"></script>\r\n";
 	public static String HEADERJS = "<script src=\"@root/boot-services/js/bootstrap.min.js\" type=\"text/javascript\"></script>\r\n"+
 									"<script src=\"@root/boot-services/js/qaboot.min.js\" type=\"text/javascript\"></script>\r\n";
 	public static String HEADERJSDEBUG = "<script src=\"@root/boot-services/js/bootstrap.js\" type=\"text/javascript\"></script>\r\n"+
@@ -42,11 +43,9 @@ public class BootHeaderRenderer extends HtmlBasicRenderer {
 				if(isRespondEnabled())
 					writer.write(HEADERRESPOND.replaceAll("@root", contextPath));
 				if(isjQueryEnabled())
-					writer.write(HEADERJQUERY.replaceAll("@root", contextPath));
-				if(isInJSDebugMode())
-					writer.write(HEADERJSDEBUG.replaceAll("@root", contextPath));
-				else
-					writer.write(HEADERJS.replaceAll("@root", contextPath));
+					writer.write((isInJSDebugMode()?HEADERJQUERY:HEADERJQUERYDEBUG).replaceAll("@root", contextPath));
+
+				writer.write((isInJSDebugMode()? HEADERJS:HEADERJSDEBUG).replaceAll("@root", contextPath));
 			}
 			context.getAttributes().put(BOOTSTRAP_HEADER,Boolean.TRUE);
 			

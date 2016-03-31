@@ -1,7 +1,6 @@
 package com.quakearts.webapp.facelets.bootstrap.renderers;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 
 import javax.el.ValueExpression;
@@ -46,22 +45,7 @@ public class BootFileInputRenderer extends Renderer {
 		
 		ValueExpression dataExpression, valueExpression;
 		if((dataExpression=component.getValueExpression("data"))!=null){
-			byte[] data = new byte[(int)upload.getFilePart().getSize()];
-			InputStream is=null;
-			try {
-				is = upload.getFilePart().getInputStream();
-				is.read(data);
-				dataExpression.setValue(context.getELContext(), data);
-			} catch (IOException e) {
-				LOGGER.warning("Exception of type " + e.getClass().getName()
-						+ " was thrown. Message is " + e.getMessage()
-						+ ". Exception occured whiles loading input file for client "+input.getClientId());
-			} finally {
-				try {
-					is.close();
-				} catch (Exception e) {
-				}
-			}
+			dataExpression.setValue(context.getELContext(), upload.getData());
 		} else if((valueExpression=component.getValueExpression("value"))!=null) {
 			valueExpression.setValue(context.getELContext(), upload);
 		} else {

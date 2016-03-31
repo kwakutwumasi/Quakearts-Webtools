@@ -1630,6 +1630,10 @@ child component if present
 			<description>A ValueExpression to render the "title" element of the HTML tag</description>
 			<name>title</name>
 		</attribute>
+		<attribute>
+			<description>Activate pop-up behavior</description>
+			<name>popup</name>
+		</attribute>
 	</tag>
 	<tag>
 		<tag-name>pagination</tag-name>

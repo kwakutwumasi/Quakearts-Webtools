@@ -489,3 +489,27 @@ qab.mnh = function(data){
         default:
     }
 };
+
+qab.pclk = function(e){
+	var drgbl= $(e.currentTarget);
+  if(!drgbl.hasClass("dragging")){
+  	drgbl.addClass("dragging");
+  } else
+    drgbl.removeClass("dragging");
+}
+
+qab.pmv= function(e){
+	var drgbl= $(e.currentTarget);
+  if(drgbl.hasClass("dragging")){
+  	var offset = drgbl.offset();
+    drgbl.css("left",e.pageX);
+    drgbl.css("top",e.pageY);    
+  }
+}
+
+qab.cls=function(obj){
+	$(obj).parent().parent().fadeOut(function(){
+		$(this).removeClass("dragging");
+	});
+	return false;
+}

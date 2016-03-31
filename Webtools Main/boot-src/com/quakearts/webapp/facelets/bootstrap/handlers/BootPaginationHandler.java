@@ -14,6 +14,8 @@ import com.quakearts.webapp.facelets.bootstrap.listeners.BootPaginationListener;
 
 public class BootPaginationHandler extends BootBaseHandler {
 
+	private static final BootPaginationListener PAGINATION_LISTENER = new BootPaginationListener();
+	
 	public BootPaginationHandler(ComponentConfig config) {
 		super(config);
 	}
@@ -29,8 +31,7 @@ public class BootPaginationHandler extends BootBaseHandler {
 		if(paginations==null){ //Do one time actions. Create pagination array, subscribe to event
 			paginations = new ArrayList<BootPagination>();
 			ctx.getFacesContext().getAttributes().put(BootPagination.PAGINATION_KEY,paginations);
-			if(!ctx.getFacesContext().isPostback())
-				ctx.getFacesContext().getViewRoot().subscribeToEvent(PreRenderViewEvent.class, new BootPaginationListener());
+			ctx.getFacesContext().getViewRoot().subscribeToEvent(PreRenderViewEvent.class, PAGINATION_LISTENER);
 		}
 		paginations.add((BootPagination)c);
 	}
