@@ -481,6 +481,10 @@ child component if present
 			<description>The target for the overlay during AJAX calls. Used by the onevent handler of f:ajax to find the right target to overlay</description>
 			<name>data-overlay-target</name>
 		</attribute>
+		<attribute>
+			<description>A ValueExpression for disabling the UInput component</description>
+			<name>disabled</name>
+		</attribute>
 	</tag>
 	<tag>
 		<tag-name>column</tag-name>
@@ -1303,6 +1307,10 @@ child component if present
 			<description>The target for the overlay during AJAX calls. Used by the onevent handler of f:ajax to find the right target to overlay</description>
 			<name>data-overlay-target</name>
 		</attribute>
+		<attribute>
+			<description>A ValueExpression for disabling the UInput component</description>
+			<name>disabled</name>
+		</attribute>		
 	</tag>
 	<tag>
 		<tag-name>label</tag-name>
@@ -2716,6 +2724,10 @@ child component if present
 			<description>The target for the overlay during AJAX calls. Used by the onevent handler of f:ajax to find the right target to overlay</description>
 			<name>data-overlay-target</name>
 		</attribute>
+		<attribute>
+			<description>A ValueExpression for disabling the UInput component</description>
+			<name>disabled</name>
+		</attribute>		
 	</tag>
 	<tag>
 		<tag-name>selectOneInput</tag-name>
@@ -2913,6 +2925,10 @@ child component if present
 			<description>The target for the overlay during AJAX calls. Used by the onevent handler of f:ajax to find the right target to overlay</description>
 			<name>data-overlay-target</name>
 		</attribute>
+		<attribute>
+			<description>A ValueExpression for disabling the UInput component</description>
+			<name>disabled</name>
+		</attribute>		
 	</tag>
 	<tag>
 		<tag-name>dataTable</tag-name>

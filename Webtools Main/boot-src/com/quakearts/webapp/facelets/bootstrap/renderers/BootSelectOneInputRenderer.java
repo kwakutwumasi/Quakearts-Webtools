@@ -59,7 +59,7 @@ public class BootSelectOneInputRenderer extends BootSelectInputGroupRenderer {
 		writer.writeAttribute("id", id+"_group", null);
 		
 		String wrapClass = get("wrapClass", component);
-		writer.writeAttribute("class","input-group select-one-input form-control"+(wrapClass!=null?" "+wrapClass:"")
+		writer.writeAttribute("class","select-one-input form-control"+(wrapClass!=null?" "+wrapClass:"")
 				+ (componentDisabled ? " disabled" : "")+(autocompleteBehavior!=null 
 				&& autocompleteBehavior.hasSuggestion()?" form-select-focus":""), null);
 		String wrapStyle = get("wrapStyle", component);

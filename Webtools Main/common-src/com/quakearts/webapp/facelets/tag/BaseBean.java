@@ -90,4 +90,30 @@ public abstract class BaseBean implements Serializable {
 		ctx.addMessage(clientID, message);		
 	}
 
+	protected String getParameter(String name){
+		return FacesContext.getCurrentInstance()
+				.getExternalContext()
+				.getRequestParameterMap()
+				.get(name);
+	}
+
+	protected int getParameterInt(String name){
+		String value = getParameter(name);
+		if(value==null)
+			return 0;
+		return Integer.parseInt(value);
+	}
+	
+	protected long getParameterLong(String name){
+		String value = getParameter(name);
+		if(value==null)
+			return 0;
+		return Long.parseLong(value);
+	}
+	
+	protected boolean hasParameter(String name) {
+		return FacesContext.getCurrentInstance()
+		.getExternalContext()
+		.getRequestParameterMap().containsKey(name);
+	}
 }

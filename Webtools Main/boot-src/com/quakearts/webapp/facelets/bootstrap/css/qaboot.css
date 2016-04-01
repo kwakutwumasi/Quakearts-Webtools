@@ -94,7 +94,7 @@
 	padding: 0px;
 }
 
-.input-group .disabled {
+.input-group .disabled, .select-one-input.disabled  {
 	color: #777;
 	cursor: not-allowed;
 	background-color: #EEE;
@@ -207,6 +207,9 @@
 	z-index: auto;
 	height: 34px;
 	width: 100%;
+	position: relative;
+	display: table;
+	border-collapse: separate;
 }
 
 .side-menu {
