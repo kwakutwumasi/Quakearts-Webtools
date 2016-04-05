@@ -43,9 +43,9 @@ public class BootHeaderRenderer extends HtmlBasicRenderer {
 				if(isRespondEnabled())
 					writer.write(HEADERRESPOND.replaceAll("@root", contextPath));
 				if(isjQueryEnabled())
-					writer.write((isInJSDebugMode()?HEADERJQUERY:HEADERJQUERYDEBUG).replaceAll("@root", contextPath));
+					writer.write((isInJSDebugMode()?HEADERJQUERYDEBUG:HEADERJQUERY).replaceAll("@root", contextPath));
 
-				writer.write((isInJSDebugMode()? HEADERJS:HEADERJSDEBUG).replaceAll("@root", contextPath));
+				writer.write((isInJSDebugMode()? HEADERJSDEBUG:HEADERJS).replaceAll("@root", contextPath));
 			}
 			context.getAttributes().put(BOOTSTRAP_HEADER,Boolean.TRUE);
 			

@@ -139,14 +139,17 @@ public abstract class HibernateBean {
 					continue;
 				
 				if(choice.choices.size()==1)
-					query.add(Restrictions.eq(entry.getKey(), choice.choices.get(1)));
+					query.add(getCriterion(entry.getKey(), choice.choices.get(0)));
+				else if(choice.choices.size()==2)
+					query.add(Restrictions.or(getCriterion(entry.getKey(), choice.choices.get(0)),
+							getCriterion(entry.getKey(), choice.choices.get(0))
+						));
 				else {
-					Criterion criterion = Restrictions.or(getCriterion(entry.getKey(), choice.choices.get(0)), 
-							getCriterion(entry.getKey(), choice.choices.get(1)));
-					for(int i=2; i<choice.choices.size()-1;i++){
-						criterion=Restrictions.or(criterion, getCriterion(entry.getKey(), choice.choices.get(i)));
+					Criterion[] criterion = new Criterion[choice.choices.size()];
+					for(int i=0; i<choice.choices.size();i++){
+						criterion[i] = getCriterion(entry.getKey(), choice.choices.get(i));
 					}
-					query.add(criterion);
+					query.add(Restrictions.or(criterion));
 				}
 			} else {
 				query.add(getCriterion(entry.getKey(), entry.getValue()));

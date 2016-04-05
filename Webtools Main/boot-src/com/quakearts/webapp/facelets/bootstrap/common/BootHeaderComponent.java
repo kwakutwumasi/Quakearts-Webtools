@@ -2,6 +2,7 @@ package com.quakearts.webapp.facelets.bootstrap.common;
 
 import java.util.ListIterator;
 
+import javax.faces.application.ProjectStage;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIOutput;
 import javax.faces.component.UIViewRoot;
@@ -26,12 +27,13 @@ public class BootHeaderComponent extends UIOutput {
 	
 	public BootHeaderComponent() {
 		if(!started){
-			ExternalContext ctx = FacesContext.getCurrentInstance()
-					.getExternalContext();
-			jQueryEnabled = !Boolean.parseBoolean(ctx.getInitParameter("com.quakearts.bootstrap.nojquery")); //JQuery loading disabled;
-			bootstrapEnabled = !Boolean.parseBoolean(ctx.getInitParameter("com.quakearts.bootstrap.nobootstrap")); //Bootstrap loading disabled;
-			respondEnabled = !Boolean.parseBoolean(ctx.getInitParameter("com.quakearts.bootstrap.norespond"));//Disable responds loading
-			inJSDebugMode = Boolean.parseBoolean(ctx.getInitParameter("com.quakearts.bootstrap.jsdebug"));
+			FacesContext ctx = FacesContext.getCurrentInstance();
+			ExternalContext exctx = ctx.getExternalContext();
+			jQueryEnabled = !Boolean.parseBoolean(exctx.getInitParameter("com.quakearts.bootstrap.nojquery")); //JQuery loading disabled;
+			bootstrapEnabled = !Boolean.parseBoolean(exctx.getInitParameter("com.quakearts.bootstrap.nobootstrap")); //Bootstrap loading disabled;
+			respondEnabled = !Boolean.parseBoolean(exctx.getInitParameter("com.quakearts.bootstrap.norespond"));//Disable responds loading
+			inJSDebugMode = Boolean.parseBoolean(exctx.getInitParameter("com.quakearts.bootstrap.jsdebug"))
+					|| (ctx.isProjectStage(ProjectStage.Development));
 			started=true;
 		}
 	}
