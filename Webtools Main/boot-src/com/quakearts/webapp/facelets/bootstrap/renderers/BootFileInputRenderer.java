@@ -101,13 +101,16 @@ public class BootFileInputRenderer extends Renderer {
 		if(!"@all".equals(execute) && !"@form".equals(execute) && !"@this".equals(execute))
 			execute = findClientIds(execute, component, context);
 		
-        String style =fileInput.get("style");		
 		String name = fileInput.get("name");
 		
 		writer.startElement("div", component);
 		writer.writeAttribute("id", id, "clientId");
+        String style =fileInput.get("style");		
         if(style!=null)
-        	writer.writeAttribute("stlye", style, null);    
+        	writer.writeAttribute("stlye", style, null);
+        String styleClass =fileInput.get("styleClass");		
+        if(styleClass!=null)
+        	writer.writeAttribute("class", styleClass, null);
         renderPassThruAttributes(context, writer, component, new Attribute[0]);
 		writer.write("\n");    	
 		writer.startElement("div", component);

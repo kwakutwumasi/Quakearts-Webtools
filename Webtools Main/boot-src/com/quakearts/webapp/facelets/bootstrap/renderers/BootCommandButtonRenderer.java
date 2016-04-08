@@ -86,11 +86,11 @@ public class BootCommandButtonRenderer extends HtmlBasicRenderer {
 		
 		String displayType = command.get("displayType");
 		String styleClass = command.get("styleClass");
-		if (styleClass != null && styleClass.length() > 0) {
-			writer.writeAttribute("class", "btn btn-"+displayType+" "+styleClass, "styleClass");
-		} else {
-			writer.writeAttribute("class", "btn btn-"+displayType, "styleClass");			
-		}
+		writer.writeAttribute("class", "btn btn-"+displayType+(styleClass!=null?" "+styleClass:""), "styleClass");
+		String style = command.get("style");
+		if(style!=null)
+			writer.writeAttribute("style", style, null);
+
 		
 		renderOnclick(context, component, getBehaviorParameters(component));
         writer.write("\n");

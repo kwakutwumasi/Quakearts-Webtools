@@ -7,6 +7,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlSelectBooleanCheckbox;
 import javax.faces.context.FacesContext;
 
+import com.quakearts.webapp.facelets.util.ObjectExtractor;
+
 public class BootCheckbox extends HtmlSelectBooleanCheckbox {
 	
 	public static final String COMPONENT_FAMILY="com.quakearts.bootstrap.checkbox";
@@ -62,5 +64,15 @@ public class BootCheckbox extends HtmlSelectBooleanCheckbox {
 	
 	@Override
 	public void setRendererType(String rendererType) {
+	}
+	
+	public String get(String attribute) {
+		String attributeValue = ObjectExtractor
+				.extractString(getValueExpression(attribute), getFacesContext()
+						.getELContext());
+		if (attributeValue == null)
+			attributeValue = (String) getAttributes().get(attribute);
+
+		return attributeValue;
 	}
 }

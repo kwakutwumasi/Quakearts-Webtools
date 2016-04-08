@@ -18,13 +18,16 @@ public class BootLabelRenderer extends HtmlBasicRenderer {
 			throw new IOException("Component must be of type "+BootLabel.class.getName());
 		}
 		
-		String type =((BootLabel)component).get("type");
-		String style = ((BootLabel)component).get("style");
+		BootLabel label = ((BootLabel)component);
+		String type = label.get("type");
+		String style = label.get("style");
+		String styleClass = label.get("styleClass");
 		
 		writer.startElement("span", component);
 		writeIdAttributeIfNecessary(context, writer, component);
-		writer.writeAttribute("class", "label label-"+type, null);
-		writer.writeAttribute("style", style, null);
+		writer.writeAttribute("class", "label label-"+type+(styleClass!=null?" "+styleClass:""), null);
+		if(style!=null)
+			writer.writeAttribute("style", style, null);
 		writer.write(currentValue);
 		writer.endElement("span");
 	}

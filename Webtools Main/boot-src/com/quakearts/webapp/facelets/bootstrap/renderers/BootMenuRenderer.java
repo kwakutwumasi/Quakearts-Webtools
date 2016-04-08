@@ -29,7 +29,9 @@ public class BootMenuRenderer extends HtmlBasicRenderer {
         }
         BootMenu menu = (BootMenu)component;
         String style =menu.get("style");
-        String type =menu.get("type");        
+        String type =menu.get("type");
+        String styleClass = menu.get("styleClass");
+        
 		if(type==null){
         	UIComponent parent = menu.getParent();
         	do{
@@ -67,7 +69,7 @@ public class BootMenuRenderer extends HtmlBasicRenderer {
 				writer.startElement("div", component);
 				String dropup = Boolean.parseBoolean(menu.get("dropup"))?" dropup":"";
 				
-				writer.writeAttribute("class", "btn-group"+dropup, null);
+				writer.writeAttribute("class", "btn-group"+dropup+(styleClass!=null?" "+styleClass:""), null);
 		        if(style!=null)
 		        	writer.writeAttribute("stlye", style, null);
 		        writer.write("\n");

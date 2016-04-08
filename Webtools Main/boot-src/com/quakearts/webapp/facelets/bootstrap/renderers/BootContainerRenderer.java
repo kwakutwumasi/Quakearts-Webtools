@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.context.ResponseWriter;
 
 import com.quakearts.webapp.facelets.bootstrap.components.BootContainer;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.html_basic.HtmlBasicRenderer;
@@ -26,10 +27,14 @@ public class BootContainerRenderer extends HtmlBasicRenderer {
 		boolean fluid= Boolean.parseBoolean(container.get("fluid"));
 		String styleClass = container.get("styleClass");
 
-		context.getResponseWriter().write("<div class=\""+(fluid?"container-fluid":"container")
+		ResponseWriter writer = context.getResponseWriter();
+		writer.write("<div class=\""+(fluid?"container-fluid":"container")
 				+(styleClass != null ? " " + styleClass : "")+"\""+ (shouldWriteIdAttribute(component) ? " id=\""
 						+ component.getClientId(context) + "\"" : "")
 						+">\n");
+		String style = container.get("style");
+		if(style!=null)
+			writer.writeAttribute("style", style, null);
 	}
 	
 	@Override

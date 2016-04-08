@@ -63,6 +63,12 @@ public class BootNavRenderer extends HtmlBasicRenderer {
 								:("pills".equals(type) ? " nav-pills" : " nav-tabs")
 								+ (stacked ? " nav-stacked" : "")+(justified ? " nav-justified" : "")))
 				+(styleClass!=null?" "+styleClass:""), null);
+		
+		String style = nav.get("style");
+		if(style!=null){
+			writer.writeAttribute("style", style, null);
+		}
+		
 		writeIdAttributeIfNecessary(context, writer, component);
 		renderPassThruAttributes(context, writer, component, ATTRIBUTES);
 	}

@@ -35,6 +35,10 @@ public class BootBreadCrumbRenderer extends HtmlBasicRenderer {
 		writer.startElement("ol", component);
 		String styleClass =  ((BootBreadCrumb)component).get("styleClass");				
 		writer.writeAttribute("class", "breadcrumb"+(styleClass!=null?" "+styleClass:""), null);
+		String style = ((BootBreadCrumb)component).get("style");
+		if(style!=null)
+			writer.writeAttribute("style", style, null);
+			
 		writeIdAttributeIfNecessary(context, writer, component);
 		renderPassThruAttributes(context, writer, component, ATTRIBUTES);
 

@@ -32,6 +32,9 @@ public class BootSideMenuRenderer extends HtmlBasicRenderer {
 		renderPassThruAttributes(context, writer, component, ATTRIBUTES);
 		String styleClass = sideMenu.get("styleClass");
 		writer.writeAttribute("class", "side-menu"+(styleClass!=null?" "+styleClass:"")+(disabled?" disabled":""), null);		
+		String style = sideMenu.get("style");
+		if(style!=null)
+			writer.writeAttribute("style", style, null);
 		
 		if(!disabled){
 			writer.writeAttribute("onmouseenter", "qab.tm(this,true)", null);

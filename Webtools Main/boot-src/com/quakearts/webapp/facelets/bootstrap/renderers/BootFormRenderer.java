@@ -94,6 +94,11 @@ public class BootFormRenderer extends HtmlBasicRenderer {
 						+ (styleClass != null ? " " + styleClass : ""), null);
 		writer.writeAttribute("action", getActionStr(context), null);
 		
+		String style = form.get("style");
+		if(style!=null){
+			writer.writeAttribute("style", style, null);
+		}
+		
 		String acceptcharset = (String) component.getAttributes().get(
 				"acceptcharset");
 		if (acceptcharset != null) {

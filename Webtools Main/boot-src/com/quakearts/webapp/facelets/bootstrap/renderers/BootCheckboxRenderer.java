@@ -77,14 +77,20 @@ public class BootCheckboxRenderer extends HtmlBasicInputRenderer {
         if(!(component instanceof BootCheckbox))
     		throw new IOException("Component must be of type "+BootCheckbox.class.getName());
     	    	
+        BootCheckbox box = ((BootCheckbox)component);
         
         ResponseWriter writer = context.getResponseWriter();
         assert(writer != null);
-        String styleClass;
         String id = component.getClientId(context);
         writer.startElement("div", component);
         writeIdAttributeIfNecessary(context, writer, component);
-        writer.writeAttribute("class", "input-group", null);
+        String mainClass = box.get("mainClass");
+        writer.writeAttribute("class", "input-group"+(mainClass!=null?" "+mainClass:""), null);
+        String mainStyle = box.get("mainStyle");
+        if(mainStyle!=null){
+        	writer.writeAttribute("style", mainStyle, null);
+        }
+        
         writer.write("\n");    	
         writer.startElement("span", component);
         writer.writeAttribute("class", "input-group-addon", null);
@@ -97,7 +103,7 @@ public class BootCheckboxRenderer extends HtmlBasicInputRenderer {
 			if(child instanceof UIInput){
 				component.getAttributes().put(HASINPUTCHILD, "true");
 				String inputEnableHandler = "qab.icbe(this)";
-				String userHandler = (String) component.getAttributes().get("onclick");
+				Object userHandler = component.getAttributes().get("onclick");
 				if(userHandler!=null){
 					userHandler = inputEnableHandler+"; "+userHandler;
 				} else {
@@ -121,9 +127,14 @@ public class BootCheckboxRenderer extends HtmlBasicInputRenderer {
         if (isChecked(currentValue)) {
             writer.writeAttribute("checked", Boolean.TRUE, "value");
         }
-        if (null != (styleClass = (String)
-        	component.getAttributes().get("styleClass"))) {
+        
+        String styleClass;
+        if (null != (styleClass = box.get("styleClass"))) {
         	writer.writeAttribute("class", styleClass, "styleClass");
+        }
+        String style;
+        if (null != (style = box.get("style"))) {
+        	writer.writeAttribute("style", style, null);
         }
         
 		renderPassThruAttributes(context, writer, component, ATTRIBUTES,

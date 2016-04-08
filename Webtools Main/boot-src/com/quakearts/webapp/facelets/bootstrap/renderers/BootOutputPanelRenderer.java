@@ -46,6 +46,12 @@ public class BootOutputPanelRenderer extends HtmlBasicRenderer {
 		writer.startElement("div", component);
 		writer.writeAttribute("class", "panel panel-" + type
 				+ (styleClass != null ? " "+styleClass : "")+(isPopup?" popup":""), null);
+		
+		String style = panel.get("style");
+		if(style!=null){
+			writer.writeAttribute("style", style, null);
+		}
+		
 		writeIdAttributeIfNecessary(context, writer, component);
 		renderPassThruAttributes(context, writer, component, ATTRIBUTES);
 		writer.write("\n");

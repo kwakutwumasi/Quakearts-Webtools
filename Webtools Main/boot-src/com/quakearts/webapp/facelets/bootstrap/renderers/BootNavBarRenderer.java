@@ -38,7 +38,13 @@ public class BootNavBarRenderer extends HtmlBasicRenderer {
         
 		ResponseWriter writer = context.getResponseWriter();
 		writer.startElement("div", component);
-		writer.writeAttribute("class", "navbar navbar-"+type+(position!=null?" navbar-"+position:""), null);
+		String styleClass = navbar.get("styleClass");
+		writer.writeAttribute("class", "navbar navbar-" + type + (position != null ? " navbar-" + position : "")
+				+ (styleClass != null ? " " + styleClass : ""), null);
+		String style = navbar.get("style");
+		if(style!=null)
+			writer.writeAttribute("style", style, null);
+		
 		writer.writeAttribute("role", "navigation", null);
 		writer.writeAttribute("id", id, null);
 		renderPassThruAttributes(context, writer, component, ATTRIBUTES);

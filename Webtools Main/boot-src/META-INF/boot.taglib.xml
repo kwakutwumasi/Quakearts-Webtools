@@ -467,6 +467,14 @@ child component if present
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" element of the div HTML tag that wraps the element</description>
+			<name>mainStyle</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render the "class" element of the div HTML tag that wraps the element</description>
+			<name>mainClass</name>
+		</attribute>
+		<attribute>
 			<description>A ValueExpression to render the "title" element of the HTML tag</description>
 			<name>title</name>
 		</attribute>
@@ -708,6 +716,10 @@ child component if present
 			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
+		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<name>style</name>
+		</attribute>
 	</tag>
 	<tag>
 		<tag-name>date</tag-name>
@@ -948,6 +960,10 @@ child component if present
 			<name>style</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<name>styleClass</name>
+		</attribute>
+		<attribute>
 			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
 			<name>required</name>
 		</attribute>
@@ -1122,6 +1138,10 @@ child component if present
 		<attribute>
 			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<name>styleClass</name>
 		</attribute>
 		<attribute>
 			<description>A ValueExpression to render the "title" element of the HTML tag</description>
@@ -1334,6 +1354,10 @@ child component if present
 		<attribute>
 			<description>A ValueExpression to render the "style" element of the HTML tag</description>
 			<name>style</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<name>styleClass</name>
 		</attribute>
 		<attribute>
 			<description>A ValueExpression that holds the UIOutput or UIInput component's value</description>
@@ -1562,6 +1586,10 @@ child component if present
 		<attribute>
 			<description>A ValueExpression to render the "class" element of the HTML tag</description>
 			<name>styleClass</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<name>style</name>
 		</attribute>
 	</tag>
 	<tag>
@@ -2884,9 +2912,6 @@ child component if present
 		</attribute>
 		<attribute>
 			<name>readonly</name>
-		</attribute>
-		<attribute>
-			<name>size</name>
 		</attribute>
 		<attribute>
 			<name>tabindex</name>

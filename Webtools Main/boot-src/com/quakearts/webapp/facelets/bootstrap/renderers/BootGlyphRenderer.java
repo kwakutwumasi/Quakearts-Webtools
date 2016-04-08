@@ -22,6 +22,7 @@ public class BootGlyphRenderer extends HtmlBasicRenderer {
 		String label = bootGlyph.get("label");
 		String style = bootGlyph.get("style");
 		String title = bootGlyph.get("title");
+		String styleClass = bootGlyph.get("styleClass");
 		
 		ResponseWriter writer = context.getResponseWriter();
 		String type = (String) bootGlyph.getValue();
@@ -33,7 +34,7 @@ public class BootGlyphRenderer extends HtmlBasicRenderer {
 		
 		writer.startElement("span", component);
 		writeIdAttributeIfNecessary(context, writer, component);
-		writer.writeAttribute("class", "glyphicon glyphicon-"+type, null);
+		writer.writeAttribute("class", "glyphicon glyphicon-"+type+(styleClass!=null?" "+styleClass:""), null);
 		if(label!=null){
 			writer.writeAttribute("aria-label",label, null);
 		}
