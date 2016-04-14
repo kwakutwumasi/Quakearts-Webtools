@@ -251,7 +251,7 @@
 
 .popup {
 	position: fixed;
-	z-index:1009;
+	z-index:999;
 	width:400px;
 	height:250px;
 	top:50%;

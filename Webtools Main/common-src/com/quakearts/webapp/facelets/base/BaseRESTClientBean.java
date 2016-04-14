@@ -1,4 +1,4 @@
-package com.quakearts.webapp.facelets.tag;
+package com.quakearts.webapp.facelets.base;
 
 import java.io.BufferedReader;
 import java.io.IOException;

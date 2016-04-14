@@ -1,9 +1,14 @@
 package com.quakearts.webapp.facelets.bootstrap.beans;
+import java.io.Serializable;
 import java.util.Collection;
 
 import javax.faces.component.UIComponent;
 
-public class PaginationBean {
+public class PaginationBean implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6438714134708931420L;
 	private int begin, end;
 	private Object value;
 	private UIComponent dataComponent;

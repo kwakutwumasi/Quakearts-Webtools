@@ -1,10 +1,12 @@
-package com.quakearts.webapp.facelets.tag;
+package com.quakearts.webapp.facelets.base;
 
 import java.io.Serializable;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
+
+import com.quakearts.webapp.facelets.tag.NavigationResolver;
 
 public abstract class BaseBean implements Serializable {
 	/**

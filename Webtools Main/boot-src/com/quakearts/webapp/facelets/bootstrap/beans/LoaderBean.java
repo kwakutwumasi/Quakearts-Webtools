@@ -1,6 +1,12 @@
 package com.quakearts.webapp.facelets.bootstrap.beans;
 
-public class LoaderBean {
+import java.io.Serializable;
+
+public class LoaderBean implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1599598630373609593L;
 	private static final String MAINAJAXLOADER = "qab.mlh";
 	private static final String MINIAJAXLOADER = "qab.mnh";
 	private static final String OVERLAYAJAXLOADER = "qab.ovh";

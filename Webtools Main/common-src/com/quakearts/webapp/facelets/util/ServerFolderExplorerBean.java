@@ -10,7 +10,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
 
-import com.quakearts.webapp.facelets.tag.BaseBean;
+import com.quakearts.webapp.facelets.base.BaseBean;
 
 public class ServerFolderExplorerBean extends BaseBean implements FilenameFilter, Validator {
 

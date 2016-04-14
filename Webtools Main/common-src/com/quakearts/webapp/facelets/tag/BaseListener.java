@@ -7,6 +7,8 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
 
+import com.quakearts.webapp.facelets.base.BaseBean;
+
 public abstract class BaseListener extends BaseBean implements ActionListener,Serializable {
 
 	/**

@@ -92,7 +92,7 @@ The second test evaluates a ValueExpression to determine if it should be rendred
 			<name>id</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
@@ -144,7 +144,7 @@ The second test evaluates a ValueExpression to determine if it should be rendred
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
@@ -174,7 +174,7 @@ Encode behavior: Renders any UIOutput child component.
 			<name>id</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
@@ -246,7 +246,7 @@ Encode behavior: Renders any UIOutput child component.
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
@@ -286,11 +286,11 @@ Encode behavior: Renders a &lt;div&gt; element with the button group classes. Re
 			<name>label</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 	</tag>
@@ -326,11 +326,11 @@ Encode behavior: Renders a &lt;div&gt; element with the button group classes. Re
 			<name>label</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 	</tag>
@@ -459,11 +459,11 @@ child component if present
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
@@ -514,35 +514,43 @@ child component if present
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>Number of Bootstrap columns spans (1-12) this element will have for extra small screens (less than 768px)</description>
 			<name>xs</name>
 		</attribute>
 		<attribute>
+			<description>Number of Bootstrap columns spans (1-12) this element will haverender for small screens (between 768px and 992px)</description>
 			<name>sm</name>
 		</attribute>
 		<attribute>
+			<description>Number of Bootstrap columns spans (1-12) this element will haverender for mid sized screens (between 992px and 1170px)</description>
 			<name>md</name>
 		</attribute>
 		<attribute>
+			<description>Number of Bootstrap columns spans (1-12) this element will haverender for large screens (greater than 1170px)</description>
 			<name>lg</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
+			<description>Number of Bootstrap columns spans (1-12) to offset this element for extra small screens (less than 768px)</description>
 			<name>offsetxs</name>
 		</attribute>
 		<attribute>
+			<description>Number of Bootstrap columns spans (1-12) to offset this element for small screens (between 768px and 992px)</description>
 			<name>offsetsm</name>
 		</attribute>
 		<attribute>
+			<description>Number of Bootstrap columns spans (1-12) to offset this element for mid sized screens (between 992px and 1170px)</description>
 			<name>offsetmd</name>
 		</attribute>
 		<attribute>
+			<description>Number of Bootstrap columns spans (1-12) to offset this element for large screens (greater than 1170px)</description>
 			<name>offsetlg</name>
 		</attribute>
 	</tag>
@@ -578,28 +586,35 @@ child component if present
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
+			<description>Bootstrap button type to render</description>
 			<name>displayType</name>
 		</attribute>
 		<attribute>
+			<description>Image to render on the button</description>
 			<name>image</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
+			<description>Button type (submit, button)</description>
 			<name>type</name>
 		</attribute>
 		<attribute>
+			<description>A MethodExpression of a managed bean method to execute when an ActionEvent is triggered. The method must have the signature 'void methodName(ActionListener)' </description>
 			<name>actionListener</name>
 		</attribute>
 		<attribute>
+			<description>A MethodExpression of a managed bean method to execute when this button is pressed. The method must have the signature 'void methodName()' </description>
 			<name>action</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the a string to be rendered as the HTML 'accesskey' attribute of the component</description>
 			<name>accesskey</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the a string to be rendered as the HTML 'alt' attribute of the component</description>
 			<name>alt</name>
 		</attribute>
 		<attribute>
@@ -671,10 +686,11 @@ child component if present
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "tabindex" element of the HTML tag</description>
 			<name>tabindex</name>
 		</attribute>
 		<attribute>
@@ -710,14 +726,15 @@ child component if present
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. Controls the rendering of Bootstrap 'navbar-fluid' css class in hte 'class' attribute</description>
 			<name>fluid</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 	</tag>
@@ -773,41 +790,68 @@ child component if present
 			<name>requiredMessage</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a number (maximum of 9) 
+				indicating the number of years before the current year to display in the year 
+				component of the date element. Values greater then 9 will trigger the infinite date styling.
+				Infinite date styling renders a text box in the year component that accepts variable years.
+				If the max attribute is also specified, it becomes the range of year values to show. In that instance,
+				the maximum is 9 minus the value of the max attribute. If min attribute plus max attribute is greater than 9,
+				infinite date styling is triggered.
+			</description>
 			<name>min</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a number (maximum of 9) 
+				indicating the number of years after the current year to display in the year 
+				component of the date element. Values greater then 9 will trigger the infinite date styling.
+				Infinite date styling renders a text box in the year component that accepts variable years.
+				If the min attribute is also specified, it becomes the range of year values to show. In that instance,
+				the maximum is 9 minus the value of the min attribute. If min attribute plus max attribute is greater than 9,
+				infinite date styling is triggered.
+			</description>
 			<name>max</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a string which controls the format of the date the input component will generate.
+				Valid values are d (day only), dm (day/month), my (month/year), y (year) and dmy (date/month/year)
+			</description>
 			<name>format</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean indicating whether the date can be null
+			</description>
 			<name>nullable</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "class" element of the day button HTML tag</description>
 			<name>dayClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "class" element of the month button HTML tag</description>
 			<name>monthClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "class" element of the year button HTML tag</description>
 			<name>yearClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "style" element of the day button HTML tag</description>
 			<name>dayType</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "style" element of the month button HTML tag</description>
 			<name>monthType</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "style" element of the year button HTML tag</description>
 			<name>yearType</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
@@ -883,17 +927,18 @@ child component if present
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
+			<description>Bootstrap button type to render</description>
 			<name>displayType</name>
 		</attribute>
 		<attribute>
 			<name>type</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
@@ -956,11 +1001,11 @@ child component if present
 			<name>allowMultiple</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
@@ -1069,11 +1114,11 @@ child component if present
 			<name>onsubmit</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
@@ -1104,11 +1149,11 @@ child component if present
 			<name>binding</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 	</tag>
@@ -1136,11 +1181,11 @@ child component if present
 			<name>value</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
@@ -1300,11 +1345,11 @@ child component if present
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
@@ -1352,11 +1397,11 @@ child component if present
 			<name>binding</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
@@ -1453,11 +1498,11 @@ child component if present
 			<name>layout</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
@@ -1500,7 +1545,7 @@ child component if present
 			<name>type</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
@@ -1544,7 +1589,7 @@ child component if present
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
@@ -1584,11 +1629,11 @@ child component if present
 			<name>responsive</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 	</tag>
@@ -1615,7 +1660,7 @@ child component if present
 			<name>type</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
@@ -1659,7 +1704,7 @@ child component if present
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
@@ -1712,11 +1757,11 @@ child component if present
 			<name>execute</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
@@ -1779,11 +1824,11 @@ child component if present
 			<name>binding</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 	</tag>
@@ -2107,6 +2152,7 @@ child component if present
 			<name>tabindex</name>
 		</attribute>
 		<attribute>
+			<description>Bootstrap button type to render</description>
 			<name>displayType</name>
 		</attribute>
 		<attribute>
@@ -2494,6 +2540,7 @@ child component if present
 			<name>tabindex</name>
 		</attribute>
 		<attribute>
+			<description>Bootstrap button type to render</description>
 			<name>displayType</name>
 		</attribute>
 		<attribute>
@@ -2923,6 +2970,7 @@ child component if present
 			<name>listener</name>
 		</attribute>
 		<attribute>
+			<description>Bootstrap button type to render</description>
 			<name>displayType</name>
 		</attribute>
 		<attribute>
@@ -3086,11 +3134,11 @@ child component if present
 			<name>rules</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
@@ -3223,11 +3271,11 @@ child component if present
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
@@ -3263,11 +3311,11 @@ child component if present
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>

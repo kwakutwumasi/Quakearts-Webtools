@@ -237,7 +237,7 @@ public class BootTableRenderer extends HtmlBasicRenderer {
 		BootMetaInfo info = getMetaInfo(context, component);
 		UIComponent footer = getFacet(component, "footer");
 
-		if (footer != null || !info.hasFooterFacets) {
+		if (footer != null || info.hasFooterFacets) {
 			String footerClass = (String) component.getAttributes().get("footerClass");
 			writer.startElement("tfoot", component);
 			writer.writeText("\n", component, null);

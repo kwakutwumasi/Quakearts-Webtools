@@ -60,13 +60,16 @@ public class BootOutputPanelRenderer extends HtmlBasicRenderer {
 		if((facet!=null && facet.isRendered()) || isPopup){
 			writer.startElement("div", component);
 			writer.writeAttribute("class", "panel-heading", null);
+			if(isPopup)
+				writer.writeAttribute("onclick", "qab.hclk(event)", null);
+			
 			if(facet!=null)
 				facet.encodeAll(context);
 			else{
 				writer.write("&nbsp");
 			}
 			if(isPopup){
-				writer.write("<span class=\"glyphicon glyphicon-remove close-btn\" onclick=\"qab.cls(this);\"></span>");
+				writer.write("<span class=\"glyphicon glyphicon-remove close-btn\" onclick=\"qab.cls(event);\"></span>");
 			}
 		   	writer.write("\n");
 			writer.endElement("div");

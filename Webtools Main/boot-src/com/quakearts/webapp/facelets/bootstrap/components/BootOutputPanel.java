@@ -171,7 +171,7 @@ public class BootOutputPanel extends UIOutput {
 			if(attributeValue==null) {
 	        	attributeValue="default";
 	        } else {
-		        if(isValid(attributeValue))
+		        if(!isValid(attributeValue))
 		        	attributeValue="default";
 	        }
 	                

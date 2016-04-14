@@ -490,12 +490,23 @@ qab.mnh = function(data){
     }
 };
 
-qab.pclk = function(e){
-	var drgbl= $(e.currentTarget);
+qab.hclk = function(e){
+  var drgbl= $(e.currentTarget).parent();
   if(!drgbl.hasClass("dragging")){
   	drgbl.addClass("dragging");
-  } else
-    drgbl.removeClass("dragging");
+	  if(e.stopPropagation){
+		  e.stopPropagation();
+	  } else {
+		  window.event.cancelBubble = true;
+	  }
+  }
+}
+
+qab.pclk = function(e) {
+  var drgbl= $(e.currentTarget);
+  if(drgbl.hasClass("dragging")){
+	  drgbl.removeClass("dragging");
+  }
 }
 
 qab.pmv= function(e){
@@ -507,9 +518,11 @@ qab.pmv= function(e){
   }
 }
 
-qab.cls=function(obj){
-	$(obj).parent().parent().fadeOut(function(){
-		$(this).removeClass("dragging");
-	});
-	return false;
+qab.cls=function(e){
+	$(e.currentTarget).parent().parent().fadeOut();
+	if (e.stopPropagation) {
+		e.stopPropagation();
+	} else {
+		window.event.cancelBubble = true;
+	}
 }
