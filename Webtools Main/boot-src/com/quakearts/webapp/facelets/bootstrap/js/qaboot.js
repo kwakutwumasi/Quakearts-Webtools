@@ -226,14 +226,21 @@ qab.rsi = function () {
 	}
 };
 
+qab.tmid2 = 0;
 qab.tm = function(obj,opst){
 	var sm = $(obj);
 	
-	var val=opst?"0":"-13em";
-	sm.animate({
-		left:val
-	});
-};
+	if(qab.tmid2 = 0){
+		clearTimeout(qab.tmid2);
+	}
+	
+	setTimeout(function () {
+		var val = opst?"0":"-13em";
+		sm.animate({
+			left:val
+		});
+	}, opst?0:500);	
+}; 
 
 qab.icbe = function(obj){
 	var checkbtn = $(obj);

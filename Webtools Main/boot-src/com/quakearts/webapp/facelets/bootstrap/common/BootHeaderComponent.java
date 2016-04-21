@@ -38,6 +38,8 @@ public class BootHeaderComponent extends UIOutput {
 		}
 	}
 	
+	private static final String NULLCOMPONENT = "";
+	
 	@Override
 	public String getFamily() {
 		return COMPONENT_FAMILY;
@@ -96,12 +98,23 @@ public class BootHeaderComponent extends UIOutput {
 		}
 	}
 	
-	public static void addBootComponentToHead(FacesContext ctx){
-		if(ctx.getPartialViewContext().isPartialRequest()){
-			return;
-		}
-			
+	public static void addBootComponentToHead(FacesContext ctx){			
         if(ctx.getAttributes().get(BOOT_LIBRARY_LOADED)==null){
+    		if(ctx.getPartialViewContext().isPartialRequest()){
+    			boolean hasall = false;
+    			for(String id:ctx.getPartialViewContext().getRenderIds()){
+    				if(!"javax.faces.ViewRoot".equals(id) &&
+    						!"@all".equals(id));
+    				{hasall=true; break;}
+    			}
+    			
+    			if(!hasall){
+    				ctx.getAttributes().put(BOOT_LIBRARY_LOADED, NULLCOMPONENT);//Dummy
+    				return;
+    			}
+    		}
+
+        	
             if(!hasJSFResourceBeenInstalled(ctx)){
             	UIOutput jsfJsComp = new UIOutput();
             	jsfJsComp.getAttributes().put("name", JSF_JS);

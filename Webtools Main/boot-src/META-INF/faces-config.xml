@@ -223,11 +223,6 @@
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootDateButtonRenderer</renderer-class>
 		</renderer>
 		<renderer>
-			<component-family>com.quakearts.bootstrap.datescript</component-family>
-			<renderer-type>com.quakearts.bootstrap.datescript.renderer</renderer-type>
-			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootDateScriptRenderer</renderer-class>
-		</renderer>
-		<renderer>
 			<component-family>com.quakearts.bootstrap.menu</component-family>
 			<renderer-type>com.quakearts.bootstrap.menu.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootMenuRenderer</renderer-class>

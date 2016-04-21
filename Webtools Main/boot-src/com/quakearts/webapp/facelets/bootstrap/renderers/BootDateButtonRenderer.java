@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.TreeMap;
@@ -28,8 +29,10 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
     public static final int[] MONTHDAYS = new int[]{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     private static final Map<Integer,String> months = new TreeMap<Integer, String>();
     private static final Attribute[] ATTRIBUTES = AttributeManager.getAttributes(Key.DATEBUTTON);
+    public static final String DATE_SCRIPT_FUNCTION = "var dc_idVal = qab.dc('#dayVal',#monthVal,'#yearVal',"
+    		+ "'#idVal','#type');";
     
-    static{
+    static {
     	months.put(1,"Jan");
     	months.put(2,"Feb");
     	months.put(3,"Mar");
@@ -154,7 +157,17 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
         writer.endElement("input");
         writer.write("\n");
         writer.endElement("div");
-        writer.write("\n");    	
+        writer.write("\n");  
+        
+        if(!componentIsDisabled(button)){
+			writer.startElement("script", button);
+			writer.writeAttribute("type", "text/javascript", null);
+	        writer.write("\n");    	
+			writer.writeText(getContents(button,context), null);	
+	        writer.write("\n");
+			writer.endElement("script");
+	        writer.write("\n");   
+		}
     }
     
     private void generateSelectDay(String idJs, int value,
@@ -281,6 +294,49 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
         writer.write("\n");    	
     	writer.endElement("div");
     }   
+	
+	private String getContents(BootDateButton dateComponent, FacesContext context) {
+		String idJs=dateComponent.getClientId(context).replace("-", "_");
+	    int dayInt,monthInt,yearInt;
+	    Calendar date;
+        date = new GregorianCalendar();
+		Object object = dateComponent.getValue();
+		boolean isNull = false;
+		
+        if(object instanceof String){
+    		SimpleDateFormat formatter;
+    		formatter = new SimpleDateFormat(dateComponent.formatVal().getFormatString());
+			try {
+				date.setTime(formatter.parse((String) object));
+			} catch (ParseException e) {
+			}
+        } else if(object instanceof Date){
+        	date.setTime((Date)object);
+        } else if(object==null){
+        	isNull = dateComponent.nullable();
+        }
+        
+        if(dateComponent.formatVal()==DateFormat.DAYMONTH||dateComponent.formatVal()==DateFormat.DAYMONTHYEAR)
+        	dayInt = date.get(Calendar.DAY_OF_MONTH);
+        else
+        	dayInt = 1;
+        
+        if(dateComponent.formatVal()!=DateFormat.YEAR)
+        	monthInt = (date.get(Calendar.MONTH)+1);
+        else
+        	monthInt = 1;
+
+        yearInt = date.get(Calendar.YEAR);
+		
+		
+		return DATE_SCRIPT_FUNCTION
+				.replace("idVal", idJs)
+				.replace("#dayVal",isNull?"":(dayInt<10?"0"+dayInt:""+dayInt))
+				.replace("#monthVal",isNull?"0":(monthInt+""))
+				.replace("#yearVal", isNull?"":(""+yearInt))
+				.replace("#type", dateComponent.formatVal()
+						.getFormatValue());
+	}
     
     private Map<Integer, String> getYearsMap(int max,int min, int yearInt){
     	Map<Integer, String> yearsMap = new TreeMap<Integer, String>();

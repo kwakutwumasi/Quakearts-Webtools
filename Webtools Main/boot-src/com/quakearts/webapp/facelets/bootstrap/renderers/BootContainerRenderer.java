@@ -26,15 +26,13 @@ public class BootContainerRenderer extends HtmlBasicRenderer {
 		
 		boolean fluid= Boolean.parseBoolean(container.get("fluid"));
 		String styleClass = container.get("styleClass");
+		String style = container.get("style");
 
 		ResponseWriter writer = context.getResponseWriter();
 		writer.write("<div class=\""+(fluid?"container-fluid":"container")
 				+(styleClass != null ? " " + styleClass : "")+"\""+ (shouldWriteIdAttribute(component) ? " id=\""
-						+ component.getClientId(context) + "\"" : "")
+						+ component.getClientId(context) + "\"" : "")+(style!=null?" style=\""+style+"\"":"")
 						+">\n");
-		String style = container.get("style");
-		if(style!=null)
-			writer.writeAttribute("style", style, null);
 	}
 	
 	@Override

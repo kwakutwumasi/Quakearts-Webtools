@@ -743,7 +743,7 @@ child component if present
 		<component>
 			<component-type>com.quakearts.bootstrap.date</component-type>
 			<renderer-type>com.quakearts.bootstrap.date.renderer</renderer-type>
-			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootDateButtonHandler</handler-class>
+			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
 			<description>the ID of the component</description>
