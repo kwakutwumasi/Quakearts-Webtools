@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<faceted-project>
-  <runtime name="JBoss AS 5.1 Runtime"/>
-  <fixed facet="jst.utility"/>
-  <fixed facet="java"/>
-  <installed facet="wst.jsdt.web" version="1.0"/>
-  <installed facet="java" version="1.7"/>
-  <installed facet="jst.utility" version="1.0"/>
-</faceted-project>

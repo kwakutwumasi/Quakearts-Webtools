@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<facelet-taglib version="2.0" xmlns="http://java.sun.com/xml/ns/javaee"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee web-facelettaglibrary_2_0.xsd ">
+	<namespace>http://quakearts.com/2.0/commonui</namespace>
+	<tag>
+		<tag-name>convertTimeStamp</tag-name>
+		<handler-class>com.quakearts.webapp.facelets.tag.input.converter.TimeStampTagHandler</handler-class>
+		<attribute>
+			<name>pattern</name>
+		</attribute>
+		<attribute>
+			<name>type</name>
+		</attribute>
+		<attribute>
+			<name>datestyle</name>
+		</attribute>
+		<attribute>
+			<name>timestyle</name>
+		</attribute>
+		<attribute>
+			<name>transient</name>
+		</attribute>
+	</tag>
+	<tag>
+		<tag-name>fileNameValidator</tag-name>
+		<handler-class>com.quakearts.webapp.facelets.tag.input.validator.FileNameValidatorTagHandler</handler-class>
+		<attribute>
+			<name>restricted</name>
+		</attribute>
+		<attribute>
+			<name>transient</name>
+		</attribute>
+		<attribute>
+			<name>pattern</name>
+		</attribute>
+	</tag>
+</facelet-taglib>

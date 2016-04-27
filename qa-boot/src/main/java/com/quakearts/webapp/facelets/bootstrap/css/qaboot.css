@@ -1,0 +1,268 @@
+.select-container{
+	display: table;
+}
+
+.form-select {
+	cursor:pointer;
+}
+
+.select-list {
+	margin-bottom: 2px;
+	cursor: pointer;
+}
+
+.btn-select-dropdown {
+	margin-bottom: 3px;
+}
+
+.day-container {
+	padding: 8px 0px 8px 12px;
+	width: 300px;
+}
+
+.date-container {
+	padding: 8px 0px 8px 12px;
+	min-width: 150px;
+}
+
+.year-inp{
+	width: 125px;
+	color: #337ab7;
+	margin-top: 5px;
+}
+
+.day, .day-header {
+	width: 35px;
+	height: 34px;
+	padding: 6px 0px 0px 0px;
+	display: inline-block;
+	text-align: center;
+	font-size: 16px;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.day-header {
+	cursor: default;
+}
+
+.other-date {
+	width: 60px;
+	height: 34px;
+	padding: 6px 0px 0px 0px;
+	display: inline-block;
+	text-align: center;
+	font-size: 16px;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.other-date:hover, .day:hover {
+	text-decoration: none;
+	background-color: #31708F;
+	color: white;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+	border-bottom-left-radius: 3px;
+}
+
+.pagination {
+	cursor: pointer;
+}
+
+.overlay {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color: #fff;
+	opacity: 0.0;
+	display: block;
+	z-index: 1001;
+	text-align: center;
+}
+
+.overlay img {
+	position: relative;
+	top: 33%;
+}
+
+.input-list-group {
+	width: 100%;
+	padding: 0px;
+}
+
+.input-group .disabled, .select-one-input.disabled  {
+	color: #777;
+	cursor: not-allowed;
+	background-color: #EEE;
+}
+
+.input-caret {
+	position: absolute;
+	top: 14px;
+	right: 10px;
+}
+
+.auto-complete {
+	border: none;
+	min-width: 100%;
+	background-color: transparent;
+}
+
+.list-container {
+	overflow: hidden;
+	max-height: 220px;
+	margin-bottom: 0px;
+}
+
+.menu-input {
+	cursor: text;
+	width: auto;
+}
+
+.fill5 {
+	width: 5%;
+}
+
+.fill10 {
+	width: 10%;
+}
+
+.fill15 {
+	width: 15%;
+}
+
+.fill20 {
+	width: 20%;
+}
+
+.fill25 {
+	width: 25%;
+}
+
+.fill30 {
+	width: 30%;
+}
+
+.fill35 {
+	width: 35%;
+}
+
+.fill40 {
+	width: 40%;
+}
+
+.fill45 {
+	width: 45%;
+}
+
+.fill50 {
+	width: 50%;
+}
+
+.fill55 {
+	width: 55%;
+}
+
+.fill60 {
+	width: 60%;
+}
+
+.fill65 {
+	width: 65%;
+}
+
+.fill70 {
+	width: 70%;
+}
+
+.fill75 {
+	width: 75%;
+}
+
+.fill80 {
+	width: 80%;
+}
+
+.fill85 {
+	width: 85%;
+}
+
+.fill90 {
+	width: 90%;
+}
+
+.fill95 {
+	width: 95%;
+}
+
+.fill100 {
+	width: 100%;
+}
+
+.select-one-input{
+	z-index: auto;
+	height: 34px;
+	width: 100%;
+	position: relative;
+	display: table;
+	border-collapse: separate;
+}
+
+.side-menu {
+    position: fixed;
+    left: -13em;
+    top: 0;
+    bottom: 0;
+    border-right: 2px solid #000;
+    box-shadow: 4px 0 5px rgba(0,0,0,0.2);
+    z-index: 1;
+    cursor: pointer;
+    min-width: 226px;
+    background-color: #FFF;
+}
+
+.side-menu .nav-pills > li > a {
+	border-radius: 0px;
+}
+
+.navitem-icon {
+	position: absolute;
+	right: 10px;
+	top: 30%;
+}
+
+.form-select-focus {
+  border-color: #66afe9;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+          box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+}
+
+.dragging{
+  cursor: move;
+  border-color: red;
+  -webkit-box-shadow: 0 1px 2px rgba(255,0,0,.8);
+  box-shadow: 0 1px 2px rgba(255,0,0,.8);
+}
+
+.popup {
+	position: fixed;
+	z-index:999;
+	width:400px;
+	height:250px;
+	top:50%;
+	left:50%;
+	margin-left: -200px;
+	margin-top: -125px;
+}
+
+.close-btn {
+	position: absolute;
+	right: 10px;
+	top:12px;
+	cursor: pointer;
+}
