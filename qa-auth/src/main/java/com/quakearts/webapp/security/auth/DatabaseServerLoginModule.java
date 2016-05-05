@@ -216,7 +216,7 @@ public class DatabaseServerLoginModule implements LoginModule {
 			log.fine("Subject " + username + " verified.");
 			checker.reset(username);
 			if (sharedState != null) {
-				sharedState.put("com.zenithbank.LoginOk",Boolean.TRUE);					
+				sharedState.put("com.quakearts.LoginOk",Boolean.TRUE);					
 			}
 			
 			if (!authenticate_only) {

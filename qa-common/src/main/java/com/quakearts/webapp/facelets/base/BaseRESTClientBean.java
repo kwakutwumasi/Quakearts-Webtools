@@ -94,7 +94,7 @@ public abstract class BaseRESTClientBean extends BaseBean {
 		private String message;
 		private int httpCode;
 		
-		public RESTResponse(String output, String message, int httpCode) {
+		private RESTResponse(String output, String message, int httpCode) {
 			this.output = output;
 			this.message = message;
 			this.httpCode = httpCode;
@@ -185,7 +185,7 @@ public abstract class BaseRESTClientBean extends BaseBean {
 			cookie = cookie.substring(0, cookie.indexOf(";"));
 		}
 
-		if(responseCode==200){
+		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
 					con.getInputStream()));
 			StringBuilder response = new StringBuilder();
@@ -194,11 +194,12 @@ public abstract class BaseRESTClientBean extends BaseBean {
 				response.append(line);
 			}
 			output = response.toString();
+		} catch (IOException e) {
 		}
 		return new RESTResponse(output, con.getResponseMessage(), con.getResponseCode());
 	}
 
-    protected String prettyFormat(String jsonString){
+    public static String prettyPrintJSON(String jsonString){
         int level = 0;
         boolean newline=false, inLiteral=false;
         StringBuilder builder = new StringBuilder();

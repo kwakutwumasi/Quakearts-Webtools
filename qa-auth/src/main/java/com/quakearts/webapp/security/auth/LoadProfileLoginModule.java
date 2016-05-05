@@ -107,10 +107,10 @@ public class LoadProfileLoginModule implements LoginModule{
             if(sharedState != null){
                 log.fine("Using first pass....");
                 Object loginDN_val = sharedState.get("javax.security.auth.login.name");
-                Object changePasswordObject = sharedState.get("com.zenithbank.ChangePassword");
+                Object changePasswordObject = sharedState.get("com.quakearts.ChangePassword");
                 username = (loginDN_val!=null && loginDN_val instanceof Principal)?((Principal) loginDN_val).getName():null;
                 change_password = (changePasswordObject==null?false:(Boolean) (changePasswordObject));
-                Object loginOkObject = sharedState.get("com.zenithbank.LoginOk");
+                Object loginOkObject = sharedState.get("com.quakearts.LoginOk");
 
                 loginOk = (loginOkObject==null?false:(Boolean)(loginOkObject));
             }

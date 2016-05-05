@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-workflow</artifactId>
-	<version>2.0.1-SNAPSHOT</version>
+	<version>2.2</version>
 	<name>Quakearts JBPM3 Workflow Enhancements</name>
 	<build>
 		<plugins>
@@ -27,12 +27,12 @@
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-common</artifactId>
-			<version>2.0.1-SNAPSHOT</version>			
+			<version>2.2</version>			
 		</dependency>
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-boot</artifactId>
-			<version>2.0.1-SNAPSHOT</version>			
+			<version>2.2</version>			
 		</dependency>
 		<dependency>
 			<groupId>org.infinispan</groupId>
@@ -42,12 +42,12 @@
 		<dependency>
 			<groupId>com.quakearts.workflow</groupId>
 			<artifactId>jbpm3</artifactId>
-			<version>3.0.1-SNAPSHOT</version>
+			<version>3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.quakearts.workflow</groupId>
 			<artifactId>jBPM4jsf</artifactId>
-			<version>2.0.1-SNAPSHOT</version>
+			<version>2</version>
 		</dependency>
 	</dependencies>
 </project>

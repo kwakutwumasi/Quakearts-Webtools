@@ -48,7 +48,7 @@ public class DatabaseLoginModule implements LoginModule {
 	private static final Logger log = Logger
 			.getLogger(DatabaseLoginModule.class.getName());
 	private int iterations = 0;
-	private boolean resOrientPort;
+	private boolean resOrientPort, usernameAsSalt;
 	private AttemptChecker checker;
 
 	public DatabaseLoginModule() {
@@ -76,6 +76,9 @@ public class DatabaseLoginModule implements LoginModule {
 		require_password_change = Boolean.parseBoolean((String) options
 				.get("require_password_change"));
 
+		usernameAsSalt = Boolean.parseBoolean((String) options
+				.get("username_as_salt"));
+		
 		if (require_password_change) {
 			changePasswordRole = (String) options.get("changePasswordRole");
 			defaultPassword = (String) options.get("defaultPassword");
@@ -237,7 +240,8 @@ public class DatabaseLoginModule implements LoginModule {
 					throw new LoginException("Login/Password is null.");
 				String passwordhash;
 				HashPassword hash = new HashPassword(new String(password),
-						hashalgorithm, iterations, salt);
+						hashalgorithm, iterations, salt
+							+(usernameAsSalt?username:""));
 
 				passwordhash = hash.toString();
 
@@ -261,10 +265,10 @@ public class DatabaseLoginModule implements LoginModule {
 					throw new LoginException("Invalid Password.");
 				}
 
-				if (require_password_change) {
-					if (passwordhash.equals(defaultPassword)) {
+				if (require_password_change) {					
+					if (new String(password).equals(defaultPassword)) {
 						change_password = true;
-						sharedState.put("com.zenithbank.ChangePassword",
+						sharedState.put("com.quakearts.ChangePassword",
 								Boolean.TRUE);
 					}
 				}
@@ -274,7 +278,7 @@ public class DatabaseLoginModule implements LoginModule {
 				log.fine("Subject " + username + " verified.");
 				checker.reset(username);
 				if (sharedState != null) {
-					sharedState.put("com.zenithbank.LoginOk",Boolean.TRUE);					
+					sharedState.put("com.quakearts.LoginOk",Boolean.TRUE);					
 				}
 			}
 			log.fine("Getting roles for " + username + "...");
