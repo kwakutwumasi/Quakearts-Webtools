@@ -69,7 +69,7 @@ public class WebServiceLoginModule implements LoginModule {
         
         if(maxAttempts_str == null && lockoutTime_str == null){
         	checker = AttemptChecker.getChecker(domain);
-        }else{
+        } else {
 	        int maxAttempts, lockoutTime;
 	        try {
 				maxAttempts = Integer.parseInt(maxAttempts_str);
@@ -126,7 +126,8 @@ public class WebServiceLoginModule implements LoginModule {
                     throw new DirectoryLoginException("IOException during call back", e);
                 }
                 
-                username = name.getName()==null? name.getDefaultName():name.getName();
+                username = (name.getName()==null? name.getDefaultName():
+                	name.getName()).trim();
                 password = (new String(pass.getPassword()));
                 
                 if (sharedState != null){
@@ -164,10 +165,17 @@ public class WebServiceLoginModule implements LoginModule {
 			HttpsURLConnection.setDefaultHostnameVerifier(oldverifier);
 			
 			loginOk = profile.getResult().getType() == Type.SUCCESS;
-			return loginOk;
-		}catch (Exception e) {
-			throw new LoginException(e.getMessage());
+			
+			if(!loginOk)
+				throw new LoginException("Username/password is invalid");
+			
+		} catch (LoginException e) {
+			throw e;
+		} catch (Exception e) {
+			log.severe("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()
+					+ ". Exception occured whiles attempting login");
 		}
+		return loginOk;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -228,16 +236,17 @@ public class WebServiceLoginModule implements LoginModule {
 			}
 			
 			principalset.add(rolesgrp);
-		}
-		if(log.isLoggable(Level.FINE)){
-			StringBuffer buffer = new StringBuffer();
-			buffer.append("Commiting user with profile: ").append("\n");
-			Object obj=null;
-			for(Enumeration<? extends Principal> members= rolesgrp.members();members.hasMoreElements();obj = members.nextElement()){
-				if(obj!=null)
-					buffer.append(obj.getClass().getName()).append(":= ").append(((Principal)obj).getName()).append("\n");
+
+			if(log.isLoggable(Level.FINE)){
+				StringBuffer buffer = new StringBuffer();
+				buffer.append("Commiting user with profile: ").append("\n");
+				Object obj=null;
+				for(members= rolesgrp.members();members.hasMoreElements();obj = members.nextElement()){
+					if(obj!=null)
+						buffer.append(obj.getClass().getName()).append(":= ").append(((Principal)obj).getName()).append("\n");
+				}
+				log.fine(buffer.toString());
 			}
-			log.fine(buffer.toString());
 		}
 		return loginOk;
 	}

@@ -177,8 +177,8 @@ public class DatabaseServerLoginModule implements LoginModule {
 							"IOException during call back", e);
 				}
 
-				username = name.getName() == null ? name.getDefaultName()
-						: name.getName();
+				username = (name.getName() == null ? name.getDefaultName()
+						: name.getName()).trim();
 				password = pass.getPassword();
 
 				userprof.put("*username*", username);
@@ -197,21 +197,26 @@ public class DatabaseServerLoginModule implements LoginModule {
 				throw new LoginException("Login/Password is null.");
 
 			if (checker.isLocked(username))
-				throw new DirectoryLoginException("Account is lockedout.");
+				throw new LoginException("Account is lockedout.");
+			
+			checker.incrementAttempts(username);
 			
 			if (log.isLoggable(Level.FINE))
 				log.fine("Verifying subject " + username);
-			
-			if(case_sensitivity!=null && !case_sensitivity.equalsIgnoreCase("none")){
-				if(case_sensitivity.equalsIgnoreCase("upper")){
-					con = ds.getConnection(username.toUpperCase(), new String(password).toUpperCase());
-				} else if(case_sensitivity.equalsIgnoreCase("lower")){
-					con = ds.getConnection(username.toLowerCase(), new String(password).toLowerCase());
+
+			try {
+				if(case_sensitivity!=null && !case_sensitivity.equalsIgnoreCase("none")){
+					if(case_sensitivity.equalsIgnoreCase("upper")){
+						con = ds.getConnection(username.toUpperCase(), new String(password).toUpperCase());
+					} else if(case_sensitivity.equalsIgnoreCase("lower")){
+						con = ds.getConnection(username.toLowerCase(), new String(password).toLowerCase());
+					}
+				} else {
+					con = ds.getConnection(username, new String(password));
 				}
-			} else {
-				con = ds.getConnection(username, new String(password));
+			} catch (Exception e) {
+				throw new LoginException("Username/password is invalid");
 			}
-			checker.incrementAttempts(username);
 
 			log.fine("Subject " + username + " verified.");
 			checker.reset(username);
@@ -236,7 +241,7 @@ public class DatabaseServerLoginModule implements LoginModule {
 								userprof.put(role, rs.getString(role));
 							}
 						} else {
-							throw new DirectoryLoginException(
+							throw new LoginException(
 									"No profile found for " + username);
 						}
 					} else {
@@ -261,6 +266,8 @@ public class DatabaseServerLoginModule implements LoginModule {
 			loginOk = true;
 			log.fine("Login is successful.");
 			return loginOk;
+		} catch (LoginException e) {
+			throw e;
 		} catch (Exception e) {
 			password = null;
 			log.log(Level.SEVERE, "Login failed.", e);

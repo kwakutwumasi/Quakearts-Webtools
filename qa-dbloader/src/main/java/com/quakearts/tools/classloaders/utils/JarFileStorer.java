@@ -40,6 +40,7 @@ public class JarFileStorer {
 		jarFile.setJarData(jarBytes);
 		jarFile.setJarName(jarName);
 		session.save(jarFile);
+		session.flush();
 		
 		ZipInputStream jarStream = new ZipInputStream(new ByteArrayInputStream(jarBytes));		
 		ZipEntry zipEntry;
@@ -63,7 +64,7 @@ public class JarFileStorer {
 					builder.append("Loaded "+zipEntry.getName()).append("\n");
 					++savecount;
 				}else{
-					builder.append(zipEntry.getName()).append("already exists in database");
+					builder.append(zipEntry.getName()).append(" already exists in database");
 					JarFile duplicateFile = duplicateJarFileEntry.getJarFile();
 					ZipInputStream duplicateJarStream = new ZipInputStream(new ByteArrayInputStream(duplicateFile.getJarData()));
 					ZipEntry duplicateZipEntry = UtilityMethods.findZipEntry(duplicateJarFileEntry.getId(), duplicateJarStream);

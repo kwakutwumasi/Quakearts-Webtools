@@ -144,8 +144,9 @@ public class IpAddressFilterLoginModule implements LoginModule {
 			ipAddress = request.getRemoteAddr();
 			log.fine("Attempted access from "+ipAddress);
 		} catch (Exception e) {
-			throw new LoginException("Exception " + e.getClass().getName() + ". Message is "
+			log.severe("Exception " + e.getClass().getName() + ". Message is "
 					+ e.getMessage());
+			return false;
 		}
 
 		rolesStr = properties.getProperty(ipAddress);

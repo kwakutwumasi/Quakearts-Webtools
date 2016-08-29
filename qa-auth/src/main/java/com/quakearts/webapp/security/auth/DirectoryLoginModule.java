@@ -188,7 +188,8 @@ public class DirectoryLoginModule implements LoginModule{
                 throw new LoginException("IOException during call back");
             }
             
-            username = name.getName()==null? name.getDefaultName():name.getName();
+            username = (name.getName()==null? name.getDefaultName():
+            	name.getName()).trim();
             password = (new String(pass.getPassword())).getBytes();
             
             if (sharedState != null){
@@ -241,6 +242,10 @@ public class DirectoryLoginModule implements LoginModule{
                     throw new LoginException(e.getMessage());
                 }
             }
+
+            checker.reset(username);
+            loginOk = true;
+            log.fine("Login is successful.");
         } catch (LDAPException e) {
             log.log(Level.SEVERE, "Error while logging in: "+e.getMessage(),e);
             if ( e.getResultCode() == LDAPException.NO_SUCH_OBJECT ) {
@@ -250,7 +255,6 @@ public class DirectoryLoginModule implements LoginModule{
             } else {
                 log.log(Level.SEVERE, "Error while authenticating",e);
             }
-            throw new LoginException("Error while searching for user profile.");
         } finally {
             try {
                 conn.disconnect();
@@ -261,9 +265,6 @@ public class DirectoryLoginModule implements LoginModule{
             loginDN = null;
             password = null;
         }
-        checker.reset(username);
-        loginOk = true;
-        log.fine("Login is successful.");
         return loginOk;
     }
 

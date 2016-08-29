@@ -13,22 +13,20 @@ public class CommandLineTool {
 	 */
 	public static void main(String[] args) {
 		
-		if(args.length < 3){
+		if(args.length < 2){
 			printUsage();
 			return;
 		}
 		
 		String jarFileLocation=null,config=null;
 		
-		int i=0;
-		for(String arg:args){
-			if(i % 2==1){
+		for(int i=0;i<args.length;i+=2){
+			String arg=args[i];
+			if(i % 2==0){
 				if(arg.equalsIgnoreCase("-jar"))
 					jarFileLocation = args[i+1];
 				if(arg.equalsIgnoreCase("-config"))
 					config = args[i+1];
-			}else{
-				continue;
 			}
 		}
 		

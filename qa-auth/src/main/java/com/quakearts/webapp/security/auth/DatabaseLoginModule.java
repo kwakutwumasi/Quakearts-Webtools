@@ -218,8 +218,8 @@ public class DatabaseLoginModule implements LoginModule {
 							"IOException during call back", e);
 				}
 
-				username = name.getName() == null ? name.getDefaultName()
-						: name.getName();
+				username = (name.getName() == null ? name.getDefaultName()
+						: name.getName()).trim();
 				password = pass.getPassword();
 
 				userprof.put("*username*", username);
@@ -237,7 +237,7 @@ public class DatabaseLoginModule implements LoginModule {
 			
 			if (!load_profile_only) {
 				if (username == null || password == null)
-					throw new LoginException("Login/Password is null.");
+					throw new LoginException("Username/Password is null.");
 				String passwordhash;
 				HashPassword hash = new HashPassword(new String(password),
 						hashalgorithm, iterations, salt
@@ -249,7 +249,7 @@ public class DatabaseLoginModule implements LoginModule {
 					throw new DirectoryLoginException("Error logging in.");
 
 				if (checker.isLocked(username))
-					throw new DirectoryLoginException("Account is lockedout.");
+					throw new LoginException("Account is lockedout.");
 				
 				checker.incrementAttempts(username);
 				
@@ -295,7 +295,7 @@ public class DatabaseLoginModule implements LoginModule {
 							userprof.put(role, rs.getString(role));
 						}
 					} else {
-						throw new DirectoryLoginException(
+						throw new LoginException(
 								"No profile found for " + username);
 					}
 				} else {
@@ -307,7 +307,7 @@ public class DatabaseLoginModule implements LoginModule {
 						} while (rs.next());
 						log.fine("Got roles: " + userprof);
 					} else {
-						throw new DirectoryLoginException(
+						throw new LoginException(
 								"No profile found for " + username);
 					}
 				}
@@ -319,6 +319,8 @@ public class DatabaseLoginModule implements LoginModule {
 			loginOk = true;
 			log.fine("Login is successful.");
 			return loginOk;
+		} catch (LoginException e) {
+			throw e;
 		} catch (Exception e) {
 			password = null;
 			log.log(Level.SEVERE, "Login failed.", e);

@@ -2,12 +2,15 @@ package com.quakearts.webapp.facelets.base;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -29,7 +32,7 @@ public abstract class BaseRESTClientBean extends BaseBean {
 	private String password;
 	private SimpleDateFormat dateFormat = new SimpleDateFormat(
 				"DDD, dd MMM yyyy HH:mm:ss");
-	private String cookie;
+	private String defaultCookie;
 	private boolean secured;
 	private String userAgent;
 	
@@ -49,12 +52,12 @@ public abstract class BaseRESTClientBean extends BaseBean {
 		this.host = host;
 	}
 
-	public String getCookie() {
-		return cookie;
+	public String getDefaultCookie() {
+		return defaultCookie;
 	}
 
-	public void setCookie(String cookie) {
-		this.cookie = cookie;
+	public void setDefaultCookie(String cookie) {
+		this.defaultCookie = cookie;
 	}
 
 	public boolean isSecured() {
@@ -93,11 +96,14 @@ public abstract class BaseRESTClientBean extends BaseBean {
 		private String output;
 		private String message;
 		private int httpCode;
+		private Map<String, List<String>> headers = new HashMap<>();
 		
-		private RESTResponse(String output, String message, int httpCode) {
+		private RESTResponse(String output, String message, int httpCode, Map<String, List<String>> headers) {
 			this.output = output;
 			this.message = message;
 			this.httpCode = httpCode;
+			if(headers!=null)
+				this.headers = headers;
 		}
 
 		public String getOutput() {
@@ -122,6 +128,15 @@ public abstract class BaseRESTClientBean extends BaseBean {
 
 		public void setHttpCode(int httpCode) {
 			this.httpCode = httpCode;
+		}
+		
+		public List<String> getHeaders(String headerName){
+			return headers.get(headerName);
+		}
+		
+		public String getHeader(String headerName){
+			List<String> headerFields = headers.get(headerName);
+			return headerFields != null && !headerFields.isEmpty()? headerFields.iterator().next():null;
 		}
 	}
 	
@@ -155,8 +170,8 @@ public abstract class BaseRESTClientBean extends BaseBean {
 		con.addRequestProperty("User-Agent", userAgent==null? "Generic REST Client":userAgent);
 		con.addRequestProperty("Date", dateFormat.format(new Date()) + " GMT");
 		con.addRequestProperty("Accept-Language", "en-US");
-		if(cookie!=null)
-			con.addRequestProperty("Cookie", cookie);
+		if(defaultCookie!=null)
+			con.addRequestProperty("Cookie", defaultCookie);
 
 		if(additionalHeaders!=null){
 			for(Entry<String, String> entry:additionalHeaders.entrySet()){
@@ -181,22 +196,29 @@ public abstract class BaseRESTClientBean extends BaseBean {
 		con.getResponseMessage();
 		String output = null;
 		if(200<=responseCode && responseCode<300 && con.getHeaderField("Set-Cookie")!=null){
-			cookie = con.getHeaderField("Set-Cookie");
-			cookie = cookie.substring(0, cookie.indexOf(";"));
+			defaultCookie = con.getHeaderField("Set-Cookie");
+			defaultCookie = defaultCookie.substring(0, defaultCookie.indexOf(";"));
 		}
 
-		try {
+		InputStream is;
+		if(responseCode==200){
+			is = con.getInputStream();
+		} else{
+			is = con.getErrorStream();
+		}
+		
+		if(is!=null){
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					con.getInputStream()));
+					is));
 			StringBuilder response = new StringBuilder();
 			String line;
 			while ((line = reader.readLine()) != null) {
 				response.append(line);
 			}
 			output = response.toString();
-		} catch (IOException e) {
 		}
-		return new RESTResponse(output, con.getResponseMessage(), con.getResponseCode());
+		
+		return new RESTResponse(output, con.getResponseMessage(), con.getResponseCode(), con.getHeaderFields());
 	}
 
     public static String prettyPrintJSON(String jsonString){

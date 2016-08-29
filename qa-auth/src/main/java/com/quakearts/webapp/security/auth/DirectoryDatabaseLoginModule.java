@@ -152,7 +152,8 @@ public class DirectoryDatabaseLoginModule implements LoginModule{
                     throw new DirectoryLoginException("IOException during call back", e);
                 }
                 
-                username = name.getName()==null? name.getDefaultName():name.getName();
+                username = (name.getName()==null? name.getDefaultName():
+                	name.getName()).trim();
                 password = (new String(pass.getPassword())).getBytes();
                 
                 if (sharedState != null){
@@ -165,10 +166,10 @@ public class DirectoryDatabaseLoginModule implements LoginModule{
             }
                        
             if(username == null || password == null)
-                throw new DirectoryLoginException("Login/Password is null.");
+                throw new LoginException("Login/Password is null.");
             
             if(checker.isLocked(username))
-                throw new DirectoryLoginException("Account is lockedout.");
+                throw new LoginException("Account is lockedout.");
             
             String passwordhash;
             HashPassword hash = new HashPassword(new String(password),hashalgorithm,10,HashPassword.DEFAULT_SALT);
@@ -241,8 +242,14 @@ public class DirectoryDatabaseLoginModule implements LoginModule{
             loginOk = true;
             log.fine("Login is successful.");
             return loginOk;
-        }catch(DirectoryLoginException e){
-            try{
+        } catch(LoginException e){
+        	throw e;
+        } catch(Exception e){
+            password = null;
+            log.log(Level.FINE, "Login failed.",e);
+            return false;
+        } finally {
+        	try{
                 rs.close();
             }catch(Exception ex){
                 log.log(Level.SEVERE, "ResultSet could not be closed.");
@@ -257,10 +264,7 @@ public class DirectoryDatabaseLoginModule implements LoginModule{
             }catch(Exception ex){
                 log.log(Level.SEVERE, "Connection could not be closed.");
             }
-            password = null;
-            log.log(Level.FINE, "Login failed.",e);
-            return false;
-        }
+		}
     }
 
     public boolean commit() {

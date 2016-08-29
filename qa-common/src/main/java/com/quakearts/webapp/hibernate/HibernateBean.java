@@ -59,6 +59,10 @@ public abstract class HibernateBean {
 			this.to = to;
 			return this;
 		}
+		
+		public boolean isEmpty(){
+			return from != null || to != null;
+		}
 	}
 	
 	public static class Choice implements Serializable{
@@ -75,6 +79,10 @@ public abstract class HibernateBean {
 		public Choice or(Serializable value){
 			choices.add(value);
 			return this;
+		}
+		
+		public boolean isEmpty(){
+			return choices.isEmpty();
 		}
 	}
 	
