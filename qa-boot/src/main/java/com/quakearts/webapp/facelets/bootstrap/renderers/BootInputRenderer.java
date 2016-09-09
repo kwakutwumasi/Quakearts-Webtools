@@ -9,6 +9,8 @@ import com.quakearts.webapp.facelets.bootstrap.components.BootInputText;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.Attribute;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.AttributeManager;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.html_basic.HtmlBasicInputRenderer;
+import com.quakearts.webapp.facelets.util.UtilityMethods;
+
 import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.*;
 
 public class BootInputRenderer extends HtmlBasicInputRenderer {
@@ -40,6 +42,9 @@ public class BootInputRenderer extends HtmlBasicInputRenderer {
         String id = component.getClientId(context);
         writer.startElement("div", component);
         writeIdAttributeIfNecessary(context, writer, component);
+        if(! UtilityMethods.componentIsDisabled(component))
+        	renderOnchange(context, component);
+        
         if(style!=null)
         	writer.writeAttribute("stlye", style, null);        
         writer.writeAttribute("class", "input-group", null);
@@ -76,11 +81,10 @@ public class BootInputRenderer extends HtmlBasicInputRenderer {
         }
         
         writer.writeAttribute("class", "form-control"+(styleClass!=null?" "+styleClass:""), "styleClass");
-
+        writer.writeAttribute("onchange", "$('#"+id+"').change()", null);
+        
         renderPassThruAttributes(context, writer, component, INPUT_ATTRIBUTES, getNonOnChangeBehaviors(component));
         renderXHTMLStyleBooleanAttributes(writer, component);
-
-        renderOnchange(context, component);
         writer.endElement("input");
 		writer.write("\n");
         writer.endElement("div");

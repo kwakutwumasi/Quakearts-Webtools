@@ -61,7 +61,7 @@ public abstract class HibernateBean {
 		}
 		
 		public boolean isEmpty(){
-			return from != null || to != null;
+			return from == null || to == null;
 		}
 	}
 	
