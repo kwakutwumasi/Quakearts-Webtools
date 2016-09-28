@@ -71,7 +71,7 @@ public class BootMenuRenderer extends HtmlBasicRenderer {
 				
 				writer.writeAttribute("class", "btn-group"+dropup+(styleClass!=null?" "+styleClass:""), null);
 		        if(style!=null)
-		        	writer.writeAttribute("stlye", style, null);
+		        	writer.writeAttribute("style", style, null);
 		        writer.write("\n");
 			}
 			

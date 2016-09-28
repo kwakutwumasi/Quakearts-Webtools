@@ -46,7 +46,7 @@ public class BootInputRenderer extends HtmlBasicInputRenderer {
         	renderOnchange(context, component);
         
         if(style!=null)
-        	writer.writeAttribute("stlye", style, null);        
+        	writer.writeAttribute("style", style, null);        
         writer.writeAttribute("class", "input-group", null);
 		writer.write("\n");
         writer.startElement("span", component);

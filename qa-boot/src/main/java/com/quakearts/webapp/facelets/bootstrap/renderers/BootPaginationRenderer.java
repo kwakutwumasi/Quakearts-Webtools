@@ -125,7 +125,7 @@ public class BootPaginationRenderer extends HtmlBasicRenderer {
 		writer.startElement("div", component);
 		writer.writeAttribute("id", id, null);
         if(style!=null)
-        	writer.writeAttribute("stlye", style, null);
+        	writer.writeAttribute("style", style, null);
     	writer.write("\n");
 		writer.startElement("ul", component);
 		writer.writeAttribute("class", "pagination"+(styleClass!=null?" "+styleClass:""), null);

@@ -34,7 +34,7 @@ public class BootButtonGroupRenderer extends HtmlBasicRenderer {
         writer.writeAttribute("role", "group", null);
         writer.writeAttribute("aria-label", (label!=null?label:"button group"), null);
         if(style!=null)
-        	writer.writeAttribute("stlye", style, null);        
+        	writer.writeAttribute("style", style, null);        
         writer.write("\n");
 	}
 	

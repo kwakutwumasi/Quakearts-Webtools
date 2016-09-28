@@ -72,11 +72,15 @@ public class BootMessagesRenderer extends HtmlBasicRenderer {
 		boolean showSummary = messages.isShowSummary();
 		boolean showDetail = messages.isShowDetail();
 		String styleClass = messages.get("styleClass");
+		String style = messages.get("style");
 
 		writer.startElement("div", component);
 		writeIdAttributeIfNecessary(context, writer, component);
 		if (null != styleClass) {
 			writer.writeAttribute("class", styleClass, "styleClass");
+		}
+		if(null != style){
+			writer.writeAttribute("style", style, "style");
 		}
 
 		RenderKitUtils.renderPassThruAttributes(context, writer, component,

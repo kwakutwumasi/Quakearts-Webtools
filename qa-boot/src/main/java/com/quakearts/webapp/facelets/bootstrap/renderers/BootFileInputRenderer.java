@@ -107,7 +107,7 @@ public class BootFileInputRenderer extends Renderer {
 		writer.writeAttribute("id", id, "clientId");
         String style =fileInput.get("style");		
         if(style!=null)
-        	writer.writeAttribute("stlye", style, null);
+        	writer.writeAttribute("style", style, null);
         String styleClass =fileInput.get("styleClass");		
         if(styleClass!=null)
         	writer.writeAttribute("class", styleClass, null);

@@ -30,7 +30,7 @@ public class BootFormGroupRenderer extends HtmlBasicRenderer {
         writeIdAttributeIfNecessary(context, writer, component);
         writer.writeAttribute("class", "form-group"+(styleClass!=null?" "+styleClass:""), null);
         if(style!=null)
-        	writer.writeAttribute("stlye", style, null);
+        	writer.writeAttribute("style", style, null);
         writer.write("\n");
 	}
 	

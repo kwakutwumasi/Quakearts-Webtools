@@ -35,7 +35,7 @@ public class BootButtonToolbarRenderer extends HtmlBasicRenderer {
         writer.writeAttribute("role", "toolbar", null);
         writer.writeAttribute("aria-label", (label!=null?label:"toolbar"), null);
         if(style!=null)
-        	writer.writeAttribute("stlye", style, null);        
+        	writer.writeAttribute("style", style, null);        
         writer.write("\n");
 
 	}
