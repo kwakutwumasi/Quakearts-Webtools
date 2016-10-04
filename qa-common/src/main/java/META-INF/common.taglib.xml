@@ -460,10 +460,10 @@
 	</tag>
 	<tag>
 		<tag-name>pojoConverter</tag-name>
-		<handler-class>com.quakearts.webapp.facelets.converters.PojoSelectItemConverterTagHandler</handler-class>
+		<handler-class>com.quakearts.webapp.facelets.converters.PojoConverterTagHandler</handler-class>
 		<attribute>
 			<name>collection</name>
-			<required>true</required>
+			<required>false</required>
 		</attribute>
 	</tag>
 	<tag>	

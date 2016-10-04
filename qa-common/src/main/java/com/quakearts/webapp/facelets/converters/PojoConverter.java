@@ -11,15 +11,16 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 
-public class PojoSelectItemConverter implements Converter, StateHolder, Serializable {
+public class PojoConverter implements Converter, StateHolder, Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 6641054285920618374L;
-	private HashMap<String, Object> map;
+	private HashMap<String, Object> map = new HashMap<String, Object>();
 	private ValueExpression collectionExpression;
-	
+	private boolean hasBeenLoaded = false;
+
 	public void setCollectionExpression(ValueExpression collectionExpression) {
 		this.collectionExpression = collectionExpression;
 	}
@@ -31,11 +32,10 @@ public class PojoSelectItemConverter implements Converter, StateHolder, Serializ
 
 	@SuppressWarnings("rawtypes")
 	private Object getObject(Object value, FacesContext ctx){
-		if(value == null || collectionExpression==null)
+		if(value == null)
 			return null;
 		
-		if(map == null) {
-			map = new HashMap<String, Object>();
+		if(!hasBeenLoaded && collectionExpression!=null){
 			Object collectionObject = collectionExpression.getValue(ctx.getELContext()), asObject=null;
 			if(collectionObject instanceof Object[]){
 				for(Object object:((Object[])collectionObject)){
@@ -58,25 +58,36 @@ public class PojoSelectItemConverter implements Converter, StateHolder, Serializ
 				if(collectionObject!=null)
 					map.put(collectionObject.toString(), collectionObject);
 			}
+			hasBeenLoaded = true;
 			return asObject;
-		} else {
-			return map.get(value);
-		}	
+		} 
+		
+		return map.get(value);
 	}
 	
 	@Override
 	public String getAsString(FacesContext ctx, UIComponent comp, Object object) {
-		return object!=null?object.toString():"";
+		if(object!=null){
+			if(collectionExpression==null){
+				map.put(object.toString(), object);
+			}
+			return object.toString();
+		} else {
+			return "";
+		}
 	}
 
 	@Override
 	public Object saveState(FacesContext context) {
-		return collectionExpression;
+		return new Object[] {collectionExpression, map};
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void restoreState(FacesContext context, Object state) {
-		collectionExpression =(ValueExpression) state;		
+		Object[] oldstate = (Object[]) state;
+		collectionExpression =(ValueExpression) oldstate[0];
+		map = (HashMap<String, Object>) oldstate[1];
 	}
 
 	@Override

@@ -9,11 +9,11 @@ import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagConfig;
 import javax.faces.view.facelets.TagHandler;
 
-public class PojoSelectItemConverterTagHandler extends TagHandler {
+public class PojoConverterTagHandler extends TagHandler {
 	
-	private TagAttribute collectionAttribute = getRequiredAttribute("collection");
+	private TagAttribute collectionAttribute = getAttribute("collection");
 	
-	public PojoSelectItemConverterTagHandler(TagConfig config) {
+	public PojoConverterTagHandler(TagConfig config) {
 		super(config);
 	}
 
@@ -21,8 +21,9 @@ public class PojoSelectItemConverterTagHandler extends TagHandler {
 	public void apply(FaceletContext context, UIComponent component) throws IOException {
 		if(component instanceof ValueHolder){
 			if(ComponentHandler.isNew(component)){
-				PojoSelectItemConverter converter = new PojoSelectItemConverter();
-				converter.setCollectionExpression(collectionAttribute.getValueExpression(context, Object.class));
+				PojoConverter converter = new PojoConverter();
+				if(collectionAttribute!=null)
+					converter.setCollectionExpression(collectionAttribute.getValueExpression(context, Object.class));
 				((ValueHolder)component).setConverter(converter);
 			}
 		}
