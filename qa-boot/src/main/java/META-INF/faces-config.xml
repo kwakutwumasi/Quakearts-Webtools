@@ -65,10 +65,6 @@
 		<component-class>com.quakearts.webapp.facelets.bootstrap.components.BootDateButton</component-class>
 	</component>
 	<component>
-		<component-type>com.quakearts.bootstrap.datescript</component-type>
-		<component-class>com.quakearts.webapp.facelets.bootstrap.components.BootDateScriptComponent</component-class>
-	</component>
-	<component>
 		<component-type>com.quakearts.bootstrap.menu</component-type>
 		<component-class>com.quakearts.webapp.facelets.bootstrap.components.BootMenu</component-class>
 	</component>
@@ -87,6 +83,10 @@
 	<component>
 		<component-type>com.quakearts.bootstrap.glyph</component-type>
 		<component-class>com.quakearts.webapp.facelets.bootstrap.components.BootGlyph</component-class>
+	</component>
+	<component>
+		<component-type>com.quakearts.bootstrap.flaticon</component-type>
+		<component-class>com.quakearts.webapp.facelets.bootstrap.components.BootFlaticon</component-class>
 	</component>
 	<component>
 		<component-type>com.quakearts.bootstrap.textinput</component-type>
@@ -246,6 +246,11 @@
 			<component-family>com.quakearts.bootstrap.glyph</component-family>
 			<renderer-type>com.quakearts.bootstrap.glyph.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootGlyphRenderer</renderer-class>
+		</renderer>
+		<renderer>
+			<component-family>com.quakearts.bootstrap.flaticon</component-family>
+			<renderer-type>com.quakearts.bootstrap.flaticon.renderer</renderer-type>
+			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootFlaticonRenderer</renderer-class>
 		</renderer>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.textinput</component-family>

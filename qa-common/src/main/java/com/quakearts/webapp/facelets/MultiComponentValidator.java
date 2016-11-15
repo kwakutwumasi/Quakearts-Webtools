@@ -5,7 +5,7 @@ import javax.el.ValueExpression;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.validator.Validator;
 
-public abstract class AbstractMultiComponentValidator implements Validator {
+public abstract class MultiComponentValidator implements Validator {
 	
 	protected Object extractValue(ValueExpression componentExpression, ELContext elContext) throws IllegalArgumentException{
 		Object componentObject = componentExpression.getValue(elContext);

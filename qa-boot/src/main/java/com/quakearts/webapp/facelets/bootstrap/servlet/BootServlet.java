@@ -46,6 +46,24 @@ public class BootServlet extends HttpServlet {
 		bootResources.put("/css/images/loading.gif",null); 
 		bootResources.put("/css/images/loading-error.png",null); 
 		bootResources.put("/css/images/loaded.png",null); 
+		bootResources.put("/css/management/flaticon.css",null);	
+		bootResources.put("/css/office/flaticon.css",null);	
+		bootResources.put("/css/qacollection/flaticon.css",null);
+		bootResources.put("/css/management/Flaticon.eot",null);	
+		bootResources.put("/css/office/Flaticon.eot",null);	
+		bootResources.put("/css/qacollection/Flaticon.eot",null);
+		bootResources.put("/css/management/flaticon.min.css",null);	
+		bootResources.put("/css/office/flaticon.min.css",null);	
+		bootResources.put("/css/qacollection/flaticon.min.css",null);
+		bootResources.put("/css/management/Flaticon.svg",null);	
+		bootResources.put("/css/office/Flaticon.svg",null);	
+		bootResources.put("/css/qacollection/Flaticon.svg",null);
+		bootResources.put("/css/management/Flaticon.ttf",null);	
+		bootResources.put("/css/office/Flaticon.ttf",null);	
+		bootResources.put("/css/qacollection/Flaticon.ttf",null);
+		bootResources.put("/css/management/Flaticon.woff",null);	
+		bootResources.put("/css/office/Flaticon.woff",null);	
+		bootResources.put("/css/qacollection/Flaticon.woff",null);
 		
 		for(String forbiddenExt:getServletContext().getInitParameter("com.quakearts.bootstrap.FORBIDDEN").split(",")){
 			forbidden.put(forbiddenExt.trim(), "");
@@ -148,6 +166,8 @@ public class BootServlet extends HttpServlet {
 				
 				resp.setContentType(contentType);
 				resp.setContentLength(data.length);
+				resp.setHeader("Cache-Control", "max-age=2419200, public, must-revalidate");
+				
 				os = resp.getOutputStream();
 				os.write(data);
 				os.flush();

@@ -8,6 +8,7 @@ import com.quakearts.webapp.facelets.util.ObjectExtractor;
 
 public class BootGlyph extends UIOutput {
 	private static final HashMap<String, String> VALIDVALUESMAP = new HashMap<String, String>();
+	private static final String EMPTY = "";
 	private static final String[] VALIDVALUES=new String[]{"asterisk",
 			"plus", "euro", "eur", "minus", "cloud", "envelope", "pencil",
 			"glass", "music", "search", "heart", "star", "star-empty", "user",
@@ -65,7 +66,7 @@ public class BootGlyph extends UIOutput {
 			"menu-up"};
 	static{
 		for(String validValue:VALIDVALUES){
-			VALIDVALUESMAP.put(validValue, "");
+			VALIDVALUESMAP.put(validValue, EMPTY);
 		}
 	}
 	

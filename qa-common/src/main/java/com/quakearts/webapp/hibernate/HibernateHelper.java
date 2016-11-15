@@ -61,7 +61,7 @@ public class HibernateHelper {
 		helperStore.registry = new StandardServiceRegistryBuilder().configure(new StringBuilder(domain)
 					.append(".")
 					.append(StandardServiceRegistryBuilder.DEFAULT_CFG_RESOURCE_NAME)
-					.toString()).build();
+					.toString()).applySetting(ServletSessionHelper.DOMAIN, domain).build();
 		helperStore.configuration = configuration;
 		helperStore.factory = configuration.buildSessionFactory(helperStore.registry);
 		store.put(domain, helperStore);

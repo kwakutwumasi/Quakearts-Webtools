@@ -7,23 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.naming.NamingException;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.Status;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
-
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-
-import com.quakearts.webapp.facelets.util.UtilityMethods;
 
 public abstract class HibernateBean {
 
@@ -189,28 +178,6 @@ public abstract class HibernateBean {
 			return Restrictions.ilike(key, ((VariableString)value).value);
 		} else {
 			return Restrictions.eq(key, value);
-		}
-	}
-	
-	protected UserTransaction beginTransaction() throws NamingException, SystemException, NotSupportedException{
-		UserTransaction transaction = UtilityMethods.getTransaction();
-		if(transaction.getStatus()==Status.STATUS_NO_TRANSACTION){
-			transaction.begin();
-			return transaction;
-		}
-		return null;
-	}
-	
-	
-	protected void endTransaction(UserTransaction transaction){
-		try {
-			if(transaction.getStatus()==Status.STATUS_MARKED_ROLLBACK)
-				transaction.rollback();
-			else
-				if(transaction.getStatus()==Status.STATUS_ACTIVE){
-					transaction.commit();
-				}
-		} catch (SystemException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
 		}
 	}
 
