@@ -11,6 +11,7 @@ import javax.faces.context.FacesContext;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.SessionException;
 import org.hibernate.Transaction;
 import org.hibernate.context.spi.CurrentSessionContext;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
@@ -131,8 +132,10 @@ public class ServletSessionHelper implements CurrentSessionContext {
 			} catch (HibernateException e) {
 				exceptions.add(new Exception("Exception thrown whiles cleaning up domain: "+domain, e));
 			} finally {
-				try {
+				try {//Reclose just in case
 					session.close();
+				} catch (SessionException e) {
+					//Ignore
 				} catch (Exception e) {
 					exceptions.add(new Exception("Exception thrown whiles cleaning up domain: "+domain, e));
 				}

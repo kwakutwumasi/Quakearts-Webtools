@@ -21,21 +21,8 @@ public class HibernatePhaseHelper implements PhaseListener {
 	 */
 	private static final long serialVersionUID = -2366733998857516126L;
 	private static final Logger log = Logger.getLogger(HibernatePhaseHelper.class.getName());
-	private boolean userTransaction = true;
+	private Boolean userTransaction;
 	
-	public HibernatePhaseHelper() {
-		String nojtaparameter = FacesContext.getCurrentInstance().getExternalContext().getInitParameter("quakearts.hibernate.nojta");
-
-		if(nojtaparameter==null)
-			try {
-				Class.forName("javax.transaction.UserTransaction");
-			} catch (ClassNotFoundException e) {
-				userTransaction = false;
-			}
-		else
-			userTransaction = Boolean.parseBoolean(nojtaparameter);
-	}
-		
 	@Override
 	public void afterPhase(PhaseEvent event) {
 		FacesContext ctx = FacesContext.getCurrentInstance();
@@ -55,7 +42,7 @@ public class HibernatePhaseHelper implements PhaseListener {
 	}
 
 	private void commitTrx() throws Exception{
-		if(userTransaction){
+		if(isUserTransaction()){
 			InitialContext icx = UtilityMethods.getInitialContext();
 			UserTransaction tran= (UserTransaction) icx.lookup("java:comp/UserTransaction");
 			if(tran.getStatus() == Status.STATUS_ACTIVE)
@@ -70,7 +57,7 @@ public class HibernatePhaseHelper implements PhaseListener {
 	@Override
 	public void beforePhase(PhaseEvent event) {
 		if(event.getPhaseId() == PhaseId.RESTORE_VIEW){//start a transaction
-			if(userTransaction){
+			if(isUserTransaction()){
 				try {
 					InitialContext icx = UtilityMethods.getInitialContext();
 					UserTransaction tran= (UserTransaction) icx.lookup("java:comp/UserTransaction");
@@ -95,4 +82,15 @@ public class HibernatePhaseHelper implements PhaseListener {
 	public PhaseId getPhaseId() {
 		return PhaseId.ANY_PHASE;
 	}
+
+	private boolean isUserTransaction() {
+		if(userTransaction == null){
+			userTransaction = ! Boolean.parseBoolean(FacesContext.getCurrentInstance()
+					.getExternalContext()
+					.getInitParameter("com.quakearts.hibernate.nojta"));
+		}
+		
+		return userTransaction;
+	}
+
 }
