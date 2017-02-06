@@ -110,26 +110,14 @@ public abstract class BaseRESTClientBean extends BaseBean {
 			return output;
 		}
 
-		public void setOutput(String output) {
-			this.output = output;
-		}
-
 		public String getMessage() {
 			return message;
-		}
-
-		public void setMessage(String message) {
-			this.message = message;
 		}
 
 		public int getHttpCode() {
 			return httpCode;
 		}
 
-		public void setHttpCode(int httpCode) {
-			this.httpCode = httpCode;
-		}
-		
 		public List<String> getHeaders(String headerName){
 			return headers.get(headerName);
 		}

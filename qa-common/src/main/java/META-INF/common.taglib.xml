@@ -170,6 +170,10 @@
 			<name>action</name>
 		</attribute>
 		<attribute>
+			<name>trimstrings</name>
+			<type>java.lang.boolean</type>
+		</attribute>
+		<attribute>
 			<name>unless</name>
 		</attribute>
 	</tag>

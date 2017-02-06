@@ -112,6 +112,10 @@
 	background-color: transparent;
 }
 
+.auto-complete:focus {
+	outline-width: 0;
+}
+
 .list-container {
 	overflow: hidden;
 	max-height: 220px;

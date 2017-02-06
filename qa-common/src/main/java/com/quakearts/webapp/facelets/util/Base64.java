@@ -1,5 +1,7 @@
 package com.quakearts.webapp.facelets.util;
 
+import java.io.IOException;
+
 /**
  * <p>Encodes and decodes to and from Base64 notation.</p>
  * <p>Homepage: <a href="http://iharder.net/base64">http://iharder.net/base64</a>.</p>
@@ -145,6 +147,7 @@ package com.quakearts.webapp.facelets.util;
  *
  * @author Robert Harder
  * @author rob@iharder.net
+ * @author Kwaku Twumasi
  * @version 2.3.7
  */
 public class Base64
@@ -554,7 +557,7 @@ public class Base64
      * @param encoded output buffer
      * @since 2.3
      */
-    public static void encode( java.nio.ByteBuffer raw, java.nio.ByteBuffer encoded ){
+    public static void encodeStreamToByteBuffer( java.nio.ByteBuffer raw, java.nio.ByteBuffer encoded ){
         byte[] raw3 = new byte[3];
         byte[] enc4 = new byte[4];
 
@@ -578,7 +581,7 @@ public class Base64
      * @param encoded output buffer
      * @since 2.3
      */
-    public static void encode( java.nio.ByteBuffer raw, java.nio.CharBuffer encoded ){
+    public static void encodeStreamToCharBuffer( java.nio.ByteBuffer raw, java.nio.CharBuffer encoded ){
         byte[] raw3 = new byte[3];
         byte[] enc4 = new byte[4];
 
@@ -701,14 +704,32 @@ public class Base64
     }   // end encode
     
     /**
-     * Convenience method. Calls through to encodeBytes(byte[] source).
+     * Convenience method. Calls through to encode(String source, int options).
      * 
      * @param source The data to convert (as a string)
      * @return The data in Base64-encoded form
      * @throws NullPointerException if source array is null
      */
     public static String encode(String source){
-    	return encodeBytes(source.getBytes());
+    	return encode(source, NO_OPTIONS);
+    }
+
+    /**
+     * Convenience method. Calls through to encodeBytes(byte[] source, int options).
+     * 
+     * @param source
+     * @param options
+     * @return The data in Base64-encoded form
+     */
+    public static String encode(String source, int options){
+    	String encoded = null;
+        try {
+        	encoded= encodeBytes(source.getBytes(), options);
+        } catch (java.io.IOException ex) {
+            assert false : ex.getMessage();
+        }   // end catch
+        assert encoded != null;
+        return encoded;
     }
 
     /**
@@ -1108,8 +1129,28 @@ public class Base64
     }   // end decodeToBytes
     
 
+    /**
+     * Convenience method for decoding to string
+     * 
+     * @param source
+     * @return decoded data
+     * @throws IOException
+     */
+    public static String decode(String source) throws IOException{
+    	return decode(source, NO_OPTIONS);
+    }
 
-
+    /**
+     * Convenience method for decoding to string with options
+     * 
+     * @param source
+     * @param options
+     * @return decoded data
+     * @throws IOException
+     */
+    public static String decode(String source, int options) throws IOException{
+    	return new String(decodeToBytes(source), PREFERRED_ENCODING);
+    }
 
     /**
      * Low-level access to decoding ASCII characters in
@@ -1124,11 +1165,11 @@ public class Base64
      * @return decoded data
      * @since 2.3.1
      */
-    public static byte[] decode( byte[] source )
+    public static byte[] decodeBytesToBytes( byte[] source )
     throws java.io.IOException {
         byte[] decoded = null;
 //        try {
-            decoded = decode( source, 0, source.length, Base64.NO_OPTIONS );
+            decoded = decodeBytesToBytes( source, 0, source.length, Base64.NO_OPTIONS );
 //        } catch( java.io.IOException ex ) {
 //            assert false : "IOExceptions only come from GZipping, which is turned off: " + ex.getMessage();
 //        }
@@ -1154,7 +1195,7 @@ public class Base64
      * @throws java.io.IOException If bogus characters exist in source data
      * @since 1.3
      */
-    public static byte[] decode( byte[] source, int off, int len, int options )
+    public static byte[] decodeBytesToBytes( byte[] source, int off, int len, int options )
     throws java.io.IOException {
         
         // Lots of error checking and exception throwing
@@ -1229,8 +1270,8 @@ public class Base64
      * @throws java.io.IOException If there is a problem
      * @since 1.4
      */
-    public static byte[] decode( String s ) throws java.io.IOException {
-        return decode( s, NO_OPTIONS );
+    public static byte[] decodeToBytes( String s ) throws java.io.IOException {
+        return decodeToBytes( s, NO_OPTIONS );
     }
 
     
@@ -1246,7 +1287,7 @@ public class Base64
      * @throws NullPointerException if <tt>s</tt> is null
      * @since 1.4
      */
-    public static byte[] decode( String s, int options ) throws java.io.IOException {
+    public static byte[] decodeToBytes( String s, int options ) throws java.io.IOException {
         
         if( s == null ){
             throw new NullPointerException( "Input string was null." );
@@ -1262,7 +1303,7 @@ public class Base64
 		//</change>
         
         // Decode
-        bytes = decode( bytes, 0, bytes.length, options );
+        bytes = decodeBytesToBytes( bytes, 0, bytes.length, options );
         
         // Check to see if it's gzip-compressed
         // GZIP Magic Two-Byte Number: 0x8b1f (35615)
@@ -1347,7 +1388,7 @@ public class Base64
     throws java.io.IOException, java.lang.ClassNotFoundException {
         
         // Decode and gunzip if necessary
-        byte[] objBytes = decode( encodedObject, options );
+        byte[] objBytes = decodeToBytes( encodedObject, options );
         
         java.io.ByteArrayInputStream  bais = null;
         java.io.ObjectInputStream     ois  = null;

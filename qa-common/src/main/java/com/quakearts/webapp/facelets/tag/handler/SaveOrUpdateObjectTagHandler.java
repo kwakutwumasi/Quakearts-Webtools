@@ -11,7 +11,8 @@ public class SaveOrUpdateObjectTagHandler extends AbstractHibernateHandler {
 
 	private TagAttribute messageAttribute = getAttribute("message"),
 	objectAttribute = getRequiredAttribute("object"),
-	actionAttribute = getAttribute("action");
+	actionAttribute = getAttribute("action"),
+	trimstringsAttribute = getAttribute("trimstrings");
 	
 	public SaveOrUpdateObjectTagHandler(TagConfig config) {
 		super(config);
@@ -21,7 +22,8 @@ public class SaveOrUpdateObjectTagHandler extends AbstractHibernateHandler {
 	protected HibernateListener getHibernateListener(FaceletContext ctx) {
 		return new SaveOrUpdateObjectListener(getValueExpression(messageAttribute, ctx, String.class),
 				getValueExpression(objectAttribute, ctx, Object.class),
-				getValueExpression(actionAttribute, ctx, String.class));
+				getValueExpression(actionAttribute, ctx, String.class),
+				getValueExpression(trimstringsAttribute, ctx, Boolean.class));
 	}
 
 }

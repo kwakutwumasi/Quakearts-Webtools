@@ -17,24 +17,26 @@ public class BootFlaticonRenderer extends HtmlBasicRenderer {
         if(!(component instanceof BootFlaticon))
 			throw new IOException("Component must be of type "+BootFlaticon.class.getName());
 		
-		BootFlaticon BootFlaticon = (BootFlaticon)component;
+		BootFlaticon bootFlaticon = (BootFlaticon)component;
 
-		String label = BootFlaticon.get("label");
-		String style = BootFlaticon.get("style");
-		String title = BootFlaticon.get("title");
-		String styleClass = BootFlaticon.get("styleClass");
+		String label = bootFlaticon.get("label");
+		String style = bootFlaticon.get("style");
+		String title = bootFlaticon.get("title");
+		String styleClass = bootFlaticon.get("styleClass");
 		
 		ResponseWriter writer = context.getResponseWriter();
-		String type = (String) BootFlaticon.getValue();
+		String type = (String) bootFlaticon.getValue();
 		if(type==null)
 			throw new IOException("Attribute 'value' is required");
 		
-		if(!BootFlaticon.isValid(type))
+		if(!bootFlaticon.isValid(type))
 			throw new IOException("Attribute 'value' is not valid: "+type);
+		
+		String typeString = bootFlaticon.getTypeName(type);
 		
 		writer.startElement("span", component);
 		writeIdAttributeIfNecessary(context, writer, component);
-		writer.writeAttribute("class", "flaticon-"+type+(styleClass!=null?" "+styleClass:""), null);
+		writer.writeAttribute("class", "flaticon-"+typeString+(styleClass!=null?" "+styleClass:""), null);
 		if(label!=null){
 			writer.writeAttribute("aria-label",label, null);
 		}

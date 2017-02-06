@@ -15,7 +15,7 @@ import com.quakearts.tools.classloaders.hibernate.JarFileEntry;
 import com.quakearts.tools.classloaders.utils.UtilityMethods;
 import com.quakearts.webapp.hibernate.HibernateHelper;
 
-public class DBJarClassLoader extends ClassLoader {
+public class DBJarClassLoader extends ClassLoader {//TODO Implement with URL class loader
 
 	private static final ConcurrentHashMap<Long, byte[]> CACHED_JARS = new ConcurrentHashMap<Long, byte[]>();
 	private String domain;

@@ -59,7 +59,13 @@ public class ServletSessionHelper implements CurrentSessionContext {
 	}
 	
 	public static Session getCurrentSession(String domain){
+		domain = "".equals(domain)?null:domain;
 		return (Session) getContextAttributes().get(CURRENTSESSION+(domain!=null?":"+domain:""));
+	}
+	
+	private static void removeCurrentSession(String domain){
+		domain = "".equals(domain)?null:domain;
+		getContextAttributes().remove(CURRENTSESSION+(domain!=null?":"+domain:""));
 	}
 	
 	public static List<String> getOpenSessions(){
@@ -109,10 +115,11 @@ public class ServletSessionHelper implements CurrentSessionContext {
 		ArrayList<Exception> exceptions = new ArrayList<>();
 		
 		for(String domain:getOpenSessions()){
-			Session session = getCurrentSession(domain.equals("")?null:domain);
-			
+			Session session = getCurrentSession(domain);
 			if(session==null)
 				return;
+
+			removeCurrentSession(domain);
 			
 			Transaction tx = session.getTransaction();
 			

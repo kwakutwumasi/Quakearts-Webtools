@@ -26,6 +26,7 @@ public class AutoCompleteBehavior extends ClientBehaviorBase {
 	private int delay = 5;
 	private int minchars = 3;
 	private static final String ATTRIBUTE = "suggestion";
+	public static final String SUGGESTIONPRESENT = "com.quakearts.boot.SUGGESTIONPRESENT";
 	private boolean hasSuggestion=false;
 	private String suggest;
 	
@@ -119,6 +120,11 @@ public class AutoCompleteBehavior extends ClientBehaviorBase {
 				suggestionExpression.setValue(context.getELContext(), suggest);
 				hasSuggestion = true;
 			}
+			
+	        String behaviorEvent = context.getExternalContext().getRequestParameterMap().get("javax.faces.behavior.event");
+	        if(getEvent()!=null && getEvent().equals(behaviorEvent)){
+	        	context.getAttributes().put(SUGGESTIONPRESENT, Boolean.TRUE);
+	        }
 		}
 		component.queueEvent(new AjaxBehaviorEvent(component, this));
 	}

@@ -18,7 +18,7 @@ public class HibernateHelper {
 	private static Configuration configuration;
 	private static final Logger log = Logger.getLogger(HibernateHelper.class.getName());
 
-	public static SessionFactory getCurrentSessionFactory() {
+	public synchronized static SessionFactory getCurrentSessionFactory() {
 		if(factory == null){
 			factory = getCurrentConfiguration().buildSessionFactory(getRegistry());
 		}
@@ -26,7 +26,7 @@ public class HibernateHelper {
 		return factory;
 	}
 	
-	public static ServiceRegistry getRegistry() {
+	public synchronized static ServiceRegistry getRegistry() {
 		if(registry==null){
 			registry = new StandardServiceRegistryBuilder().configure().build();
 		}
@@ -34,7 +34,7 @@ public class HibernateHelper {
 		return registry;
 	}
 	
-	public static Configuration getCurrentConfiguration(){
+	public synchronized static Configuration getCurrentConfiguration(){
 		if (configuration== null){
 			configuration = new Configuration();
 		}
@@ -42,11 +42,11 @@ public class HibernateHelper {
 		return configuration;
 	}
 	
-	public static Session getCurrentSession(){
+	public synchronized static Session getCurrentSession(){
 		return getCurrentSessionFactory().getCurrentSession();
 	}
 	
-	public static Configuration getConfiguration(String domain) throws IOException, HibernateException {
+	public synchronized static Configuration getConfiguration(String domain) throws IOException, HibernateException {
 		if(store.containsKey(domain)){
 			return store.get(domain).configuration;
 		} else {
@@ -67,7 +67,7 @@ public class HibernateHelper {
 		store.put(domain, helperStore);
 	}
 	
-	public static SessionFactory getSessionFactory(String domain) throws HibernateException, IOException{
+	public synchronized static SessionFactory getSessionFactory(String domain) throws HibernateException, IOException{
 		if(store.containsKey(domain)){
 			return store.get(domain).factory;
 		} else {

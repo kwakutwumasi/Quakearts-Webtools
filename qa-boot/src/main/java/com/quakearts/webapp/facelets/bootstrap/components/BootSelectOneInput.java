@@ -1,6 +1,6 @@
 package com.quakearts.webapp.facelets.bootstrap.components;
 
-public class BootSelectOneInput extends BootSelectOneMenu {
+public class BootSelectOneInput extends BootSelectInputGroup {
 	public static final String COMPONENT_FAMILY="com.quakearts.bootstrap.selectoneinput";
 	public static final String RENDERER_TYPE="com.quakearts.bootstrap.selectoneinput.renderer";
 

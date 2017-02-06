@@ -101,8 +101,11 @@ public class BootMessagesRenderer extends HtmlBasicRenderer {
 					: "";
 
 			String detail = (null != (detail = curMessage.getDetail())) ? detail
-					: summary;
+					: "";
 			
+			if(detail != null && !detail.trim().isEmpty() && detail.equals(summary))
+				detail = "";
+				
 			boolean successMessage = Boolean.parseBoolean(messages.get("successMessage"));
 
 			if (curMessage.getSeverity() == FacesMessage.SEVERITY_INFO) {
