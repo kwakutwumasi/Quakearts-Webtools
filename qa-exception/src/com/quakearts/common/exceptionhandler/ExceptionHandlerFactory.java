@@ -4,9 +4,10 @@ import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
+import com.quakearts.common.exceptionhandler.annotations.Handler;
 import com.quakearts.common.exceptionhandler.exceptions.ExceptionHandlerRuntimeException;
 
-/**Base Class for all exception handler factiories. Contains default implementation of factory methods.
+/**Base Class for all exception handler factories. Contains default implementation of factory methods.
  * The default implementation use a Map as the store for handlers. Extenders may wish to use a different store
  * or provide a mechanism for sharing handlers between VM's, or serialize handlers for storage in a database
  * @author Kwaku Twumasi
@@ -167,7 +168,10 @@ public abstract class ExceptionHandlerFactory {
 			throw new ExceptionHandlerRuntimeException("Only one factory can exist per application.");
 	}
 	
-	/**
+	/**Gets the {@link ExceptionHandlerFactory}. If no instance has has been set via the protected 
+	 * {@link #setInstance(ExceptionHandlerFactory) setInstance()} method, the default factory {@link DefaultExceptionHandlerFactory}
+	 * will be instantiated and its {@linkplain DefaultExceptionHandlerFactory#scan() scan} method will be called to search the 
+	 * class path for classes annotated with the {@link Handler} annotation
 	 * @return
 	 */
 	public static ExceptionHandlerFactory getInstance() {
@@ -178,9 +182,12 @@ public abstract class ExceptionHandlerFactory {
 		
 		return instance;
 	}
-	
 }
 
+/**A convenience class for indexing the exception handlers
+ * @author Kwaku Twumasi
+ *
+ */
 class ExceptionHandlerKey {
 	Class<? extends Exception> exceptionClass;
 	Class<?> relatedClass;

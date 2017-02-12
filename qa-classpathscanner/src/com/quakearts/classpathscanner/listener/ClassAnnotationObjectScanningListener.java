@@ -3,17 +3,14 @@ package com.quakearts.classpathscanner.listener;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.annotation.Annotation;
 
-/**
- * The Interface ClassAnnotationDiscoveryListener.
+/**Interface for {@link AnnotationScanningListener}s that need access to the {@link ClassFile} object.
+ * @author Kwaku Twumasi Afriyie (kwaku.twumasi@quakearts.com)
  *
  */
 public interface ClassAnnotationObjectScanningListener extends AnnotationScanningListener {
-
-	/**
-	 * Gets called by the Discoverer with class-name of the class where annotation is found.
-	 *
-	 * @param clazz
-	 * @param annotation
+	/**Handle processing for the discovered class
+	 * @param clazz The {@link ClassFile}
+	 * @param annotation The {@link Annotation}
 	 */
-	void discovered(ClassFile clazz, Annotation annotation);
+	void handle(ClassFile clazz, Annotation annotation);
 }

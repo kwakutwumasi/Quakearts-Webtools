@@ -76,10 +76,10 @@ public class BootSelectOneInputRenderer extends BootSelectInputGroupRenderer {
 		
 		String element = autocompleteBehavior!=null && !componentDisabled?"input":"span";
 		writer.startElement(element, component);
+		writer.writeAttribute("class", "auto-complete", null);
 		if(autocompleteBehavior!=null && !componentDisabled){
 			autocompleteBehavior.loadFromComponent(component, context);
 			autocompleteBehavior.setId(id+"_display");
-			writer.writeAttribute("class", "auto-complete", null);
 			writer.writeAttribute("autocomplete", "off", null);
 			writer.writeAttribute("onkeyup",
 					autocompleteBehavior.getScript(

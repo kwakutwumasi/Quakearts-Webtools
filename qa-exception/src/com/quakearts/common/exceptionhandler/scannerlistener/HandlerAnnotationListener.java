@@ -9,12 +9,12 @@ import com.quakearts.common.exceptionhandler.exceptions.ExceptionHandlerRuntimeE
 public class HandlerAnnotationListener implements ClassAnnotationScanningListener {
 
 	@Override
-	public String[] supportedAnnotations() {
+	public String[] getAnnotationsToListenFor() {
 		return new String[]{Handler.class.getName()};
 	}
 
 	@Override
-	public void discovered(String className, String annotation) {
+	public void handle(String className, String annotation) {
 		try {
 			Class<?> handlerClass = Class.forName(className);
 			

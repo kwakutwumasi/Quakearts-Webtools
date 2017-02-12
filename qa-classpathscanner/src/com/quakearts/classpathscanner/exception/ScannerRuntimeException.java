@@ -1,5 +1,10 @@
 package com.quakearts.classpathscanner.exception;
 
+/**A subclass of {@link RuntimeException} to be thrown when scanning errors occur. Can be caught by applications
+ * that can recover from such errors; in all other uses cases, as this is a 
+ * @author Kwaku Twumasi Afriyie (kwaku.twumasi@quakearts.com)
+ *
+ */
 public class ScannerRuntimeException extends RuntimeException {
 
 	/**

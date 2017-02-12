@@ -10,48 +10,34 @@ import java.util.jar.JarInputStream;
 import com.quakearts.classpathscanner.Filter;
 import com.quakearts.classpathscanner.exception.ScannerRuntimeException;
 
-/**
- * Iterates through a Jar file for each file resource.
- * 
- * @author animesh.kumar
- */
-/**
- * @author animesh.kumar
+/**Implementation of {@link ResourceInputStreamIterator} that iterates over class files in a jar archive
+ * @author Kwaku Twumasi Afriyie (kwaku.twumasi@quakearts.com)
  *
  */
-public final class JarFileIterator implements ResourceIterator {
+public final class JarFileIterator implements ResourceInputStreamIterator {
 
-    /** jar input stream */
     private JarInputStream jarInputStream;
 
-    /** next entry */
     private JarEntry next;
 
-    /** filter. */
     private Filter filter;
 
-    /** initial. */
     private boolean start = true;
 
-    /** closed. */
     private boolean closed = false;
 
-    /**
-     * Instantiates a new jar file iterator.
-     * 
-     * @param file
-     * @param filter
+    /**Constructs a resource iterator using the given jar file
+     * @param file The {@link File} object. Must point to a valid jar file
+     * @param filter The {@link Filter} object to use to skip files
      * @throws IOException
      */
     public JarFileIterator(File file, Filter filter) throws IOException {
         this(new FileInputStream(file), filter);
     }
 
-    /**
-     * Instantiates a new jar file iterator.
-     * 
-     * @param is
-     * @param filter
+    /**Constructs a resource iterator using the given input stream
+     * @param is The {@link InputStream}
+     * @param filter The {@link Filter} object to use to skip files
      * @throws IOException
      */
     public JarFileIterator(InputStream is, Filter filter) throws IOException {
@@ -59,7 +45,9 @@ public final class JarFileIterator implements ResourceIterator {
         jarInputStream = new JarInputStream(is);
     }
 
-    // helper method to set the next InputStream
+    /**Move the {@link JarInputStream} to the next entry
+     * 
+     */
     private void setNext() {
     	start = true;
         try {
@@ -80,7 +68,9 @@ public final class JarFileIterator implements ResourceIterator {
         }
     }
 
-    /* @see com.quakearts.annovention.resource.ResourceIterator#next() */
+    /* (non-Javadoc)
+     * @see com.quakearts.classpathscanner.resource.ResourceIterator#next()
+     */
     @Override
     public InputStream next() {
         if (closed || (next == null && !start)) {
@@ -93,7 +83,9 @@ public final class JarFileIterator implements ResourceIterator {
         return new JarInputStreamWrapper(jarInputStream);
     }
 
-    /* @see com.quakearts.annovention.resource.ResourceIterator#close() */
+    /* (non-Javadoc)
+     * @see com.quakearts.classpathscanner.resource.ResourceIterator#close()
+     */
     @Override
     public void close() {
         try {
@@ -103,58 +95,89 @@ public final class JarFileIterator implements ResourceIterator {
         }
     }
 
-    /**
-     * Wrapper class for jar stream
+    /**Wrapper class for {@link JarInputStream}
+     * @author animesh.kumar
+     *
      */
     static class JarInputStreamWrapper extends InputStream {
 
         // input stream object which is wrapped
     	private InputStream is;
 
+        /**Constructs the wrapper using the given {@link InputStream}
+         * @param is The {@link InputStream}
+         */
         public JarInputStreamWrapper(InputStream is) {
             this.is = is;
         }
 
+        /* (non-Javadoc)
+         * @see java.io.InputStream#read()
+         */
         @Override
         public int read() throws IOException {
             return is.read();
         }
 
+        /* (non-Javadoc)
+         * @see java.io.InputStream#read(byte[])
+         */
         @Override
         public int read(byte[] bytes) throws IOException {
             return is.read(bytes);
         }
 
+        /* (non-Javadoc)
+         * @see java.io.InputStream#read(byte[], int, int)
+         */
         @Override
         public int read(byte[] bytes, int i, int i1) throws IOException {
             return is.read(bytes, i, i1);
         }
 
+        /* (non-Javadoc)
+         * @see java.io.InputStream#skip(long)
+         */
         @Override
         public long skip(long l) throws IOException {
             return is.skip(l);
         }
 
+        /* (non-Javadoc)
+         * @see java.io.InputStream#available()
+         */
         @Override
         public int available() throws IOException {
             return is.available();
         }
 
+        /* (non-Javadoc)
+         * @see java.io.InputStream#close()
+         */
         @Override
         public void close() throws IOException {
             // DO Nothing
         }
 
+        /* (non-Javadoc)
+         * @see java.io.InputStream#mark(int)
+         */
         @Override
         public void mark(int i) {
         	is.mark(i);
         }
 
+        /* (non-Javadoc)
+         * @see java.io.InputStream#reset()
+         */
         @Override
         public void reset() throws IOException {
             is.reset();
         }
 
+        /* (non-Javadoc)
+         * @see java.io.InputStream#markSupported()
+         */
         @Override
         public boolean markSupported() {
             return is.markSupported();

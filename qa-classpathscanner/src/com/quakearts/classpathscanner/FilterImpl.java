@@ -2,12 +2,14 @@ package com.quakearts.classpathscanner;
 
 import java.io.File;
 
-/**
- * Basic implementation to skip well-known packages and allow only *.class files
- * 
- * @author animesh.kumar, ngocdaothanh@gmail.com
+/**Default implementation of the {@link Filter} interface. Skips packages from well known vendors.
+ * @author Kwaku Twumasi Afriyie (kwaku.twumasi@quakearts.com)
+ *
  */
 public class FilterImpl implements Filter {
+    /**Default set of packages to ignore
+     * 
+     */
     public static final String[] IGNORED_PACKAGES = {
         "java", "javax",
         "sun", "com.sun",
@@ -35,29 +37,49 @@ public class FilterImpl implements Filter {
         "javassist", "com.quakearts.classpathscanner"
     };
 
+    /**List of packages to ignore
+     * 
+     */
     private String[] ignoredPackages;
 
-    public FilterImpl()                         { this.ignoredPackages = IGNORED_PACKAGES; }
-    public FilterImpl(String[] ignoredPackages) { this.ignoredPackages = ignoredPackages;  }
+	/**Default constructors. Uses the default list of packages to ignore
+	 * 
+	 */
+	public FilterImpl() {
+		this.ignoredPackages = IGNORED_PACKAGES;
+	}
 
-    /* @see com.quakearts.annovention.Filter#accepts(java.lang.String) */
+	/**Constructor for providing a custom list of packages to ignore
+	 * @param ignoredPackages
+	 */
+	public FilterImpl(String[] ignoredPackages) {
+		this.ignoredPackages = ignoredPackages;
+	}
+
+    /* (non-Javadoc)
+     * @see com.quakearts.classpathscanner.Filter#accepts(java.lang.String)
+     */
     @Override
-    public final boolean accepts(String filename) {
-        if (filename.endsWith(".class")) {
-        	String separator = filename.contains(File.separator)?File.separator:"/";
-            if (filename.startsWith(separator)) {
-                filename = filename.substring(1);
+    public final boolean accepts(String name) {
+        if (name.endsWith(".class")) {
+        	String separator = name.contains(File.separator)?File.separator:"/";
+            if (name.startsWith(separator)) {
+                name = name.substring(1);
             }
-            if (!ignoreScan(filename.replace(separator, "."))) {
+            if (!ignoreScan(name.replace(separator, "."))) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean ignoreScan(String intf) {
+    /**Ignore the package name passed in
+     * @param packageName The package name to check
+     * @return true of the package should be scanned
+     */
+    private boolean ignoreScan(String packageName) {
         for (String ignored : ignoredPackages) {
-            if (intf.startsWith(ignored + ".")) {
+            if (packageName.startsWith(ignored + ".")) {
                 return true;
             }
         }

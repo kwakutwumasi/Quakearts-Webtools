@@ -10,26 +10,21 @@ import java.util.List;
 import com.quakearts.classpathscanner.Filter;
 import com.quakearts.classpathscanner.exception.ScannerRuntimeException;
 
-/**
- * The Class ClassFileIterator.
- * 
- * @author animesh.kumar
+/**Implementation of {@link ResourceInputStreamIterator} that iterates over class files in a folder
+ * @author Kwaku Twumasi Afriyie (kwaku.twumasi@quakearts.com)
+ *
  */
-public class ClassFileIterator implements ResourceIterator {
+public class ClassFileIterator implements ResourceInputStreamIterator {
 
-    /** files. */
     private List<File> files;
     
     private File rootDir;
 
-    /** The index. */
     private int index = 0;
 
-    /**
-     * Instantiates a new class file iterator.
-     * 
-     * @param file
-     * @param filter
+    /**Constructs a resource file iterator using the given directory
+     * @param file The {@link File} object of the directory. Must be a directory
+     * @param filter The {@link Filter} object to use to skip files
      */
     public ClassFileIterator(File file, Filter filter) {
         files = new ArrayList<File>();
@@ -45,7 +40,12 @@ public class ClassFileIterator implements ResourceIterator {
         }
     }
 
-    // helper method to initialize the iterator
+    /**Recursively iterate over files to scan subdirectories
+     * @param list
+     * @param dir
+     * @param filter
+     * @throws Exception
+     */
     private void init(List<File> list, File dir, Filter filter) throws Exception {
         File[] files = dir.listFiles();
         for (File file:files) {
@@ -61,7 +61,9 @@ public class ClassFileIterator implements ResourceIterator {
         }
     }
 
-    /* @see com.quakearts.annovention.resource.ResourceIterator#next() */
+    /* (non-Javadoc)
+     * @see com.quakearts.classpathscanner.resource.ResourceIterator#next()
+     */
     @Override
     public final InputStream next() {
         if (index >= files.size()){
@@ -75,9 +77,10 @@ public class ClassFileIterator implements ResourceIterator {
         }
     }
 
-    /* @see com.quakearts.annovention.resource.ResourceIterator#close() */
+    /* (non-Javadoc)
+     * @see com.quakearts.classpathscanner.resource.ResourceIterator#close()
+     */
     @Override
     public void close() {
-    	// DO Nothing
     }
 }

@@ -5,8 +5,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.net.URL;
-
 import org.junit.Test;
 
 import com.quakearts.classpathscanner.ClasspathScanner;
@@ -14,16 +12,6 @@ import com.quakearts.classpathscanner.FilterImpl;
 import com.quakearts.classpathscanner.listener.ClassAnnotationScanningListener;
 
 public class TestClasspathScanner {
-
-	@Test
-	public void testFindResources() {
-		ClasspathScanner scanner = new ClasspathScanner();
-		URL[] urls = scanner.findResources();
-		assertTrue(urls.length>0);
-		for(URL url:urls){
-			assertTrue(url.getProtocol().equals("file"));
-		}
-	}
 	
 	@Test
 	public void testScan() {
@@ -52,12 +40,12 @@ class TestClassAnnotationScanningListener implements ClassAnnotationScanningList
 	boolean hasRun;
 	
 	@Override
-	public String[] supportedAnnotations() {
+	public String[] getAnnotationsToListenFor() {
 		return new String[]{TestAnnotation.class.getName()};
 	}
 
 	@Override
-	public void discovered(String className, String annotation) {
+	public void handle(String className, String annotation) {
 		hasRun = true;
 		assertTrue(className.equals(TestClass.class.getName()));
 	}

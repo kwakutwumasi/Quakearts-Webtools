@@ -1,14 +1,14 @@
 package com.quakearts.classpathscanner;
 
-/**
- * Interface to filter out filenames.
- * 
- * @author animesh.kumar
+/**An interface for implementing a filter to skip over class files while scanning
+ * @author Kwaku Twumasi Afriyie (kwaku.twumasi@quakearts.com)
+ *
  */
 public interface Filter {
 
-    /**
-     * If true, the file is accepted, else rejected.
+    /**Tests whether the scanner accepts the resource with the given name
+     * @param name The name to test
+     * @return true if the resource should be scanned
      */
-    boolean accepts(String filename);
+    boolean accepts(String name);
 }

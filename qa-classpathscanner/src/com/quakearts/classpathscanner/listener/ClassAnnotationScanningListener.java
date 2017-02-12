@@ -1,17 +1,15 @@
 package com.quakearts.classpathscanner.listener;
 
-/**
- * The Interface ClassAnnotationDiscoveryListener.
- * 
- * @author animesh.kumar
+import javassist.bytecode.annotation.Annotation;
+
+/**Interface for {@link AnnotationScanningListener}s.
+ * @author Kwaku Twumasi Afriyie (kwaku.twumasi@quakearts.com)
+ *
  */
 public interface ClassAnnotationScanningListener extends AnnotationScanningListener {
-
-	/**
-	 * Gets called by the Discoverer with class-name of the class where annotation is found.
-	 * 
-	 * @param clazz			
-	 * @param annotation
+	/**Handle processing for the discovered class
+	 * @param className The class name
+	 * @param annotation The {@link Annotation}
 	 */
-	void discovered(String className, String annotation);
+	void handle(String className, String annotation);
 }

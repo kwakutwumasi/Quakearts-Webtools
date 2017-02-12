@@ -8,6 +8,9 @@ import java.util.logging.Level;
  */
 public class DefaultExceptionHandler extends ExceptionHandlerBase {
 
+	/* (non-Javadoc)
+	 * @see com.quakearts.common.exceptionhandler.ExceptionHandler#handleException(java.lang.Exception, java.lang.Object[])
+	 */
 	@Override
 	public void handleException(Exception e, Object... params) {
 		loggger.log(Level.SEVERE, "Exception of type " + e.getClass().getName() 

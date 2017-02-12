@@ -1,14 +1,15 @@
 package com.quakearts.classpathscanner.listener;
 
-/**
- * The Interface AnnotationDiscoveryListener.
- * 
- * @author animesh.kumar
+import java.lang.annotation.Annotation;
+
+/**Base interface for annotation listeners
+ * @author Kwaku Twumasi Afriyie (kwaku.twumasi@quakearts.com)
+ *
  */
 public interface AnnotationScanningListener {
 
-	/**
-	 * @return Array of supported annotations names
+	/**A list of {@link Annotation} names that this listener handles
+	 * @return
 	 */
-	String[] supportedAnnotations();
+	String[] getAnnotationsToListenFor();
 }
