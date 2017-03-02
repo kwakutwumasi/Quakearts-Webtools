@@ -1,4 +1,4 @@
-package com.quakearts.classpathscanner;
+package com.quakearts.classannotationscanner;
 
 import java.io.File;
 

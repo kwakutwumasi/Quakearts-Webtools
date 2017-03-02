@@ -1,7 +1,7 @@
-package com.quakearts.classpathscanner;
+package com.quakearts.classannotationscanner;
 
-import com.quakearts.classpathscanner.listener.ClassAnnotationObjectScanningListener;
-import com.quakearts.classpathscanner.listener.ClassAnnotationScanningListener;
+import com.quakearts.classannotationscanner.listener.ClassAnnotationObjectScanningListener;
+import com.quakearts.classannotationscanner.listener.ClassAnnotationScanningListener;
 
 /**A scanner for discovering loadable classes by their annotations
  * @author Kwaku Twumasi Afriyie (kwaku.twumasi@quakearts.com)

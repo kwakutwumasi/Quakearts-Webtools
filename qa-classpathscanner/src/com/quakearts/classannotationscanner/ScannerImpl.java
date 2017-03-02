@@ -1,4 +1,4 @@
-package com.quakearts.classpathscanner;
+package com.quakearts.classannotationscanner;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -12,14 +12,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.quakearts.classannotationscanner.exception.ScannerRuntimeException;
+import com.quakearts.classannotationscanner.listener.ClassAnnotationObjectScanningListener;
+import com.quakearts.classannotationscanner.listener.ClassAnnotationScanningListener;
+import com.quakearts.classannotationscanner.resource.ResourceInputStreamIterator;
+
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.annotation.Annotation;
-
-import com.quakearts.classpathscanner.listener.ClassAnnotationScanningListener;
-import com.quakearts.classpathscanner.exception.ScannerRuntimeException;
-import com.quakearts.classpathscanner.listener.ClassAnnotationObjectScanningListener;
-import com.quakearts.classpathscanner.resource.ResourceInputStreamIterator;
 
 /**Base class for {@link Scanner} implementations. Should be subclassed by all other implementations for ease of use
  * @author Kwaku Twumasi Afriyie (kwaku.twumasi@quakearts.com)

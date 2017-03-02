@@ -1,4 +1,4 @@
-package com.quakearts.classpathscanner.listener;
+package com.quakearts.classannotationscanner.listener;
 
 import javassist.bytecode.annotation.Annotation;
 

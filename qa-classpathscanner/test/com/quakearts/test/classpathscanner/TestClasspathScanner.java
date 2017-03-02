@@ -7,9 +7,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.junit.Test;
 
-import com.quakearts.classpathscanner.ClasspathScanner;
-import com.quakearts.classpathscanner.FilterImpl;
-import com.quakearts.classpathscanner.listener.ClassAnnotationScanningListener;
+import com.quakearts.classannotationscanner.ClasspathScanner;
+import com.quakearts.classannotationscanner.FilterImpl;
+import com.quakearts.classannotationscanner.listener.ClassAnnotationScanningListener;
 
 public class TestClasspathScanner {
 	

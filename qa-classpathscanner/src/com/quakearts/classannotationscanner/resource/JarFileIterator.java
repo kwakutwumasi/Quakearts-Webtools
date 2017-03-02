@@ -1,4 +1,4 @@
-package com.quakearts.classpathscanner.resource;
+package com.quakearts.classannotationscanner.resource;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,8 +7,8 @@ import java.io.InputStream;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
-import com.quakearts.classpathscanner.Filter;
-import com.quakearts.classpathscanner.exception.ScannerRuntimeException;
+import com.quakearts.classannotationscanner.Filter;
+import com.quakearts.classannotationscanner.exception.ScannerRuntimeException;
 
 /**Implementation of {@link ResourceInputStreamIterator} that iterates over class files in a jar archive
  * @author Kwaku Twumasi Afriyie (kwaku.twumasi@quakearts.com)

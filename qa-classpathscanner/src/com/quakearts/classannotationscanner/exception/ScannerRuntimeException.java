@@ -1,4 +1,4 @@
-package com.quakearts.classpathscanner.exception;
+package com.quakearts.classannotationscanner.exception;
 
 /**A subclass of {@link RuntimeException} to be thrown when scanning errors occur. Can be caught by applications
  * that can recover from such errors; in all other uses cases, as this is a 

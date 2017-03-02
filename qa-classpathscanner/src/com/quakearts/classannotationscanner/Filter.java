@@ -1,4 +1,4 @@
-package com.quakearts.classpathscanner;
+package com.quakearts.classannotationscanner;
 
 /**An interface for implementing a filter to skip over class files while scanning
  * @author Kwaku Twumasi Afriyie (kwaku.twumasi@quakearts.com)

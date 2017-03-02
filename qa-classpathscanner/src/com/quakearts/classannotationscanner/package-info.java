@@ -3,4 +3,4 @@
  * 
  * @author Kwaku Twumasi Afriyie
  */
-package com.quakearts.classpathscanner;
+package com.quakearts.classannotationscanner;

@@ -1,4 +1,4 @@
-package com.quakearts.classpathscanner.resource;
+package com.quakearts.classannotationscanner.resource;
 
 import java.io.InputStream;
 

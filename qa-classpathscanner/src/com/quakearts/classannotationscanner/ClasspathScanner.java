@@ -1,4 +1,4 @@
-package com.quakearts.classpathscanner;
+package com.quakearts.classannotationscanner;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,9 +11,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import com.quakearts.classpathscanner.resource.ClassFileIterator;
-import com.quakearts.classpathscanner.resource.JarFileIterator;
-import com.quakearts.classpathscanner.resource.ResourceInputStreamIterator;
+import com.quakearts.classannotationscanner.resource.ClassFileIterator;
+import com.quakearts.classannotationscanner.resource.JarFileIterator;
+import com.quakearts.classannotationscanner.resource.ResourceInputStreamIterator;
 
 /** Main implementation of Scanner. Looks for annotations in jar files and class folders on the current classpath
  * @author Kwaku Twumasi Afriyie (kwaku.twumasi@quakearts.com)

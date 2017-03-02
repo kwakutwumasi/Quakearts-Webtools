@@ -1,6 +1,6 @@
 package com.quakearts.common.exceptionhandler.scannerlistener;
 
-import com.quakearts.classpathscanner.listener.ClassAnnotationScanningListener;
+import com.quakearts.classannotationscanner.listener.ClassAnnotationScanningListener;
 import com.quakearts.common.exceptionhandler.ExceptionHandler;
 import com.quakearts.common.exceptionhandler.ExceptionHandlerFactory;
 import com.quakearts.common.exceptionhandler.annotations.Handler;

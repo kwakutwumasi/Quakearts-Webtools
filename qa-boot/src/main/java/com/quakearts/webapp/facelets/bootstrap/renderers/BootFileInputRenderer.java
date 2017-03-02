@@ -131,7 +131,8 @@ public class BootFileInputRenderer extends Renderer {
 		writer.startElement("img", component);
 		writer.writeAttribute("id", "img_ldd_"+id_js, null);
 		writer.writeAttribute("alt", "Loaded", null);
-		writer.writeAttribute("class", "collapse", null);
+		if(name==null)
+			writer.writeAttribute("class", "collapse", null);
 		writer.writeAttribute("src", root+"/boot-services/css/images/loaded.png", null);
 		writer.endElement("img"); 
 		writer.write("\n");

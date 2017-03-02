@@ -177,7 +177,6 @@ public abstract class ExceptionHandlerFactory {
 	public static ExceptionHandlerFactory getInstance() {
 		if(instance==null){
 			instance = new DefaultExceptionHandlerFactory();
-			((DefaultExceptionHandlerFactory)instance).scan();
 		}
 		
 		return instance;

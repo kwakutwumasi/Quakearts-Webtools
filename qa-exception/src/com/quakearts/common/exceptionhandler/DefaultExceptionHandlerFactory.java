@@ -5,18 +5,25 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.quakearts.classpathscanner.ClasspathScanner;
-import com.quakearts.classpathscanner.Scanner;
+import com.quakearts.classannotationscanner.ClasspathScanner;
+import com.quakearts.classannotationscanner.Scanner;
 import com.quakearts.common.exceptionhandler.scannerlistener.HandlerAnnotationListener;
 import com.quakearts.common.exceptionhandler.scannerlistener.HandlersAnnotationListener;
 
-/**Default handler factory. Uses a ConcurrentHashMap as the backing store
+/**Default handler factory. Uses a ConcurrentHashMap as the backing store. Uses {@link Scanner} to 
+ * scan class files for {@link ExceptionHandler} implementations annotated with the {@link com.quakearts.common.exceptionhandler.annotations.Handler Handler}
+ * annotation
  * @author Kwaku Twumasi
  *
  */
 public class DefaultExceptionHandlerFactory extends ExceptionHandlerFactory {
 
 	private static Map<ExceptionHandlerKey, ExceptionHandler> handlerRegistry = new ConcurrentHashMap<>();
+	private static boolean scanned;
+	
+	protected DefaultExceptionHandlerFactory() {
+		scan();
+	}
 	
 	/* (non-Javadoc)
 	 * @see com.quakearts.common.exceptionhandler.ExceptionHandlerFactory#get(com.quakearts.common.exceptionhandler.ExceptionHandlerKey)
@@ -53,10 +60,14 @@ public class DefaultExceptionHandlerFactory extends ExceptionHandlerFactory {
 	/**Method to initiate classpath scanning. This is the default behavior.
 	 * 
 	 */
-	protected void scan() {
-		Scanner scanner = getScanner();
-		addScanAnnotationListeners(scanner);
-		scanner.scan();
+	protected static synchronized void scan() {
+		if(!scanned){
+			Scanner scanner = getScanner();
+			scanner.addAnnotationListener(new HandlerAnnotationListener());
+			scanner.addAnnotationListener(new HandlersAnnotationListener());
+			scanner.scan();
+			scanned = true;
+		}
 	}
 	
 	/**Gets the scanner to use for scanning
@@ -65,15 +76,16 @@ public class DefaultExceptionHandlerFactory extends ExceptionHandlerFactory {
 	 * or implement their own {@link ExceptionHandlerFactory} behavior
 	 * @return
 	 */
-	protected Scanner getScanner() {
+	protected static Scanner getScanner() {
 		return new ClasspathScanner();
 	}
 
 	/**Convenience method to simply plug the listeners to an existing scanner. Useful for projects that use {@link Scanner}
-	 * to streamline scanning
+	 * for loading other components to streamline scanning
 	 * @param scanner
 	 */
 	public static void addScanAnnotationListeners(Scanner scanner) {
+		scanned = true;
 		scanner.addAnnotationListener(new HandlerAnnotationListener());
 		scanner.addAnnotationListener(new HandlersAnnotationListener());
 	}
