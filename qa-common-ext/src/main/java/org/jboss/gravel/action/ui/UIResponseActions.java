@@ -4,7 +4,6 @@ import org.jboss.gravel.common.annotation.TldTag;
 
 import javax.el.MethodExpression;
 import javax.faces.component.ActionSource2;
-import javax.faces.component.UICommand;
 import javax.faces.component.UIComponentBase;
 import javax.faces.context.FacesContext;
 import javax.faces.el.MethodBinding;

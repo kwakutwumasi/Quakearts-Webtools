@@ -19,7 +19,7 @@ import com.quakearts.classannotationscanner.resource.ResourceInputStreamIterator
  * @author Kwaku Twumasi Afriyie (kwaku.twumasi@quakearts.com)
  *
  */
-public class ClasspathScanner extends ScannerImpl {
+public class ClasspathScanner extends URLResourceScanner {
 
     /**Filter used to skip loading of classes from popular libraries and library vendors
      * 

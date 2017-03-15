@@ -8,9 +8,6 @@ import javax.faces.view.facelets.ComponentConfig;
 import javax.faces.view.facelets.ComponentHandler;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
-import javax.faces.event.ActionListener;
-import javax.faces.event.PhaseId;
 import javax.faces.event.PreRenderViewEvent;
 
 import org.jboss.gravel.action.action.ResponseActionSystemListener;

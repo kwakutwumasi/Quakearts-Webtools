@@ -4,7 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+//import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,11 +12,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import com.quakearts.classannotationscanner.exception.ScannerRuntimeException;
 import com.quakearts.classannotationscanner.listener.ClassAnnotationObjectScanningListener;
 import com.quakearts.classannotationscanner.listener.ClassAnnotationScanningListener;
-import com.quakearts.classannotationscanner.resource.ResourceInputStreamIterator;
-
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.annotation.Annotation;
@@ -25,17 +22,17 @@ import javassist.bytecode.annotation.Annotation;
  * @author Kwaku Twumasi Afriyie (kwaku.twumasi@quakearts.com)
  *
  */
-public abstract class ScannerImpl implements Scanner {
+public abstract class ScannerImplBase implements Scanner {
 
     private final Map<String, Set<ClassAnnotationScanningListener>> classAnnotationListeners =
         new HashMap<String, Set<ClassAnnotationScanningListener>>();
 
-    private static final Map<String, Set<ClassAnnotationObjectScanningListener>> classAnnotationObjectListeners =
+    private final Map<String, Set<ClassAnnotationObjectScanningListener>> classAnnotationObjectListeners =
     	new HashMap<String, Set<ClassAnnotationObjectScanningListener>>();
 
-    private static final Logger log = Logger.getLogger("Scanner");
+    static final Logger log = Logger.getLogger("Scanner");
     
-    public ScannerImpl() {
+    public ScannerImplBase() {
     }
 
     /* (non-Javadoc)
@@ -69,42 +66,26 @@ public abstract class ScannerImpl implements Scanner {
         }
     }
 
-	/**Get an array of {@link URL}s to scan
-	 * @return the array of {@link URL}s
-	 */
-	protected abstract URL[] findResources();
-
-    /* (non-Javadoc)
-	 * @see com.quakearts.classpathscanner.Scanner#scan()
-	 */
-    @Override
-	public final void scan() {
-    	long starttime = System.nanoTime();
-        URL[] resources = findResources();
-        for (URL resource : resources) {
-            try {
-                ResourceInputStreamIterator itr = getResourceIterator(resource, getFilter());
-                if (itr != null) {
-                    InputStream is = null;
-                    while ((is = itr.next()) != null) {
-                        DataInputStream dstream = new DataInputStream(new BufferedInputStream(is));
-                        try {
-                            ClassFile classFile = new ClassFile(dstream);
-                            scanAndNotifyForClassAnnotations (classFile);
-                        } finally {
-                             dstream.close();
-                             is.close();
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                throw new ScannerRuntimeException(e);
-            }
-        }
-    	log.info("Annotation scanning completed in "+((System.nanoTime()-starttime)/1000000)+" ms");
+    /**Process an {@link InputStream} resource. Loads a {@link ClassFile} and passes it 
+     * to {@link #scanAndNotifyForClassAnnotations(ClassFile)}
+     * @param is
+     * @throws IOException
+     */
+    protected void processInputStream(InputStream is) throws IOException{
+    	 DataInputStream dstream = new DataInputStream(new BufferedInputStream(is));
+         try {
+             ClassFile classFile = new ClassFile(dstream);
+             scanAndNotifyForClassAnnotations (classFile);
+         } finally {
+              dstream.close();
+              is.close();
+         }
     }
-
-    private void scanAndNotifyForClassAnnotations(ClassFile classFile) {
+    
+    /**Loop through Annotations and find listeners to process Annotations, if any
+     * @param classFile {@link ClassFile} object to search for annotations
+     */
+    protected void scanAndNotifyForClassAnnotations(ClassFile classFile) {
         Set<Annotation> annotations = new HashSet<Annotation>();
 
 		AnnotationsAttribute visibleA = (AnnotationsAttribute) classFile.getAttribute(AnnotationsAttribute.visibleTag);
@@ -127,5 +108,4 @@ public abstract class ScannerImpl implements Scanner {
         }
     }
 
-    protected abstract ResourceInputStreamIterator getResourceIterator(URL url, Filter filter) throws IOException;
 }

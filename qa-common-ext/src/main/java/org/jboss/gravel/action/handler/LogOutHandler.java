@@ -15,7 +15,6 @@ import javax.el.ELException;
 
 import org.jboss.gravel.action.action.LogOutActionListener;
 import org.jboss.gravel.common.annotation.TldAttribute;
-import org.jboss.gravel.common.annotation.TldAttributes;
 import org.jboss.gravel.common.annotation.TldTag;
 
 /**

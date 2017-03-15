@@ -62,7 +62,7 @@ public class DefaultExceptionHandlerFactory extends ExceptionHandlerFactory {
 	 */
 	protected static synchronized void scan() {
 		if(!scanned){
-			Scanner scanner = getScanner();
+			Scanner scanner = getDefaultScanner();
 			scanner.addAnnotationListener(new HandlerAnnotationListener());
 			scanner.addAnnotationListener(new HandlersAnnotationListener());
 			scanner.scan();
@@ -76,7 +76,7 @@ public class DefaultExceptionHandlerFactory extends ExceptionHandlerFactory {
 	 * or implement their own {@link ExceptionHandlerFactory} behavior
 	 * @return
 	 */
-	protected static Scanner getScanner() {
+	protected static Scanner getDefaultScanner() {
 		return new ClasspathScanner();
 	}
 

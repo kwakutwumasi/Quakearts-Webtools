@@ -7,14 +7,12 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
-import javax.jms.Session;
 import javax.naming.InitialContext;
 import javax.transaction.Status;
 import javax.transaction.UserTransaction;
 
 import com.quakearts.webapp.facelets.util.UtilityMethods;
 import com.quakearts.webapp.hibernate.CurrentSessionContextHelper;
-import com.quakearts.webapp.hibernate.ServletSessionHelper;
 
 public class HibernatePhaseHelper implements PhaseListener {
 

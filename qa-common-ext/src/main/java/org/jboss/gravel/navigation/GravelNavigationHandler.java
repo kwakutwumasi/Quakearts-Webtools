@@ -8,10 +8,7 @@ import javax.el.ELException;
 import javax.el.MethodExpression;
 import javax.faces.FacesException;
 import javax.faces.application.Application;
-import javax.faces.application.ConfigurableNavigationHandler;
-import javax.faces.application.NavigationCase;
 import javax.faces.application.NavigationHandler;
-import javax.faces.component.ActionSource;
 import javax.faces.component.ActionSource2;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -20,8 +17,6 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
 
 import java.io.Serializable;
-import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 

@@ -2,7 +2,6 @@ package org.jboss.gravel.action.action;
 
 import java.util.List;
 
-import javax.faces.component.StateHolder;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
