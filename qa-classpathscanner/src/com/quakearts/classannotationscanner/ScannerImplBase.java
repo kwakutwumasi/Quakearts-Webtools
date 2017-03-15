@@ -12,11 +12,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import com.quakearts.classannotationscanner.exception.ScannerRuntimeException;
 import com.quakearts.classannotationscanner.listener.ClassAnnotationObjectScanningListener;
 import com.quakearts.classannotationscanner.listener.ClassAnnotationScanningListener;
-import com.quakearts.classannotationscanner.resource.ResourceInputStreamIterator;
-
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.annotation.Annotation;
