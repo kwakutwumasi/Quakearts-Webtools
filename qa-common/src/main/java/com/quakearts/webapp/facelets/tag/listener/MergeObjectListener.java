@@ -13,34 +13,25 @@ public class MergeObjectListener extends HibernateListener {
 	 * 
 	 */
 	private static final long serialVersionUID = -492106451127617568L;
-	private ValueExpression objectExpression,deleteExpression;
+	private ValueExpression objectExpression;
 	private ValueExpression messageExpression;
 
-	public MergeObjectListener(ValueExpression objectExpression,ValueExpression deleteExpression, ValueExpression messageExpression) {
+	public MergeObjectListener(ValueExpression objectExpression, ValueExpression messageExpression) {
 		this.objectExpression = objectExpression;
-		this.deleteExpression = deleteExpression;
 		this.messageExpression = messageExpression;
 	}
 
 	@Override
 	protected void continueProcessing(ActionEvent event, FacesContext ctx) {
-		boolean delete = ObjectExtractor.extractBoolean(deleteExpression, ctx.getELContext());
 		Object obj = objectExpression.getValue(ctx.getELContext());
 		String message = ObjectExtractor.extractString(messageExpression, ctx.getELContext());
 		
 		try {
 			if(obj !=null){
-				obj = session.merge(obj);
-				
-				if(delete){
-					session.delete(obj);
-					setOutcome("success");
-					addMessage("Deleted",message==null?(obj.getClass().getSimpleName()+" has been successfully deleted"):message, ctx);
-				} else {
-					setOutcome("success");
-					addMessage("Modified",message==null?(obj.getClass().getSimpleName()+" has been successfully updated"):message, ctx);
-					objectExpression.setValue(ctx.getELContext(), obj);
-				}
+				obj = dataStore.refresh(obj);
+				setOutcome("success");
+				addMessage("Modified",message==null?(obj.getClass().getSimpleName()+" has been successfully updated"):message, ctx);
+				objectExpression.setValue(ctx.getELContext(), obj);
 			} else {
 				setOutcome("error");
 				addError("Invalid object", "Object attribute evaluated to null", ctx);

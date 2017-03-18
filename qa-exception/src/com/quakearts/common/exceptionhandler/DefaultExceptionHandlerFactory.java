@@ -19,7 +19,7 @@ import com.quakearts.common.exceptionhandler.scannerlistener.HandlersAnnotationL
 public class DefaultExceptionHandlerFactory extends ExceptionHandlerFactory {
 
 	private static Map<ExceptionHandlerKey, ExceptionHandler> handlerRegistry = new ConcurrentHashMap<>();
-	private static Boolean scanned = false;
+	private static Boolean dontscan = false;
 	
 	protected DefaultExceptionHandlerFactory() {
 		scan();
@@ -61,12 +61,12 @@ public class DefaultExceptionHandlerFactory extends ExceptionHandlerFactory {
 	 * 
 	 */
 	protected void scan() {
-		synchronized (scanned) {
-			if(!scanned){//prevent multiple scans. Just in case
+		synchronized (dontscan) {
+			if(!dontscan){//prevent multiple scans. Just in case
 				Scanner scanner = getScanner();
 				addScanAnnotationListeners(scanner);
 				scanner.scan();
-				scanned = true;
+				dontscan = true;
 			}			
 		}
 	}
@@ -86,7 +86,7 @@ public class DefaultExceptionHandlerFactory extends ExceptionHandlerFactory {
 	 * @param scanner
 	 */
 	public static void addScanAnnotationListeners(Scanner scanner) {
-		scanned = true;
+		dontscan = true;
 		scanner.addAnnotationListener(new HandlerAnnotationListener());
 		scanner.addAnnotationListener(new HandlersAnnotationListener());
 	}

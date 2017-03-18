@@ -53,13 +53,13 @@ public class SaveOrUpdateObjectListener extends HibernateListener {
 			if(object!=null){
 				if(action != null){
 					if(action.equals("save"))
-						session.save(object);						
+						dataStore.save(object);						
 					else if(action.equals("update"))
-						session.update(object);
+						dataStore.update(object);
 					else
 						throw new IllegalArgumentException("Action "+action+" is not a valid parameter");
 				} else {
-					session.saveOrUpdate(object);
+					dataStore.saveOrUpdate(object);
 				}
 				addMessage("Success",message==null?(object.getClass().getSimpleName()+" has been successfully saved"):message, ctx);
 				setOutcome("success");

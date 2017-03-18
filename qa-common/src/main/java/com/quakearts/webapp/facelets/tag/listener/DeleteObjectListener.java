@@ -33,7 +33,7 @@ public class DeleteObjectListener extends HibernateListener {
 		
 		try {
 			if(object!=null){
-				session.delete(object);
+				dataStore.delete(object);
 				addMessage("Success",message==null?(object.getClass().getSimpleName()+" has been successfully deleted"):message, ctx);
 				setOutcome("success");
 			}else{

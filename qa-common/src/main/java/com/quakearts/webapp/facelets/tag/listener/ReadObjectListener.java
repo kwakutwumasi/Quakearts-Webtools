@@ -43,7 +43,7 @@ public class ReadObjectListener extends HibernateListener {
 		
 		try {
 			if(id!=null && type!=null){
-				object = session.get(type, id);
+				object = dataStore.get(type, id);
 				if(object!=null){
 					addMessage("Loaded", message==null?(type.getSimpleName()+" has been successfully loaded"):message, ctx);
 					setOutcome("success");
