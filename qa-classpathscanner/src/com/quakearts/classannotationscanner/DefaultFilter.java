@@ -6,7 +6,7 @@ import java.io.File;
  * @author Kwaku Twumasi Afriyie (kwaku.twumasi@quakearts.com)
  *
  */
-public class FilterImpl implements Filter {
+public class DefaultFilter implements Filter {
     /**Default set of packages to ignore
      * 
      */
@@ -45,14 +45,14 @@ public class FilterImpl implements Filter {
 	/**Default constructors. Uses the default list of packages to ignore
 	 * 
 	 */
-	public FilterImpl() {
+	public DefaultFilter() {
 		this.ignoredPackages = IGNORED_PACKAGES;
 	}
 
 	/**Constructor for providing a custom list of packages to ignore
 	 * @param ignoredPackages
 	 */
-	public FilterImpl(String[] ignoredPackages) {
+	public DefaultFilter(String[] ignoredPackages) {
 		this.ignoredPackages = ignoredPackages;
 	}
 

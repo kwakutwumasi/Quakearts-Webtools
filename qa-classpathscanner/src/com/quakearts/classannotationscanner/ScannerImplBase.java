@@ -32,9 +32,6 @@ public abstract class ScannerImplBase implements Scanner {
 
     static final Logger log = Logger.getLogger("Scanner");
     
-    public ScannerImplBase() {
-    }
-
     /* (non-Javadoc)
 	 * @see com.quakearts.classpathscanner.Scanner#addAnnotationListener(com.quakearts.classpathscanner.listener.ClassAnnotationScanningListener)
 	 */

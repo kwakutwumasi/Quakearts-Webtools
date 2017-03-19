@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 import org.junit.Test;
 
 import com.quakearts.classannotationscanner.ClasspathScanner;
-import com.quakearts.classannotationscanner.FilterImpl;
+import com.quakearts.classannotationscanner.DefaultFilter;
 import com.quakearts.classannotationscanner.listener.ClassAnnotationScanningListener;
 
 public class TestClasspathScanner {
@@ -28,7 +28,7 @@ public class TestClasspathScanner {
 		TestClassAnnotationScanningListener listener = new TestClassAnnotationScanningListener();
 		ClasspathScanner scanner = new ClasspathScanner();
 		scanner.addAnnotationListener(listener);
-		scanner.setFilter(new FilterImpl(new String[]{"com.quakearts.test.classpathscanner"}));
+		scanner.setFilter(new DefaultFilter(new String[]{"com.quakearts.test.classpathscanner"}));
 		scanner.scan();
 		assertTrue(!listener.hasRun);
 	}

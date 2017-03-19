@@ -26,11 +26,11 @@ public class ClasspathScanner extends URLResourceScanner {
      */
     private Filter filter;
 
-    /**Default constructor. Uses the default filter implementation {@link FilterImpl}.
+    /**Default constructor. Uses the default filter implementation {@link DefaultFilter}.
      * 
      */
     public ClasspathScanner() {
-        filter = new FilterImpl();
+        filter = new DefaultFilter();
     }
     
     /**Constructor for injecing a custom filter
@@ -38,6 +38,10 @@ public class ClasspathScanner extends URLResourceScanner {
      */
     public ClasspathScanner(Filter filter) {
 		this.filter = filter;
+	}
+    
+    public ClasspathScanner(String packageName) {
+		this.filter = new PackageFilter(packageName);
 	}
 
 	/* (non-Javadoc)
