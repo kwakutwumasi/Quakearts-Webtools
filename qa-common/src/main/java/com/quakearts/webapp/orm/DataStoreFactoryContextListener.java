@@ -1,4 +1,4 @@
-package com.quakearts.webapp.hibernate.facelets;
+package com.quakearts.webapp.orm;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -7,7 +7,7 @@ import javax.servlet.annotation.WebListener;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 
 @WebListener
-public class HibernateSessionServletContextListener implements ServletContextListener {
+public class DataStoreFactoryContextListener implements ServletContextListener {
 
 	private static final String DATASTOREFACTORY = "com.quakearts.webapp.orm.FACTORY";
 	
