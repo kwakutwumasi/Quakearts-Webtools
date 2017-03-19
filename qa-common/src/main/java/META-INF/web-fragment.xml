@@ -4,6 +4,6 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-fragment_3_0.xsd ">
 	<context-param>
 		<param-name>com.quakearts.webapp.orm.FACTORY</param-name>
-		<param-value>com.quakearts.webapp.hibernate.facelets.HibernateSessionDataStoreFactory</param-value>
+		<param-value>com.quakearts.webapp.hibernate.HibernateSessionDataStoreFactory</param-value>
 	</context-param>
 </web-fragment>

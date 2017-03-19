@@ -1,4 +1,4 @@
-package com.quakearts.webapp.hibernate.facelets;
+package com.quakearts.webapp.hibernate;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -8,8 +8,6 @@ import java.util.Map;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
-import com.quakearts.webapp.hibernate.HibernateBean;
-import com.quakearts.webapp.hibernate.HibernateHelper;
 import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.webapp.orm.query.QueryOrder;

@@ -1,4 +1,4 @@
-package com.quakearts.webapp.hibernate.facelets;
+package com.quakearts.webapp.hibernate;
 
 import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.DataStoreFactory;
