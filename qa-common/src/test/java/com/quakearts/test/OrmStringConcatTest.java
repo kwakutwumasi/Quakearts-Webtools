@@ -5,11 +5,12 @@ import static org.junit.Assert.*;
 import javax.persistence.Column;
 import javax.persistence.Transient;
 import org.junit.Test;
-import com.quakearts.webapp.hibernate.HibernateStringConcatUtil;
+
+import com.quakearts.webapp.orm.stringconcat.OrmStringConcatUtil;
 
 import static org.hamcrest.core.Is.*;
 
-public class HibernateStringConcatTest {
+public class OrmStringConcatTest {
 
 	@Test
 	public void testStringConcat() {
@@ -27,8 +28,8 @@ public class HibernateStringConcatTest {
 		beanChild.setYastring("12345678901234567890");		
 		
 		try {
-			HibernateStringConcatUtil.trimStrings(bean);
-			HibernateStringConcatUtil.trimStrings(beanChild);
+			OrmStringConcatUtil.trimStrings(bean);
+			OrmStringConcatUtil.trimStrings(beanChild);
 			
 			assertThat(bean.getAnnotatedField(), is("1234567890"));
 			assertThat(bean.getNonAnnotatedField(), is("12345"));

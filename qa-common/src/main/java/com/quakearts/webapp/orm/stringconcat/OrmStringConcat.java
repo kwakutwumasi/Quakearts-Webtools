@@ -1,4 +1,4 @@
-package com.quakearts.webapp.hibernate;
+package com.quakearts.webapp.orm.stringconcat;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -15,13 +15,13 @@ import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Transient;
 
-public class HibernateStringConcat {	
+public class OrmStringConcat {	
 	private Map<String, ConcatenatorEntry> fieldMap;
 	private Class<?> beanClass;
 	
-	final static Logger log = Logger.getLogger(HibernateStringConcat.class.getName());
+	final static Logger log = Logger.getLogger(OrmStringConcat.class.getName());
 	
-	public HibernateStringConcat(Class<?> beanClass) {
+	public OrmStringConcat(Class<?> beanClass) {
 		fieldMap = new HashMap<>();
 		
 		try {

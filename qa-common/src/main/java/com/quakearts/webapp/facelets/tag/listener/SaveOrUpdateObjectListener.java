@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 import com.quakearts.webapp.facelets.tag.HibernateListener;
 import com.quakearts.webapp.facelets.util.ObjectExtractor;
 import com.quakearts.webapp.facelets.util.UtilityMethods;
-import com.quakearts.webapp.hibernate.HibernateStringConcatUtil;
+import com.quakearts.webapp.orm.stringconcat.OrmStringConcatUtil;
 
 public class SaveOrUpdateObjectListener extends HibernateListener {
 
@@ -46,7 +46,7 @@ public class SaveOrUpdateObjectListener extends HibernateListener {
 		
 		if(trimstringsExpression!=null 
 				&& ObjectExtractor.extractBoolean(trimstringsExpression, ctx.getELContext())){
-			HibernateStringConcatUtil.trimStrings(object);
+			OrmStringConcatUtil.trimStrings(object);
 		}
 		
 		try {
