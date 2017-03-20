@@ -60,29 +60,27 @@ public class DefaultFilter implements Filter {
      * @see com.quakearts.classpathscanner.Filter#accepts(java.lang.String)
      */
     @Override
-    public final boolean accepts(String name) {
+    public boolean accepts(String name) {
         if (name.endsWith(".class")) {
         	String separator = name.contains(File.separator)?File.separator:"/";
             if (name.startsWith(separator)) {
                 name = name.substring(1);
             }
-            if (!ignoreScan(name.replace(separator, "."))) {
-                return true;
-            }
+            return shouldScan(name.replace(separator, "."));
         }
         return false;
     }
 
-    /**Ignore the package name passed in
+    /**Determin if the package name passed in should be scanned
      * @param packageName The package name to check
      * @return true of the package should be scanned
      */
-    private boolean ignoreScan(String packageName) {
+    protected boolean shouldScan(String packageName) {
         for (String ignored : ignoredPackages) {
             if (packageName.startsWith(ignored + ".")) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 }

@@ -40,6 +40,9 @@ public class ClasspathScanner extends URLResourceScanner {
 		this.filter = filter;
 	}
     
+    /**Constructor for restricting scanning to a single package
+     * @param packageName
+     */
     public ClasspathScanner(String packageName) {
 		this.filter = new PackageFilter(packageName);
 	}
