@@ -11,6 +11,11 @@ public class HibernateSessionDataStoreFactory extends DataStoreFactory {
 	}
 	
 	@Override
+	public DataStore getDataStore() {
+		return new HibernateSessionDataStore();
+	}
+	
+	@Override
 	public DataStore getDataStore(String domain) {
 		return new HibernateSessionDataStore(domain);
 	}

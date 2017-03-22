@@ -16,9 +16,7 @@ public abstract class DataStoreFactory {
 			throw new DataStoreException("A factory has already been set.");
 	}
 
-	public DataStore getDataStore(){
-		return getDataStore(null);
-	}
+	public abstract DataStore getDataStore();
 	
 	public abstract DataStore getDataStore(String storename);
 }

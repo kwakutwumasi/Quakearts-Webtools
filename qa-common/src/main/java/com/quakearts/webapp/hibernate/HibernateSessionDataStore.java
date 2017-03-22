@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
@@ -12,19 +11,22 @@ import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.webapp.orm.query.QueryOrder;
 
-public class HibernateSessionDataStore extends HibernateBean implements DataStore {
+public class HibernateSessionDataStore implements DataStore {
 
 	private Session session;
+	private String domain;
+	
+	public HibernateSessionDataStore() {
+		session = HibernateHelper.getCurrentSession();
+	}
 	
 	public HibernateSessionDataStore(String domain) {
-		if(domain==null)
-			session = HibernateHelper.getCurrentSession();
-		else
-			try {
-				session = HibernateHelper.getSession(domain);
-			} catch (HibernateException | IOException e) {
-				throw new DataStoreException(e);
-			}
+		try {
+			this.domain = domain;
+			session = HibernateHelper.getSession(domain);
+		} catch (HibernateException | IOException e) {
+			throw new DataStoreException(e);
+		}
 	}
 	
 	@Override
@@ -66,7 +68,7 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 	@Override
 	public <T> List<T> list(Class<T> clazz, Map<String, Serializable> parameters, QueryOrder...orders) {
 		try {
-			return findObjects(clazz, parameters, session, orders);
+			return null;
 		} catch (HibernateException e) {
 			throw new DataStoreException(e);
 		}
@@ -90,5 +92,12 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 			throw new DataStoreException(e);
 		}
 	}
+
+	public Session getSession() {
+		return session;
+	}
 	
+	public String getDomain() {
+		return domain;
+	}
 }
