@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+                                         "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+ <session-factory>
+  <property name="hibernate.connection.driver_class">org.apache.derby.jdbc.EmbeddedDriver</property>
+  <property name="hibernate.connection.url">jdbc:derby:./test;create=true</property>
+  <property name="hibernate.dialect">org.hibernate.dialect.DerbyTenSixDialect</property>
+  <property name="hibernate.hbm2ddl.auto">create</property>
+  <property name="hibernate.show_sql">true</property>
+  <property name="hibernate.format_sql">true</property>
+  <property name="hibernate.default_schema">TEST</property>
+  <property name="hibernate.current_session_context_class">com.quakearts.webapp.hibernate.ServletSessionHelper</property>
+  <mapping class="com.quakearts.test.hibernate.Brand"/>
+  <mapping class="com.quakearts.test.hibernate.Inventory"/>
+  <mapping class="com.quakearts.test.hibernate.Product"/>
+ </session-factory>
+</hibernate-configuration>

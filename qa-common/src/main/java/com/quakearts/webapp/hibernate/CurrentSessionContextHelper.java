@@ -32,10 +32,13 @@ public abstract class CurrentSessionContextHelper implements CurrentSessionConte
 	public CurrentSessionContextHelper(SessionFactoryImplementor implementor) {
 		this.implementor = implementor;
 		domain = (String) implementor.getProperties().get(DOMAIN);
+		if(domain==null)
+			domain = EMPTY;
+			
 		if(sessionHelperCache.containsKey(domain))
 			throw new IllegalArgumentException("Domain "+domain+" has already been set up in this application context");
 			
-		sessionHelperCache.put(domain==null?EMPTY:domain, this);
+		sessionHelperCache.put(domain, this);
 	}
 	
 	public static CurrentSessionContextHelper getInstance(){

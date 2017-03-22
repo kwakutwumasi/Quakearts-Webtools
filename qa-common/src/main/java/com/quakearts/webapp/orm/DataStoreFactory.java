@@ -10,7 +10,7 @@ public abstract class DataStoreFactory {
 	}
 
 	protected static void setInstance(DataStoreFactory instance) {
-		if(instance == null)
+		if(DataStoreFactory.instance == null)
 			DataStoreFactory.instance = instance;
 		else
 			throw new DataStoreException("A factory has already been set.");

@@ -11,7 +11,7 @@ import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.webapp.orm.query.QueryOrder;
 
-public class HibernateSessionDataStore implements DataStore {
+public class HibernateSessionDataStore extends HibernateBean implements DataStore {
 
 	private Session session;
 	private String domain;
@@ -68,7 +68,7 @@ public class HibernateSessionDataStore implements DataStore {
 	@Override
 	public <T> List<T> list(Class<T> clazz, Map<String, Serializable> parameters, QueryOrder...orders) {
 		try {
-			return null;
+			return findObjects(clazz, parameters, session, orders);
 		} catch (HibernateException e) {
 			throw new DataStoreException(e);
 		}

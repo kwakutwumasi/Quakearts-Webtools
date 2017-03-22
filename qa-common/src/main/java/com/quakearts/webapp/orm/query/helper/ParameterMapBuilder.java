@@ -28,26 +28,26 @@ public class ParameterMapBuilder {
 		return parameters;
 	}
 	
-	public ParameterMapBuilder add(String name, Serializable value){
-		parameters.put(name, value);
+	public ParameterMapBuilder add(String propertyName, Serializable value){
+		parameters.put(propertyName, value);
 		return this;
 	}
 	
-	public ParameterMapBuilder addVariableString(String name, String value){
-		return add(name, new VariableString(value));
+	public ParameterMapBuilder addVariableString(String propertyName, String value){
+		return add(propertyName, new VariableString(value));
 	}
 	
-	public ParameterMapBuilder addRange(String name, Serializable from, Serializable to){
-		return add(name, new Range().from(from).to(to));
+	public ParameterMapBuilder addRange(String propertyName, Serializable from, Serializable to){
+		return add(propertyName, new Range().from(from).to(to));
 	}
 	
-	public ParameterMapBuilder addChoices(String name, Serializable...values){
+	public ParameterMapBuilder addChoices(String propertyName, Serializable...values){
 		Choice choice = new Choice();
 		for(Serializable value:values){
 			choice.or(value);
 		}
 		
-		return add(name, choice);
+		return add(propertyName, choice);
 	}
 	
 	public ParameterMapBuilder disjoin(){
@@ -60,10 +60,21 @@ public class ParameterMapBuilder {
 		return this;
 	}
 	
+	public ParameterMapBuilder endjoin(){
+		if(!stack.isEmpty()){
+			parameters = stack.pop();
+		}
+		return this;	
+	}
+	
 	private void newParameters(String type){
 		HashMap<String, Serializable> newparameters = new HashMap<>();
-		parameters.put(type,parameters);
+		parameters.put(type, newparameters);
 		stack.push(parameters);
 		parameters = newparameters;
+	}
+	
+	public static ParameterMapBuilder createParameters(){
+		return new ParameterMapBuilder();
 	}
 }
