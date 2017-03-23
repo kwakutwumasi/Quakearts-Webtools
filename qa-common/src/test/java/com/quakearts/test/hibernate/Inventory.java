@@ -21,7 +21,7 @@ public class Inventory implements Serializable {
 	private Product product;
 	private String currency;
 	private double price;
-	private Date date = new Date();
+	private Date date;
 	private int quantity;
 
 	public int getId() {

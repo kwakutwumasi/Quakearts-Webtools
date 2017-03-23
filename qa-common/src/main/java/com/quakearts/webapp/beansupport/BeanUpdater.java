@@ -25,7 +25,7 @@ public class BeanUpdater<T> {
 	private Map<String, UpdaterHandles> cache;
 	private static final Map<Class<?>, BeanEmptyHandler<?>> emptyHandlers = new ConcurrentHashMap<>();
 	
-	private boolean ignoreNullAndEmpty, treatZeroAsEmpty;
+	private boolean ignoreNullAndEmpty=true, treatZeroAsEmpty=true;
 	
 	static {
 		registerEmptyHandlers(Collection.class, new CollectionEmptyHandler());
@@ -54,13 +54,13 @@ public class BeanUpdater<T> {
 		cache = Collections.unmodifiableMap(cache);
 	}
 	
-	public BeanUpdater<T> ignoreNullAndEmpty(){
-		ignoreNullAndEmpty = true;
+	public BeanUpdater<T> dontIgnoreNullAndEmpty(){
+		ignoreNullAndEmpty = false;
 		return this;
 	}
 	
-	public BeanUpdater<T> treatZeroAsEmpty() {
-		treatZeroAsEmpty = true;
+	public BeanUpdater<T> dontTreatZeroAsEmpty() {
+		treatZeroAsEmpty = false;
 		return this;
 	}
 	
