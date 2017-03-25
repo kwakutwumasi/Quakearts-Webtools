@@ -20,6 +20,7 @@ import com.quakearts.webapp.beansupport.emtpyhandlerimpl.CollectionEmptyHandler;
 import com.quakearts.webapp.beansupport.emtpyhandlerimpl.MapEmptyHandler;
 import com.quakearts.webapp.beansupport.emtpyhandlerimpl.StringEmptyHandler;
 import com.quakearts.webapp.beansupport.exception.BeanUpdaterException;
+import com.quakearts.webapp.beansupport.exception.BeanUpdaterInitException;
 
 public class BeanUpdater<T> {
 	private Map<String, UpdaterHandles> cache;
@@ -33,8 +34,14 @@ public class BeanUpdater<T> {
 		registerEmptyHandlers(Map.class, new MapEmptyHandler());
 	}
 	
-	public BeanUpdater(Class<T> clazz) throws IntrospectionException, IllegalAccessException {
-		BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
+	public BeanUpdater(Class<T> clazz) {
+		BeanInfo beanInfo;
+		try {
+			beanInfo = Introspector.getBeanInfo(clazz);
+		} catch (IntrospectionException e) {
+			throw new BeanUpdaterInitException(e);
+		}
+		
 		cache = new HashMap<>();
 		for(PropertyDescriptor descriptor:beanInfo.getPropertyDescriptors()){
 			BeanEmptyHandler<?> handler = emptyHandlers.get(descriptor.getPropertyType());
@@ -47,8 +54,12 @@ public class BeanUpdater<T> {
 				}
 			}
 				
-			cache.put(descriptor.getName(), new UpdaterHandles(getMethodHandle(descriptor.getReadMethod()), 
-					getMethodHandle(descriptor.getWriteMethod()), handler));			
+			try {
+				cache.put(descriptor.getName(), new UpdaterHandles(getMethodHandle(descriptor.getReadMethod()), 
+						getMethodHandle(descriptor.getWriteMethod()), handler));
+			} catch (IllegalAccessException e) {
+				throw new BeanUpdaterInitException(e);
+			}			
 		}
 		
 		cache = Collections.unmodifiableMap(cache);

@@ -3,7 +3,6 @@ package com.quakearts.test;
 import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.*;
 
-import java.beans.IntrospectionException;
 import java.util.Date;
 
 import org.junit.Test;
@@ -12,6 +11,7 @@ import com.quakearts.test.hibernate.Inventory;
 import com.quakearts.test.hibernate.Product;
 import com.quakearts.webapp.beansupport.BeanUpdater;
 import com.quakearts.webapp.beansupport.exception.BeanUpdaterException;
+import com.quakearts.webapp.beansupport.exception.BeanUpdaterInitException;
 
 public class BeanUpdaterTest {
 
@@ -43,7 +43,7 @@ public class BeanUpdaterTest {
 		BeanUpdater<Inventory> inventoryUpdater;
 		try {
 			inventoryUpdater = new BeanUpdater<>(Inventory.class);
-		} catch (IllegalAccessException | IntrospectionException e) {
+		} catch (BeanUpdaterInitException e) {
 			fail("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage());
 			return;
 		}
@@ -65,7 +65,7 @@ public class BeanUpdaterTest {
 		BeanUpdater<Inventory> inventoryUpdater;
 		try {
 			inventoryUpdater = new BeanUpdater<>(Inventory.class).dontIgnoreNullAndEmpty();
-		} catch (IllegalAccessException | IntrospectionException e) {
+		} catch (BeanUpdaterInitException e) {
 			fail("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage());
 			return;
 		}
@@ -93,7 +93,7 @@ public class BeanUpdaterTest {
 		BeanUpdater<Inventory> inventoryUpdater;
 		try {
 			inventoryUpdater = new BeanUpdater<>(Inventory.class).dontTreatZeroAsEmpty();
-		} catch (IllegalAccessException | IntrospectionException e) {
+		} catch (BeanUpdaterInitException e) {
 			fail("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage());
 			return;
 		}
