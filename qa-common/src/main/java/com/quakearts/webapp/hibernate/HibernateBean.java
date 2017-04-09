@@ -41,8 +41,12 @@ public abstract class HibernateBean {
 		Criterion criterion;
 		
 		for(Entry<String, Serializable> entry:parameters.entrySet()){
-			criterion = handleParameters(entry);
-			query.add(criterion);
+			if(entry.getKey() == ParameterMapBuilder.MAXRESULTS){
+				query.setMaxResults((int)entry.getValue());
+			} else {				
+				criterion = handleParameters(entry);
+				query.add(criterion);
+			}
 		}		
 	}
 	

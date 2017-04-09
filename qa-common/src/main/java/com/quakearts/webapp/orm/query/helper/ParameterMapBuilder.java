@@ -13,7 +13,8 @@ public class ParameterMapBuilder {
 	private HashMap<String, Serializable> parameters;
 	private Stack<HashMap<String, Serializable>> stack = new Stack<>();
 	public static final String DISJUNCTION = "com.quakearts.orm.searchparams.DISJUNCTION",
-			CONJUNCTION = "com.quakearts.orm.searchparams.CONJUNCTION";
+			CONJUNCTION = "com.quakearts.orm.searchparams.CONJUNCTION",
+			MAXRESULTS = "com.quakearts.orm.searchparams.MAXRESULTS";
 		
 	public ParameterMapBuilder() {
 		parameters = new HashMap<>();
@@ -65,6 +66,16 @@ public class ParameterMapBuilder {
 			parameters = stack.pop();
 		}
 		return this;	
+	}
+	
+	public ParameterMapBuilder setMaxResults(int max){
+		Map<String, Serializable> parameters = this.parameters;
+		if(!stack.isEmpty()){
+			parameters = stack.firstElement();
+		}
+		
+		parameters.put(MAXRESULTS, max);
+		return this;
 	}
 	
 	private void newParameters(String type){
