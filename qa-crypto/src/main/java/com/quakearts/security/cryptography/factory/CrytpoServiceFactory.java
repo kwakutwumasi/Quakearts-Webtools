@@ -1,7 +1,11 @@
 package com.quakearts.security.cryptography.factory;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.security.Key;
 import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +14,8 @@ import com.quakearts.security.cryptography.CryptoResource;
 import com.quakearts.security.cryptography.provider.KeyProvider;
 
 public class CrytpoServiceFactory {
+	private static final String CRYPTO_PROPERTIES = ".crypto.properties";
+
 	private CrytpoServiceFactory() {
 	}
 
@@ -21,7 +27,7 @@ public class CrytpoServiceFactory {
 		return instance;
 	}
 	
-	public CryptoResource getCryptoResourc(String instance, String keyProviderClass, Map<Object, Object> properties, String name) throws Exception{
+	public CryptoResource getCryptoResource(String instance, String keyProviderClass, Map<Object, Object> properties, String name) throws Exception{
 		KeyProvider provider;
 		Key key;
 		
@@ -35,5 +41,29 @@ public class CrytpoServiceFactory {
     	
     	key = provider.getKey();
     	return new CryptoResource(key, instance, name);
+	}
+	
+	private static final Map<String, CryptoResource> localResources = new ConcurrentHashMap<>();
+	
+	public CryptoResource getCryptoResource(String name) throws Exception {
+		CryptoResource resource = localResources.get(name);
+		if(resource==null){
+			Properties properties = new Properties();
+		
+			InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(name+CRYPTO_PROPERTIES);
+			if(in==null)
+				throw new FileNotFoundException("Unable to find "+name+CRYPTO_PROPERTIES);
+		
+			properties.load(in);
+		
+			String instance = properties.getProperty("crypto.instance");
+			String keyProviderClass = properties.getProperty("crypto.key.provider.class");
+			
+			resource = getCryptoResource(instance, keyProviderClass, properties, name);
+			
+			localResources.put(name, resource);
+		}
+		
+		return resource;
 	}
 }

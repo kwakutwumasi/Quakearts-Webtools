@@ -39,7 +39,7 @@ public class CryptoService extends ServiceMBeanSupport implements CryptoServiceM
 
 	@Override
 	public CryptoResource getResource() throws Exception {
-		return CrytpoServiceFactory.getInstance().getCryptoResourc(instance, keyProviderClass, properties, jndiName);
+		return CrytpoServiceFactory.getInstance().getCryptoResource(instance, keyProviderClass, properties, jndiName);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class CryptoService extends ServiceMBeanSupport implements CryptoServiceM
 	@Override
 	public String attestService() {
 		try {
-			return CrytpoServiceFactory.getInstance().getCryptoResourc(instance, keyProviderClass, properties, jndiName).doEncrypt("Cipher check");			
+			return CrytpoServiceFactory.getInstance().getCryptoResource(instance, keyProviderClass, properties, jndiName).doEncrypt("Cipher check");			
 		} catch (Exception e) {
 			return "Exception "+e.getClass().getName()+". "+e.getMessage();
 		}
