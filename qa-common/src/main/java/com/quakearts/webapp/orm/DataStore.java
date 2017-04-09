@@ -15,4 +15,6 @@ public interface DataStore {
 	<T> List<T> list(Class<T> clazz, Map<String, Serializable> parameters, QueryOrder... orders) throws DataStoreException;
 	void saveOrUpdate(Object object) throws DataStoreException;
 	<T> T refresh(T object) throws DataStoreException;
+	void flushBuffers();
+	String getConfigurationProperty(String propertyName);
 }

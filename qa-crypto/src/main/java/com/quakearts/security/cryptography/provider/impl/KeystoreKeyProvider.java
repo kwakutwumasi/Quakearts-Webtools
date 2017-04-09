@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.security.Key;
 import java.security.KeyStore;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -66,12 +67,15 @@ public class KeystoreKeyProvider implements KeyProvider {
 	}
 
 	@Override
-	public void setProperties(Properties properties) {
-		keyStoreType = properties.getProperty("key.storeType");
-		keyPass = properties.getProperty("key.pass");
-		storePass = properties.getProperty("store.pass");
-		keyStoreFile = properties.getProperty("store.file");
-		keyAlias = properties.getProperty("key.alias");
+	public void setProperties(Map<Object, Object> properties) {
+		Properties keyProperties = new Properties();
+		keyProperties.putAll(properties);
+		
+		keyStoreType = keyProperties.getProperty("key.storeType");
+		keyPass = keyProperties.getProperty("key.pass");
+		storePass = keyProperties.getProperty("store.pass");
+		keyStoreFile = keyProperties.getProperty("store.file");
+		keyAlias = keyProperties.getProperty("key.alias");
 		if(log.isLoggable(Level.FINE)){
 			log.fine("Properties: "+
 		"\nkey.storeType: " +keyStoreType+

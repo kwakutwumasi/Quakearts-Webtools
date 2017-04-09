@@ -1,6 +1,5 @@
 package com.quakearts.webapp.hibernate;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -46,7 +45,7 @@ public class HibernateHelper {
 		return getCurrentSessionFactory().getCurrentSession();
 	}
 	
-	public synchronized static Configuration getConfiguration(String domain) throws IOException, HibernateException {
+	public synchronized static Configuration getConfiguration(String domain) throws HibernateException {
 		if(store.containsKey(domain)){
 			return store.get(domain).configuration;
 		} else {
@@ -55,7 +54,7 @@ public class HibernateHelper {
 		}
 	}
 	
-	private static void configureDomain(String domain) throws IOException, HibernateException{
+	private static void configureDomain(String domain) throws HibernateException{
 		Configuration configuration = new Configuration();
 		HelperStore helperStore = new HelperStore();
 		helperStore.registry = new StandardServiceRegistryBuilder().configure(new StringBuilder(domain)
@@ -67,7 +66,7 @@ public class HibernateHelper {
 		store.put(domain, helperStore);
 	}
 	
-	public synchronized static SessionFactory getSessionFactory(String domain) throws HibernateException, IOException{
+	public synchronized static SessionFactory getSessionFactory(String domain) throws HibernateException {
 		if(store.containsKey(domain)){
 			return store.get(domain).factory;
 		} else {
@@ -76,7 +75,7 @@ public class HibernateHelper {
 		}
 	}
 	
-	public static Session getSession(String domain) throws HibernateException, IOException{
+	public static Session getSession(String domain) throws HibernateException{
 		return getSessionFactory(domain).getCurrentSession();
 	}
 	
@@ -87,7 +86,6 @@ public class HibernateHelper {
 	}
 	
 	public static Object refresh(Object object, String domain){
-		
 		if(domain==null)
 			return getCurrentSession().merge(object);
 		else

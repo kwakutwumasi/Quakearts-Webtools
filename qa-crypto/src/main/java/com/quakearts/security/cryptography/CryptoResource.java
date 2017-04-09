@@ -5,11 +5,15 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 
+import com.quakearts.security.cryptography.exception.IllegalCryptoActionException;
+import com.quakearts.security.cryptography.permission.CrytographyOperationPermission;
+
 public class CryptoResource {
     private Cipher cipher;
     private Key secretKey;
-
-    public CryptoResource(Key key, String instance) throws NoSuchAlgorithmException, NoSuchPaddingException 
+    private CrytographyOperationPermission decryptPermission, encryptPermission;
+    
+    public CryptoResource(Key key, String instance, String name) throws NoSuchAlgorithmException, NoSuchPaddingException 
     {
         try {
             cipher = Cipher.getInstance(instance);
@@ -18,6 +22,11 @@ public class CryptoResource {
             nsae.printStackTrace();
         } catch (NoSuchPaddingException nspe) {
             nspe.printStackTrace();
+        }
+        
+        if(System.getSecurityManager()!=null){
+        	decryptPermission = new CrytographyOperationPermission(name, "decrypt");        
+        	encryptPermission = new CrytographyOperationPermission(name, "encrypt");
         }
     }
 
@@ -81,6 +90,11 @@ public class CryptoResource {
     }
 
     public synchronized byte[] doDecrypt(byte[] cipheredtext) throws IllegalCryptoActionException {
+    	SecurityManager manager = System.getSecurityManager();
+    	if(manager != null){
+    		manager.checkPermission(decryptPermission);
+    	}
+
     	if(cipheredtext == null)
     		return null;
     	
@@ -94,7 +108,12 @@ public class CryptoResource {
     }
 
     public synchronized byte[] doEncrypt(byte[] plaintext) throws IllegalCryptoActionException {
-		if(plaintext == null)
+    	SecurityManager manager = System.getSecurityManager();
+    	if(manager != null){
+    		manager.checkPermission(encryptPermission);
+    	}
+
+    	if(plaintext == null)
 			return null;
 
         try {

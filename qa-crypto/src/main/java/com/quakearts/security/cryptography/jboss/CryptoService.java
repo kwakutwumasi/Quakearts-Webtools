@@ -1,10 +1,7 @@
 package com.quakearts.security.cryptography.jboss;
 
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
 import java.util.Properties;
 
-import javax.crypto.NoSuchPaddingException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -12,14 +9,11 @@ import org.jboss.system.ServiceMBeanSupport;
 
 import com.quakearts.security.cryptography.CryptoResource;
 import com.quakearts.security.cryptography.CryptoUtils;
-import com.quakearts.security.cryptography.factory.KeyProviderFactory;
-import com.quakearts.security.cryptography.provider.KeyProvider;
+import com.quakearts.security.cryptography.factory.CrytpoServiceFactory;
 
 public class CryptoService extends ServiceMBeanSupport implements CryptoServiceMBean{
     
-	private Key key;
 	private String instance, keyProviderClass;
-	private KeyProvider provider;
 	private String jndiName;
 	private Properties properties;
 	
@@ -34,17 +28,7 @@ public class CryptoService extends ServiceMBeanSupport implements CryptoServiceM
     		throw new NullPointerException("You must provide a valid instance.");
     	if(keyProviderClass == null)
     		throw new NullPointerException("You must provide a valid key provider class.");
-    	    	
-    	provider = KeyProviderFactory.createKeyProvider(keyProviderClass);
-    	
-    	if(provider == null){
-    		log.warn("keyProviderProperties is null. Key Provider may not startup properly.");
-    	}else{
-    		provider.setProperties(properties);
-    	}
-    	
-    	key = provider.getKey();
-    	
+    	    	    	
     	rebind();
     }
       
@@ -54,8 +38,8 @@ public class CryptoService extends ServiceMBeanSupport implements CryptoServiceM
 	}
 
 	@Override
-	public CryptoResource getResource() throws NoSuchAlgorithmException, NoSuchPaddingException {
-		return new CryptoResource(key, instance);
+	public CryptoResource getResource() throws Exception {
+		return CrytpoServiceFactory.getInstance().getCryptoResourc(instance, keyProviderClass, properties, jndiName);
 	}
 
 	@Override
@@ -81,7 +65,7 @@ public class CryptoService extends ServiceMBeanSupport implements CryptoServiceM
 	@Override
 	public String attestService() {
 		try {
-			return new CryptoResource(key,instance).doEncrypt("Cipher check");			
+			return CrytpoServiceFactory.getInstance().getCryptoResourc(instance, keyProviderClass, properties, jndiName).doEncrypt("Cipher check");			
 		} catch (Exception e) {
 			return "Exception "+e.getClass().getName()+". "+e.getMessage();
 		}

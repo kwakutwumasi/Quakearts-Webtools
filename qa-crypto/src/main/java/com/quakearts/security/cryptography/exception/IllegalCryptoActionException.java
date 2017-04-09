@@ -1,4 +1,4 @@
-package com.quakearts.security.cryptography;
+package com.quakearts.security.cryptography.exception;
 
 public class IllegalCryptoActionException extends Exception {
     /**

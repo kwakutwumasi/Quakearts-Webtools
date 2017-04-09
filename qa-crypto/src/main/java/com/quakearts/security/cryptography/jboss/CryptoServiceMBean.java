@@ -1,16 +1,11 @@
 package com.quakearts.security.cryptography.jboss;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.Properties;
-
-import javax.crypto.NoSuchPaddingException;
-
 import org.jboss.system.ServiceMBean;
-
 import com.quakearts.security.cryptography.CryptoResource;
 
 public interface CryptoServiceMBean extends ServiceMBean{
-	public CryptoResource getResource() throws NoSuchAlgorithmException, NoSuchPaddingException;
+	public CryptoResource getResource() throws Exception;
 	public String getInstance();
 	public void setInstance(String instance);
 	public String getKeyProviderClass();

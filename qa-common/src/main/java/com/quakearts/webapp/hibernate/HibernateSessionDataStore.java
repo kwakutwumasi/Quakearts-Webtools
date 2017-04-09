@@ -1,6 +1,5 @@
 package com.quakearts.webapp.hibernate;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +23,7 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 		try {
 			this.domain = domain;
 			session = HibernateHelper.getSession(domain);
-		} catch (HibernateException | IOException e) {
+		} catch (HibernateException e) {
 			throw new DataStoreException(e);
 		}
 	}
@@ -99,5 +98,18 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 	
 	public String getDomain() {
 		return domain;
+	}
+
+	@Override
+	public void flushBuffers() {
+		session.flush();
+	}
+
+	@Override
+	public String getConfigurationProperty(String propertyName) {
+		if(domain!=null)
+			return HibernateHelper.getConfiguration(domain).getProperty(propertyName);
+		else
+			return HibernateHelper.getCurrentConfiguration().getProperty(propertyName);			
 	}
 }
