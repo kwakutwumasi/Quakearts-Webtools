@@ -11,11 +11,11 @@ public interface Scanner {
 	/**Add an implementation of {@link ClassAnnotationScanningListener} to the list of listeners
 	 * @param listener The listener
 	 */
-	void addAnnotationListener(ClassAnnotationScanningListener listener);
+	Scanner addAnnotationListener(ClassAnnotationScanningListener listener);
 	/**Add an implementation of {@link ClassAnnotationObjectScanningListener} to the list of listeners
 	 * @param listener The listener
 	 */
-	void addAnnotationListener(ClassAnnotationObjectScanningListener listener);
+	Scanner addAnnotationListener(ClassAnnotationObjectScanningListener listener);
 	/**Get the filter for this scanner
 	 * @return The {@link Filter}
 	 */

@@ -36,16 +36,18 @@ public abstract class ScannerImplBase implements Scanner {
 	 * @see com.quakearts.classpathscanner.Scanner#addAnnotationListener(com.quakearts.classpathscanner.listener.ClassAnnotationScanningListener)
 	 */
     @Override
-	public final void addAnnotationListener (ClassAnnotationScanningListener listener) {
+	public final Scanner addAnnotationListener (ClassAnnotationScanningListener listener) {
         addAnnotationListener (classAnnotationListeners, listener, listener.getAnnotationsToListenFor());
+        return this;
     }
 
     /* (non-Javadoc)
 	 * @see com.quakearts.classpathscanner.Scanner#addAnnotationListener(com.quakearts.classpathscanner.listener.ClassAnnotationObjectScanningListener)
 	 */
     @Override
-	public final void addAnnotationListener (ClassAnnotationObjectScanningListener listener) {
+	public final Scanner addAnnotationListener (ClassAnnotationObjectScanningListener listener) {
     	addAnnotationListener (classAnnotationObjectListeners, listener, listener.getAnnotationsToListenFor());
+        return this;
     }
 
     private <L> void addAnnotationListener (Map<String, Set<L>> map, L listener, String... annotations) {
