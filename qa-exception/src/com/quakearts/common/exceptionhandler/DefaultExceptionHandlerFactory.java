@@ -87,7 +87,7 @@ public class DefaultExceptionHandlerFactory extends ExceptionHandlerFactory {
 	 */
 	public static void addScanAnnotationListeners(Scanner scanner) {
 		dontscan = true;
-		scanner.addAnnotationListener(new HandlerAnnotationListener());
-		scanner.addAnnotationListener(new HandlersAnnotationListener());
+		scanner.addAnnotationListener(new HandlerAnnotationListener())
+			.addAnnotationListener(new HandlersAnnotationListener());
 	}
 }
