@@ -2,10 +2,10 @@ package com.quakearts.classannotationscanner;
 
 public class PackageFilter extends DefaultFilter {
 
-	private String scanPackage;
+	private String[] scanPackages;
 	
-    public PackageFilter(String scanPackage) {
-		this.scanPackage = scanPackage;
+    public PackageFilter(String... scanPackages) {
+		this.scanPackages = scanPackages;
 	}
 
 
@@ -14,9 +14,11 @@ public class PackageFilter extends DefaultFilter {
      */
     @Override
     protected boolean shouldScan(String packageName) {
-        if (packageName.startsWith(scanPackage + ".")) {
-            return true;
-        }
+    	for(String scanPackage:scanPackages){
+	        if (packageName.startsWith(scanPackage + ".")) {
+	            return true;
+	        }
+    	}
         return false;
     }
 }
