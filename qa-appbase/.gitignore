@@ -1,0 +1,10 @@
+/target/
+/.settings
+/.project
+/.classpath
+/*.lck
+/*.log
+/webapp/
+/tomcat.8080/
+/PutObjectStoreDirHere/
+/ObjectStore/
