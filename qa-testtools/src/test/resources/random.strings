@@ -1,0 +1,11 @@
+stringtest=lorem;ipsum;dolor;sit;amet;consectetur;adipiscing;elit;sed;do;eiusmod;tempor;incididunt;ut;labore;et;dolore;magna;aliqua
+stringotherdelim=sed ut perspiciatis unde omnis iste natus error sit voluptatem
+stringotherdelim.delim=\\s
+stringproperties.length=20
+stringproperties.prefix=AT
+stringproperties.suffix=KR
+names=Sophia;Jackson;Emma;Aiden;Olivia;Lucas;Ava;Liam;Mia;Noah;Isabella;Ethan;Riley;Mason;Aria;Caden;Zoe;Oliver;Charlotte;Elijah;Lily;Grayson;Layla;Jacob;Amelia;Michael;Emily;Benjamin;Madelyn;Carter;Aubrey;James;Adalyn;Jayden;Madison;Logan;Chloe;Alexander;Harper;Caleb;Abigail;Ryan;Aaliyah;Luke;Avery;Daniel;Evelyn;Jack;Kaylee;William;Ella;Owen;Ellie;Gabriel;Scarlett;Matthew;Arianna;Connor;Hailey;Jayce;Nora;Isaac;Addison;Sebastian;Brooklyn;Henry;Hannah;Muhammad;Mila;Cameron;Leah;Wyatt;Elizabeth;Dylan
+allsymbols.charset=all
+alphaNumeric.charset=alphaNumeric
+numeric.charset=numeric
+alphabet.charset=alphabet
