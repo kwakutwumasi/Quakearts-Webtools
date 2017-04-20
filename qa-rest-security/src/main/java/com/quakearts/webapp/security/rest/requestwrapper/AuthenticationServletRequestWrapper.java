@@ -1,0 +1,119 @@
+package com.quakearts.webapp.security.rest.requestwrapper;
+
+import java.io.IOException;
+import java.security.Principal;
+import java.util.Enumeration;
+
+import javax.security.auth.Subject;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
+
+import com.quakearts.webapp.security.rest.RestUserPrincipal;
+import com.quakearts.webapp.security.rest.SecurityContext;
+import com.quakearts.webapp.security.rest.filter.AuthenticationFilter;
+
+public final class AuthenticationServletRequestWrapper extends HttpServletRequestWrapper {
+
+	private static final String PASSWORD = "j_password";
+	private static final String AUTHORIZATION_HEADER = "Authorization";
+	private static final String QUAKEARTS_AUTHENTICATION = "com.quakearts.security.AUTHENTICATION";
+
+	public AuthenticationServletRequestWrapper(HttpServletRequest request) {
+		super(request);
+	}
+
+	@Override
+	public String getAuthType() {
+		if(SecurityContext.getSecurityContext().isAuthenicated())
+			return QUAKEARTS_AUTHENTICATION;
+		else 
+			return null;
+	}
+
+	@Override
+	public String getHeader(String name) {
+		if(AUTHORIZATION_HEADER.equals(name))
+			return null;
+		
+		return super.getHeader(name);
+	}
+
+	@Override
+	public Enumeration<String> getHeaders(String name) {
+		if(AUTHORIZATION_HEADER.equals(name))
+			return null;
+
+		return super.getHeaders(name);
+	}
+
+	@Override
+	public boolean isUserInRole(String role) {
+		Subject subject = SecurityContext.getSecurityContext().getSubject();
+		if(subject==null)
+			return false;
+		
+		for(Principal principal:subject.getPrincipals()){
+			if(principal.getName().equals(role))
+				return true;
+		}
+		
+		return false;
+	}
+
+	@Override
+	public Principal getUserPrincipal() {
+		SecurityContext context = SecurityContext.getSecurityContext();
+		
+		if(context.getIdentity()!=null)
+			return new RestUserPrincipal(context.getIdentity());
+		
+		else
+			return null;
+	}
+	
+	@Override
+	public String getRemoteUser() {
+		Principal principal = getUserPrincipal();
+		if(principal!=null)
+			return principal.getName();
+		
+		return null;
+	}
+
+	@Override
+	public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
+		if(SecurityContext.getSecurityContext().isAuthenicated())
+			return true;
+		
+		response.sendError(401);
+		return false;
+	}
+
+	@Override
+	public void login(String username, String password) throws ServletException {
+		throw new ServletException("login() method is not supported. Use "+AuthenticationFilter.class.getName());
+	}
+
+	@Override
+	public void logout() throws ServletException {
+	}
+
+	@Override
+	public String getParameter(String name) {
+		if(PASSWORD.equals(name))
+			return null;
+		
+		return super.getParameter(name);
+	}
+
+	@Override
+	public String[] getParameterValues(String name) {
+		if(PASSWORD.equals(name))
+			return null;
+
+		return super.getParameterValues(name);
+	}
+
+}
