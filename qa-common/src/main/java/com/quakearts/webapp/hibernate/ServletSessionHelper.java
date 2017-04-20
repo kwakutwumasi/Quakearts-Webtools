@@ -19,7 +19,7 @@ public class ServletSessionHelper extends CurrentSessionContextHelper {
 		super(implementor);
 	}
 
-	private static final ThreadLocal<Map<Object, Object>> threadLocalContext = new ThreadLocal<Map<Object, Object>>(){
+	private static final ThreadLocal<Map<Object, Object>> threadLocalContext = new InheritableThreadLocal<Map<Object, Object>>(){
 		protected Map<Object,Object> initialValue() {
 			return new HashMap<>();
 		};
