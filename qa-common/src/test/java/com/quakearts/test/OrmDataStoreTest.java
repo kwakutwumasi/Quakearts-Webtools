@@ -16,6 +16,8 @@ import org.junit.Test;
 import com.quakearts.test.hibernate.Brand;
 import com.quakearts.test.hibernate.Inventory;
 import com.quakearts.test.hibernate.Product;
+import com.quakearts.test.hibernate.SalesOrder;
+import com.quakearts.test.hibernate.SalesPart;
 import com.quakearts.webapp.hibernate.CurrentSessionContextHelper;
 import com.quakearts.webapp.hibernate.HibernateSessionDataStore;
 import com.quakearts.webapp.hibernate.HibernateSessionDataStoreFactory;
@@ -183,6 +185,26 @@ public class OrmDataStoreTest {
 					.addRange("quantity", 4, 6)
 					.setMaxResults(3).build());
 			assertThat("Max results did not work. Returned "+list.size()+" instead of 3", list.size(), is(3));
+			
+			SalesOrder salesOrder = new SalesOrder();
+			salesOrder.setId(1);
+			
+			dataStore.save(salesOrder);
+			dataStore.flushBuffers();
+			
+			dataStore.save(createSalesPart(1, product, 20000, salesOrder));
+			dataStore.save(createSalesPart(2, dataStore.get(Product.class, 1), 20000, salesOrder));
+			dataStore.save(createSalesPart(3, dataStore.get(Product.class, 2), 20000, salesOrder));
+			
+			dataStore.flushBuffers();
+			//SELECT FROM SalesPart WHERE product.brand.name = "Nissan"
+			List<SalesPart> salesParts = dataStore.list(SalesPart.class, createParameters().add("product.brand.name", "Nissan").build());
+			assertThat("Failed to list with subcriteria",salesParts.size(), is(1));
+			
+			salesParts = dataStore.list(SalesPart.class, createParameters().disjoin().add("product.name", "Altima")
+					.add("product.brand.name", "Audi").build());
+
+			assertThat("Failed to list disjoint with subcriteria", salesParts.size(), is(2));
 		} catch (DataStoreException e) {
 			fail("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage());
 		}
@@ -242,5 +264,15 @@ public class OrmDataStoreTest {
 		inventory.setProduct(product);
 		inventory.setQuantity(quantity);
 		return inventory;
+	}
+	
+	private SalesPart createSalesPart(int id, Product product, double price, SalesOrder salesOrder) {
+		SalesPart salesPart = new SalesPart();
+		salesPart.setId(id);
+		salesPart.setPrice(price);
+		salesPart.setProduct(product);
+		salesPart.setSalesOrder(salesOrder);
+		
+		return salesPart;
 	}
 }

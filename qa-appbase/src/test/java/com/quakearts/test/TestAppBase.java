@@ -1,17 +1,24 @@
 package com.quakearts.test;
 
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
 import com.quakearts.appbase.Main;
+import static org.hamcrest.core.Is.*;
 
 public class TestAppBase {
 
-	public static void main(String[] args) {
+	@Test
+	public void testAppBase() {
 		try {
-			Main.main(new String[]{"com.quakearts.test.TestMainBean","-dontwaitinmain"});
+			Main.main(new String[]{"com.quakearts.test.TestMainBean","dontWaitInMain"});
 			Thread.sleep(10000);
-			assert(TestInjectImpl.done);
-			assert(TestProductImpl.done);
+			assertThat(TestInjectImpl.done, is(true));
+			assertThat(TestProductImpl.done, is(true));
 		} catch (Throwable e) {
-			e.printStackTrace();
+			fail("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()
+					+ ". Exception occured whiles ");
 		}
 	}
 

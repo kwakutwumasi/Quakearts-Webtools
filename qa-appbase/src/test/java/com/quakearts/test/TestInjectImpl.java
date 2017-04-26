@@ -4,6 +4,7 @@ public class TestInjectImpl implements TestInject {
 
 	public static boolean done = false;
 	
+	@TestingInterceptor
 	@Override
 	public String sayHello() {
 		done=true;

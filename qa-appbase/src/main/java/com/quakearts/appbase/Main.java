@@ -2,6 +2,8 @@ package com.quakearts.appbase;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Properties;
@@ -11,6 +13,7 @@ import javax.net.ServerSocketFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.quakearts.appbase.exception.ConfigurationException;
 import com.quakearts.appbase.spi.ContextDependencySpi;
 import com.quakearts.appbase.spi.DataSourceProviderSpi;
 import com.quakearts.appbase.spi.EmbeddedWebServerSpi;
@@ -74,7 +77,16 @@ public class Main {
 		Main.log.info("Embedded Web Server service started");
 
 		new Thread(()->{
-			contextDependencySpi.runMainSingleton(mainClassName);
+			try {
+				Class<?> mainClass = Class.forName(mainClassName);
+				Object mainInstance = contextDependencySpi.getMainSingleton(mainClass);
+				Method initMethod = mainClass.getMethod("init");
+				initMethod.invoke(mainInstance);
+			} catch (ClassNotFoundException | NoSuchMethodException 
+					| SecurityException | IllegalAccessException
+					| IllegalArgumentException | InvocationTargetException e) {
+				throw new ConfigurationException("Cannot load mainclass "+mainClassName, e);
+			}
 		}).start();
 	}
 	

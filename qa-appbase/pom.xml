@@ -162,6 +162,12 @@
 			<artifactId>jersey-media-json-jackson</artifactId>
 			<version>2.23</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.quakearts.webtools</groupId>
+			<artifactId>qa-common</artifactId>
+			<version>2.2</version>
+			<scope>test</scope>
 		</dependency>		
 	</dependencies>
 	<repositories>
