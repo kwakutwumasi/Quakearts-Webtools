@@ -6,12 +6,14 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 public interface DataSourceProviderSpi {
-	public static final String DATASOURCECLASS="com.quakearts.appbase.datasource.CLASS",
-			DRIVERCLASS="com.quakearts.appbase.datasource.DRIVER", DATASOURCEURL="com.quakearts.appbase.datasource.URL", 
-			USERNAME="com.quakearts.appbase.datasource.USERNAME", PASSWORD="com.quakearts.appbase.datasource.PASSWORD",
-					NAME="com.quakearts.appbase.datasource.NAME";	
+	public static final String DATASOURCECLASS = "datasource.class", 
+			NAME = "datasource.name";
+
 	void initiateDataSourceSpi();
+
 	DataSource getDataSource(Map<String, Serializable> configurationParameters);
+
 	DataSource getDataSource(String name);
+
 	void shutDownDataSourceProvider();
 }

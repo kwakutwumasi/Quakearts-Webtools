@@ -1,7 +1,16 @@
 package com.quakearts.appbase.spi.impl;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,6 +20,9 @@ import javax.sql.DataSource;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.quakearts.appbase.exception.ConfigurationException;
+import com.quakearts.appbase.internal.json.Json;
+import com.quakearts.appbase.internal.json.JsonObject;
+import com.quakearts.appbase.internal.json.JsonValue;
 import com.quakearts.appbase.spi.DataSourceProviderSpi;
 import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
 
@@ -27,13 +39,83 @@ public class AtomikosBeanDatasourceSpi implements DataSourceProviderSpi {
 		} catch (NamingException e) {
 			new ConfigurationException(e.getMessage(),e);
 		}
+		
+		List<File> datasourceFiles = listDatasourceFiles();
+		
+		for(File file:datasourceFiles){
+			
+		}
+	}
+	
+	private List<File> listDatasourceFiles() {
+		List<File> datasourceFiles = new ArrayList<>();
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		if(classLoader instanceof URLClassLoader){
+			URL[] urls = ((URLClassLoader) classLoader).getURLs();
+			for(URL url:urls){
+				try {
+					File directoryFile = new File(url.toURI());
+					if(directoryFile.exists() && directoryFile.isDirectory()){
+						for(File file:directoryFile.listFiles()){
+							if(file.exists() 
+									&& file.isFile() 
+									&& file.getName().endsWith(".datasource"))
+								datasourceFiles.add(file);
+						}
+					}
+				} catch (URISyntaxException e) {
+					//Skip
+				}
+			}
+		}
+		
+		return datasourceFiles;
+	}
+
+	private Map<String, Serializable> loadParametersFromFile(File file){
+		Map<String, Serializable> map = new HashMap<>();
+		try(FileReader reader = new FileReader(file)) {
+			JsonValue datasourceValue = Json.parse(reader);
+			
+			if(!datasourceValue.isObject()){
+				throw new ConfigurationException("Invalid datasource file. Must be a single json object with name:value pairs.");
+			}
+			
+			datasourceValue.asObject().forEach((c)->{
+				if(c.getValue().isBoolean()){
+					map.put(c.getName(), c.getValue().asBoolean());
+				} else if(c.getValue().isNumber()){
+					map.put(c.getName(), c.getValue().asDouble());
+				} else if(c.getValue().isString()){
+					map.put(c.getName(), c.getValue().asString());
+				} else if(c.getValue().isObject()){
+					JsonObject object = c.getValue().asObject();
+					JsonValue typeValue = object.get("type");
+					if(typeValue == null){
+						throw new ConfigurationException("Invalid datasource parameter "
+							+ c.getName()
+							+ ". Must be a single json object with name:value pairs.");
+					}
+				}
+			});
+		} catch (IOException e) {
+			throw new ConfigurationException("Exception of type " 
+					+ e.getClass().getName() 
+					+ " was thrown. Message is " 
+					+ e.getMessage()
+					+ ". Exception occured whiles reading datasource file "
+					+ file, e);
+		}
+		
+		return map;
 	}
 	
 	@Override
 	public DataSource getDataSource(Map<String, Serializable> configurationParameters) {
 		AtomikosDataSourceBean atomikosDataSourceBean = new AtomikosDataSourceBean();
 		atomikosDataSourceBean.setXaDataSourceClassName((String) configurationParameters.get(DATASOURCECLASS));
-		atomikosDataSourceBean.setXaProperties(getProperties(configurationParameters));
+		atomikosDataSourceBean.setXaProperties(getProperties(configurationParameters));		
+		setOtherParameters(atomikosDataSourceBean, configurationParameters);
 		
 		if(configurationParameters.containsKey(NAME)){
 			atomikosDataSourceBean.setUniqueResourceName(get(NAME,String.class,configurationParameters));
@@ -46,8 +128,6 @@ public class AtomikosBeanDatasourceSpi implements DataSourceProviderSpi {
 		} else {
 			throw new ConfigurationException("Missing unique datasource name");
 		}
-		
-		setOtherParameters(atomikosDataSourceBean, configurationParameters);
 		
 		return atomikosDataSourceBean;
 	}
@@ -96,7 +176,7 @@ public class AtomikosBeanDatasourceSpi implements DataSourceProviderSpi {
 		return datasources.get(name);
 	}
 
-	Properties getProperties(Map<String, Serializable> configurationParameters){
+	private Properties getProperties(Map<String, Serializable> configurationParameters){
 		Properties properties = new Properties();
 		properties.putAll(configurationParameters);
 		
