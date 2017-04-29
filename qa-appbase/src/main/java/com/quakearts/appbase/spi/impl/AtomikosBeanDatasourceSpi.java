@@ -22,6 +22,7 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.quakearts.appbase.exception.ConfigurationException;
 import com.quakearts.appbase.internal.json.Json;
 import com.quakearts.appbase.internal.json.JsonObject;
+import com.quakearts.appbase.internal.json.JsonObject.Member;
 import com.quakearts.appbase.internal.json.JsonValue;
 import com.quakearts.appbase.spi.DataSourceProviderSpi;
 import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
@@ -43,7 +44,8 @@ public class AtomikosBeanDatasourceSpi implements DataSourceProviderSpi {
 		List<File> datasourceFiles = listDatasourceFiles();
 		
 		for(File file:datasourceFiles){
-			
+			Map<String, Serializable> parameters = loadParametersFromFile(file);
+			getDataSource(parameters);
 		}
 	}
 	
@@ -59,7 +61,7 @@ public class AtomikosBeanDatasourceSpi implements DataSourceProviderSpi {
 						for(File file:directoryFile.listFiles()){
 							if(file.exists() 
 									&& file.isFile() 
-									&& file.getName().endsWith(".datasource"))
+									&& file.getName().endsWith(".ds.json"))
 								datasourceFiles.add(file);
 						}
 					}
@@ -85,17 +87,39 @@ public class AtomikosBeanDatasourceSpi implements DataSourceProviderSpi {
 				if(c.getValue().isBoolean()){
 					map.put(c.getName(), c.getValue().asBoolean());
 				} else if(c.getValue().isNumber()){
-					map.put(c.getName(), c.getValue().asDouble());
+					if(c.getValue().asString().contains("."))
+						map.put(c.getName(), c.getValue().asDouble());
+					else
+						map.put(c.getName(), new Double(c.getValue().asDouble()).intValue());
 				} else if(c.getValue().isString()){
 					map.put(c.getName(), c.getValue().asString());
 				} else if(c.getValue().isObject()){
 					JsonObject object = c.getValue().asObject();
-					JsonValue typeValue = object.get("type");
-					if(typeValue == null){
-						throw new ConfigurationException("Invalid datasource parameter "
-							+ c.getName()
-							+ ". Must be a single json object with name:value pairs.");
+					if(object.isEmpty())
+						throw new ConfigurationException("Invalid datasource parameter "+c.getName()+". Must not be empty.");
+						
+					Member objectMember = object.iterator().next();
+					Serializable value;
+					switch (objectMember.getName()) {
+					case "double":
+						value = objectMember.getValue().asDouble();
+						break;
+					case "float":
+						value = objectMember.getValue().asFloat();
+						break;
+					case "chars":
+						value = objectMember.getValue().asString().toCharArray();
+						break;
+					case "char":
+						value = objectMember.getValue().asString().toCharArray()[0];
+						break;
+					case "long":
+						value = objectMember.getValue().asLong();
+						break;
+					default:
+						throw new ConfigurationException("Invalid datasource parameter "+c.getName()+". Must not be empty. Conversion not understood: "+objectMember.getName());
 					}
+					map.put(c.getName(), value);
 				}
 			});
 		} catch (IOException e) {
@@ -118,7 +142,7 @@ public class AtomikosBeanDatasourceSpi implements DataSourceProviderSpi {
 		setOtherParameters(atomikosDataSourceBean, configurationParameters);
 		
 		if(configurationParameters.containsKey(NAME)){
-			atomikosDataSourceBean.setUniqueResourceName(get(NAME,String.class,configurationParameters));
+			atomikosDataSourceBean.setUniqueResourceName(get(NAME, String.class, configurationParameters));
 			datasources.put(atomikosDataSourceBean.getUniqueResourceName(), atomikosDataSourceBean);
 			try {
 				JavaNamingDirectorySpiFactory.getInstance().getJavaNamingDirectorySpi().getInitialContext().bind("java:/jdbc/" + atomikosDataSourceBean.getUniqueResourceName(), atomikosDataSourceBean);
@@ -134,12 +158,15 @@ public class AtomikosBeanDatasourceSpi implements DataSourceProviderSpi {
 
 	private void setOtherParameters(AtomikosDataSourceBean atomikosDataSourceBean,
 			Map<String, Serializable> configurationParameters) {
-		atomikosDataSourceBean.setBorrowConnectionTimeout(get("borrowConnectionTimeout", Integer.class, configurationParameters));
-		try {
-			atomikosDataSourceBean.setLoginTimeout(get("loginTimeout", Integer.class, configurationParameters));
-		} catch (SQLException e) {
-			throw new ConfigurationException(e.getMessage(), e);
-		}
+		if (configurationParameters.containsKey("borrowConnectionTimeout"))
+			atomikosDataSourceBean.setBorrowConnectionTimeout(get("borrowConnectionTimeout", Integer.class, configurationParameters));
+
+		if (configurationParameters.containsKey("loginTimeout"))
+			try {
+				atomikosDataSourceBean.setLoginTimeout(get("loginTimeout", Integer.class, configurationParameters));
+			} catch (SQLException e) {
+				throw new ConfigurationException(e.getMessage(), e);
+			}
 
 		if (configurationParameters.containsKey("maintenanceInterval"))
 			atomikosDataSourceBean.setMaintenanceInterval(get("maintenanceInterval", Integer.class, configurationParameters));

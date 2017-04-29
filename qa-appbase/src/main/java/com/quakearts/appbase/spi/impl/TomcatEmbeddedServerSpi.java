@@ -10,6 +10,7 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.webresources.DirResourceSet;
 import org.apache.catalina.webresources.StandardRoot;
+import org.apache.tomcat.util.scan.StandardJarScanner;
 import org.hibernate.internal.util.config.ConfigurationException;
 
 import com.quakearts.appbase.Main;
@@ -44,7 +45,10 @@ public class TomcatEmbeddedServerSpi implements EmbeddedWebServerSpi {
 		} catch (ServletException e) {
 			throw new ConfigurationException("ServletException adding webapp "+webappDirLocation.getAbsolutePath(), e);
 		}
-        Main.log.debug("Configured web application with base directory: " +webappDirLocation.getAbsolutePath());
+		if(ctx.getJarScanner() instanceof StandardJarScanner)
+			((StandardJarScanner)ctx.getJarScanner()).setScanClassPath(false);
+        
+		Main.log.debug("Configured web application with base directory: " +webappDirLocation.getAbsolutePath());
 
         // Declare an alternative location for your "WEB-INF/classes" dir
         // Servlet 3.0 annotation will work
