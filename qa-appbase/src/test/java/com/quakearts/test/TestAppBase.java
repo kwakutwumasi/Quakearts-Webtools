@@ -12,10 +12,10 @@ public class TestAppBase {
 	@Test
 	public void testAppBase() {
 		try {
-			Main.main(new String[]{"com.quakearts.test.hibernate.TestAppBaseHibernate",
+			Main.main(new String[]{"com.quakearts.test.TestMainBean",
 					"-dontwaitinmain"});
 			Thread.sleep(10000);
-		} catch (IllegalStateException|InterruptedException e) {
+		} catch (IllegalStateException | InterruptedException e) {
 		}
 		assertThat(TestInjectImpl.done, is(true));
 		assertThat(TestProductImpl.done, is(true));

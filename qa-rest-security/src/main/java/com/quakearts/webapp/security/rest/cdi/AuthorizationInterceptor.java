@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.annotation.Priority;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
@@ -14,6 +15,7 @@ import com.quakearts.webapp.security.rest.SecurityContext;
 import com.quakearts.webapp.security.rest.exception.SecurityContextException;
 
 @RequireAuthorization @Interceptor
+@Priority(Interceptor.Priority.APPLICATION)
 public class AuthorizationInterceptor {
 
 	@AroundInvoke

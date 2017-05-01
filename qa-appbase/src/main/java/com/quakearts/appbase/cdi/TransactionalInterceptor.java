@@ -63,18 +63,18 @@ public class TransactionalInterceptor {
 		
 		if(!proceed)
 			return null;
-		
-		Object object = context.proceed();
-		
-		if(transactional.value() ==TransactionType.END 
-				|| transactional.value() == TransactionType.SINGLETON){
-			if(transaction.getStatus() == Status.STATUS_MARKED_ROLLBACK) {
-				transaction.rollback();
-			} else {
-				transaction.commit();
+		try {
+			Object object = context.proceed();
+			return object;
+		} finally {
+			if(transactional.value() ==TransactionType.END 
+					|| transactional.value() == TransactionType.SINGLETON){
+				if(transaction.getStatus() == Status.STATUS_MARKED_ROLLBACK) {
+					transaction.rollback();
+				} else {
+					transaction.commit();
+				}
 			}
-		}
-		
-		return object;
+		}		
 	}
 }

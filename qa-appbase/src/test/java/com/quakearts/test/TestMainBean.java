@@ -27,6 +27,8 @@ public class TestMainBean {
 		product = CDI.current().select(TestProduct.class).get();
 		System.out.println(product.getTestInject()+":"+(product.getTestInject()!=null?product.getTestInject().sayHello():""));
 		
+		TestStatic testStatic = TestStatic.getInstance();
+		testStatic.intercepted();
 	}
 	
 	public TestInject getTestInject() {
