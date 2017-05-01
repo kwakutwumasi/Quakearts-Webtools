@@ -7,12 +7,14 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
 
 @InterceptorBinding
 @Retention(RUNTIME)
 @Target({ TYPE, METHOD })
-public @interface Transactional {
+public @interface TransactionParticipant {
+	@Nonbinding
 	TransactionType value() default TransactionType.JOIN;
 	
 	public static enum TransactionType{

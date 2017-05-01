@@ -207,6 +207,9 @@ public class AtomikosBeanDatasourceSpi implements DataSourceProviderSpi {
 		Properties properties = new Properties();
 		properties.putAll(configurationParameters);
 		
+		properties.remove(DATASOURCECLASS);
+		properties.remove(NAME);
+		
 		return properties;
 	}
 	

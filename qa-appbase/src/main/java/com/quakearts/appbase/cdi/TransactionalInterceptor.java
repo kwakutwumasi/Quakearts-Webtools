@@ -1,5 +1,7 @@
 package com.quakearts.appbase.cdi;
 
+import javax.annotation.Priority;
+import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
@@ -7,21 +9,23 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
-import com.quakearts.appbase.cdi.annotation.Transaction;
-import com.quakearts.appbase.cdi.annotation.Transactional;
-import com.quakearts.appbase.cdi.annotation.Transactional.TransactionType;
+import com.quakearts.appbase.cdi.annotation.TransactionHandle;
+import com.quakearts.appbase.cdi.annotation.TransactionParticipant;
+import com.quakearts.appbase.cdi.annotation.TransactionParticipant.TransactionType;
 
-@Transactional @Interceptor
-public class TransactionalInterceptor {
+@Interceptor @TransactionParticipant
+@Priority(Interceptor.Priority.APPLICATION)
+public class TransactionalInterceptor {	
 
-	@Transaction
+	@Inject @TransactionHandle
 	private UserTransaction transaction;
 	
 	@AroundInvoke
 	public Object intercept(InvocationContext context) throws Exception {
-		Transactional transactional = context.getMethod().getAnnotation(Transactional.class);
+				
+		TransactionParticipant transactional = context.getMethod().getAnnotation(TransactionParticipant.class);
 		if(transactional == null)
-			transactional = context.getMethod().getDeclaringClass().getAnnotation(Transactional.class);
+			transactional = context.getMethod().getDeclaringClass().getAnnotation(TransactionParticipant.class);
 		
 		if(transactional == null)
 			throw new SystemException("Transactional attribute cannot be found on method "

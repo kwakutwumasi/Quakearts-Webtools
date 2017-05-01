@@ -1,6 +1,6 @@
 {
-	"createDatabase":true,
-	"databaseName":"testdb",
+	"createDatabase":"create",
+	"databaseName":"./testdb",
 	"datasource.class":"org.apache.derby.jdbc.EmbeddedXADataSource",
 	"datasource.name":"TestDB"
 }

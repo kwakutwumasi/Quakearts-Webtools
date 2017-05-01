@@ -10,14 +10,6 @@
 		<property name="hibernate.format_sql">true</property>
 		<property name="hibernate.default_schema">APP</property>
 		<property name="hibernate.transaction.jta.platform">com.quakearts.appbase.spi.support.hibernate.AppBaseJTAPlatform</property>
-		<mapping class="com.quakearts.test.ParentFoo" />
-		<mapping class="com.quakearts.test.Child1Foo" />
-		<mapping class="com.quakearts.test.Child2Foo" />
-		<mapping class="com.quakearts.test.JoinedFoo" />
-		<mapping class="com.quakearts.test.model.PrimaryTest" />
-		<mapping class="com.quakearts.test.model.QuaternaryTest" />
-		<mapping class="com.quakearts.test.model.SecondaryTest" />
-		<mapping class="com.quakearts.test.model.TertiaryTest" />
-		<mapping class="com.quakearts.test.model.QuintinaryTest" />
+		<mapping class="com.quakearts.test.hibernate.TestModel" />
 	</session-factory>
 </hibernate-configuration>

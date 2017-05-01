@@ -10,7 +10,7 @@
   <property name="hibernate.show_sql">true</property>
   <property name="hibernate.format_sql">true</property>
   <property name="hibernate.default_schema">TEST</property>
-  <property name="hibernate.current_session_context_class">com.quakearts.webapp.hibernate.ServletSessionHelper</property>
+  <property name="hibernate.current_session_context_class">com.quakearts.webapp.hibernate.threadcontext.ThreadSessionHelper</property>
   <mapping class="com.quakearts.test.hibernate.Brand"/>
   <mapping class="com.quakearts.test.hibernate.Inventory"/>
   <mapping class="com.quakearts.test.hibernate.Product"/>

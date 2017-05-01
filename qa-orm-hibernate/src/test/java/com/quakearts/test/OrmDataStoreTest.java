@@ -199,7 +199,7 @@ public class OrmDataStoreTest {
 			dataStore.flushBuffers();
 			//SELECT FROM SalesPart WHERE product.brand.name = "Nissan"
 			List<SalesPart> salesParts = dataStore.list(SalesPart.class, createParameters().add("product.brand.name", "Nissan").build());
-			assertThat("Failed to list with subcriteria",salesParts.size(), is(1));
+			assertThat("Failed to list with subcriteria",salesParts.size(), is(2));
 			
 			salesParts = dataStore.list(SalesPart.class, createParameters().disjoin().add("product.name", "Altima")
 					.add("product.brand.name", "Audi").build());
