@@ -1,0 +1,90 @@
+package com.quakearts.syshub.model;
+
+import java.io.Serializable;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="agent_module", schema="dbo")
+public class AgentModule implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4832241426782359322L;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int id;
+	@Column(nullable=false, length=100)
+	private String agentClassName;
+	@ManyToOne(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
+	private AgentConfiguration agentConfiguration;
+	@Column(length=100)
+	private String moduleName;
+	@Column(length=100)
+	private String mappedModuleName;
+	@Column(nullable=false)
+	private ModuleType moduleType;
+	
+	public static enum ModuleType {
+		DATASPOOLER,
+		FORMATTER,
+		MESSENGER
+	}
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getAgentClassName() {
+		return agentClassName;
+	}
+
+	public void setAgentClassName(String agentClassName) {
+		this.agentClassName = agentClassName;
+	}
+
+	public AgentConfiguration getAgentConfiguration() {
+		return agentConfiguration;
+	}
+
+	public void setAgentConfiguration(AgentConfiguration agentConfiguration) {
+		this.agentConfiguration = agentConfiguration;
+	}
+
+	public String getModuleName() {
+		return moduleName;
+	}
+
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+
+	public String getMappedModuleName() {
+		return mappedModuleName;
+	}
+
+	public void setMappedModuleName(String mappedModuleName) {
+		this.mappedModuleName = mappedModuleName;
+	}
+
+	public ModuleType getModuleType() {
+		return moduleType;
+	}
+
+	public void setModuleType(ModuleType moduleType) {
+		this.moduleType = moduleType;
+	}
+
+}

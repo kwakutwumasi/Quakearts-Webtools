@@ -2,15 +2,16 @@ package com.quakearts.test;
 
 import static org.junit.Assert.*;
 
-import org.junit.Test;
+//import org.junit.Test;
 
 import com.quakearts.appbase.Main;
 import static org.hamcrest.core.Is.*;
 
 public class TestAppBase {
 
-	@Test
-	public void testAppBase() {
+//	@Test
+//	public void testAppBase() {
+	public static void main(String[] args){
 		try {
 			Main.main(new String[]{"com.quakearts.test.TestMainBean",
 					"-dontwaitinmain"});

@@ -6,8 +6,7 @@ import com.quakearts.webapp.orm.DataStoreFactory;
 public class HibernateSessionDataStoreFactory extends DataStoreFactory {
 	
 	public HibernateSessionDataStoreFactory() {
-		if(getInstance()==null)
-			setInstance(this);
+		setInstance(this);
 	}
 	
 	@Override

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+                                         "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory name="SysHubDB">
+		<property name="hibernate.connection.datasource">java:/jdbc/SYSHUBDS</property>
+		<property name="hibernate.dialect">org.hibernate.dialect.DerbyTenSixDialect</property>
+		<property name="hibernate.hbm2ddl.auto">update</property>
+		<property name="hibernate.transaction.jta.platform">com.quakearts.appbase.spi.support.hibernate.AppBaseJTAPlatform</property>
+		<property name="hibernate.default_schema">DBO</property>
+		<property name="hibernate.order_inserts">true</property>
+		<property name="hibernate.order_updates">true</property>
+		<property name="hibernate.bytecode.use_reflection_optimizer">true</property>
+		<mapping class="com.quakearts.syshub.model.AgentConfiguration" />
+		<mapping class="com.quakearts.syshub.model.AgentConfigurationParameter" />
+		<mapping class="com.quakearts.syshub.model.AgentModule" />
+		<mapping class="com.quakearts.syshub.model.MaxID" />
+		<mapping class="com.quakearts.syshub.model.ProcessingLog" />
+		<mapping class="com.quakearts.syshub.model.ResultExceptionLog" />
+		<mapping class="com.quakearts.syshub.model.TransactionLog" />
+		<mapping class="com.quakearts.syshub.model.VariableCache" />
+	</session-factory>
+</hibernate-configuration>

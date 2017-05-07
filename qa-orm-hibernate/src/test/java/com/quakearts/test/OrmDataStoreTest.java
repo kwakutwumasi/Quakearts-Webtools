@@ -10,7 +10,6 @@ import java.util.List;
 import static org.hamcrest.core.Is.*;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.quakearts.test.hibernate.Brand;
@@ -20,18 +19,12 @@ import com.quakearts.test.hibernate.SalesOrder;
 import com.quakearts.test.hibernate.SalesPart;
 import com.quakearts.webapp.hibernate.CurrentSessionContextHelper;
 import com.quakearts.webapp.hibernate.HibernateSessionDataStore;
-import com.quakearts.webapp.hibernate.HibernateSessionDataStoreFactory;
 import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.DataStoreFactory;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 import static com.quakearts.webapp.orm.query.helper.ParameterMapBuilder.createParameters;;
 
 public class OrmDataStoreTest {
-
-	@Before
-	public void setUp() throws Exception {
-		new HibernateSessionDataStoreFactory();
-	}
 
 	@Test
 	public void testDataStore() {
