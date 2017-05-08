@@ -31,7 +31,7 @@ public interface AgentConfigurationModule {
      * @param props a {@link Map} object containing configuration information
      * @throws ConfigurationException
      */
-    public void setupWithConfigurationParameters(Map<String, AgentConfigurationParameter> parameterMap) 
+    public void setupWithConfigurationParameters(Map<String, AgentConfigurationParameter> parameters) 
     		throws ConfigurationException;
 
 }

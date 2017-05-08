@@ -120,10 +120,10 @@ public class AgentConfiguration implements Serializable {
 	@Transient
 	private Map<String, AgentConfigurationParameter> agentConfigurationMap;
 
-	private void createConfigurationMap() {
+	private void createConfigurationMaps() {
+		agentConfigurationMap = new HashMap<>();
+		moduleConfigurationMaps = new HashMap<>();
 		if(parameters.size()>0){
-			agentConfigurationMap = new HashMap<>();
-			moduleConfigurationMaps = new HashMap<>();
 			for(AgentConfigurationParameter agentConfigurationParameter: parameters) {
 				if(agentConfigurationParameter.getAgentModule()!=null){
 					Map<String, AgentConfigurationParameter> agentModuleConfigurationMap = 
@@ -140,6 +140,10 @@ public class AgentConfiguration implements Serializable {
 				}
 			}
 			
+			for(Map<String, AgentConfigurationParameter> agentModuleConfigurationMap:moduleConfigurationMaps.values()){
+				agentModuleConfigurationMap.putAll(agentConfigurationMap);
+			}
+			
 			agentConfigurationMap = Collections.unmodifiableMap(agentConfigurationMap);
 			moduleConfigurationMaps = Collections.unmodifiableMap(moduleConfigurationMaps);
 		}
@@ -152,20 +156,19 @@ public class AgentConfiguration implements Serializable {
 
 	public Map<String, AgentConfigurationParameter> getAgentConfigurationMap() {
 		if(agentConfigurationMap==null)
-			createConfigurationMap();
+			createConfigurationMaps();
 
 		return agentConfigurationMap;
 	}
 	
 	@Transient
-	public Map<String, AgentConfigurationParameter> getModuleConfigurationParameters(AgentModule agentModule) {
+	public Map<String, AgentConfigurationParameter> getAgentModuleConfigurationParameters(AgentModule agentModule) {
 		if(moduleConfigurationMaps==null)
-			createConfigurationMap();
+			createConfigurationMaps();
 		
-		Map<String, AgentConfigurationParameter> moduleConfigurationMap = moduleConfigurationMaps.get(agentModule.getId());
-		if(moduleConfigurationMap!=null) {
-			moduleConfigurationMap.putAll(agentConfigurationMap);
-			return moduleConfigurationMap;
+		Map<String, AgentConfigurationParameter> agentModuleConfigurationMap = moduleConfigurationMaps.get(agentModule.getId());
+		if(agentModuleConfigurationMap!=null) {
+			return agentModuleConfigurationMap;
 		} else {
 			return null;
 		}

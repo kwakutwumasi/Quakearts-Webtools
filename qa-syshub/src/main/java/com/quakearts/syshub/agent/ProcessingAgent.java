@@ -8,39 +8,12 @@
  * Contributors:
  *     Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com> - initial API and implementation
  ******************************************************************************/
-/**	Version 3
- *  This is the main class of the Notification Server
- *  It performs the notifications. It uses a multithreaded approach to spool, generate and send messages
- *  It also has a daemon that processes result exceptions. Message exceptions are expected to be handled by the messengers.
- *  The agent takes a configuration file (java.util.Property readable file, xml and key value format) and builds the agent
- *  Required properties:
- *  ntagent.name - the name of the agent. Must be unique on the server
- *  ntagent.dataspooler - Two options: the fully qualified class name of a dataspooler instance to be created or a 
- *  					  comma separated list of configuration files for dataspoolers. Each file must define
- *  					  a property called dataspooler.class that holds the fully qualified class name of the 
- *  					  dataspooler instance  					  
- *  ntagent.messageformatter - Two options: the fully qualified class name of a messageformatter instance to be created or a 
- *  					  comma separated list of configuration files for messageformatters. Each file must define
- *  					  a property called messageformatter.class that holds the fully qualified class name of the 
- *  					  dataspooler instance
- *  ntagent.messenger - Two options: the JNDI name of a MessengerService instance to be created and mapped to each of
- *  					message formatters or a property of the format [filename prefix].ntagent.messenger where [filename prefix]
- *  					is the filename prefix of the message formatter that should be mapped to the messenger
- *  Optional parameters are
- *  ntagent.maximumPoolSize - Used to configure the maximum pool size of the ThreadpoolExecutor
- *  ntagent.corePoolSize - Used to configure the core pool size of the ThreadpoolExecutor
- *  ntagent.keepAliveTime - Used to configure the keep alive time of the ThreadpoolExecutor
- *  ntagent.queueSize - Used to configure the queue size of the ThreadpoolExecutor
- *  see documentation for @java.util.concurrent.ThreadPoolExecutor for more information on how to configure this system.
- */
-
 package com.quakearts.syshub.agent;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -102,8 +75,8 @@ public class ProcessingAgent {
 	@Inject @ResultExceptionLogging
 	private ResultExceptionLogger resultExceptionLogger;
 	private AgentConfiguration agentConfiguration;
-	private List<DataSpooler> dataspoolers;
-	private Map<Messenger, MessageFormatter> mapper = new HashMap<>();
+	private List<DataSpooler> dataSpoolers;
+	private Map<Messenger, MessageFormatter> mapper;
 	private ThreadPoolExecutor executor;
 	private String name;
 	private Date lastRunTime, startTime;
@@ -127,15 +100,21 @@ public class ProcessingAgent {
 	public void processData() throws ProcessingException {
 		if(agentConfiguration == null 
 				|| name == null)
-			throw new ProcessingException("Incomplete setup: "+(agentConfiguration==null?"missing agentConfiguration":"missing name"));
+			throw new ProcessingException("Incomplete setup: "+(agentConfiguration == null?"missing agentConfiguration":"missing name"));
+		
+		if(dataSpoolers == null)
+			throw new ProcessingException("Incomplete setup: missing Data Spoolers");			
+		
+		if(mapper == null)
+			throw new ProcessingException("Incomplete setup: missing Message Formatter/Messenger Pairs");			
 		
 		log.trace("Initiating...");
 		lastRunTime = new Date();
 		
-		if(dataspoolers.size() == 1){
-			getAnAgentWorker(dataspoolers.get(0)).startProcess();
+		if(dataSpoolers.size() == 1){
+			getAnAgentWorker(dataSpoolers.get(0)).startProcess();
 		} else {
-			for(DataSpooler spooler:dataspoolers){
+			for(DataSpooler spooler:dataSpoolers){
 				getExecutor().execute(()->{getAnAgentWorker(spooler).startProcess();});
 				log.trace("Launched dataspooler "+spooler.getClass().getName());
 			}		
@@ -150,7 +129,7 @@ public class ProcessingAgent {
 	}
 
 	public void resendResultExceptionLog(ResultExceptionLog exceptionLog){
-		if(mapper.isEmpty())
+		if(mapper == null || mapper.isEmpty())
 			return;
 		
 		if(exceptionLog == null)
@@ -179,7 +158,7 @@ public class ProcessingAgent {
 	
 	private synchronized AgentWorker getAnAgentWorker(DataSpooler dataSpooler){
 		AgentWorker worker;
-		if(agentWorkersCreated <= dataspoolers.size()){
+		if(agentWorkersCreated <= dataSpoolers.size()){
 			log.trace("No sub worker found in sub worker queue. Creating one...");
 			worker = new AgentWorker(dataSpooler);
 			if(log.isTraceEnabled())
@@ -446,6 +425,12 @@ public class ProcessingAgent {
 	 * @param corePoolSize The core pool size for {@link ThreadPoolExecutor}
 	 */
 	public void setCorePoolSize(int corePoolSize) {
+		if(corePoolSize<=0)
+			return;
+		
+		if(corePoolSize < dataSpoolers.size())
+			corePoolSize += dataSpoolers.size();
+		
 		this.corePoolSize = corePoolSize;
 	}
 
@@ -460,6 +445,9 @@ public class ProcessingAgent {
 	 * @param maximumPoolSize The maximumPoolSize for {@link ThreadPoolExecutor}
 	 */
 	public void setMaximumPoolSize(int maximumPoolSize) {
+		if(maximumPoolSize <= 0 || corePoolSize > maximumPoolSize)
+			return;
+		
 		this.maximumPoolSize = maximumPoolSize;
 	}
 
@@ -474,6 +462,9 @@ public class ProcessingAgent {
 	 * @param queueSize The queue size for {@link ThreadPoolExecutor}
 	 */
 	public void setQueueSize(int queueSize) {
+		if(queueSize <= 0)
+			return;
+		
 		this.queueSize = queueSize;
 	}
 
@@ -488,6 +479,9 @@ public class ProcessingAgent {
 	 * @param keepAliveTime The keep alive time in seconds for {@link ThreadPoolExecutor}
 	 */
 	public void setKeepAliveTime(long keepAliveTime) {
+		if(keepAliveTime <= 0)
+			return;
+		
 		this.keepAliveTime = keepAliveTime;
 	}
 
@@ -509,12 +503,15 @@ public class ProcessingAgent {
 	 * @return A list of configured {@link DataSpooler}
 	 */
 	public List<DataSpooler> getDataSpoolers() {
-		return dataspoolers;
+		return dataSpoolers;
 	}
 
-	public void setDataSpoolers(List<DataSpooler> dataspoolers) {
-		this.dataspoolers = Collections.unmodifiableList(dataspoolers);
-		agentWorkers = new ArrayBlockingQueue<>(dataspoolers.size());
+	public void setDataSpoolers(List<DataSpooler> dataSpoolers) {
+		if(dataSpoolers == null || dataSpoolers.size() <= 0)
+			return;
+		
+		this.dataSpoolers = Collections.unmodifiableList(dataSpoolers);
+		agentWorkers = new ArrayBlockingQueue<>(dataSpoolers.size());
 	}
 	
 	/**
@@ -525,6 +522,9 @@ public class ProcessingAgent {
 	}
 	
 	public void setMessengerFormatterMapper(Map<Messenger, MessageFormatter> mapper) {
+		if(mapper == null || mapper.size() <= 0)
+			return;
+		
 		this.mapper = Collections.unmodifiableMap(mapper);
 	}
 
