@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (C) 2017 Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com>.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com> - initial API and implementation
+ ******************************************************************************/
 package com.quakearts.tools.classloaders.hibernate;
 
 // Generated 17-Mar-2014 00:13:24 by Hibernate Tools 3.4.0.CR1
