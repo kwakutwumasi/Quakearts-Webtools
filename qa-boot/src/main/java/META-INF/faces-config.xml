@@ -89,6 +89,10 @@
 		<component-class>com.quakearts.webapp.facelets.bootstrap.components.BootFlaticon</component-class>
 	</component>
 	<component>
+		<component-type>com.quakearts.bootstrap.fontawesome</component-type>
+		<component-class>com.quakearts.webapp.facelets.bootstrap.components.BootFontawesome</component-class>
+	</component>
+	<component>
 		<component-type>com.quakearts.bootstrap.textinput</component-type>
 		<component-class>com.quakearts.webapp.facelets.bootstrap.components.BootInputText</component-class>
 	</component>
@@ -251,6 +255,11 @@
 			<component-family>com.quakearts.bootstrap.flaticon</component-family>
 			<renderer-type>com.quakearts.bootstrap.flaticon.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootFlaticonRenderer</renderer-class>
+		</renderer>
+		<renderer>
+			<component-family>com.quakearts.bootstrap.fontawesome</component-family>
+			<renderer-type>com.quakearts.bootstrap.fontawesome.renderer</renderer-type>
+			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootFontawesomeRenderer</renderer-class>
 		</renderer>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.textinput</component-family>

@@ -10,16 +10,14 @@ public interface DataSpooler extends AgentConfigurationModule, AgentModuleValida
 	 */
 	void prepare() throws ProcessingException;
 	
-	/**Method to check if the call to getData() will not return any data. A return of true does not
-	 * guarantee that data will be returned due to the multithreaded nature of application.
-	 * For better performance implementers are encouraged adopt a strategy to guarantee data is returned
-	 * with the next call to getData()
-	 * @return true if the call to get data will likely result in data being returned. False iff
+	/**Method to check if the call to getData() will not return any data. A return of true must
+	 * guarantee that data will be returned
+	 * @return true if the call to get data will result in data being returned. False if
 	 * next call to get data will not result in data being returned.
 	 */
 	boolean hasMoreData();
 
-	/**Data retrieval call. Implementations should return a com.zenithbank.notification.core.Result
+	/**Data retrieval call. Implementations should return a {@link Result}
 	 * object containing data for message creation. Must not return null if no data
 	 * is available. An empty Result object should be returned.
 	 * @return A result object which may or may not contain data.

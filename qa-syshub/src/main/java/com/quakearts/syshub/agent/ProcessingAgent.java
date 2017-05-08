@@ -201,13 +201,17 @@ public class ProcessingAgent {
 			try {
 				log.trace("Preparing dataspooler...");
 				dataSpooler.prepare();				
+
 				log.trace("Fetching data...");
 				while(dataSpooler.hasMoreData()){
-					log.trace("Dataspooler has data. Initiating sub worker...");
+					
+					Result result = dataSpooler.getData();
+
+					log.trace("Dataspooler has data. Initiating sub workers...");
 					agentDataSpoolerTrackers.add(
 						getExecutor()
 							.submit(()->{
-								getAnAgentDataSpoolerWorker(dataSpooler).fetchDataAndProcess();
+								getAnAgentDataSpoolerWorker(dataSpooler, result).processData();
 							}
 					));
 				}
@@ -218,7 +222,7 @@ public class ProcessingAgent {
 			} finally {
 				for(Future<?> tracker: agentDataSpoolerTrackers){
 					try {
-						tracker.get();
+						tracker.get();//Wait for execution to complete
 					} catch (InterruptedException | ExecutionException e) {
 						//won't happen
 					}
@@ -235,11 +239,11 @@ public class ProcessingAgent {
 		}
 	}
 
-	private synchronized AgentDataSpoolerWorker getAnAgentDataSpoolerWorker(DataSpooler dataSpooler){
+	private synchronized AgentDataSpoolerWorker getAnAgentDataSpoolerWorker(DataSpooler dataSpooler, Result result){
 		AgentDataSpoolerWorker worker;
 		if(dataSpoolerWorkersCreated <= maxDataSpoolerWorkers){
 			log.trace("No sub worker found in sub worker queue. Creating one...");
-			worker = new AgentDataSpoolerWorker(dataSpooler);
+			worker = new AgentDataSpoolerWorker(dataSpooler, result);
 			if(log.isTraceEnabled())
 				log.trace("Added new agent sub worker. Hashcode:"+worker.hashCode());
 			
@@ -259,16 +263,16 @@ public class ProcessingAgent {
 
 	private class AgentDataSpoolerWorker {
 		private DataSpooler dataSpooler;
+		private Result result;
+
 		
-		public AgentDataSpoolerWorker(DataSpooler dataSpooler) {
+		public AgentDataSpoolerWorker(DataSpooler dataSpooler, Result result) {
 			this.dataSpooler = dataSpooler;
+			this.result = result;
 		}
 	
-		public void fetchDataAndProcess() {
-			Result result;
+		public void processData() {
 			try {
-				result = dataSpooler.getData();
-			
 				if(result.getDataResults().size()==0){
 					return;
 				}
@@ -287,11 +291,6 @@ public class ProcessingAgent {
 						});
 					}					
 				}
-			} catch (ProcessingException e) {
-				log.error( "Exception " + e.getClass().getName()
-						+ " was thrown. Message is " + e.getMessage()
-						+". Error occured whiles attempting to get data for formatting.", e);
-				return;
 			} finally {	
 				dataSpooler = null;
 				try {

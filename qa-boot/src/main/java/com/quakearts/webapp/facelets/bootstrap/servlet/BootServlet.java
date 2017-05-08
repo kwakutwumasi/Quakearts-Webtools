@@ -43,9 +43,9 @@ public class BootServlet extends HttpServlet {
 		bootResources.put("/js/jquery-1.12.2.js",null);
 		bootResources.put("/js/jquery-1.12.2.min.js",null);
 		bootResources.put("/js/respond.min.js",null); 
-		bootResources.put("/css/images/loading.gif",null); 
-		bootResources.put("/css/images/loading-error.png",null); 
-		bootResources.put("/css/images/loaded.png",null); 
+		bootResources.put("/images/loading.gif",null); 
+		bootResources.put("/images/loading-error.png",null); 
+		bootResources.put("/images/loaded.png",null); 
 		bootResources.put("/css/management/flaticon.css",null);	
 		bootResources.put("/css/office/flaticon.css",null);	
 		bootResources.put("/css/qacollection/flaticon.css",null);
@@ -64,6 +64,14 @@ public class BootServlet extends HttpServlet {
 		bootResources.put("/css/management/Flaticon.woff",null);	
 		bootResources.put("/css/office/Flaticon.woff",null);	
 		bootResources.put("/css/qacollection/Flaticon.woff",null);
+		bootResources.put("/fontawesome/css/font-awesome.css",null);
+		bootResources.put("/fontawesome/css/font-awesome.min.css",null);
+		bootResources.put("/fontawesome/fonts/fontawesome-webfont.eot",null);
+		bootResources.put("/fontawesome/fonts/fontawesome-webfont.svg",null);
+		bootResources.put("/fontawesome/fonts/fontawesome-webfont.ttf",null);
+		bootResources.put("/fontawesome/fonts/fontawesome-webfont.woff",null);
+		bootResources.put("/fontawesome/fonts/fontawesome-webfont.woff2",null);
+		bootResources.put("/fontawesome/fonts/FontAwesome.otf",null);
 		
 		for(String forbiddenExt:getServletContext().getInitParameter("com.quakearts.bootstrap.FORBIDDEN").split(",")){
 			forbidden.put(forbiddenExt.trim(), "");

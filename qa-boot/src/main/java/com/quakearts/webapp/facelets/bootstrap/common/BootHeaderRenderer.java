@@ -18,7 +18,8 @@ public class BootHeaderRenderer extends HtmlBasicRenderer {
 				+"<link href=\"@root/boot-services/css/qaboot.min.css\" rel=\"stylesheet\" type=\"text/css\" />\r\n"
 				+"<link href=\"@root/boot-services/css/management/flaticon.min.css\" rel=\"stylesheet\" type=\"text/css\" />\r\n"
 				+"<link href=\"@root/boot-services/css/office/flaticon.min.css\" rel=\"stylesheet\" type=\"text/css\" />\r\n"
-				+"<link href=\"@root/boot-services/css/qacollection/flaticon.min.css\" rel=\"stylesheet\" type=\"text/css\" />\r\n";
+				+"<link href=\"@root/boot-services/css/qacollection/flaticon.min.css\" rel=\"stylesheet\" type=\"text/css\" />\r\n"
+				+"<link href=\"@root/boot-services/fontawesome/css/font-awesome.min.css\" rel=\"stylesheet\" type=\"text/css\" />\r\n";
 	public static String HEADERRESPOND = "<script src=\"@root/boot-services/js/respond.min.js\" type=\"text/javascript\"></script>\r\n";
 	public static String HEADERJQUERY = "<script src=\"@root/boot-services/js/jquery-1.12.2.min.js\" type=\"text/javascript\"></script>\r\n";
 	public static String HEADERJQUERYDEBUG = "<script src=\"@root/boot-services/js/jquery-1.12.2.js\" type=\"text/javascript\"></script>\r\n";

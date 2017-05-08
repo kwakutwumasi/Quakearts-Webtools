@@ -1246,6 +1246,50 @@ child component if present
 		</attribute>
 	</tag>
 	<tag>
+		<tag-name>fa</tag-name>
+		<component>
+			<component-type>com.quakearts.bootstrap.fontawesome</component-type>
+			<renderer-type>com.quakearts.bootstrap.fontawesome.renderer</renderer-type>
+			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
+		</component>
+		<attribute>
+			<description>the ID of the component</description>
+			<name>id</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to determine whether or not the component will be rendered. </description>
+			<name>rendered</name>
+		</attribute>
+		<attribute>
+			<description>The ValueExpression linking this component to a property in a backing bean</description>
+			<name>binding</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression that evaluates to the name of the glyphicon to be rendered</description>
+			<name>value</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<name>style</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<name>styleClass</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<name>title</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression that evaluates to a javax.faces.Converter implementation for converting the UIInput or UIOutput component's value</description>
+			<name>converter</name>
+		</attribute>
+		<attribute>
+			<description>Error message to be displayed on a conversion error</description>
+			<name>converterMessage</name>
+		</attribute>
+	</tag>	
+	<tag>
 		<tag-name>inputText</tag-name>
 		<component>
 			<component-type>com.quakearts.bootstrap.textinput</component-type>
