@@ -202,6 +202,7 @@ public class LoadProfileLoginModule implements LoginModule{
             if(rolesgrp == null){
                 log.fine("Creating roles group...");
                 rolesgrp = new DirectoryRoles(rolesgrpname);
+                principalset.add(rolesgrp);
             }
                        
             String name;

@@ -19,7 +19,7 @@ public interface MessageLogger {
 
 	List<ProcessingLog> getUnpersistedLogs();
 
-	void log(Message<?> mssg, String response, boolean isError);
+	void log(Message<?> mssg, String details, boolean isError);
 
 	void store(Message<?> mssg, boolean isError);
 

@@ -52,7 +52,7 @@ public class TriggeredAgentRunner implements Runnable, AgentRunner, RunAgentList
 	public void run() {
 		if(trigger != null && !isRunning){
 			isRunning = true;
-			trigger.run();
+			trigger.runTrigger();
 			isRunning = false;
 		}
 	}

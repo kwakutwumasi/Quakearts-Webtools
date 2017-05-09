@@ -35,6 +35,7 @@ import com.quakearts.syshub.core.MessageFormatter;
 import com.quakearts.syshub.core.Messenger;
 import com.quakearts.syshub.core.Result;
 import com.quakearts.syshub.core.utils.SerializationUtil;
+import com.quakearts.syshub.core.utils.SystemDataStoreUtils;
 import com.quakearts.syshub.exception.FatalException;
 import com.quakearts.syshub.exception.ProcessingException;
 import com.quakearts.syshub.log.MessageLogger;
@@ -149,6 +150,7 @@ public class ProcessingAgent {
 				Message<?> message = messageFormatter.formatdata(rlt);
 				messenger.sendMessage(message);
 			}
+			SystemDataStoreUtils.getInstance().getSystemDataStore().delete(exceptionLog);
 			log.trace("Sending complete.");
 		} catch (ProcessingException | ClassNotFoundException | IOException e) {
 			log.error( "Exception of type " + e.getClass().getName()
@@ -338,8 +340,6 @@ public class ProcessingAgent {
 			Message<?> message;
 			try {
 				message = messageFormatter.formatdata(result);
-				messenger.sendMessage(message);
-				dataSpooler.updateData(result, message);				
 			} catch (ProcessingException e) {
 				if(resultExceptionLogger != null){
 					ResultExceptionLog exceptionLog = new ResultExceptionLog();
@@ -354,6 +354,26 @@ public class ProcessingAgent {
 							+ " was thrown. Message is " + e.getMessage()+". Exception occured whiles attempting to format data for sending", e);
 				}
 				return;
+			} 
+			
+			try {
+				messenger.sendMessage(message);
+			} catch (ProcessingException e) {
+				log.error( "Exception " + e.getClass().getName()
+						+ " was thrown. Message is " + e.getMessage()+". Exception occured whiles attempting to send message", e);
+				if(messageLogger!=null)
+					messageLogger.log(message, "Exception " + e.getClass().getName()
+							+ " was thrown. Message is " + e.getMessage()
+							+". Exception occured whiles attempting to send message."
+							+ " Message will be logged as an error", true);
+			}			
+			
+			try {
+				dataSpooler.updateData(result, message);
+			} catch (ProcessingException e) {
+				log.error( "Exception " + e.getClass().getName()
+						+ " was thrown. Message is " + e.getMessage()
+						+". Exception occured whiles attempting to format data for sending", e);
 			} finally {
 				result = null;
 				dataSpooler = null;

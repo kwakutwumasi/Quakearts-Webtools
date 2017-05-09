@@ -23,9 +23,9 @@ import com.quakearts.syshub.core.runner.AgentRunner;
 import com.quakearts.syshub.core.runner.impl.LoopedAgentRunner;
 import com.quakearts.syshub.core.runner.impl.ScheduledAgentRunner;
 import com.quakearts.syshub.core.runner.impl.TriggeredAgentRunner;
+import com.quakearts.syshub.core.utils.SystemDataStoreUtils;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.model.AgentConfiguration;
-import com.quakearts.webapp.orm.DataStoreFactory;
 import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
 
 public class SysHubMain {
@@ -34,8 +34,9 @@ public class SysHubMain {
 	
 	@TransactionParticipant(TransactionType.SINGLETON)
 	public void init() {
-		List<AgentConfiguration> agentConfigurations = DataStoreFactory.getInstance()
-				.getDataStore()
+		List<AgentConfiguration> agentConfigurations = SystemDataStoreUtils
+				.getInstance()
+				.getSystemDataStore()
 				.list(AgentConfiguration.class, new ParameterMapBuilder().add("active", Boolean.TRUE).build());
 		
 		for(AgentConfiguration agentConfiguration : agentConfigurations) {

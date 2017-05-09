@@ -10,8 +10,10 @@
  ******************************************************************************/
 package com.quakearts.syshub.core.metadata;
 
-import java.util.Properties;
+import java.util.Map;
+
+import com.quakearts.syshub.model.AgentConfigurationParameter;
 
 public interface NameGenerator {
-	String generateName(Properties properties);
+	String generateName(Map<String, AgentConfigurationParameter> parameters);
 }

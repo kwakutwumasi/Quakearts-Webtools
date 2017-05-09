@@ -3,7 +3,7 @@
                                          "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
 	<session-factory name="SysHubDB">
-		<property name="hibernate.connection.datasource">java:/jdbc/SYSHUBDS</property>
+		<property name="hibernate.connection.datasource">java:/jdbc/SysHubDS</property>
 		<property name="hibernate.dialect">org.hibernate.dialect.DerbyTenSixDialect</property>
 		<property name="hibernate.hbm2ddl.auto">update</property>
 		<property name="hibernate.transaction.jta.platform">com.quakearts.appbase.spi.support.hibernate.AppBaseJTAPlatform</property>

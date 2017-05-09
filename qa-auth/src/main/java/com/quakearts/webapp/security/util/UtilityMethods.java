@@ -18,7 +18,6 @@ import java.net.URLDecoder;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.transaction.UserTransaction;
 
 public class UtilityMethods {
 
@@ -56,9 +55,5 @@ public class UtilityMethods {
 
 	public static InitialContext getInitialContext() {
 		return icx;
-	}
-	
-	public static UserTransaction getTransaction() throws NamingException{
-		return (UserTransaction) icx.lookup("java:comp/UserTransaction");
-	}
+	}	
 }

@@ -23,7 +23,7 @@ import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.login.Configuration;
 import javax.security.auth.login.LoginException;
 
-import com.quakearts.webapp.security.rest.callback.TokenCallback;
+import com.quakearts.webapp.security.auth.callback.TokenCallback;
 import com.quakearts.webapp.security.rest.context.LoginContext;
 
 

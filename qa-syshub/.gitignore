@@ -20,3 +20,7 @@ local.properties
 .recommenders
 .project
 .classpath
+/syshubmainDB/
+/derby.log
+/tmlog.lck
+/tmlog5.log

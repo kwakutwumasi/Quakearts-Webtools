@@ -16,7 +16,7 @@ import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 
 public interface AgentTrigger {
-	void run();
+	void runTrigger();
 	boolean shutdown();
     public void setupWithConfigurationParameters(Map<String, AgentConfigurationParameter> parameters) 
     		throws ConfigurationException;
