@@ -10,9 +10,9 @@
  ******************************************************************************/
 package com.quakearts.webapp.facelets.tag.handler;
 
-import javax.faces.event.ActionListener;
+import java.util.Map;
 
-import org.hibernate.mapping.Map;
+import javax.faces.event.ActionListener;
 
 import com.quakearts.webapp.facelets.tag.AbstractHandler;
 import com.quakearts.webapp.facelets.tag.listener.ProfileListener;

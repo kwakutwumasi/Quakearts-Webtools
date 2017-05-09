@@ -19,7 +19,7 @@ import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.DataStoreFactory;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 
-public abstract class HibernateListener extends BaseListener {
+public abstract class OrmListener extends BaseListener {
 
 	/**
 	 * 

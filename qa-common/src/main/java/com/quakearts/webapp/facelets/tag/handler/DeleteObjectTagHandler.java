@@ -14,11 +14,11 @@ import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagConfig;
 
-import com.quakearts.webapp.facelets.tag.AbstractHibernateHandler;
-import com.quakearts.webapp.facelets.tag.HibernateListener;
+import com.quakearts.webapp.facelets.tag.AbstractOrmHandler;
+import com.quakearts.webapp.facelets.tag.OrmListener;
 import com.quakearts.webapp.facelets.tag.listener.DeleteObjectListener;
 
-public class DeleteObjectTagHandler extends AbstractHibernateHandler {
+public class DeleteObjectTagHandler extends AbstractOrmHandler {
 
 	private TagAttribute messageAttribute = getAttribute("message"),
 	objectAttribute = getRequiredAttribute("object");
@@ -28,7 +28,7 @@ public class DeleteObjectTagHandler extends AbstractHibernateHandler {
 	}
 
 	@Override
-	protected HibernateListener getHibernateListener(FaceletContext ctx) {
+	protected OrmListener getOrmListener(FaceletContext ctx) {
 		return new DeleteObjectListener(getValueExpression(messageAttribute, ctx, String.class),
 				getValueExpression(objectAttribute, ctx, Object.class));
 	}

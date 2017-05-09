@@ -21,7 +21,6 @@ import javax.naming.InitialContext;
 import javax.transaction.Status;
 import javax.transaction.UserTransaction;
 
-import com.quakearts.webapp.facelets.util.UtilityMethods;
 import com.quakearts.webapp.hibernate.CurrentSessionContextHelper;
 
 public class HibernatePhaseHelper implements PhaseListener {
@@ -53,7 +52,7 @@ public class HibernatePhaseHelper implements PhaseListener {
 
 	private void commitTrx() throws Exception{
 		if(isUserTransaction()){
-			InitialContext icx = UtilityMethods.getInitialContext();
+			InitialContext icx = new InitialContext();
 			UserTransaction tran= (UserTransaction) icx.lookup("java:comp/UserTransaction");
 			if(tran.getStatus() == Status.STATUS_ACTIVE)
 				tran.commit();
@@ -69,7 +68,7 @@ public class HibernatePhaseHelper implements PhaseListener {
 		if(event.getPhaseId() == PhaseId.RESTORE_VIEW){//start a transaction
 			if(isUserTransaction()){
 				try {
-					InitialContext icx = UtilityMethods.getInitialContext();
+					InitialContext icx = new InitialContext();
 					UserTransaction tran= (UserTransaction) icx.lookup("java:comp/UserTransaction");
 					if(tran.getStatus() == Status.STATUS_NO_TRANSACTION)
 						tran.begin();

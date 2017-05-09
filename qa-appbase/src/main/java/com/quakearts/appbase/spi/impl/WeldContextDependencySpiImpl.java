@@ -35,7 +35,11 @@ public class WeldContextDependencySpiImpl implements ContextDependencySpi {
 		if (weld == null) {
 			throw new ConfigurationException("Call to shutdown Weld without existing instance");
 		}
-		weld.shutdown();
+		try {
+			weld.shutdown();
+		} catch (Throwable e) {
+			// Suppress error
+		}
 	}
 	
 	@Override

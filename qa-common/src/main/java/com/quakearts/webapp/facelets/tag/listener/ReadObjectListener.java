@@ -18,11 +18,11 @@ import javax.faces.event.ActionEvent;
 
 import java.util.logging.Logger;
 
-import com.quakearts.webapp.facelets.tag.HibernateListener;
+import com.quakearts.webapp.facelets.tag.OrmListener;
 import com.quakearts.webapp.facelets.util.ObjectExtractor;
 import com.quakearts.webapp.facelets.util.UtilityMethods;
 
-public class ReadObjectListener extends HibernateListener {
+public class ReadObjectListener extends OrmListener {
 
 	/**
 	 * 

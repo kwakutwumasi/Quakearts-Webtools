@@ -10,14 +10,14 @@
  ******************************************************************************/
 package com.quakearts.webapp.facelets.tag.handler;
 
-import com.quakearts.webapp.facelets.tag.AbstractHibernateHandler;
-import com.quakearts.webapp.facelets.tag.HibernateListener;
+import com.quakearts.webapp.facelets.tag.AbstractOrmHandler;
+import com.quakearts.webapp.facelets.tag.OrmListener;
 import com.quakearts.webapp.facelets.tag.listener.SaveOrUpdateObjectListener;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagConfig;
 
-public class SaveOrUpdateObjectTagHandler extends AbstractHibernateHandler {
+public class SaveOrUpdateObjectTagHandler extends AbstractOrmHandler {
 
 	private TagAttribute messageAttribute = getAttribute("message"),
 	objectAttribute = getRequiredAttribute("object"),
@@ -29,7 +29,7 @@ public class SaveOrUpdateObjectTagHandler extends AbstractHibernateHandler {
 	}
 
 	@Override
-	protected HibernateListener getHibernateListener(FaceletContext ctx) {
+	protected OrmListener getOrmListener(FaceletContext ctx) {
 		return new SaveOrUpdateObjectListener(getValueExpression(messageAttribute, ctx, String.class),
 				getValueExpression(objectAttribute, ctx, Object.class),
 				getValueExpression(actionAttribute, ctx, String.class),

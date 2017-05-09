@@ -14,10 +14,10 @@ import javax.el.ValueExpression;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
-import com.quakearts.webapp.facelets.tag.HibernateListener;
+import com.quakearts.webapp.facelets.tag.OrmListener;
 import com.quakearts.webapp.facelets.util.ObjectExtractor;
 
-public class MergeObjectListener extends HibernateListener {
+public class MergeObjectListener extends OrmListener {
 
 	/**
 	 * 

@@ -16,12 +16,12 @@ import javax.faces.event.ActionEvent;
 
 import java.util.logging.Logger;
 
-import com.quakearts.webapp.facelets.tag.HibernateListener;
+import com.quakearts.webapp.facelets.tag.OrmListener;
 import com.quakearts.webapp.facelets.util.ObjectExtractor;
 import com.quakearts.webapp.facelets.util.UtilityMethods;
 import com.quakearts.webapp.orm.stringconcat.OrmStringConcatUtil;
 
-public class SaveOrUpdateObjectListener extends HibernateListener {
+public class SaveOrUpdateObjectListener extends OrmListener {
 
 	/**
 	 * 

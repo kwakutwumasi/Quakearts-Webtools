@@ -29,6 +29,7 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
+import com.quakearts.appbase.Main;
 import com.quakearts.appbase.exception.ConfigurationException;
 import com.quakearts.appbase.internal.json.Json;
 import com.quakearts.appbase.internal.json.JsonObject;
@@ -79,6 +80,23 @@ public class AtomikosBeanDatasourceSpi implements DataSourceProviderSpi {
 					//Skip
 				}
 			}
+		}
+		
+		File datasourceLocation = new File("."+File.separator+"atomikos"+File.separator+"datasources");
+		if(datasourceLocation.exists() && datasourceLocation.isDirectory()){
+			for(File file:datasourceLocation.listFiles()){
+				if(file.exists() 
+						&& file.isFile() 
+						&& file.getName().endsWith(".ds.json"))
+					datasourceFiles.add(file);
+			}
+		} else if(!datasourceLocation.isFile()){
+			datasourceLocation.mkdirs();
+			Main.log.info("Created "+datasourceLocation.getAbsolutePath()
+				+" to store QA AppBase Atomikos datasource definion files (*.ds.json)");
+		} else {
+			Main.log.warn("File "+datasourceLocation.getAbsolutePath()+" is not a directory. "
+					+ "This location must be a folder to hold datasource files");
 		}
 		
 		return datasourceFiles;

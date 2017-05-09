@@ -16,17 +16,17 @@ import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagConfig;
 
-public abstract class AbstractHibernateHandler extends AbstractHandler {
+public abstract class AbstractOrmHandler extends AbstractHandler {
 
 	private TagAttribute domainAttribute = getAttribute("domain");
 	
-	public AbstractHibernateHandler(TagConfig config) {
+	public AbstractOrmHandler(TagConfig config) {
 		super(config);
 	}
 
 	@Override
 	protected ActionListener getActionListener(FaceletContext ctx) {
-		HibernateListener listener = getHibernateListener(ctx);
+		OrmListener listener = getOrmListener(ctx);
 
 		if(domainAttribute != null){
 			listener.setDomainExpression(getValueExpression(domainAttribute, ctx, Object.class));
@@ -35,6 +35,6 @@ public abstract class AbstractHibernateHandler extends AbstractHandler {
 		return listener;
 	}
 	
-	protected abstract HibernateListener getHibernateListener(FaceletContext ctx);
+	protected abstract OrmListener getOrmListener(FaceletContext ctx);
 
 }

@@ -10,14 +10,14 @@
  ******************************************************************************/
 package com.quakearts.webapp.facelets.tag.handler;
 
-import com.quakearts.webapp.facelets.tag.AbstractHibernateHandler;
-import com.quakearts.webapp.facelets.tag.HibernateListener;
+import com.quakearts.webapp.facelets.tag.AbstractOrmHandler;
+import com.quakearts.webapp.facelets.tag.OrmListener;
 import com.quakearts.webapp.facelets.tag.listener.MergeObjectListener;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagConfig;
 
-public class MergeObjectTagHandler extends AbstractHibernateHandler {
+public class MergeObjectTagHandler extends AbstractOrmHandler {
 
 	private TagAttribute objectAttribute = getRequiredAttribute("object"),
 	messageAttribute=getAttribute("message");
@@ -27,7 +27,7 @@ public class MergeObjectTagHandler extends AbstractHibernateHandler {
 	}
 
 	@Override
-	protected HibernateListener getHibernateListener(FaceletContext ctx) {
+	protected OrmListener getOrmListener(FaceletContext ctx) {
 		return new MergeObjectListener(getValueExpression(objectAttribute, ctx, Object.class),
 				getValueExpression(messageAttribute, ctx, String.class));
 	}
