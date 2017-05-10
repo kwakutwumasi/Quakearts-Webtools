@@ -23,12 +23,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.security.auth.Subject;
 import javax.security.jacc.PolicyContext;
 import javax.security.jacc.PolicyContextException;
 
+import com.quakearts.webapp.orm.DataStoreFactory;
+import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.webapp.security.auth.UserPrincipal;
 
 public class TagUtilities {
@@ -121,5 +125,17 @@ public class TagUtilities {
     	List list = new ArrayList();
     	list.addAll(set);
     	return list;
+    }
+    
+    public static void refresh(Object object, String domain){
+    	try {
+        	if(domain==null){
+        		DataStoreFactory.getInstance().getDataStore().refresh(object);
+        	} else {
+        		DataStoreFactory.getInstance().getDataStore(domain).refresh(object);
+        	}
+		} catch (DataStoreException e) {
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Refresh Error", e.getMessage()));
+		}
     }
 }

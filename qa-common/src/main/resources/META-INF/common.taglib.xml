@@ -494,9 +494,4 @@
 			<name>redirect</name>
 		</attribute>
 	</tag>
-	<function>
-		<function-name>refresh</function-name>
-		<function-class>com.quakearts.webapp.hibernate.HibernateHelper</function-class>
-		<function-signature>java.lang.Object refresh(java.lang.Object, java.lang.String)</function-signature>
-	</function>
 </facelet-taglib>

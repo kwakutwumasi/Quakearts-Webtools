@@ -38,4 +38,9 @@
     	<function-class>com.quakearts.webapp.facelets.tag.utils.TagUtilities</function-class>
     	<function-signature>java.util.List toList(java.util.Set)</function-signature>
     </function>
+	<function>
+		<function-name>refresh</function-name>
+    	<function-class>com.quakearts.webapp.facelets.tag.utils.TagUtilities</function-class>
+		<function-signature>java.lang.Object refresh(java.lang.Object, java.lang.String)</function-signature>
+	</function>    
 </facelet-taglib>

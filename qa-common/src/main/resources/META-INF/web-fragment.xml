@@ -2,8 +2,4 @@
 <web-fragment version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
 	xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-fragment_3_0.xsd ">
-	<context-param>
-		<param-name>com.quakearts.webapp.orm.FACTORY</param-name>
-		<param-value>com.quakearts.webapp.hibernate.HibernateSessionDataStoreFactory</param-value>
-	</context-param>
 </web-fragment>
