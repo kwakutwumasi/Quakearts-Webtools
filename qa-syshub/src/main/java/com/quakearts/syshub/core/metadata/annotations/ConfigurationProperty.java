@@ -22,14 +22,13 @@ import com.quakearts.syshub.model.AgentConfigurationParameter.ParameterType;
 @Retention(RUNTIME)
 @Target(TYPE)
 public @interface ConfigurationProperty {
-	String value() default "";
-	boolean required();
-	ParameterType type();
-	Class<? extends NameGenerator> generatorClass();
-	String pattern();
-	String description();
-	String friendlyName();
-	boolean password();
-	Class<?> assignableType();
-
+	String value();
+	boolean required() default false;
+	ParameterType type() default ParameterType.STRING;
+	Class<? extends NameGenerator> generatorClass() default NameGenerator.class;
+	String pattern() default "";
+	String description() default "";
+	String friendlyName() default "";
+	boolean password() default false;
+	Class<?> assignableType() default Object.class;
 }

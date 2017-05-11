@@ -8,18 +8,22 @@
  * Contributors:
  *     Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com> - initial API and implementation
  ******************************************************************************/
-package com.quakearts.syshub.core.runner;
+package com.quakearts.webapp.security.auth.callback;
 
-import java.util.Map;
+import javax.security.auth.callback.Callback;
 
-import com.quakearts.syshub.exception.ConfigurationException;
-import com.quakearts.syshub.model.AgentConfigurationParameter;
+public class TokenCallback implements Callback {
 
-public interface AgentTrigger {
-	void runTrigger();
-	boolean shutdown();
-    public void setupWithConfigurationParameters(Map<String, AgentConfigurationParameter> parameters) 
-    		throws ConfigurationException;
-	boolean isShutDown();
-	void registerRunAgentListener(RunAgentListener listener);
+	public TokenCallback() {
+	}
+
+	protected byte[] tokenData;
+
+	public byte[] getTokenData() {
+		return tokenData;
+	}
+
+	public void setTokenData(byte[] tokenData) {
+		this.tokenData = tokenData;
+	}
 }

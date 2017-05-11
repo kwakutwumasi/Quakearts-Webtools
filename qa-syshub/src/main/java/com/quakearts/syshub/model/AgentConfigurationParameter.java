@@ -59,7 +59,6 @@ public class AgentConfigurationParameter implements Serializable {
 		JNDINAME,
 		EMAIL,
 		ENDPOINTADDRESS,
-		SQLQUERY,
 		CRONCONFIGURATION
 	}
 

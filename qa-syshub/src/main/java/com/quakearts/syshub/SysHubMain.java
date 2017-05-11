@@ -10,9 +10,12 @@
  ******************************************************************************/
 package com.quakearts.syshub;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.inject.Singleton;
 
 import com.quakearts.appbase.Main;
 import com.quakearts.appbase.cdi.annotation.TransactionParticipant;
@@ -28,26 +31,36 @@ import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
 
+@Singleton
 public class SysHubMain {
 	
 	private static Map<String, AgentRunner> agentRunners = new ConcurrentHashMap<>();
+		
+	private static boolean hasRun = false;
 	
 	@TransactionParticipant(TransactionType.SINGLETON)
 	public void init() {
-		List<AgentConfiguration> agentConfigurations = SystemDataStoreUtils
-				.getInstance()
-				.getSystemDataStore()
-				.list(AgentConfiguration.class, new ParameterMapBuilder().add("active", Boolean.TRUE).build());
-		
-		for(AgentConfiguration agentConfiguration : agentConfigurations) {
-			try {
-				deployAgent(agentConfiguration);
-			} catch (ConfigurationException e) {
-				Main.log.error("Exception of type " + e.getClass().getName() 
-						+ " was thrown. Message is " + e.getMessage()
-						+ ". Exception occured whiles deploying "+agentConfiguration.getAgentName());
+		if(!hasRun){
+			List<AgentConfiguration> agentConfigurations = SystemDataStoreUtils
+					.getInstance()
+					.getSystemDataStore()
+					.list(AgentConfiguration.class, new ParameterMapBuilder().add("active", Boolean.TRUE).build());
+			
+			for(AgentConfiguration agentConfiguration : agentConfigurations) {
+				try {
+					deployAgent(agentConfiguration);
+				} catch (ConfigurationException e) {
+					Main.log.error("Exception of type " + e.getClass().getName() 
+							+ " was thrown. Message is " + e.getMessage()
+							+ ". Exception occured whiles deploying "+agentConfiguration.getAgentName());
+				}
 			}
+			hasRun = true;
 		}
+	}
+	
+	public Collection<AgentRunner> listAgentRunners(){
+		return agentRunners.values();
 	}
 	
 	public void deployAgent(AgentConfiguration agentConfiguration) throws ConfigurationException{
@@ -70,5 +83,16 @@ public class SysHubMain {
 			throw new ConfigurationException("Unable to find type runner for " + agentConfiguration.getType());
 		
 		agentRunners.put(agent.getName(), agentRunner);
+	}
+	
+	public void undeployAgent(AgentConfiguration agentConfiguration){
+		AgentRunner agentRunner = agentRunners.get(agentConfiguration.getAgentName());
+		agentRunner.shutdown();
+		
+		agentRunners.remove(agentConfiguration.getAgentName());
+	}
+	
+	public boolean isDeployed(AgentConfiguration agentConfiguration){
+		return agentRunners.containsKey(agentConfiguration.getAgentName());
 	}
 }
