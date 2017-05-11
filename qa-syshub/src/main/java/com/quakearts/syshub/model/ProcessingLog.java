@@ -47,13 +47,15 @@ public class ProcessingLog implements Serializable {
 	private long logID;
 	@Column(nullable=false, length=50)
 	private String mid;
-	@Column(nullable=false, length=100)
+	@Column(length=100)
 	private String recipient;
 	@Enumerated(EnumType.ORDINAL)
 	@Column(nullable=true)
 	private LogType type;
 	@ManyToOne(optional=false, fetch=FetchType.EAGER)
 	private AgentConfiguration agentConfiguration;
+	@ManyToOne(optional=false, fetch=FetchType.EAGER)
+	private AgentModule agentModule;
 	@Column(nullable=false, length=200)
 	private String statusMessage;
 	@Lob
@@ -80,24 +82,20 @@ public class ProcessingLog implements Serializable {
 	public ProcessingLog() {
 	}
 
-	public ProcessingLog(Date logDt) {
-		this.logDt = logDt;
-	}
 
-	public ProcessingLog(String mid, String recipient, LogType type,
-			AgentConfiguration agentConfiguration,
-			String statusMessage, byte[] messageData, long retries,
-			boolean error, Date logDt) {
+	public ProcessingLog(String mid, LogType type, AgentConfiguration agentConfiguration, AgentModule agentModule,
+			String statusMessage, byte[] messageData, long retries, boolean error, Date logDt) {
 		this.mid = mid;
-		this.recipient = recipient;
 		this.type = type;
 		this.agentConfiguration = agentConfiguration;
+		this.agentModule = agentModule;
 		this.statusMessage = statusMessage;
 		this.messageData = messageData;
 		this.retries = retries;
 		this.error = error;
 		this.logDt = logDt;
 	}
+
 
 	public long getLogID() {
 		return this.logID;
@@ -137,6 +135,14 @@ public class ProcessingLog implements Serializable {
 
 	public void setAgentConfiguration(AgentConfiguration agentConfiguration) {
 		this.agentConfiguration = agentConfiguration;
+	}
+
+	public AgentModule getAgentModule() {
+		return agentModule;
+	}
+
+	public void setAgentModule(AgentModule agentModule) {
+		this.agentModule = agentModule;
 	}
 
 	public String getStatusMessage() {

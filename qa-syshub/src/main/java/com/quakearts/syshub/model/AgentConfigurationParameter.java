@@ -54,15 +54,25 @@ public class AgentConfigurationParameter implements Serializable {
 		BOOLEAN,
 		STRING,
 		CLASS,
-		DATE,
 		BINARY,
 		FILE,
 		JNDINAME,
 		EMAIL,
-		PHONENUMBER,
 		ENDPOINTADDRESS,
 		SQLQUERY,
 		CRONCONFIGURATION
+	}
+
+	public AgentConfigurationParameter() {
+	}
+	
+	public AgentConfigurationParameter(String name) {
+		this.name = name;
+	}
+	
+	public AgentConfigurationParameter(String name, ParameterType parameterType) {
+		this.name = name;
+		this.parameterType = parameterType;
 	}
 
 	public int getId() {

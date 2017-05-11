@@ -51,8 +51,7 @@ public class MessageFormatterFactory {
         return messageFormatter;
     }
 
-    public MessageFormatter getInstance(String instancename, 
-    		Map<String, AgentConfigurationParameter> parameters,
+    public MessageFormatter getInstance(Map<String, AgentConfigurationParameter> parameters,
     		AgentModule module) throws ConfigurationException {
     	MessageFormatter messageFormatter;
     	if(module.getModuleName() != null && !module.getModuleName().trim().isEmpty()){
@@ -66,7 +65,7 @@ public class MessageFormatterFactory {
 			}
         }    	
 
-    	messageFormatter = getInstance(instancename);
+    	messageFormatter = getInstance(module.getAgentClassName());
         messageFormatter.setupWithConfigurationParameters(parameters);
         messageFormatter.setAgentConfiguration(module.getAgentConfiguration().cloneById());
         

@@ -342,16 +342,10 @@ public class ProcessingAgent {
 				message = messageFormatter.formatdata(result);
 			} catch (ProcessingException e) {
 				if(resultExceptionLogger != null){
-					ResultExceptionLog exceptionLog = new ResultExceptionLog();
-					exceptionLog.setAgentConfiguration(agentConfiguration);
-					exceptionLog.setExceptionType(e.getClass().getName());
-					exceptionLog.setExceptionData(serializationUtil.toByteArray(e));
-					exceptionLog.setResultData(serializationUtil.toByteArray(result));
-					exceptionLog.setSpoolerType(dataSpooler.getClass().getName());
-					
-					resultExceptionLogger.log(exceptionLog);
+					resultExceptionLogger.logResultException(agentConfiguration, dataSpooler.getAgentModule(), e, result);
 					log.error( "Exception " + e.getClass().getName()
-							+ " was thrown. Message is " + e.getMessage()+". Exception occured whiles attempting to format data for sending", e);
+							+ " was thrown. Message is " + e.getMessage()
+							+". Exception occured whiles attempting to format data for sending", e);
 				}
 				return;
 			} 
@@ -362,7 +356,8 @@ public class ProcessingAgent {
 				log.error( "Exception " + e.getClass().getName()
 						+ " was thrown. Message is " + e.getMessage()+". Exception occured whiles attempting to send message", e);
 				if(messageLogger!=null)
-					messageLogger.log(message, "Exception " + e.getClass().getName()
+					messageLogger.log(messenger.getAgentConfiguration(), messenger.getAgentModule(), 
+							message, "Exception " + e.getClass().getName()
 							+ " was thrown. Message is " + e.getMessage()
 							+". Exception occured whiles attempting to send message."
 							+ " Message will be logged as an error", true);

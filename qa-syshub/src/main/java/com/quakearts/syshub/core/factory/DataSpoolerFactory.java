@@ -51,8 +51,7 @@ public class DataSpoolerFactory {
         return dataSpooler;
     }
 
-    public DataSpooler getInstance(String instancename, 
-    		Map<String, AgentConfigurationParameter> parameters,
+    public DataSpooler getInstance(Map<String, AgentConfigurationParameter> parameters,
     		AgentModule module) throws ConfigurationException {
     	DataSpooler dataSpooler;
     	if(module.getModuleName() != null && !module.getModuleName().trim().isEmpty()){
@@ -66,7 +65,7 @@ public class DataSpoolerFactory {
 			}
         }    	
     	
-        dataSpooler = getInstance(instancename);
+        dataSpooler = getInstance(module.getAgentClassName());
         dataSpooler.setupWithConfigurationParameters(parameters);
         dataSpooler.setAgentConfiguration(module.getAgentConfiguration().cloneById());
 

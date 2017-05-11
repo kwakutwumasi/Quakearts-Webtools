@@ -14,9 +14,11 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 
@@ -31,6 +33,7 @@ public class ResultExceptionLog implements java.io.Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
+	@ManyToOne(optional=false, fetch=FetchType.EAGER)
 	private AgentConfiguration agentConfiguration;
 	@Column(length=4096, nullable=false)
 	private byte[] resultData;
@@ -38,21 +41,22 @@ public class ResultExceptionLog implements java.io.Serializable {
 	private String exceptionType;
 	@Column(length=4096, nullable=false)
 	private byte[] exceptionData;
-	@Column(length=100, nullable=false)
-	private String spoolerType;
+	@ManyToOne(optional=false, fetch=FetchType.EAGER)
+	private AgentModule agentModule;
 	@Column(nullable=false)
 	private Date exceptionDt = new Date();
 
 	public ResultExceptionLog() {
 	}
 
-	public ResultExceptionLog(AgentConfiguration agentConfiguration, byte[] resultData,
-			String exceptionType, byte[] exceptionData, String spoolerType) {
+	public ResultExceptionLog(AgentConfiguration agentConfiguration, byte[] resultData, String exceptionType,
+			byte[] exceptionData, AgentModule agentModule, Date exceptionDt) {
 		this.agentConfiguration = agentConfiguration;
 		this.resultData = resultData;
 		this.exceptionType = exceptionType;
 		this.exceptionData = exceptionData;
-		this.spoolerType = spoolerType;
+		this.agentModule = agentModule;
+		this.exceptionDt = exceptionDt;
 	}
 
 	public long getId() {
@@ -95,12 +99,12 @@ public class ResultExceptionLog implements java.io.Serializable {
 		this.exceptionData = exceptionData;
 	}
 
-	public String getSpoolerType() {
-		return this.spoolerType;
+	public AgentModule getAgentModule() {
+		return agentModule;
 	}
 
-	public void setSpoolerType(String spoolerType) {
-		this.spoolerType = spoolerType;
+	public void setAgentModule(AgentModule agentModule) {
+		this.agentModule = agentModule;
 	}
 
 	public Date getExceptionDt() {

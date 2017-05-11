@@ -11,6 +11,8 @@
 package com.quakearts.syshub.model;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,6 +22,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -34,7 +37,7 @@ public class AgentModule implements Serializable {
 	private int id;
 	@Column(nullable=false, length=100)
 	private String agentClassName;
-	@ManyToOne(fetch=FetchType.EAGER, cascade={CascadeType.ALL})
+	@ManyToOne(fetch=FetchType.EAGER, cascade={CascadeType.PERSIST, CascadeType.REMOVE})
 	private AgentConfiguration agentConfiguration;
 	@Column(length=100)
 	private String moduleName;
@@ -42,6 +45,8 @@ public class AgentModule implements Serializable {
 	private String mappedModuleName;
 	@Column(nullable=false)
 	private ModuleType moduleType;
+	@OneToMany(mappedBy="agentModule")
+	private Set<AgentConfigurationParameter> parameters = new HashSet<>();
 	
 	public static enum ModuleType {
 		DATASPOOLER,
@@ -95,6 +100,20 @@ public class AgentModule implements Serializable {
 
 	public void setModuleType(ModuleType moduleType) {
 		this.moduleType = moduleType;
+	}
+
+	public Set<AgentConfigurationParameter> getParameters() {
+		return parameters;
+	}
+
+	public void setParameters(Set<AgentConfigurationParameter> agentConfigurationParameters) {
+		this.parameters = agentConfigurationParameters;
+	}
+
+	public AgentModule cloneById() {
+		AgentModule clone = new AgentModule();
+		clone.id = id;
+		return clone;
 	}
 
 }

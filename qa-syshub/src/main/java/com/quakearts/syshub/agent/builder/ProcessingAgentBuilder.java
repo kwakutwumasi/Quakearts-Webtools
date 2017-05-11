@@ -84,19 +84,20 @@ public class ProcessingAgentBuilder {
 		for (AgentModule agentModule : configuration.getAgentModules()){
 			switch (agentModule.getModuleType()) {
 			case DATASPOOLER:
-				dataSpoolers.add(DataSpoolerFactory.getFactory().getInstance(agentModule.getAgentClassName(),
-						configuration.getAgentModuleConfigurationParameters(agentModule), agentModule));
+				dataSpoolers.add(DataSpoolerFactory.getFactory().getInstance(configuration
+						.getAgentModuleConfigurationParameters(agentModule), 
+						agentModule));
 				break;
 			case FORMATTER:
 				messageFormatters.put(agentModule.getModuleName() != null 
 				&& !agentModule.getModuleName().trim().isEmpty()?
 						agentModule.getModuleName():agentModule.getAgentClassName(), 
-						MessageFormatterFactory.getFactory().getInstance(agentModule.getAgentClassName(),
-						configuration.getAgentModuleConfigurationParameters(agentModule), agentModule));
+						MessageFormatterFactory.getFactory().getInstance(configuration.getAgentModuleConfigurationParameters(agentModule), 
+								agentModule));
 				break;
 			case MESSENGER:
-				Messenger messenger = MessengerFactory.getFactory().getInstance(agentModule.getAgentClassName(),
-						configuration.getAgentModuleConfigurationParameters(agentModule), agentModule);
+				Messenger messenger = MessengerFactory.getFactory().getInstance(configuration.getAgentModuleConfigurationParameters(agentModule),
+						agentModule);
 				if(agentModule.getMappedModuleName()!=null) {
 					MessageFormatter formatter = messageFormatters.get(agentModule.getMappedModuleName());
 					if(formatter == null)
@@ -205,51 +206,50 @@ public class ProcessingAgentBuilder {
 	}
 	
 	public ProcessingAgentBuilder fromFile(String fileName) throws ConfigurationException {
-		JsonValue jsonObject;
 		InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
 		if(in!=null){
 			try (InputStream stream = in) {
-				 jsonObject = Json.parse(new InputStreamReader(stream));
+				 fromInputStream(stream);
 			} catch (IOException e) {
 				throw new ConfigurationException("Unable to load file "+fileName, e);
 			}
 		} else {
 			try(InputStream stream = new FileInputStream(fileName);) {
-				jsonObject = Json.parse(new InputStreamReader(stream));
+				 fromInputStream(stream);
 			} catch (IOException e) {
 				throw new ConfigurationException("Unable to load file "+fileName, e);
 			}
 		}
 		
-		try {
-			name(jsonObject.asObject().get("name").asString());
-			JsonArray commonParameters = jsonObject.asObject().get("parameters").asArray();
-			commonParameters.forEach((p)->{
-				processParameter(p);
-			});
-			
-			JsonArray array = jsonObject.asObject().get("modules").asArray();
-			array.forEach((o)->{
-				processModule(o);
-			});
-			
-		} catch (UnsupportedOperationException e) {
-			throw new ConfigurationException("Unable to read file "+fileName+" file is not in the proper structure.", e);
-		}
-		
 		return this;		
 	}
 	
-	private void processModule(JsonValue o) {
-		JsonValue classNameValue = o.asObject().get("classname");
+	public ProcessingAgentBuilder fromInputStream(InputStream stream) throws IOException {
+		
+		JsonValue jsonObject = Json.parse(new InputStreamReader(stream));
+		name(jsonObject.asObject().get("name").asString());
+		JsonArray commonParameters = jsonObject.asObject().get("parameters").asArray();
+		commonParameters.forEach((p)->{
+			processParameter(p);
+		});
+		
+		JsonArray array = jsonObject.asObject().get("modules").asArray();
+		array.forEach((o)->{
+			processModule(o);
+		});		
+		return this;
+	}
+	
+	private void processModule(JsonValue processValue) {
+		JsonValue classNameValue = processValue.asObject().get("classname");
 		
 		if(classNameValue==null){
 			throw new UnsupportedOperationException("Parameter classname is required for all agent modules.");
 		}
 
 		String className = classNameValue.asString();
-		JsonValue moduleNameValue = o.asObject().get("modulename");
-		JsonValue typeValue = o.asObject().get("type");
+		JsonValue moduleNameValue = processValue.asObject().get("modulename");
+		JsonValue typeValue = processValue.asObject().get("type");
 		if(typeValue==null){
 			throw new UnsupportedOperationException("Parameter type is required for agent modules. Missing for "+moduleNameValue!=null?moduleNameValue.asString():className);
 		}
@@ -269,7 +269,7 @@ public class ProcessingAgentBuilder {
 			messageFormatter(className, moduleNameValue!=null? moduleNameValue.asString():null);
 			break;
 		case MESSENGER:
-			JsonValue mappedModuleNameValue = o.asObject().get("mappedmodulename");
+			JsonValue mappedModuleNameValue = processValue.asObject().get("mappedmodulename");
 			messenger(className, moduleNameValue != null ? moduleNameValue.asString() : null,
 					mappedModuleNameValue != null ? mappedModuleNameValue.asString() : null);
 			break;
@@ -277,21 +277,21 @@ public class ProcessingAgentBuilder {
 			break;
 		}
 		
-		JsonArray commonParameters = o.asObject().get("parameters").asArray();
+		JsonArray commonParameters = processValue.asObject().get("parameters").asArray();
 		commonParameters.forEach((p)->{
 			processParameter(p);
 		});
 	}
 
-	private void processParameter(JsonValue p){
-		String name = p.asObject().get("name").asString();
-		JsonValue value = p.asObject().get("value");
+	private void processParameter(JsonValue parameterValue){
+		String name = parameterValue.asObject().get("name").asString();
+		JsonValue value = parameterValue.asObject().get("value");
 		if(value.isBoolean()){
 			addBooleanParameter(name, value.asBoolean());
 		} else if(value.isNumber()){
 			addNumericParameter(name, value.asDouble());
 		} else {
-			JsonValue typeValue = p.asObject().get("value");
+			JsonValue typeValue = parameterValue.asObject().get("value");
 			if(typeValue != null){
 				try {
 					addStringParameter(name, value.asString(), ParameterType.valueOf(typeValue.asString()));

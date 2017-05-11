@@ -12,9 +12,12 @@ package com.quakearts.syshub.log;
 
 import java.util.List;
 
+import com.quakearts.syshub.core.Result;
+import com.quakearts.syshub.model.AgentConfiguration;
+import com.quakearts.syshub.model.AgentModule;
 import com.quakearts.syshub.model.ResultExceptionLog;
 
 public interface ResultExceptionLogger {
 	List<ResultExceptionLog> getUnpersistedResultExceptionLogs();
-	void log(ResultExceptionLog log);
+	void logResultException(AgentConfiguration agentConfiguration, AgentModule agentModule, Exception e, Result result);
 }

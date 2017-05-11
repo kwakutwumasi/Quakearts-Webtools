@@ -51,8 +51,7 @@ public class MessengerFactory {
         return messenger;
     }
 
-    public Messenger getInstance(String instancename, 
-    		Map<String, AgentConfigurationParameter> parameters,
+    public Messenger getInstance(Map<String, AgentConfigurationParameter> parameters,
     		AgentModule module) throws ConfigurationException {
     	Messenger messenger;
     	if(module.getModuleName() != null && !module.getModuleName().trim().isEmpty()){
@@ -66,7 +65,7 @@ public class MessengerFactory {
 			}
         }    	
 
-    	messenger = getInstance(instancename);
+    	messenger = getInstance(module.getAgentClassName());
         messenger.setupWithConfigurationParameters(parameters);
         messenger.setAgentConfiguration(module.getAgentConfiguration().cloneById());
 

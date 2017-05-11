@@ -30,9 +30,12 @@ import org.slf4j.LoggerFactory;
 import com.quakearts.appbase.cdi.annotation.TransactionParticipant;
 import com.quakearts.appbase.cdi.annotation.TransactionParticipant.TransactionType;
 import com.quakearts.syshub.core.Message;
+import com.quakearts.syshub.core.Result;
 import com.quakearts.syshub.core.utils.CacheManagerUtil;
 import com.quakearts.syshub.core.utils.SerializationUtil;
 import com.quakearts.syshub.core.utils.SystemDataStoreUtils;
+import com.quakearts.syshub.model.AgentConfiguration;
+import com.quakearts.syshub.model.AgentModule;
 import com.quakearts.syshub.model.ProcessingLog;
 import com.quakearts.syshub.model.ResultExceptionLog;
 import com.quakearts.webapp.orm.DataStore;
@@ -142,7 +145,14 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	}
 
 	@Override
-	public void log(ResultExceptionLog log) {
+	public void logResultException(AgentConfiguration agentConfiguration, AgentModule agentModule,
+			Exception e, Result result) {
+		ResultExceptionLog log = new ResultExceptionLog();
+		log.setAgentConfiguration(agentConfiguration);
+		log.setAgentModule(agentModule);
+		log.setExceptionType(e.getClass().getName());
+		log.setExceptionData(SerializationUtil.getInstance().toByteArray(e));
+		log.setResultData(SerializationUtil.getInstance().toByteArray(result));
 		getResultExceptionLog().put(log.toString(), log);
 	}
 	
@@ -168,32 +178,32 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	 * @see com.quakearts.notification.log.MessageLogger#log(com.quakearts.notification.core.Message, java.lang.String, boolean)
 	 */
 	@Override
-	public void log(Message<?> mssg,String response,boolean isError){
-		saveLog(mssg, LogType.INFO, response,isError);
+	public void log(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg, String response, boolean isError){
+		saveLog(agentConfiguration, agentModule, mssg, LogType.INFO, response,isError);
 	}
 	
 	/* (non-Javadoc)
 	 * @see com.quakearts.notification.log.MessageLogger#store(com.quakearts.notification.core.Message, boolean)
 	 */
 	@Override
-	public void store(Message<?> mssg, boolean isError){
-		saveLog(mssg, LogType.STORED, "",isError);
+	public void store(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg, boolean isError){
+		saveLog(agentConfiguration, agentModule, mssg, LogType.STORED, "",isError);
 	}
 
 	/* (non-Javadoc)
 	 * @see com.quakearts.notification.log.MessageLogger#store(com.quakearts.notification.core.Message, java.lang.String, boolean)
 	 */
 	@Override
-	public void store(Message<?> mssg,String details, boolean isError){
-		saveLog(mssg, LogType.STORED, details,isError);
+	public void store(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg,String details, boolean isError){
+		saveLog(agentConfiguration, agentModule, mssg, LogType.STORED, details,isError);
 	}
 	
 	/* (non-Javadoc)
 	 * @see com.quakearts.notification.log.MessageLogger#queue(com.quakearts.notification.core.Message, java.lang.String)
 	 */
 	@Override
-	public void queue(Message<?> mssg,String reason){
-		saveLog(mssg, LogType.QUEUED, reason, false);
+	public void queue(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg,String reason){
+		saveLog(agentConfiguration, agentModule, mssg, LogType.QUEUED, reason, false);
 	}
 	
 	/* (non-Javadoc)
@@ -262,7 +272,8 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 		getUpdateLogCache().put(notificationLog.getMid(), notificationLog);
 	}
 
-	private void saveLog(Message<?> mssg, LogType type, String statusMessage, boolean isError){
+	private void saveLog(AgentConfiguration agentConfiguration, AgentModule agentModule, 
+			Message<?> mssg, LogType type, String statusMessage, boolean isError){
 		if(log.isTraceEnabled())
 			log.trace("Saving message to queue. Type: "+type+". statusMessage: "+statusMessage);
 		
@@ -270,6 +281,8 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 		
 		notelog.setStatusMessage(statusMessage);
 		notelog.setMid(mssg.getId());
+		notelog.setAgentConfiguration(agentConfiguration);
+		notelog.setAgentModule(agentModule);
 		String[] receipients = mssg.getRecipients(); 
 		notelog.setRecipient(Arrays.toString(receipients));
 		notelog.setType(type);
