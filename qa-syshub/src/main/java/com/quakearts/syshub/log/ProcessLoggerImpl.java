@@ -178,7 +178,7 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	 * @see com.quakearts.notification.log.MessageLogger#log(com.quakearts.notification.core.Message, java.lang.String, boolean)
 	 */
 	@Override
-	public void log(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg, String response, boolean isError){
+	public void logMessage(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg, String response, boolean isError){
 		saveLog(agentConfiguration, agentModule, mssg, LogType.INFO, response,isError);
 	}
 	
@@ -186,7 +186,7 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	 * @see com.quakearts.notification.log.MessageLogger#store(com.quakearts.notification.core.Message, boolean)
 	 */
 	@Override
-	public void store(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg, boolean isError){
+	public void storeMessage(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg, boolean isError){
 		saveLog(agentConfiguration, agentModule, mssg, LogType.STORED, "",isError);
 	}
 
@@ -194,7 +194,7 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	 * @see com.quakearts.notification.log.MessageLogger#store(com.quakearts.notification.core.Message, java.lang.String, boolean)
 	 */
 	@Override
-	public void store(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg,String details, boolean isError){
+	public void storeMessage(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg,String details, boolean isError){
 		saveLog(agentConfiguration, agentModule, mssg, LogType.STORED, details,isError);
 	}
 	
@@ -202,7 +202,7 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	 * @see com.quakearts.notification.log.MessageLogger#queue(com.quakearts.notification.core.Message, java.lang.String)
 	 */
 	@Override
-	public void queue(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg,String reason){
+	public void queueMessage(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg,String reason){
 		saveLog(agentConfiguration, agentModule, mssg, LogType.QUEUED, reason, false);
 	}
 	

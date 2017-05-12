@@ -374,7 +374,7 @@ public class ProcessingAgent {
 				log.error( "Exception " + e.getClass().getName()
 						+ " was thrown. Message is " + e.getMessage()+". Exception occured whiles attempting to send message", e);
 				if(messageLogger!=null)
-					messageLogger.log(messenger.getAgentConfiguration(), messenger.getAgentModule(), 
+					messageLogger.logMessage(messenger.getAgentConfiguration(), messenger.getAgentModule(), 
 							message, "Exception " + e.getClass().getName()
 							+ " was thrown. Message is " + e.getMessage()
 							+". Exception occured whiles attempting to send message."
