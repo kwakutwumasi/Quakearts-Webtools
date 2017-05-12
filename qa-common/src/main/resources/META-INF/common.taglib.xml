@@ -147,6 +147,9 @@
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<name>domain</name>
+		</attribute>
+		<attribute>
 			<name>delete</name>
 		</attribute>
 		<attribute>
@@ -161,6 +164,9 @@
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.SaveOrUpdateObjectTagHandler</handler-class>
 		<attribute>
 			<name>message</name>
+		</attribute>
+		<attribute>
+			<name>domain</name>
 		</attribute>
 		<attribute>
 			<name>object</name>
@@ -184,6 +190,9 @@
 			<name>message</name>
 		</attribute>
 		<attribute>
+			<name>domain</name>
+		</attribute>
+		<attribute>
 			<name>object</name>
 			<required>true</required>
 		</attribute>
@@ -202,6 +211,9 @@
 	<tag>
 		<tag-name>delete</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.DeleteObjectTagHandler</handler-class>
+		<attribute>
+			<name>domain</name>
+		</attribute>
 		<attribute>
 			<name>message</name>
 		</attribute>
