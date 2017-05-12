@@ -21,9 +21,9 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.webresources.DirResourceSet;
 import org.apache.catalina.webresources.StandardRoot;
 import org.apache.tomcat.util.scan.StandardJarScanner;
-import org.hibernate.internal.util.config.ConfigurationException;
 
 import com.quakearts.appbase.Main;
+import com.quakearts.appbase.exception.ConfigurationException;
 import com.quakearts.appbase.spi.EmbeddedWebServerSpi;
 
 public class TomcatEmbeddedServerSpi implements EmbeddedWebServerSpi {

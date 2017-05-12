@@ -71,5 +71,10 @@
 			<artifactId>derby</artifactId>
 			<version>10.13.1.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.infinispan</groupId>
+			<artifactId>infinispan-embedded</artifactId>
+			<version>8.2.6.Final</version>
+		</dependency>
 	</dependencies>
 </project>

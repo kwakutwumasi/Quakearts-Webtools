@@ -23,8 +23,8 @@ public class NamingDirectorySpi implements JavaNamingDirectorySpi {
 
 	@Override
 	public void initiateJNDIServices() {
-		System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "com.quakearts.appbase.spi.support.naming.AppBaseInitialContextFactory");
-		System.setProperty(Context.URL_PKG_PREFIXES, "com.quakearts.appbase.spi.support.naming");		
+		System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "com.quakearts.appbase.spi.impl.naming.AppBaseInitialContextFactory");
+		System.setProperty(Context.URL_PKG_PREFIXES, "com.quakearts.appbase.spi.impl.naming");		
 	}
 
 	@Override

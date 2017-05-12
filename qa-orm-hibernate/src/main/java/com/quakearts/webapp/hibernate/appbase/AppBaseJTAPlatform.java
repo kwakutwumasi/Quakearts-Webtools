@@ -8,7 +8,7 @@
  * Contributors:
  *     Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com> - initial API and implementation
  ******************************************************************************/
-package com.quakearts.appbase.spi.support.hibernate;
+package com.quakearts.webapp.hibernate.appbase;
 
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;

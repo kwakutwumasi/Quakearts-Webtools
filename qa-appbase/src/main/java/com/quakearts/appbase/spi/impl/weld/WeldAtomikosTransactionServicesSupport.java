@@ -8,7 +8,7 @@
  * Contributors:
  *     Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com> - initial API and implementation
  ******************************************************************************/
-package com.quakearts.appbase.spi.support;
+package com.quakearts.appbase.spi.impl.weld;
 
 import javax.transaction.RollbackException;
 import javax.transaction.Status;

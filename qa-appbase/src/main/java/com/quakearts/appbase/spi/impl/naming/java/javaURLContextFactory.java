@@ -8,7 +8,7 @@
  * Contributors:
  *     Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com> - initial API and implementation
  ******************************************************************************/
-package com.quakearts.appbase.spi.support.naming.java;
+package com.quakearts.appbase.spi.impl.naming.java;
 
 
 import java.util.Hashtable;

@@ -23,7 +23,6 @@
 		</plugins>
 	</build>
 	<properties>
-		<hibernate.version>5.1.3.Final</hibernate.version>
 		<infinispan.version>8.2.5.Final</infinispan.version>
 		<weld.se.version>2.4.2.Final</weld.se.version>
 		<weld.spi.version>2.4.SP1</weld.spi.version>
@@ -32,25 +31,20 @@
 		<tomcat.juli.version>8.5.2</tomcat.juli.version>
 		<atomikos.version>4.0.4</atomikos.version>
 		<junit.version>4.9</junit.version>
+		<logback.version>1.2.3</logback.version>
+		<jee.version>7.0</jee.version>
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-			<version>${hibernate.version}</version>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>${jee.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.infinispan</groupId>
-			<artifactId>infinispan-core</artifactId>
-			<version>${infinispan.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.jboss.spec.javax.transaction</groupId>
-					<artifactId>
-						jboss-transaction-api_1.1_spec
-					</artifactId>
-				</exclusion>
-			</exclusions>
+		    <groupId>ch.qos.logback</groupId>
+		    <artifactId>logback-classic</artifactId>
+		    <version>${logback.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.weld</groupId>

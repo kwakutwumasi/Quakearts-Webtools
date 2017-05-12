@@ -32,7 +32,7 @@ import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
 
 @Singleton
-public class SysHubMain {
+public class SysHubMain implements SysHub {
 	
 	private static Map<String, AgentRunner> agentRunners = new ConcurrentHashMap<>();
 		
@@ -40,7 +40,7 @@ public class SysHubMain {
 	
 	@TransactionParticipant(TransactionType.SINGLETON)
 	public void init() {
-		if(!hasRun){
+		if(!hasRun){//Run only once per application
 			List<AgentConfiguration> agentConfigurations = SystemDataStoreUtils
 					.getInstance()
 					.getSystemDataStore()
@@ -59,10 +59,18 @@ public class SysHubMain {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.quakearts.syshub.SysHub#listAgentRunners()
+	 */
+	@Override
 	public Collection<AgentRunner> listAgentRunners(){
 		return agentRunners.values();
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.quakearts.syshub.SysHub#deployAgent(com.quakearts.syshub.model.AgentConfiguration)
+	 */
+	@Override
 	public void deployAgent(AgentConfiguration agentConfiguration) throws ConfigurationException{
 		ProcessingAgentBuilder builder = new ProcessingAgentBuilder(agentConfiguration);
 		ProcessingAgent agent = builder.build();
@@ -85,6 +93,10 @@ public class SysHubMain {
 		agentRunners.put(agent.getName(), agentRunner);
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.quakearts.syshub.SysHub#undeployAgent(com.quakearts.syshub.model.AgentConfiguration)
+	 */
+	@Override
 	public void undeployAgent(AgentConfiguration agentConfiguration){
 		AgentRunner agentRunner = agentRunners.get(agentConfiguration.getAgentName());
 		agentRunner.shutdown();
@@ -92,6 +104,10 @@ public class SysHubMain {
 		agentRunners.remove(agentConfiguration.getAgentName());
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.quakearts.syshub.SysHub#isDeployed(com.quakearts.syshub.model.AgentConfiguration)
+	 */
+	@Override
 	public boolean isDeployed(AgentConfiguration agentConfiguration){
 		return agentRunners.containsKey(agentConfiguration.getAgentName());
 	}
