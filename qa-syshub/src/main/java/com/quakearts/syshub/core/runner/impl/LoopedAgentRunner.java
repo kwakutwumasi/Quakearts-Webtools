@@ -84,4 +84,9 @@ public class LoopedAgentRunner implements Runnable, AgentRunner {
 		setRunning(false);
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return agent.getName();
+	}
 }

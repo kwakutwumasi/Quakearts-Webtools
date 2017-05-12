@@ -108,4 +108,8 @@ public class TriggeredAgentRunner implements Runnable, AgentRunner, RunAgentList
 				&& trigger.shutdown();
 	}
 
+	@Override
+	public String toString() {
+		return agent.getName();
+	}
 }

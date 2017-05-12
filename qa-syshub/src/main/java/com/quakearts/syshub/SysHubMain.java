@@ -111,4 +111,9 @@ public class SysHubMain implements SysHub {
 	public boolean isDeployed(AgentConfiguration agentConfiguration){
 		return agentRunners.containsKey(agentConfiguration.getAgentName());
 	}
+	
+	@Override
+	public AgentRunner fetchAgentRunner(AgentConfiguration agentConfiguration) {
+		return agentRunners.get(agentConfiguration.getAgentName());
+	}
 }

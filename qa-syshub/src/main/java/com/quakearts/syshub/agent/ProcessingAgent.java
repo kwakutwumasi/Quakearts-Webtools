@@ -22,13 +22,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.quakearts.syshub.core.DataSpooler;
 import com.quakearts.syshub.core.Message;
 import com.quakearts.syshub.core.MessageFormatter;
@@ -43,7 +39,9 @@ import com.quakearts.syshub.log.MessageLogging;
 import com.quakearts.syshub.log.ResultExceptionLogger;
 import com.quakearts.syshub.log.ResultExceptionLogging;
 import com.quakearts.syshub.model.AgentConfiguration;
+import com.quakearts.syshub.model.ProcessingLog;
 import com.quakearts.syshub.model.ResultExceptionLog;
+import com.quakearts.webapp.orm.exception.DataStoreException;
 
 /**This class is the root class for data processing. Once configured with a number of spoolers and message formatter/messenger pairs,
  * the agent is ready to run. A call to {@link #processData()} will start the process chain.
@@ -68,7 +66,6 @@ import com.quakearts.syshub.model.ResultExceptionLog;
  * @author kwaku.twumasi@quakearts.com
  *
  */
-@ApplicationScoped
 public class ProcessingAgent {
 	private static final Logger log = LoggerFactory.getLogger(ProcessingAgent.class);
 	@Inject @MessageLogging
@@ -129,7 +126,33 @@ public class ProcessingAgent {
 		}
 	}
 
-	public void resendResultExceptionLog(ResultExceptionLog exceptionLog){
+	public void reprocessProcessingLog(ProcessingLog processingLog) throws ClassNotFoundException, IOException, ProcessingException {
+		if(mapper == null || mapper.isEmpty())
+			return;
+		
+		if(processingLog == null)
+			return;
+
+		if(processingLog.getAgentModule() == null)
+			return;
+		
+		for(Messenger messenger:mapper.keySet()){
+			if(messenger.getAgentModule().getId() == processingLog.getAgentModule().getId()){
+				try {
+					processingLog.getMessageData();
+				} catch (DataStoreException e) {
+					processingLog = SystemDataStoreUtils.getInstance().getSystemDataStore().refresh(processingLog);
+				}
+				
+				log.trace("Reprocessing message for ProcessingLog logID "+processingLog.getLogID());
+				Message<?> message = (Message<?>) SerializationUtil.getInstance().toObject(processingLog.getMessageData());
+				
+				messenger.sendMessage(message);
+			}
+		}
+	}
+	
+	public void resendResultExceptionLog(ResultExceptionLog exceptionLog) throws ClassNotFoundException, IOException, ProcessingException {
 		if(mapper == null || mapper.isEmpty())
 			return;
 		
@@ -139,23 +162,18 @@ public class ProcessingAgent {
 		if(exceptionLog.getExceptionData() == null || exceptionLog.getExceptionData().length <= 0)
 			return;
 		
-		log.trace("Starting resendResultExceptionLog() for id "+exceptionLog.getId()+"...");
+		log.trace("Starting resendResultExceptionLog() for ResultExceptionLog id "+exceptionLog.getId()+"...");
 		log.trace("Transaction started...");
-		try {
-			Result rlt =(Result) serializationUtil.toObject(exceptionLog.getResultData());
-			log.trace("Result loaded...");
-			
-			for(Messenger messenger:mapper.keySet()){
-				MessageFormatter messageFormatter = mapper.get(messenger);
-				Message<?> message = messageFormatter.formatdata(rlt);
-				messenger.sendMessage(message);
-			}
-			SystemDataStoreUtils.getInstance().getSystemDataStore().delete(exceptionLog);
-			log.trace("Sending complete.");
-		} catch (ProcessingException | ClassNotFoundException | IOException e) {
-			log.error( "Exception of type " + e.getClass().getName()
-					+ " was thrown. Message is " + e.getMessage()+". Exception occured whiles attempting to resend result in exception log with id "+exceptionLog.getId());
-		}		
+		Result rlt =(Result) serializationUtil.toObject(exceptionLog.getResultData());
+		log.trace("Result loaded...");
+		
+		for(Messenger messenger:mapper.keySet()){
+			MessageFormatter messageFormatter = mapper.get(messenger);
+			Message<?> message = messageFormatter.formatdata(rlt);
+			messenger.sendMessage(message);
+		}
+		SystemDataStoreUtils.getInstance().getSystemDataStore().delete(exceptionLog);
+		log.trace("Sending complete.");
 	}
 	
 	private synchronized AgentWorker getAnAgentWorker(DataSpooler dataSpooler){
@@ -383,6 +401,13 @@ public class ProcessingAgent {
 				}
 			}			
 		}
+	}
+	
+	/**
+	 * @return the number of agent workers created. Equivalent to the number of {@link DataSpooler} added
+	 */
+	public int getAgentWorkersCreated() {
+		return agentWorkersCreated;
 	}
 	
 	/**
