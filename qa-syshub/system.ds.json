@@ -1,6 +1,8 @@
 {
-	"createDatabase":"create",
-	"databaseName":"./syshubmainDB",
+	"xa.createDatabase":"create",
+	"xa.databaseName":"./syshubmainDB",
 	"datasource.class":"org.apache.derby.jdbc.EmbeddedXADataSource",
-	"datasource.name":"SysHubDS"
+	"datasource.name":"SysHubDS",
+	"maxPoolSize":20,
+	"poolSize":3
 }

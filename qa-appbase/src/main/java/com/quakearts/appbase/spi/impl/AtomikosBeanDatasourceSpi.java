@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,6 +36,7 @@ import com.quakearts.appbase.internal.json.Json;
 import com.quakearts.appbase.internal.json.JsonObject;
 import com.quakearts.appbase.internal.json.JsonObject.Member;
 import com.quakearts.appbase.internal.json.JsonValue;
+import com.quakearts.appbase.internal.json.ParseException;
 import com.quakearts.appbase.spi.DataSourceProviderSpi;
 import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
 
@@ -115,7 +117,7 @@ public class AtomikosBeanDatasourceSpi implements DataSourceProviderSpi {
 				if(c.getValue().isBoolean()){
 					map.put(c.getName(), c.getValue().asBoolean());
 				} else if(c.getValue().isNumber()){
-					if(c.getValue().asString().contains("."))
+					if(c.getValue().toString().contains("."))
 						map.put(c.getName(), c.getValue().asDouble());
 					else
 						map.put(c.getName(), new Double(c.getValue().asDouble()).intValue());
@@ -150,7 +152,7 @@ public class AtomikosBeanDatasourceSpi implements DataSourceProviderSpi {
 					map.put(c.getName(), value);
 				}
 			});
-		} catch (IOException e) {
+		} catch (IOException | ParseException e) {
 			throw new ConfigurationException("Exception of type " 
 					+ e.getClass().getName() 
 					+ " was thrown. Message is " 
@@ -233,10 +235,10 @@ public class AtomikosBeanDatasourceSpi implements DataSourceProviderSpi {
 
 	private Properties getProperties(Map<String, Serializable> configurationParameters){
 		Properties properties = new Properties();
-		properties.putAll(configurationParameters);
-		
-		properties.remove(DATASOURCECLASS);
-		properties.remove(NAME);
+		for(Entry<String, Serializable> entry: configurationParameters.entrySet()){
+			if(entry.getKey().startsWith("xa."))
+				properties.put(entry.getKey().substring(3), entry.getValue());
+		}
 		
 		return properties;
 	}

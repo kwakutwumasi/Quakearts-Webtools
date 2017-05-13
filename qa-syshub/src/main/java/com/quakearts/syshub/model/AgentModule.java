@@ -14,7 +14,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -37,7 +36,7 @@ public class AgentModule implements Serializable {
 	private int id;
 	@Column(nullable=false, length=100)
 	private String agentClassName;
-	@ManyToOne(fetch=FetchType.EAGER, cascade={CascadeType.PERSIST, CascadeType.REMOVE})
+	@ManyToOne(fetch=FetchType.EAGER)
 	private AgentConfiguration agentConfiguration;
 	@Column(length=100)
 	private String moduleName;

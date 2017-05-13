@@ -1,10 +1,12 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.quakearts.webtools</groupId>
-  <artifactId>qa-orm</artifactId>
-  <name>Quakearts ORM tools, extracted from Common tools</name>
-  <description>ORM tools extracted from Common tools project, to be used in non web applications</description>
-  	<build>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.quakearts.webtools</groupId>
+	<artifactId>qa-orm-hibernate-web</artifactId>
+	<version>1.0.0</version>
+	<name>Hibernate PhaseListener for web applications</name>
+	<description>Packaging of faces.config.xml for hibernate phase listener</description>
+	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -39,6 +41,10 @@
 			<version>7.0</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.quakearts.webtools</groupId>
+			<artifactId>qa-orm-hibernate</artifactId>
+			<version>2.3</version>
+		</dependency>
 	</dependencies>
-	<version>2.3</version>
 </project>

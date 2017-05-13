@@ -12,7 +12,6 @@ package com.quakearts.syshub.model;
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -38,7 +37,7 @@ public class TransactionLog implements java.io.Serializable {
 	private String username;
 	@Column(length=100, nullable=false)
 	private String action;
-	@ManyToOne(fetch=FetchType.LAZY, cascade={CascadeType.REMOVE})
+	@ManyToOne(fetch=FetchType.LAZY)
 	private ProcessingLog processingLog;
 	@Column(nullable=false)
 	private Date tranDt;

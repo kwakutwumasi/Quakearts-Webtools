@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.quakearts.appbase.spi.impl;
 
+import javax.naming.NamingException;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
@@ -17,6 +18,7 @@ import javax.transaction.UserTransaction;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.quakearts.appbase.exception.ConfigurationException;
 import com.quakearts.appbase.spi.JavaTransactionManagerSpi;
+import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
 
 public class AtomikosJavaTransactionManagerSpiImpl implements JavaTransactionManagerSpi {
 
@@ -40,6 +42,18 @@ public class AtomikosJavaTransactionManagerSpiImpl implements JavaTransactionMan
 			} catch (SystemException e) {
 				throw new ConfigurationException("Unable to create Transaction Manager", e);
 			}
+			try {
+				JavaNamingDirectorySpiFactory.getInstance()
+					.getJavaNamingDirectorySpi()
+					.createContext("java:comp");
+				
+				JavaNamingDirectorySpiFactory.getInstance()
+				.getJavaNamingDirectorySpi().getInitialContext().bind("java:comp/UserTransaction", tm);
+			} catch (NamingException e) {
+				new ConfigurationException(e.getMessage(),e);
+			}
+			
+			
 		}
 	}
 

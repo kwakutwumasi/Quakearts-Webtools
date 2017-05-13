@@ -31,21 +31,10 @@
 		<tomcat.juli.version>8.5.2</tomcat.juli.version>
 		<atomikos.version>4.0.4</atomikos.version>
 		<junit.version>4.9</junit.version>
-		<logback.version>1.2.3</logback.version>
 		<jee.version>7.0</jee.version>
+		<geronimo.version>1.1.1</geronimo.version>
 	</properties>
 	<dependencies>
-		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-api</artifactId>
-			<version>${jee.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-		    <groupId>ch.qos.logback</groupId>
-		    <artifactId>logback-classic</artifactId>
-		    <version>${logback.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>org.jboss.weld</groupId>
 			<artifactId>weld-api</artifactId>
@@ -103,7 +92,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
+			<artifactId>slf4j-jdk14</artifactId>
 			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
@@ -122,14 +111,29 @@
 			<version>${tomcat.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>com.atomikos</groupId>
-		    <artifactId>transactions</artifactId>
-		    <version>${atomikos.version}</version>
-		</dependency>		
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-el</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
 		<dependency>
-		    <groupId>com.atomikos</groupId>
-		    <artifactId>transactions-jdbc</artifactId>
-		    <version>${atomikos.version}</version>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-websocket</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.atomikos</groupId>
+			<artifactId>transactions</artifactId>
+			<version>${atomikos.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.atomikos</groupId>
+			<artifactId>transactions-jdbc</artifactId>
+			<version>${atomikos.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jta_1.1_spec</artifactId>
+			<version>${geronimo.version}</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -47,9 +47,9 @@ public class AgentConfiguration implements Serializable {
 	private String agentName;
 	private RunType type = RunType.LOOPED;
 	private boolean active;
-	@OneToMany(mappedBy="agentConfiguration", fetch=FetchType.EAGER, cascade={CascadeType.PERSIST, CascadeType.REMOVE})
+	@OneToMany(mappedBy="agentConfiguration", fetch=FetchType.EAGER, cascade={CascadeType.ALL})
 	private Set<AgentModule> agentModules = new HashSet<>();
-	@OneToMany(mappedBy="agentConfiguration", fetch=FetchType.EAGER, cascade={CascadeType.PERSIST, CascadeType.REMOVE})
+	@OneToMany(mappedBy="agentConfiguration", fetch=FetchType.EAGER, cascade={CascadeType.ALL})
 	private Set<AgentConfigurationParameter> parameters = new HashSet<>();
 	@OneToMany(mappedBy="agentConfiguration", fetch=FetchType.EAGER, cascade={CascadeType.REMOVE})
 	private Set<ProcessingLog> processingLogs = new HashSet<>();
@@ -123,8 +123,8 @@ public class AgentConfiguration implements Serializable {
 	private void createConfigurationMaps() {
 		agentConfigurationMap = new HashMap<>();
 		moduleConfigurationMaps = new HashMap<>();
-		if(parameters.size()>0){
-			for(AgentConfigurationParameter agentConfigurationParameter: parameters) {
+		if(getParameters().size()>0){
+			for(AgentConfigurationParameter agentConfigurationParameter: getParameters()) {
 				if(agentConfigurationParameter.getAgentModule()!=null){
 					Map<String, AgentConfigurationParameter> agentModuleConfigurationMap = 
 							moduleConfigurationMaps.get(agentConfigurationParameter.getAgentModule().getId());
