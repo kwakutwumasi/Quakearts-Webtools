@@ -47,11 +47,11 @@ public class AgentConfiguration implements Serializable {
 	private String agentName;
 	private RunType type = RunType.LOOPED;
 	private boolean active;
-	@OneToMany(mappedBy="agentConfiguration", fetch=FetchType.EAGER, cascade={CascadeType.ALL})
+	@OneToMany(mappedBy="agentConfiguration", fetch=FetchType.LAZY, cascade={CascadeType.ALL})
 	private Set<AgentModule> agentModules = new HashSet<>();
-	@OneToMany(mappedBy="agentConfiguration", fetch=FetchType.EAGER, cascade={CascadeType.ALL})
+	@OneToMany(mappedBy="agentConfiguration", fetch=FetchType.LAZY, cascade={CascadeType.ALL})
 	private Set<AgentConfigurationParameter> parameters = new HashSet<>();
-	@OneToMany(mappedBy="agentConfiguration", fetch=FetchType.EAGER, cascade={CascadeType.REMOVE})
+	@OneToMany(mappedBy="agentConfiguration", fetch=FetchType.LAZY, cascade={CascadeType.REMOVE})
 	private Set<ProcessingLog> processingLogs = new HashSet<>();
 	
 	public static enum RunType{
