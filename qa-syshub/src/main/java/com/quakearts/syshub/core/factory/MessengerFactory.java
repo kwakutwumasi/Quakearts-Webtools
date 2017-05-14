@@ -65,7 +65,7 @@ public class MessengerFactory {
 			}
         }    	
 
-    	messenger = getInstance(module.getAgentClassName());
+    	messenger = getInstance(module.getModuleClassName());
         messenger.setupWithConfigurationParameters(parameters);
         messenger.setAgentConfiguration(module.getAgentConfiguration().cloneById());
 

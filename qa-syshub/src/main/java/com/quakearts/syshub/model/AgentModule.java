@@ -35,7 +35,7 @@ public class AgentModule implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	@Column(nullable=false, length=100)
-	private String agentClassName;
+	private String moduleClassName;
 	@ManyToOne(fetch=FetchType.EAGER)
 	private AgentConfiguration agentConfiguration;
 	@Column(length=100)
@@ -61,12 +61,12 @@ public class AgentModule implements Serializable {
 		this.id = id;
 	}
 
-	public String getAgentClassName() {
-		return agentClassName;
+	public String getModuleClassName() {
+		return moduleClassName;
 	}
 
-	public void setAgentClassName(String agentClassName) {
-		this.agentClassName = agentClassName;
+	public void setModuleClassName(String agentClassName) {
+		this.moduleClassName = agentClassName;
 	}
 
 	public AgentConfiguration getAgentConfiguration() {

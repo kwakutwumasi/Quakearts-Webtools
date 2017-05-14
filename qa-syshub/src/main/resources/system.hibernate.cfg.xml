@@ -7,11 +7,11 @@
   <property name="hibernate.dialect">org.hibernate.dialect.DerbyTenSixDialect</property>
   <property name="hibernate.hbm2ddl.auto">update</property>
   <property name="hibernate.transaction.jta.platform">com.quakearts.webapp.hibernate.appbase.AppBaseJTAPlatform</property>
+  <property name="hibernate.transaction.coordinator_class">jta</property>
   <property name="hibernate.default_schema">DBO</property>
   <property name="hibernate.order_inserts">true</property>
   <property name="hibernate.order_updates">true</property>
   <property name="hibernate.bytecode.use_reflection_optimizer">true</property>
-  <property name="hibernate.connection.release_mode">auto</property>
   <mapping class="com.quakearts.syshub.model.AgentConfiguration"/>
   <mapping class="com.quakearts.syshub.model.AgentConfigurationParameter"/>
   <mapping class="com.quakearts.syshub.model.AgentModule"/>

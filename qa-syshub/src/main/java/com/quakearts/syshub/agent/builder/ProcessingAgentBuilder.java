@@ -91,7 +91,7 @@ public class ProcessingAgentBuilder {
 			case FORMATTER:
 				messageFormatters.put(agentModule.getModuleName() != null 
 				&& !agentModule.getModuleName().trim().isEmpty()?
-						agentModule.getModuleName():agentModule.getAgentClassName(), 
+						agentModule.getModuleName():agentModule.getModuleClassName(), 
 						MessageFormatterFactory.getFactory().getInstance(configuration.getAgentModuleConfigurationParameters(agentModule), 
 								agentModule));
 				break;
@@ -103,7 +103,7 @@ public class ProcessingAgentBuilder {
 					if(formatter == null)
 						throw new ConfigurationException("No messenger module named "+agentModule.getMappedModuleName()
 							+" to send data for formatter module "+(agentModule.getModuleName()!=null?
-									agentModule.getModuleName():agentModule.getAgentClassName()));
+									agentModule.getModuleName():agentModule.getModuleClassName()));
 					
 					messengerFormatterPairs.put(messenger, formatter);
 				} else {
@@ -339,7 +339,7 @@ public class ProcessingAgentBuilder {
 
 	private ProcessingAgentBuilder createAgentModule(ModuleType type, String className, String moduleName, String mappedModuleName) {
 		agentModule = new AgentModule();
-		agentModule.setAgentClassName(className);
+		agentModule.setModuleClassName(className);
 		agentModule.setModuleName(moduleName);
 		agentModule.setModuleType(type);
 		agentModule.setAgentConfiguration(configuration);
