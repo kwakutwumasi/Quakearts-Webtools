@@ -48,6 +48,8 @@ public class AgentConfigurationParameter implements Serializable {
 	private Boolean booleanValue;
 	@Column(length=1024)
 	private String stringValue;
+	@Column(nullable=false)
+	private boolean global;
 		
 	public static enum ParameterType {
 		NUMERIC,
@@ -138,6 +140,14 @@ public class AgentConfigurationParameter implements Serializable {
 		this.stringValue = stringValue;
 	}
 	
+	public boolean isGlobal() {
+		return global;
+	}
+
+	public void setGlobal(boolean global) {
+		this.global = global;
+	}
+
 	@Transient
 	public void setBase64String(byte[] value){
 		this.stringValue = Base64.getEncoder().encodeToString(value);

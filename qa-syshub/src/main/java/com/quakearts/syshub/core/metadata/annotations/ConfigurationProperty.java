@@ -31,4 +31,5 @@ public @interface ConfigurationProperty {
 	String friendlyName() default "";
 	boolean password() default false;
 	Class<?> assignableType() default Object.class;
+	boolean global() default false;
 }

@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -135,13 +136,17 @@ public class AgentConfiguration implements Serializable {
 					}
 					
 					agentModuleConfigurationMap.put(agentConfigurationParameter.getName(), agentConfigurationParameter);
+					if(agentConfigurationParameter.isGlobal())
+						agentConfigurationMap.put(agentConfigurationParameter.getName(), agentConfigurationParameter);
+
 				} else {
 					agentConfigurationMap.put(agentConfigurationParameter.getName(), agentConfigurationParameter);
 				}
 			}
 			
-			for(Map<String, AgentConfigurationParameter> agentModuleConfigurationMap:moduleConfigurationMaps.values()){
-				agentModuleConfigurationMap.putAll(agentConfigurationMap);
+			for(Entry<Integer, Map<String, AgentConfigurationParameter>> entry:moduleConfigurationMaps.entrySet()){
+				entry.getValue().putAll(agentConfigurationMap);
+				entry.setValue(Collections.unmodifiableMap(entry.getValue()));
 			}
 			
 			agentConfigurationMap = Collections.unmodifiableMap(agentConfigurationMap);
