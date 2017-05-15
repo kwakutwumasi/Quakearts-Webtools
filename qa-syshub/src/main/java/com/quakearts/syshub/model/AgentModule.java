@@ -11,9 +11,13 @@
 package com.quakearts.syshub.model;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -23,6 +27,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name="agent_module", schema="dbo")
@@ -44,7 +49,7 @@ public class AgentModule implements Serializable {
 	private String mappedModuleName;
 	@Column(nullable=false)
 	private ModuleType moduleType;
-	@OneToMany(mappedBy="agentModule")
+	@OneToMany(mappedBy="agentModule", fetch=FetchType.LAZY, cascade = {CascadeType.ALL})
 	private Set<AgentConfigurationParameter> parameters = new HashSet<>();
 	
 	public static enum ModuleType {
@@ -113,6 +118,29 @@ public class AgentModule implements Serializable {
 		AgentModule clone = new AgentModule();
 		clone.id = id;
 		return clone;
+	}
+
+	@Transient
+	private Map<String, AgentConfigurationParameter> moduleConfigurationMap;
+	
+	public Map<String, AgentConfigurationParameter> getModuleConfigurationMap() {
+		if(moduleConfigurationMap == null){
+			moduleConfigurationMap = new HashMap<>();
+			if(parameters.size()>0){
+				for(AgentConfigurationParameter agentConfigurationParameter : parameters){
+					moduleConfigurationMap.put(agentConfigurationParameter.getName(), agentConfigurationParameter);
+				}
+				
+				moduleConfigurationMap = Collections.unmodifiableMap(moduleConfigurationMap);
+			}
+		}
+		
+		return moduleConfigurationMap;
+	}
+	
+	@Override
+	public String toString() {
+		return Integer.toHexString(this.hashCode()+(int)(id>0?id:0));
 	}
 
 }

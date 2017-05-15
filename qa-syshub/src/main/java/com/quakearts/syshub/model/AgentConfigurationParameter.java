@@ -48,7 +48,7 @@ public class AgentConfigurationParameter implements Serializable {
 	private Boolean booleanValue;
 	@Column(length=1024)
 	private String stringValue;
-	@Column(nullable=false)
+	@Column(nullable=false, name="isGlobal")
 	private boolean global;
 		
 	public static enum ParameterType {
@@ -61,7 +61,8 @@ public class AgentConfigurationParameter implements Serializable {
 		JNDINAME,
 		EMAIL,
 		ENDPOINTADDRESS,
-		CRONCONFIGURATION
+		CRONCONFIGURATION,
+		PASSWORD
 	}
 
 	public AgentConfigurationParameter() {
@@ -171,5 +172,10 @@ public class AgentConfigurationParameter implements Serializable {
 			}
 		else
 			return null;
+	}
+	
+	@Override
+	public String toString() {
+		return Integer.toHexString(this.hashCode()+(int)(id>0?id:0));
 	}
 }

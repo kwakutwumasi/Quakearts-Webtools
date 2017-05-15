@@ -92,4 +92,8 @@ public class TransactionLog implements java.io.Serializable {
 		this.tranDt = tranDt;
 	}
 
+	@Override
+	public String toString() {
+		return Integer.toHexString(this.hashCode()+(int)(id>0?id:0));
+	}
 }

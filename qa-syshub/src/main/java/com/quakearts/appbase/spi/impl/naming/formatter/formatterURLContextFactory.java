@@ -8,7 +8,7 @@
  * Contributors:
  *     Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com> - initial API and implementation
  ******************************************************************************/
-package com.quakearts.appbase.spi.support.naming;
+package com.quakearts.appbase.spi.impl.naming.formatter;
 
 
 import java.util.Hashtable;
@@ -21,10 +21,10 @@ import javax.naming.spi.ObjectFactory;
 
 import org.apache.naming.NamingContext;
 
-public class spoolerURLContextFactory implements InitialContextFactory, ObjectFactory {
+public class formatterURLContextFactory implements InitialContextFactory, ObjectFactory {
 
 	private static NamingContext context;
-	private static final String TRANSCONTEXT = "spooler:";
+	private static final String TRANSCONTEXT = "formatter:";
 	
 	public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment)
 			throws Exception {

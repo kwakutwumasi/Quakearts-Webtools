@@ -167,7 +167,7 @@ public class AgentConfiguration implements Serializable {
 	}
 	
 	@Transient
-	public Map<String, AgentConfigurationParameter> getAgentModuleConfigurationParameters(AgentModule agentModule) {
+	public Map<String, AgentConfigurationParameter> getAgentModuleConfigurationMap(AgentModule agentModule) {
 		if(moduleConfigurationMaps==null)
 			createConfigurationMaps();
 		
@@ -177,5 +177,10 @@ public class AgentConfiguration implements Serializable {
 		} else {
 			return null;
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return Integer.toHexString(this.hashCode()+(int)(id>0?id:0));
 	}
 }

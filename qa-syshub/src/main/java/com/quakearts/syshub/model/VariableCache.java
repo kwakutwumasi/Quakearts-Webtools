@@ -58,4 +58,8 @@ public class VariableCache implements java.io.Serializable {
 		this.appData = appData;
 	}
 
+	@Override
+	public String toString() {
+		return Integer.toHexString(appKey!=null ? appKey.hashCode() : this.hashCode());
+	}
 }

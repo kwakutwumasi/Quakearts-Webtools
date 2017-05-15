@@ -192,5 +192,9 @@ public class ProcessingLog implements Serializable {
 	public void setTransactionLogs(Set<TransactionLog> transactionLogs) {
 		this.transactionLogs = transactionLogs;
 	}
-
+	
+	@Override
+	public String toString() {
+		return Integer.toHexString(this.hashCode()+(int)(logID>0?logID:0));
+	}
 }

@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.quakearts.syshub;
 
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +40,12 @@ public class SysHubMain implements SysHub {
 		
 	private static boolean hasRun = false;
 	
+	private static SysHub instance;
+	
+	public static SysHub getInstance() {
+		return instance;
+	}
+	
 	@TransactionParticipant(TransactionType.SINGLETON)
 	public void init() {
 		if(!hasRun){//Run only once per application
@@ -55,7 +63,15 @@ public class SysHubMain implements SysHub {
 							+ ". Exception occured whiles deploying "+agentConfiguration.getAgentName());
 				}
 			}
+			instance = this;
 			hasRun = true;
+			
+			Runtime.getRuntime().addShutdownHook(new Thread(()->{
+				try {
+					DriverManager.getConnection("jdbc:derby:;shutdown=true");
+				} catch (SQLException e) {
+				}
+			}));
 		}
 	}
 	
@@ -109,7 +125,10 @@ public class SysHubMain implements SysHub {
 	 */
 	@Override
 	public boolean isDeployed(AgentConfiguration agentConfiguration){
-		return agentRunners.containsKey(agentConfiguration.getAgentName());
+		if(agentConfiguration.getAgentName() != null)
+			return agentRunners.containsKey(agentConfiguration.getAgentName());
+		else
+			return false;
 	}
 	
 	@Override

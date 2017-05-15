@@ -69,4 +69,8 @@ public class MaxID implements java.io.Serializable {
 		this.maxIDValue = maxIDValue;
 	}
 
+	@Override
+	public String toString() {
+		return Integer.toHexString(this.hashCode()+(int)(id>0?id:0));
+	}
 }

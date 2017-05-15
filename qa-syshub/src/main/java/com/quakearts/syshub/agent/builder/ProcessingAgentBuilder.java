@@ -52,7 +52,6 @@ public class ProcessingAgentBuilder {
 	private AgentConfiguration configuration;
 	private AgentModule agentModule;
 	private static final Logger log = LoggerFactory.getLogger(ProcessingAgentBuilder.class);
-	private static final List<String> globalNameRegistry = new ArrayList<>();
 	
 	public ProcessingAgentBuilder() {
 		configuration = new AgentConfiguration();
@@ -70,7 +69,6 @@ public class ProcessingAgentBuilder {
 		log.trace("Setting up....");
 		
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
-		registerName(configuration.getAgentName());		
 		agent.setName(configuration.getAgentName());
 		agent.setAgentConfiguration(configuration);
 		
@@ -81,22 +79,22 @@ public class ProcessingAgentBuilder {
 		Map<Messenger, MessageFormatter> messengerFormatterPairs = new HashMap<>();
 		List<DataSpooler> dataSpoolers = new ArrayList<>();
 		
-		for (AgentModule agentModule : configuration.getAgentModules()){
+		for (AgentModule agentModule : agentModules){
 			switch (agentModule.getModuleType()) {
 			case DATASPOOLER:
 				dataSpoolers.add(DataSpoolerFactory.getFactory().getInstance(configuration
-						.getAgentModuleConfigurationParameters(agentModule), 
+						.getAgentModuleConfigurationMap(agentModule), 
 						agentModule));
 				break;
 			case FORMATTER:
 				messageFormatters.put(agentModule.getModuleName() != null 
 				&& !agentModule.getModuleName().trim().isEmpty()?
 						agentModule.getModuleName():agentModule.getModuleClassName(), 
-						MessageFormatterFactory.getFactory().getInstance(configuration.getAgentModuleConfigurationParameters(agentModule), 
+						MessageFormatterFactory.getFactory().getInstance(configuration.getAgentModuleConfigurationMap(agentModule), 
 								agentModule));
 				break;
 			case MESSENGER:
-				Messenger messenger = MessengerFactory.getFactory().getInstance(configuration.getAgentModuleConfigurationParameters(agentModule),
+				Messenger messenger = MessengerFactory.getFactory().getInstance(configuration.getAgentModuleConfigurationMap(agentModule),
 						agentModule);
 				if(agentModule.getMappedModuleName()!=null) {
 					MessageFormatter formatter = messageFormatters.get(agentModule.getMappedModuleName());
@@ -193,16 +191,6 @@ public class ProcessingAgentBuilder {
 		}
 		
 		return agent;
-	}
-
-	/**
-	 * Utility method to register agent names. This is to enforce uniqueness across the VM
-	 */
-	private static synchronized void registerName(String name) throws ConfigurationException{
-		if(globalNameRegistry.contains(name))
-			throw new ConfigurationException("Name "+name+" not a unique agent name. Name already exists.");
-		else
-			globalNameRegistry.add(name);		
 	}
 	
 	public ProcessingAgentBuilder fromFile(String fileName) throws ConfigurationException {

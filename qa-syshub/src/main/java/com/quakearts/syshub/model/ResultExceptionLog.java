@@ -114,4 +114,9 @@ public class ResultExceptionLog implements java.io.Serializable {
 	public void setExceptionDt(Date exceptionDt) {
 		this.exceptionDt = exceptionDt;
 	}
+	
+	@Override
+	public String toString() {
+		return Integer.toHexString(this.hashCode()+(int)(id>0?id:0));
+	}
 }
