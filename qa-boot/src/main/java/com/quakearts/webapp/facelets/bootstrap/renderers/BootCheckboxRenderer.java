@@ -25,6 +25,7 @@ import com.quakearts.webapp.facelets.bootstrap.components.BootCheckbox;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.Attribute;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.AttributeManager;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.html_basic.HtmlBasicInputRenderer;
+import com.quakearts.webapp.facelets.util.UtilityMethods;
 
 import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.*;
 
@@ -94,6 +95,11 @@ public class BootCheckboxRenderer extends HtmlBasicInputRenderer {
         String id = component.getClientId(context);
         writer.startElement("div", component);
         writeIdAttributeIfNecessary(context, writer, component);
+        if(!UtilityMethods.componentIsDisabled(component)){
+	        renderSelectOnclick(context, component);
+	        renderOverlayTarget(context, component);
+        }
+        
         String mainClass = box.get("mainClass");
         writer.writeAttribute("class", "input-group"+(mainClass!=null?" "+mainClass:""), null);
         String mainStyle = box.get("mainStyle");
@@ -150,7 +156,7 @@ public class BootCheckboxRenderer extends HtmlBasicInputRenderer {
 		renderPassThruAttributes(context, writer, component, ATTRIBUTES,
 				getNonOnClickSelectBehaviors(component));
         renderXHTMLStyleBooleanAttributes(writer, component);
-        renderSelectOnclick(context, component);
+        writer.writeAttribute("onchange", "$('#"+id+"').change()", null);
 
         writer.endElement("input");
         writer.write("\n");    	

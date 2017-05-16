@@ -170,6 +170,14 @@ public class RenderKitUtils {
 				behaviorEventName);
     }
 
+    public static void renderOverlayTarget(FacesContext context, UIComponent component) throws IOException{
+    	final Object overlayTarget = component.getAttributes().get("data-overlay-target");
+    	if(overlayTarget != null){
+    		context.getResponseWriter().writeAttribute("data-overlay-target", overlayTarget, "data-overlay-target");
+    	}
+    }
+
+    
     public static String prefixAttribute(final String attrName,
                                          boolean isXhtml) {
         if (isXhtml) {
@@ -700,4 +708,5 @@ public class RenderKitUtils {
     	
     	return clientIds.toString();
     }
+    
 }

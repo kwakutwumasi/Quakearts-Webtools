@@ -52,8 +52,10 @@ public class BootInputRenderer extends HtmlBasicInputRenderer {
         String id = component.getClientId(context);
         writer.startElement("div", component);
         writeIdAttributeIfNecessary(context, writer, component);
-        if(! UtilityMethods.componentIsDisabled(component))
+        if(! UtilityMethods.componentIsDisabled(component)){
         	renderOnchange(context, component);
+        	renderOverlayTarget(context, component);
+        }
         
         if(style!=null)
         	writer.writeAttribute("style", style, null);        

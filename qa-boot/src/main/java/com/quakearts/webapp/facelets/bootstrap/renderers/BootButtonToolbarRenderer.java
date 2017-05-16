@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.quakearts.webapp.facelets.bootstrap.renderers;
 
+import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.renderPassThruAttributes;
+
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -18,6 +20,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
 import com.quakearts.webapp.facelets.bootstrap.components.BootButtonToolbar;
+import com.quakearts.webapp.facelets.bootstrap.renderkit.Attribute;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.html_basic.HtmlBasicRenderer;
 
 public class BootButtonToolbarRenderer extends HtmlBasicRenderer {
@@ -46,6 +49,7 @@ public class BootButtonToolbarRenderer extends HtmlBasicRenderer {
         writer.writeAttribute("aria-label", (label!=null?label:"toolbar"), null);
         if(style!=null)
         	writer.writeAttribute("style", style, null);        
+        renderPassThruAttributes(context, writer, component, new Attribute[0]);
         writer.write("\n");
 
 	}

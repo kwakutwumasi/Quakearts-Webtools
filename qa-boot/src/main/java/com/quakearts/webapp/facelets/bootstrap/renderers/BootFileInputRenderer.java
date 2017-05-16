@@ -121,7 +121,6 @@ public class BootFileInputRenderer extends Renderer {
         String styleClass =fileInput.get("styleClass");		
         if(styleClass!=null)
         	writer.writeAttribute("class", styleClass, null);
-        renderPassThruAttributes(context, writer, component, new Attribute[0]);
 		writer.write("\n");    	
 		writer.startElement("div", component);
 		writer.writeAttribute("id", "div_"+id_js, null);
@@ -176,6 +175,7 @@ public class BootFileInputRenderer extends Renderer {
 				+(render!=null&&render.length()>0? ",render: '"+render+"'":"")
 				+(onevent!=null&&onevent.length()>0? ",onevent: "+onevent+"":"")
 				+(onerror!=null&&onerror.length()>0?",onerror: "+onerror+"":"")+"});", null);
+        renderPassThruAttributes(context, writer, component, new Attribute[0]);
         writer.write(label!=null?label:"Browse");
 		writer.endElement("button");
         writer.write("\n");

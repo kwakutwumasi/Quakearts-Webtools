@@ -17,7 +17,9 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
 import com.quakearts.webapp.facelets.bootstrap.components.BootButtonGroup;
+import com.quakearts.webapp.facelets.bootstrap.renderkit.Attribute;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.html_basic.HtmlBasicRenderer;
+import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.*;
 
 public class BootButtonGroupRenderer extends HtmlBasicRenderer {
 	@Override
@@ -43,8 +45,10 @@ public class BootButtonGroupRenderer extends HtmlBasicRenderer {
         writer.writeAttribute("class", "btn-group"+(styleClass!=null?" "+styleClass:""), null);
         writer.writeAttribute("role", "group", null);
         writer.writeAttribute("aria-label", (label!=null?label:"button group"), null);
+        
         if(style!=null)
         	writer.writeAttribute("style", style, null);        
+        renderPassThruAttributes(context, writer, component, new Attribute[0]);
         writer.write("\n");
 	}
 	

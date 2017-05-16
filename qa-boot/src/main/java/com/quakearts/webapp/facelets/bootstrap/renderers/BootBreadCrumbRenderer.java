@@ -32,6 +32,9 @@ public class BootBreadCrumbRenderer extends HtmlBasicRenderer {
 	@Override
 	public void encodeBegin(FacesContext context, UIComponent component)
 			throws IOException {
+        if(!shouldEncode(component))
+        	return;
+
         if (context == null)
         	throw new NullPointerException();
         
