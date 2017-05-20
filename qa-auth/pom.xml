@@ -43,10 +43,5 @@
 			<version>7.0</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.bitbucket.b_c</groupId>
-			<artifactId>jose4j</artifactId>
-			<version>0.5.5</version>
-		</dependency>
 	</dependencies>
 </project>

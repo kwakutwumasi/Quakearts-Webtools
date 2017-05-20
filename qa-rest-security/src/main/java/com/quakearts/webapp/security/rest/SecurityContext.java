@@ -11,10 +11,12 @@
 package com.quakearts.webapp.security.rest;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.Map;
 
 import javax.security.auth.Subject;
 
+import com.quakearts.webapp.security.auth.UserPrincipal;
 import com.quakearts.webapp.security.rest.exception.SecurityContextException;
 
 public final class SecurityContext implements Serializable {
@@ -59,7 +61,21 @@ public final class SecurityContext implements Serializable {
 	}
 
 	public String getIdentity() {
+		if(identity == null && subject != null){
+			try {
+				identity = subject.getPrincipals(UserPrincipal.class).iterator().next().getName();
+			} catch (NullPointerException e) {
+			}
+		}
 		return identity;
+	}
+	
+	public Principal getUserPrincipal(){
+		try {
+			return subject.getPrincipals(UserPrincipal.class).iterator().next();
+		} catch (NullPointerException e) {
+			return null;
+		}
 	}
 
 	String getCredentials() {
@@ -74,38 +90,31 @@ public final class SecurityContext implements Serializable {
 	void init(byte[] credentialData, String remoteHost,
 			int remotePort, Map<String, String> requestHeaders, String host, int port, String application,
 			String applicationContext) {
-		if(this.identity == null)
-			throw new SecurityContextException("Parameter 'identity' is required");
-		
-		if(this.identity != null){
-			this.credentialData = credentialData;
-			this.remoteHost = remoteHost;
-			this.remotePort = remotePort;
-			this.requestHeaders = requestHeaders;
-			this.host = host;
-			this.port = port;
-			this.application = application;
-			this.applicationContext = applicationContext;
-		}
+		this.credentialData = credentialData;
+		this.remoteHost = remoteHost;
+		this.remotePort = remotePort;
+		this.requestHeaders = requestHeaders;
+		this.host = host;
+		this.port = port;
+		this.application = application;
+		this.applicationContext = applicationContext;
 	}
 	
 	void init(String identity, String credentials, String remoteHost,
 			int remotePort, Map<String, String> requestHeaders, String host, int port, String application,
 			String applicationContext) {
-		if(this.identity == null)
+		if(identity == null)
 			throw new SecurityContextException("Parameter 'identity' is required");
 
-		if(this.identity != null){
-			this.identity = identity;
-			this.credentials = credentials;
-			this.remoteHost = remoteHost;
-			this.remotePort = remotePort;
-			this.requestHeaders = requestHeaders;
-			this.host = host;
-			this.port = port;
-			this.application = application;
-			this.applicationContext = applicationContext;
-		}
+		this.identity = identity;
+		this.credentials = credentials;
+		this.remoteHost = remoteHost;
+		this.remotePort = remotePort;
+		this.requestHeaders = requestHeaders;
+		this.host = host;
+		this.port = port;
+		this.application = application;
+		this.applicationContext = applicationContext;
 	}
 
 	public String getRemoteHost() {

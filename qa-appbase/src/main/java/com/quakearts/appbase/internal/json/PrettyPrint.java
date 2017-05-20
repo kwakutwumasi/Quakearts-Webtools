@@ -25,11 +25,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
 
-import com.quakearts.appbase.internal.json.JsonWriter;
-import com.quakearts.appbase.internal.json.PrettyPrint;
-import com.quakearts.appbase.internal.json.WriterConfig;
-
-
 /**
  * Enables human readable JSON output by inserting whitespace between values.after commas and
  * colons. Example:

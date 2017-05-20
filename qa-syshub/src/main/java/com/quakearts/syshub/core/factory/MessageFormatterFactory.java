@@ -68,10 +68,11 @@ public class MessageFormatterFactory {
     	messageFormatter = getInstance(module.getModuleClassName());
         messageFormatter.setupWithConfigurationParameters(parameters);
         messageFormatter.setAgentConfiguration(module.getAgentConfiguration().cloneById());
+        messageFormatter.setAgentModule(module.cloneById());
         
         if(module.getModuleName() != null && !module.getModuleName().trim().isEmpty()){
         	try {
-				SysHubUtils.getInitialContext().bind(FORMATTER+module.getModuleName(), this);
+				SysHubUtils.getInitialContext().bind(FORMATTER+module.getModuleName(), messageFormatter);
 			} catch (NamingException e) {
 	            throw new ConfigurationException("Unable to bind "+module.getModuleName()+" to context.");
 			}
@@ -79,4 +80,16 @@ public class MessageFormatterFactory {
         
         return messageFormatter;
     }
+    
+    public void unbindFromJNDI(AgentModule module){
+    	try {
+			MessageFormatter formatter = (MessageFormatter) SysHubUtils.getInitialContext().lookup(FORMATTER+module.getModuleName());
+			if(formatter != null){
+				SysHubUtils.getInitialContext().unbind(FORMATTER+module.getModuleName());
+				formatter.close();
+			}
+		} catch (NamingException e) {
+		}
+    }
+
 }

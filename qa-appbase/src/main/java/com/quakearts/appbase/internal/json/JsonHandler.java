@@ -21,9 +21,6 @@
  ******************************************************************************/
 package com.quakearts.appbase.internal.json;
 
-import com.quakearts.appbase.internal.json.JsonParser;
-import com.quakearts.appbase.internal.json.Location;
-
 /**
  * A handler for parser events. Instances of this class can be given to a {@link JsonParser}. The
  * parser will then call the methods of the given handler while reading the input.

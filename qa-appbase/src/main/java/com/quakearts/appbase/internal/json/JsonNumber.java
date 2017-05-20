@@ -23,11 +23,6 @@ package com.quakearts.appbase.internal.json;
 
 import java.io.IOException;
 
-import com.quakearts.appbase.internal.json.JsonNumber;
-import com.quakearts.appbase.internal.json.JsonValue;
-import com.quakearts.appbase.internal.json.JsonWriter;
-
-
 @SuppressWarnings("serial") // use default serial UID
 class JsonNumber extends JsonValue {
 

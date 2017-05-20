@@ -25,11 +25,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-import com.quakearts.appbase.internal.json.JsonHandler;
-import com.quakearts.appbase.internal.json.Location;
-import com.quakearts.appbase.internal.json.ParseException;
-
-
 /**
  * A streaming parser for JSON text. The parser reports all events to a given handler.
  */

@@ -96,7 +96,7 @@ public class ProcessingAgentBuilder {
 			case MESSENGER:
 				Messenger messenger = MessengerFactory.getFactory().getInstance(configuration.getAgentModuleConfigurationMap(agentModule),
 						agentModule);
-				if(agentModule.getMappedModuleName()!=null) {
+				if(agentModule.getMappedModuleName() != null && !agentModule.getMappedModuleName().trim().isEmpty()) {
 					MessageFormatter formatter = messageFormatters.get(agentModule.getMappedModuleName());
 					if(formatter == null)
 						throw new ConfigurationException("No messenger module named "+agentModule.getMappedModuleName()

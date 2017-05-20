@@ -37,7 +37,9 @@ public abstract class HibernateBean {
 			QueryOrder... orders) throws HibernateException {
 		Criteria query = session.createCriteria(clazz);
 		QueryContext context = new QueryContext(query);
-		handleParameters(parameters, context);
+		if(parameters != null)
+			handleParameters(parameters, context);
+		
 		if (orders != null) {
 			for (QueryOrder order : orders) {
 				if (order.isAscending())

@@ -106,10 +106,10 @@ public class AuthenticationFilter extends JAASAuthenticatorBase implements Filte
 						return;
 					}
 				}
-			} else if(httpRequest.getParameterMap().containsKey("j_username")
-					&& httpRequest.getParameterMap().containsKey("j_password")) {
-				String username = httpRequest.getParameter("j_username");
-				String password = httpRequest.getParameter("j_password");
+			} else if(httpRequest.getParameterMap().containsKey("qa_username")
+					&& httpRequest.getParameterMap().containsKey("qa_password")) {
+				String username = httpRequest.getParameter("qa_username");
+				String password = httpRequest.getParameter("qa_password");
 				
 				init(username, password, httpRequest.getRemoteAddr(), httpRequest.getRemotePort(),
 						buildHeaderMap(httpRequest), httpRequest.getLocalAddr(), httpRequest.getLocalPort(),
@@ -124,6 +124,8 @@ public class AuthenticationFilter extends JAASAuthenticatorBase implements Filte
 			} else if(requireAuthorization){
 				sendError(401, "{\"message\":\"Missing identity and credential parameters. Authentication required\"}", httpResponse);
 				return;
+			} else {
+				chain.doFilter( request, response);				
 			}
 			
 			chain.doFilter( new AuthenticationServletRequestWrapper(httpRequest), httpResponse);

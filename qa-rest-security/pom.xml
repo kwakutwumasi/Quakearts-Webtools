@@ -44,8 +44,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<properties>
-		<weld.se.version>2.4.2.Final</weld.se.version>
-		<tomcat.version>8.0.43</tomcat.version>
-	</properties>
 </project>

@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
-import com.quakearts.webapp.security.rest.RestUserPrincipal;
 import com.quakearts.webapp.security.rest.SecurityContext;
 import com.quakearts.webapp.security.rest.filter.AuthenticationFilter;
 
@@ -75,12 +74,7 @@ public final class AuthenticationServletRequestWrapper extends HttpServletReques
 	@Override
 	public Principal getUserPrincipal() {
 		SecurityContext context = SecurityContext.getSecurityContext();
-		
-		if(context.getIdentity()!=null)
-			return new RestUserPrincipal(context.getIdentity());
-		
-		else
-			return null;
+		return context.getUserPrincipal();
 	}
 	
 	@Override

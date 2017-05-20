@@ -83,7 +83,7 @@ public class ProcessingAgent {
 	private int maxFormatterMessengerWorkers = 5, formatterMessengerWorkersCreated;
 	private BlockingQueue<AgentWorker> agentWorkers;
 	private BlockingQueue<AgentDataSpoolerWorker> agentDataSpoolerWorkers = new ArrayBlockingQueue<>(maxDataSpoolerWorkers);
-	private BlockingQueue<AgentFormatterMessengerWorker> agentFormatterMessengerWorkers;
+	private BlockingQueue<AgentFormatterMessengerWorker> agentFormatterMessengerWorkers = new ArrayBlockingQueue<>(maxFormatterMessengerWorkers);
 	private int corePoolSize = 5, maximumPoolSize = 5, queueSize = 10;
     private long keepAliveTime = 60;
 	private SerializationUtil serializationUtil = SerializationUtil.getInstance();
@@ -178,7 +178,7 @@ public class ProcessingAgent {
 	
 	private synchronized AgentWorker getAnAgentWorker(DataSpooler dataSpooler){
 		AgentWorker worker;
-		if(agentWorkersCreated <= dataSpoolers.size()){
+		if(agentWorkersCreated < dataSpoolers.size()){
 			log.trace("No sub worker found in sub worker queue. Creating one...");
 			worker = new AgentWorker(dataSpooler);
 			if(log.isTraceEnabled())
@@ -250,13 +250,13 @@ public class ProcessingAgent {
 
 	private synchronized AgentDataSpoolerWorker getAnAgentDataSpoolerWorker(DataSpooler dataSpooler, Result result){
 		AgentDataSpoolerWorker worker;
-		if(dataSpoolerWorkersCreated <= maxDataSpoolerWorkers){
+		if(dataSpoolerWorkersCreated < maxDataSpoolerWorkers){
 			log.trace("No sub worker found in sub worker queue. Creating one...");
+			++dataSpoolerWorkersCreated;
 			worker = new AgentDataSpoolerWorker(dataSpooler, result);
 			if(log.isTraceEnabled())
 				log.trace("Added new agent sub worker. Hashcode:"+worker.hashCode());
 			
-			dataSpoolerWorkersCreated++;
 		} else {
 			try {
 				worker = agentDataSpoolerWorkers.take();
@@ -316,7 +316,7 @@ public class ProcessingAgent {
 			MessageFormatter messageFormatter, Messenger messenger,
 			Result result){
 		AgentFormatterMessengerWorker worker;
-		if(formatterMessengerWorkersCreated <= maxFormatterMessengerWorkers){
+		if(formatterMessengerWorkersCreated < maxFormatterMessengerWorkers){
 			log.trace("No base worker found in base worker queue. Creating one...");
 			worker = new AgentFormatterMessengerWorker(dataSpooler, messageFormatter, messenger, result);
 			if(log.isTraceEnabled())

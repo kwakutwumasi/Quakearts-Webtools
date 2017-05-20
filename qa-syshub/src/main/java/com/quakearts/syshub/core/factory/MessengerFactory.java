@@ -68,10 +68,11 @@ public class MessengerFactory {
     	messenger = getInstance(module.getModuleClassName());
         messenger.setupWithConfigurationParameters(parameters);
         messenger.setAgentConfiguration(module.getAgentConfiguration().cloneById());
-
+        messenger.setAgentModule(module.cloneById());
+        
         if(module.getModuleName() != null && !module.getModuleName().trim().isEmpty()){
         	try {
-				SysHubUtils.getInitialContext().bind(MESSENGER+module.getModuleName(), this);
+				SysHubUtils.getInitialContext().bind(MESSENGER+module.getModuleName(), messenger);
 			} catch (NamingException e) {
 	            throw new ConfigurationException("Unable to bind "+module.getModuleName()+" to context.");
 			}
@@ -79,4 +80,16 @@ public class MessengerFactory {
 
         return messenger;
     }
+    
+    public void unbindFromJNDI(AgentModule module){
+    	try {
+			Messenger messenger = (Messenger) SysHubUtils.getInitialContext().lookup(MESSENGER+module.getModuleName());
+			if(messenger != null){
+				SysHubUtils.getInitialContext().unbind(MESSENGER+module.getModuleName());
+				messenger.close();
+			}
+		} catch (NamingException e) {
+		}
+    }
+
 }

@@ -171,7 +171,7 @@ public final class BeanGenerator<T> extends GeneratorBase<T> {
 
 	private Tuple<PropertyDescriptor, Generator<?>> tupleForReplacing;
 	
-	public BeanGenerator<T> replace(String field){
+	public BeanGenerator<T> replaceGeneratorFor(String field){
 		if(generatorSet.size()==0)
 			throw new GeneratorException("Bean Generator has not been initiated");
 		

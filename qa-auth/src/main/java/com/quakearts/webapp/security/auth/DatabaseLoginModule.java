@@ -49,7 +49,7 @@ public class DatabaseLoginModule implements LoginModule {
 	private Map options;
 	private boolean loginOk = false, use_first_pass = false,
 			load_profile_only = false, require_password_change = false,
-			change_password = false;
+			change_password = false, useHash = true;
 	private String rolesgrpname, dsjndiname, authenticationquery, rolesquery,
 			hashalgorithm, rolescolumns, salt, changePasswordRole,
 			defaultPassword;
@@ -106,11 +106,14 @@ public class DatabaseLoginModule implements LoginModule {
 			try {
 				iterations = Integer.parseInt(iterationsValue.toString());
 			} catch (Exception e) {
-				log.log(Level.SEVERE,"Invalid value for hash_interations. Using default",
-						e);
+				log.log(Level.SEVERE,"Invalid value for hash_interations. Using default", e);
 				iterations = 10;
 			}
 
+		if(options.containsKey("database.usehash"))//Backwards compatibility
+			useHash = Boolean.parseBoolean((String) options
+					.get("database.usehash"));
+		
 		if (rolesgrpname == null)
 			rolesgrpname = new String("Roles");
 
@@ -249,12 +252,16 @@ public class DatabaseLoginModule implements LoginModule {
 				if (username == null || password == null)
 					throw new LoginException("Username/Password is null.");
 				String passwordhash;
-				HashPassword hash = new HashPassword(new String(password),
-						hashalgorithm, iterations, salt
-							+(usernameAsSalt?username:""));
-
-				passwordhash = hash.toString();
-
+				if(useHash){
+					HashPassword hash = new HashPassword(new String(password),
+							hashalgorithm, iterations, salt
+								+(usernameAsSalt?username:""));
+	
+					passwordhash = hash.toString();
+				} else {
+					passwordhash = new String(password);
+				}
+				
 				if (passwordhash == null)
 					throw new DirectoryLoginException("Error logging in.");
 

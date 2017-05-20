@@ -40,7 +40,7 @@ public class AgentTriggerFactory {
 			}
 			
 			((AgentTrigger) instanceObj).setupWithConfigurationParameters(parameters);
-			
+			((AgentTrigger) instanceObj).registerRunAgentListener(listener);
 			return (AgentTrigger) instanceObj;
 		} catch (ClassNotFoundException | IllegalArgumentException e) {
 			throw new ConfigurationException("Error starting trigger: "+e.getMessage(), e);

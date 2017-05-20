@@ -23,11 +23,6 @@ package com.quakearts.appbase.internal.json;
 
 import java.io.Writer;
 
-import com.quakearts.appbase.internal.json.JsonWriter;
-import com.quakearts.appbase.internal.json.PrettyPrint;
-import com.quakearts.appbase.internal.json.WriterConfig;
-
-
 /**
  * Controls the formatting of the JSON output. Use one of the available constants.
  */

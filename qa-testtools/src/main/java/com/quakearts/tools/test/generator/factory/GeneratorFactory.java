@@ -73,14 +73,8 @@ public final class GeneratorFactory {
 				|| clazz.isEnum();
 	}
 	
-	@SuppressWarnings("unchecked")
 	public <T> T generate(Class<T> clazz){
-		Generator<T> generator = (Generator<T>) MAP.get(clazz);
-		if(generator==null){
-			generator = new BeanGenerator<>(clazz);
-			MAP.put(clazz, generator);
-		}
-		return generator.generateRandom();
+		return getGenerator(clazz).generateRandom();
 	}
 	
 	

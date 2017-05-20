@@ -44,7 +44,6 @@ public class TriggeredAgentRunner implements Runnable, AgentRunner, RunAgentList
 			throw new ConfigurationException("Missing parameter. trigger.class not found");
 		
 		trigger = AgentTriggerFactory.getInstance().createAgentTrigger(triggerClassName, this, parameters);
-		trigger.setupWithConfigurationParameters(parameters);
 		restart();
 	}
 

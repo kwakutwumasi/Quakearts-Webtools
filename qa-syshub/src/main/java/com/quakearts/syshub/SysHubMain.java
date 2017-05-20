@@ -24,6 +24,9 @@ import com.quakearts.appbase.cdi.annotation.TransactionParticipant;
 import com.quakearts.appbase.cdi.annotation.TransactionParticipant.TransactionType;
 import com.quakearts.syshub.agent.ProcessingAgent;
 import com.quakearts.syshub.agent.builder.ProcessingAgentBuilder;
+import com.quakearts.syshub.core.factory.DataSpoolerFactory;
+import com.quakearts.syshub.core.factory.MessageFormatterFactory;
+import com.quakearts.syshub.core.factory.MessengerFactory;
 import com.quakearts.syshub.core.runner.AgentRunner;
 import com.quakearts.syshub.core.runner.impl.LoopedAgentRunner;
 import com.quakearts.syshub.core.runner.impl.ScheduledAgentRunner;
@@ -31,6 +34,7 @@ import com.quakearts.syshub.core.runner.impl.TriggeredAgentRunner;
 import com.quakearts.syshub.core.utils.SystemDataStoreUtils;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.model.AgentConfiguration;
+import com.quakearts.syshub.model.AgentModule;
 import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
 
 @Singleton
@@ -89,18 +93,24 @@ public class SysHubMain implements SysHub {
 	@Override
 	public void deployAgent(AgentConfiguration agentConfiguration) throws ConfigurationException{
 		ProcessingAgentBuilder builder = new ProcessingAgentBuilder(agentConfiguration);
-		ProcessingAgent agent = builder.build();
+		ProcessingAgent agent; 
 		AgentRunner agentRunner = null;
-		switch (agentConfiguration.getType()) {
-			case LOOPED:
-				agentRunner = new LoopedAgentRunner(agent);
-				break;
-			case SCHEDULED:
-				agentRunner = new ScheduledAgentRunner(agent, agentConfiguration.getAgentConfigurationMap());
-				break;
-			case TRIGGERED:
-				agentRunner = new TriggeredAgentRunner(agent, agentConfiguration.getAgentConfigurationMap());
-				break;
+		try {
+			agent = builder.build();
+			switch (agentConfiguration.getType()) {
+				case LOOPED:
+					agentRunner = new LoopedAgentRunner(agent);
+					break;
+				case SCHEDULED:
+					agentRunner = new ScheduledAgentRunner(agent, agentConfiguration.getAgentConfigurationMap());
+					break;
+				case TRIGGERED:
+					agentRunner = new TriggeredAgentRunner(agent, agentConfiguration.getAgentConfigurationMap());
+					break;
+			}
+		} catch (ConfigurationException e) {
+			undeployAgent(agentConfiguration);
+			throw e;
 		}
 		
 		if(agentRunner == null)
@@ -114,10 +124,35 @@ public class SysHubMain implements SysHub {
 	 */
 	@Override
 	public void undeployAgent(AgentConfiguration agentConfiguration){
+		if(agentConfiguration == null)
+			return;
+			
 		AgentRunner agentRunner = agentRunners.get(agentConfiguration.getAgentName());
-		agentRunner.shutdown();
+		if(agentRunner != null){
+			agentRunner.shutdown();
+			agentRunners.remove(agentConfiguration.getAgentName());
+		}
 		
-		agentRunners.remove(agentConfiguration.getAgentName());
+		for(AgentModule module:agentConfiguration.getAgentModules()){
+			try {				
+				switch (module.getModuleType()) {
+				case DATASPOOLER:
+					DataSpoolerFactory.getFactory().unbindFromJNDI(module);
+					break;
+				case FORMATTER:
+					MessageFormatterFactory.getFactory().unbindFromJNDI(module);
+					break;
+				case MESSENGER:
+					MessengerFactory.getFactory().unbindFromJNDI(module);
+					break;
+				default:
+					break;
+				}
+			} catch (Throwable e) {
+				Main.log.error("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()
+						+ ". Exception occured whiles undeploying "+module.getModuleName()+" for agent "+agentConfiguration.getAgentName());
+			}
+		}
 	}
 	
 	/* (non-Javadoc)

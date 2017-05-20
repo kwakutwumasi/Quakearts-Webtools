@@ -68,7 +68,8 @@ public class DataSpoolerFactory {
         dataSpooler = getInstance(module.getModuleClassName());
         dataSpooler.setupWithConfigurationParameters(parameters);
         dataSpooler.setAgentConfiguration(module.getAgentConfiguration().cloneById());
-
+        dataSpooler.setAgentModule(module);
+        
         if(module.getModuleName() != null && !module.getModuleName().trim().isEmpty()){
         	try {
 				SysHubUtils.getInitialContext().bind(SPOOLER+module.getModuleName(), dataSpooler);
@@ -79,4 +80,17 @@ public class DataSpoolerFactory {
         
         return dataSpooler;
     }
+    
+    
+    public void unbindFromJNDI(AgentModule module){
+    	try {
+			DataSpooler dataSpooler = (DataSpooler) SysHubUtils.getInitialContext().lookup(SPOOLER+module.getModuleName());
+			if(dataSpooler != null){
+				SysHubUtils.getInitialContext().unbind(SPOOLER+module.getModuleName());
+				dataSpooler.close();
+			}
+		} catch (NamingException e) {
+		}
+    }
+
 }

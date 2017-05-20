@@ -24,7 +24,7 @@ import javax.ws.rs.core.Response;
 import com.quakearts.webapp.security.rest.SecurityContext;
 import com.quakearts.webapp.security.rest.exception.SecurityContextException;
 
-@RequireAuthorization @Interceptor
+@Interceptor @RequireAuthorization
 @Priority(Interceptor.Priority.APPLICATION)
 public class AuthorizationInterceptor {
 
