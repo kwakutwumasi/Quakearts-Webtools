@@ -11,6 +11,7 @@
 package com.quakearts.webapp.security.util;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
@@ -18,6 +19,8 @@ import java.net.URLDecoder;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+
+import com.quakearts.webapp.security.jwt.internal.Base64;
 
 public class UtilityMethods {
 
@@ -55,5 +58,40 @@ public class UtilityMethods {
 
 	public static InitialContext getInitialContext() {
 		return icx;
-	}	
+	}
+	
+	public static String base64EncodeWithoutPadding(byte[] toEncode) throws IOException{
+		String encoded = Base64.encodeBytes(toEncode, Base64.URL_SAFE);
+		if(encoded.endsWith("=") || encoded.endsWith("==")){
+			return encoded.substring(0, encoded.indexOf("="));
+		}
+		
+		return encoded;
+	}
+	
+	public static String base64DecodeMissingPadding(String toDecode) throws IOException{
+		return Base64.decode(pad(toDecode), Base64.URL_SAFE);
+	}
+
+	private static String pad(String toDecode){
+		if(toDecode.length() % 4 != 0){
+			switch (toDecode.length() % 4) {
+			case 3:
+				toDecode+="=";
+				break;
+			case 2:
+				toDecode+="==";				
+				break;
+			default:
+				break;
+			}
+		}
+		
+		return toDecode;
+	}
+	
+	public static byte[] base64DecodeMissingPaddingToBytes(String toDecode) throws IOException{
+		return Base64.decodeToBytes(pad(toDecode), Base64.URL_SAFE);
+	}
 }
+

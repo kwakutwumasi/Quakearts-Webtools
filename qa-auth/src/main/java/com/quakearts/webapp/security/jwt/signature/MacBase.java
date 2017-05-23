@@ -1,4 +1,4 @@
-package com.quakearts.webapp.security.jwt.impl;
+package com.quakearts.webapp.security.jwt.signature;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;

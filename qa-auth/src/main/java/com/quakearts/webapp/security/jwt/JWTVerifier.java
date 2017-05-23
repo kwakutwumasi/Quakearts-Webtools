@@ -4,4 +4,6 @@ import javax.security.auth.login.LoginException;
 
 public interface JWTVerifier extends JWTBase {
 	void verify(byte[] token) throws LoginException;
+	JWTHeader getHeader();
+	JWTClaims getClaims();
 }

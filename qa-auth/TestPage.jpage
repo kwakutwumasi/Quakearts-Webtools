@@ -1,0 +1,2 @@
+for(String parts:"one:".split(":", 2))
+	System.out.println("'"+parts+"'");

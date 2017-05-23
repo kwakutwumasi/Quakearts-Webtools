@@ -17,11 +17,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class KeystoreKeyPairProvider {
-	private static Map<String, KeyPair> loadedKeyPairs = new ConcurrentHashMap<>();
+	private static Map<String, PrivateKeyEntry> loadedKeyPairs = new ConcurrentHashMap<>();
 	private String file;
 	private String storeType;
 	private char[] password;
-	
+
 	public String getFile() {
 		return file;
 	}
@@ -49,32 +49,33 @@ public abstract class KeystoreKeyPairProvider {
 		return this;
 	}
 
-	public KeyPair getKeyPair(String alias) throws InvalidKeyException, 
-		KeyStoreException, NoSuchAlgorithmException,
-		CertificateException, UnrecoverableEntryException {
-		if(loadedKeyPairs.containsKey(alias)){
-			return loadedKeyPairs.get(alias);
+	public KeyPair getKeyPair(String alias) throws InvalidKeyException, KeyStoreException, NoSuchAlgorithmException,
+			CertificateException, UnrecoverableEntryException {
+		PrivateKeyEntry entry;
+		if (loadedKeyPairs.containsKey(file + ":" + alias)) {
+			entry = loadedKeyPairs.get(file + ":" + alias);
 		} else {
-			KeyPair keyPair = loadKeyPair(file, storeType, alias, password);
-			loadedKeyPairs.put(alias, keyPair);
-			return keyPair;
+			entry = loadKeyPair(file, storeType, alias, password);
+			loadedKeyPairs.put(file + ":" + alias, entry);
 		}
+		validateKeyType(entry);
+		return new KeyPair(entry.getCertificate().getPublicKey(), entry.getPrivateKey());
 	}
-	
-	private KeyPair loadKeyPair(String file, String storeType, String alias, char[] password)
-			throws InvalidKeyException, KeyStoreException, NoSuchAlgorithmException, CertificateException, 
+
+	private PrivateKeyEntry loadKeyPair(String file, String storeType, String alias, char[] password)
+			throws InvalidKeyException, KeyStoreException, NoSuchAlgorithmException, CertificateException,
 			UnrecoverableEntryException {
 		try (InputStream in = getFile(file)) {
 			KeyStore keyStore = KeyStore.getInstance(storeType);
 			keyStore.load(in, password);
-			
+
 			Entry entry = keyStore.getEntry(alias, new KeyStore.PasswordProtection(password));
-			if(entry instanceof PrivateKeyEntry){
-				PrivateKeyEntry privateKeyEntry  = (PrivateKeyEntry) entry;
-				validateKeyType(privateKeyEntry);
-				return new KeyPair(privateKeyEntry.getCertificate().getPublicKey(), privateKeyEntry.getPrivateKey());
+			if (entry instanceof PrivateKeyEntry) {
+				PrivateKeyEntry privateKeyEntry = (PrivateKeyEntry) entry;
+				return privateKeyEntry;
 			} else {
-				throw new InvalidKeyException("Alias "+alias+" in file " + file+" is not a valid PrivateKeyEntry");
+				throw new InvalidKeyException(
+						"Alias " + alias + " in file " + file + " is not a valid PrivateKeyEntry");
 			}
 		} catch (IOException e) {
 			throw new InvalidKeyException("Unable to load file: " + file, e);
@@ -92,5 +93,20 @@ public abstract class KeystoreKeyPairProvider {
 				throw new InvalidKeyException("Unable to load file: " + file, e);
 			return in;
 		}
+	}
+
+	protected void validatePrivateKeyEntry(String algorithm, PrivateKeyEntry privateKeyEntry)
+			throws InvalidKeyException {
+		if (privateKeyEntry == null)
+			throw new InvalidKeyException("PrivateKeyEntry is null");
+
+		if (privateKeyEntry.getCertificate() == null)
+			throw new InvalidKeyException("PrivateKeyEntry.getCertificate() is null");
+
+		if (privateKeyEntry.getCertificate().getPublicKey() == null)
+			throw new InvalidKeyException("PrivateKeyEntry.getCertificate().getPublicKey() is null");
+
+		if (!algorithm.equals(privateKeyEntry.getCertificate().getPublicKey().getAlgorithm()))
+			throw new InvalidKeyException("Key is not a valid " + algorithm + " key");
 	}
 }
