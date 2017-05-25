@@ -56,14 +56,14 @@ public class TestKeystoreOperations {
 		
 		KeyPair keyPair = provider.getKeyPair("testrsakey");
 		
-		assertThat(keyPair, is(not(null)));
-		assertThat(keyPair.getPrivate(), is(not(null)));
-		assertThat(keyPair.getPublic(), is(not(null)));
+		assertThat(keyPair != null, is(true));
+		assertThat(keyPair.getPrivate() != null, is(true));
+		assertThat(keyPair.getPublic() != null, is(true));
 		
 		assertThat(RSAPrivateKey.class.isAssignableFrom(keyPair.getPrivate().getClass()), is(true));
 		assertThat(RSAPublicKey.class.isAssignableFrom(keyPair.getPublic().getClass()), is(true));
 		
-		assertThat(((RSAPublicKey)keyPair.getPublic()).getModulus().bitCount(), is(2048));
+		assertThat(((RSAPublicKey)keyPair.getPublic()).getModulus().bitLength(), is(2048));
 	}
 		
 	@Test
@@ -76,14 +76,14 @@ public class TestKeystoreOperations {
 		
 		KeyPair keyPair = provider.getKeyPair("testeckey");
 		
-		assertThat(keyPair, is(not(null)));
-		assertThat(keyPair.getPrivate(), is(not(null)));
-		assertThat(keyPair.getPublic(), is(not(null)));
+		assertThat(keyPair != null, is(true));
+		assertThat(keyPair.getPrivate() != null, is(true));
+		assertThat(keyPair.getPublic() != null, is(true));
 		
 		assertThat(ECPrivateKey.class.isAssignableFrom(keyPair.getPrivate().getClass()), is(true));
 		assertThat(ECPublicKey.class.isAssignableFrom(keyPair.getPublic().getClass()), is(true));
 		
-		assertThat(((ECPublicKey)keyPair.getPublic()).getParams().getOrder().bitCount(), is(256));
+		assertThat(((ECPublicKey)keyPair.getPublic()).getParams().getOrder().bitLength(), is(256));
 		
 		provider = new ECKeystoreKeyPairProvider(ECDSAKeySize.ES384KEY);
 
@@ -93,14 +93,14 @@ public class TestKeystoreOperations {
 		
 		keyPair = provider.getKeyPair("testeckey384");
 		
-		assertThat(keyPair, is(not(null)));
-		assertThat(keyPair.getPrivate(), is(not(null)));
-		assertThat(keyPair.getPublic(), is(not(null)));
+		assertThat(keyPair != null, is(true));
+		assertThat(keyPair.getPrivate() != null, is(true));
+		assertThat(keyPair.getPublic() != null, is(true));
 		
 		assertThat(ECPrivateKey.class.isAssignableFrom(keyPair.getPrivate().getClass()), is(true));
 		assertThat(ECPublicKey.class.isAssignableFrom(keyPair.getPublic().getClass()), is(true));
 		
-		assertThat(((ECPublicKey)keyPair.getPublic()).getParams().getOrder().bitCount(), is(384));
+		assertThat(((ECPublicKey)keyPair.getPublic()).getParams().getOrder().bitLength(), is(384));
 		
 		provider = new ECKeystoreKeyPairProvider(ECDSAKeySize.ES512KEY);
 
@@ -110,14 +110,14 @@ public class TestKeystoreOperations {
 		
 		keyPair = provider.getKeyPair("testeckey512");
 		
-		assertThat(keyPair, is(not(null)));
-		assertThat(keyPair.getPrivate(), is(not(null)));
-		assertThat(keyPair.getPublic(), is(not(null)));
+		assertThat(keyPair != null, is(true));
+		assertThat(keyPair.getPrivate() != null, is(true));
+		assertThat(keyPair.getPublic() != null, is(true));
 		
 		assertThat(ECPrivateKey.class.isAssignableFrom(keyPair.getPrivate().getClass()), is(true));
 		assertThat(ECPublicKey.class.isAssignableFrom(keyPair.getPublic().getClass()), is(true));
 		
-		assertThat(((ECPublicKey)keyPair.getPublic()).getParams().getOrder().bitCount(), is(521));
+		assertThat(((ECPublicKey)keyPair.getPublic()).getParams().getOrder().bitLength(), is(521));
 		
 		try {
 			provider = new ECKeystoreKeyPairProvider(ECDSAKeySize.ES256KEY);

@@ -208,6 +208,13 @@ public class OrmDataStoreTest {
 					.add("product.brand.name", "Audi").build());
 
 			assertThat("Failed to list disjoint with subcriteria", salesParts.size(), is(2));
+
+			salesParts = dataStore.list(SalesPart.class, createParameters().disjoin().add("product.name", "Altima")
+					.add("product.id", 2)
+					.add("product.brand.name", "Audi")
+					.add("product.brand.id", 1).build());
+
+			assertThat("Failed to list disjoint with subcriteria", salesParts.size(), is(3));
 		} catch (DataStoreException e) {
 			fail("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage());
 		}

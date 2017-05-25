@@ -110,15 +110,22 @@ public abstract class HibernateBean {
 	
 	private String handleKey(String key, QueryContext context){
 		if(key.indexOf(".")!=-1){
-			String[] keyParts = key.split("\\.");			
-			if(!context.getKeys().contains(key)){
+			String[] keyParts = key.split("\\.");
+			StringBuilder aliasBuilder = new StringBuilder();
+
+			aliasBuilder.append(keyParts.length);
+			
+			for(int index=0;index < keyParts.length-1; index++)
+				aliasBuilder.append(".").append(keyParts.length);
+			
+			if(!context.getKeys().contains(aliasBuilder.toString())){
 				StringBuilder associationPathBuilder = new StringBuilder(keyParts[0]);
 				for(int index=1;index<keyParts.length-1; index++){
 					associationPathBuilder.append(".").append(keyParts[index]);
 				}
 				context.getQuery().createCriteria(associationPathBuilder.toString(), 
 						keyParts[keyParts.length-2]);
-				context.getKeys().add(key);
+				context.getKeys().add(aliasBuilder.toString());
 			}
 			
 			return keyParts[keyParts.length-2]+"."+keyParts[keyParts.length-1];

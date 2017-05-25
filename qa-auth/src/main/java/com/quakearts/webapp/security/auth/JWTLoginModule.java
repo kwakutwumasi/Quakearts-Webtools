@@ -37,7 +37,7 @@ public class JWTLoginModule implements LoginModule {
 	private static final String AUDIENCEPARAMETER = "audience";
 	private static final String ALGORITHMPARAMETER = "algorithm";
 	private boolean loginOk;
-	private Map<String, ?> sharedState;
+	private Map<String, Object> sharedState;
 	private Subject subject;
 	private CallbackHandler callbackHandler;
 	private AuthenticationMode authenticationMode;
@@ -59,12 +59,13 @@ public class JWTLoginModule implements LoginModule {
 		VERIFY, GENERATE
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
 			Map<String, ?> options) {
 		this.subject = subject;
 		this.callbackHandler = callbackHandler;
-		this.sharedState = sharedState;
+		this.sharedState = (Map<String, Object>) sharedState;
 		this.options = options;
 
 		if (options.containsKey(ALGORITHMPARAMETER))
@@ -199,6 +200,9 @@ public class JWTLoginModule implements LoginModule {
 						loginOk = false;
 						return loginOk;
 					}
+					
+					sharedState.put("javax.security.auth.login.name", claims.getSubject());
+					sharedState.put("com.quakearts.LoginOk", loginOk);
 				}
 			} catch (IOException | UnsupportedCallbackException e) {
 				return loginOk;

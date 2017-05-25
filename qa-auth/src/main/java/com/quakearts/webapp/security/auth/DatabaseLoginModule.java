@@ -40,6 +40,23 @@ import com.quakearts.webapp.security.util.UtilityMethods;
 import java.util.Iterator;
 
 public class DatabaseLoginModule implements LoginModule {
+	private static final String LOCKOUT_TIME = "lockout_time";
+	public static final String MAX_TRY_ATTEMPTS = "max_try_attempts";
+	public static final String DATABASE_USEHASH = "database.usehash";
+	public static final String HASH_ITERATIONS = "hash_iterations";
+	public static final String SALT_VALUE = "salt_value";
+	public static final String DEFAULT_PASSWORD = "default_password";
+	public static final String CHANGE_PASSWORD_ROLE = "change_password_role";
+	public static final String USERNAME_AS_SALT = "username_as_salt";
+	public static final String REQUIRE_PASSWORD_CHANGE = "require_password_change";
+	public static final String RESULT_ORIENTATION_POTRAIT = "result_orientation_potrait";
+	public static final String DATABASE_DEFAULTROLES = "database.defaultroles";
+	public static final String HASH_ALGORITHM = "hash_algorithm";
+	public static final String DATABASE_ROLESCOLUMNS = "database.rolescolumns";
+	public static final String DATABASE_ROLESQUERY = "database.rolesquery";
+	public static final String DATABASE_AUTHENTICATIONQUERY = "database.authenticationquery";
+	public static final String DATABASE_JNDINAME = "database.jndiname";
+	public static final String DATABASE_ROLENAME = "database.rolename";
 	private Subject subject;
 	private Group rolesgrp;
 	private CallbackHandler callbackHandler;
@@ -48,7 +65,7 @@ public class DatabaseLoginModule implements LoginModule {
 	@SuppressWarnings({ "rawtypes", "unused" })
 	private Map options;
 	private boolean loginOk = false, use_first_pass = false,
-			load_profile_only = false, require_password_change = false,
+			load_profile_only = false, requirePasswordChange = false,
 			change_password = false, useHash = true;
 	private String rolesgrpname, dsjndiname, authenticationquery, rolesquery,
 			hashalgorithm, rolescolumns, salt, changePasswordRole,
@@ -72,36 +89,36 @@ public class DatabaseLoginModule implements LoginModule {
 		this.callbackHandler = callbackHandler;
 		this.sharedState = sharedState;
 		this.options = options;
-		rolesgrpname = (String) options.get("database.rolename");
-		dsjndiname = (String) options.get("database.jndiname");
+		rolesgrpname = (String) options.get(DATABASE_ROLENAME);
+		dsjndiname = (String) options.get(DATABASE_JNDINAME);
 		authenticationquery = (String) options
-				.get("database.authenticationquery");
-		rolesquery = (String) options.get("database.rolesquery");
-		rolescolumns = (String) options.get("database.rolescolumns");
-		hashalgorithm = (String) options.get("database.hashalgorithm");
-		String defaultroles_str = (String) options.get("database.defaultroles");
+				.get(DATABASE_AUTHENTICATIONQUERY);
+		rolesquery = (String) options.get(DATABASE_ROLESQUERY);
+		rolescolumns = (String) options.get(DATABASE_ROLESCOLUMNS);
+		hashalgorithm = (String) options.get(HASH_ALGORITHM);
+		String defaultroles_str = (String) options.get(DATABASE_DEFAULTROLES);
 
 		resOrientPort = Boolean.parseBoolean((String) options
-				.get("result_orientation_potrait"));
-		require_password_change = Boolean.parseBoolean((String) options
-				.get("require_password_change"));
+				.get(RESULT_ORIENTATION_POTRAIT));
+		requirePasswordChange = Boolean.parseBoolean((String) options
+				.get(REQUIRE_PASSWORD_CHANGE));
 
 		usernameAsSalt = Boolean.parseBoolean((String) options
-				.get("username_as_salt"));
+				.get(USERNAME_AS_SALT));
 		
-		if (require_password_change) {
-			changePasswordRole = (String) options.get("changePasswordRole");
-			defaultPassword = (String) options.get("defaultPassword");
+		if (requirePasswordChange) {
+			changePasswordRole = (String) options.get(CHANGE_PASSWORD_ROLE);
+			defaultPassword = (String) options.get(DEFAULT_PASSWORD);
 		}
 
-		require_password_change = require_password_change
+		requirePasswordChange = requirePasswordChange
 				&& (changePasswordRole != null) && (defaultPassword != null);
 
-		salt = (String) options.get("salt_value");
+		salt = (String) options.get(SALT_VALUE);
 		if (salt == null)
 			salt = HashPassword.DEFAULT_SALT;
 
-		Object iterationsValue = options.get("hash_iterations");
+		Object iterationsValue = options.get(HASH_ITERATIONS);
 		if (iterationsValue != null)
 			try {
 				iterations = Integer.parseInt(iterationsValue.toString());
@@ -110,9 +127,9 @@ public class DatabaseLoginModule implements LoginModule {
 				iterations = 10;
 			}
 
-		if(options.containsKey("database.usehash"))//Backwards compatibility
+		if(options.containsKey(DATABASE_USEHASH))//Backwards compatibility
 			useHash = Boolean.parseBoolean((String) options
-					.get("database.usehash"));
+					.get(DATABASE_USEHASH));
 		
 		if (rolesgrpname == null)
 			rolesgrpname = new String("Roles");
@@ -129,8 +146,8 @@ public class DatabaseLoginModule implements LoginModule {
 		load_profile_only = Boolean.parseBoolean((String) options
 				.get("load_profile_only"));
 
-		String maxAttempts_str = (String) options.get("max_try_attempts");
-		String lockoutTime_str = (String) options.get("lockout_time");
+		String maxAttempts_str = (String) options.get(MAX_TRY_ATTEMPTS);
+		String lockoutTime_str = (String) options.get(LOCKOUT_TIME);
 
 		if (maxAttempts_str == null && lockoutTime_str == null) {
 			checker = AttemptChecker.getChecker(dsjndiname);
@@ -282,7 +299,7 @@ public class DatabaseLoginModule implements LoginModule {
 					throw new LoginException("Invalid Password.");
 				}
 
-				if (require_password_change) {					
+				if (requirePasswordChange) {					
 					if (new String(password).equals(defaultPassword)) {
 						change_password = true;
 						sharedState.put("com.quakearts.ChangePassword",
