@@ -153,9 +153,10 @@ public class JWTLoginModule implements LoginModule {
 	public boolean login() throws LoginException {
 		if (sharedState != null) {
 			log.fine("Using first pass....");
-			Object usernameObject = sharedState.get("javax.security.auth.login.name");
-			if(usernameObject != null)
-				username = usernameObject.toString();
+			Object loginDN_val = sharedState
+					.get("javax.security.auth.login.name");
+			username = (loginDN_val != null && loginDN_val instanceof Principal) ? ((Principal) loginDN_val)
+					.getName() : null;
 				
 			Object loginOkObject = sharedState.get("com.quakearts.LoginOk");
 			loginOk = (loginOkObject == null ? false : (Boolean) (loginOkObject));
