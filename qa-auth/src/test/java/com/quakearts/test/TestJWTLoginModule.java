@@ -32,7 +32,7 @@ public class TestJWTLoginModule {
 		options.put("algorithm", "HS256");
 		options.put("secret", "616161");
 		
-		sharedState.put("javax.security.auth.login.name", "test@quakearts.com");
+		sharedState.put("javax.security.auth.login.name", new UserPrincipal("test@quakearts.com"));
 		sharedState.put("com.quakearts.LoginOk", Boolean.TRUE);
 		
 		module.initialize(subject, (c)->{}, sharedState, options);
@@ -79,7 +79,7 @@ public class TestJWTLoginModule {
 		
 		Map<String, Object> options = new HashMap<>(), sharedState = new HashMap<>();
 
-		sharedState.put("javax.security.auth.login.name", "test@quakearts.com");
+		sharedState.put("javax.security.auth.login.name", new UserPrincipal("test@quakearts.com"));
 		sharedState.put("com.quakearts.LoginOk", Boolean.TRUE);
 		
 		options.put("issuer", "https://test.quakearts.com");
