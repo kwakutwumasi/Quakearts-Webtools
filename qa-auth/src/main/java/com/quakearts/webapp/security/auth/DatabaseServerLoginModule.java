@@ -198,10 +198,9 @@ public class DatabaseServerLoginModule implements LoginModule {
 					UserPrincipal shareduser = new UserPrincipal(username);
 					sharedState.put("javax.security.auth.login.name",
 							shareduser);
-					char[] sharedpass = new String(password).toCharArray();
+					char[] sharedpass = password;
 					sharedState.put("javax.security.auth.login.password",
-							sharedpass);
-				}
+							sharedpass);				}
 			}
 			if (username == null || password == null)
 				throw new LoginException("Login/Password is null.");
@@ -250,9 +249,6 @@ public class DatabaseServerLoginModule implements LoginModule {
 							for (String role : roles) {
 								userprof.put(role, rs.getString(role));
 							}
-						} else {
-							throw new LoginException(
-									"No profile found for " + username);
 						}
 					} else {
 						if (rs.next()) {
@@ -262,9 +258,6 @@ public class DatabaseServerLoginModule implements LoginModule {
 								userprof.put("" + (i++), rs.getString(rolescolumns));
 							} while (rs.next());
 							log.fine("Got roles: " + userprof);
-						} else {
-							throw new DirectoryLoginException(
-									"No profile found for " + username);
 						}
 					}
 					rs.close();

@@ -200,8 +200,10 @@ public class JWTLoginModule implements LoginModule {
 						loginOk = false;
 						return loginOk;
 					}
-					
-					sharedState.put("javax.security.auth.login.name", claims.getSubject());
+					log.fine("Storing state....");
+					UserPrincipal shareduser = new UserPrincipal(claims.getSubject());
+					sharedState.put("javax.security.auth.login.name",
+							shareduser);
 					sharedState.put("com.quakearts.LoginOk", loginOk);
 				}
 			} catch (IOException | UnsupportedCallbackException e) {

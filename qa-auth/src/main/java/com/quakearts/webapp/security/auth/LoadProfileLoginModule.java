@@ -36,13 +36,21 @@ import com.quakearts.webapp.security.util.UtilityMethods;
 import java.util.Iterator;
 
 public class LoadProfileLoginModule implements LoginModule{ 
-    private Subject subject;
+    public static final String CHANGE_PASSWORD_ROLEPARAMETER = "change_password_role";
+	public static final String REQUIRE_PASSWORD_CHANGEPARAMETER = "require_password_change";
+	public static final String RESULT_ORIENTATION_POTRAITPARAMETER = "result_orientation_potrait";
+	public static final String DATABASE_DEFAULTROLESPARAMETER = "database.defaultroles";
+	public static final String DATABASE_ROLESCOLUMNSPARAMETER = "database.rolescolumns";
+	public static final String DATABASE_ROLESQUERYPARAMETER = "database.rolesquery";
+	public static final String DATABASE_JNDINAMEPARAMETER = "database.jndiname";
+	public static final String DATABASE_ROLENAMEPARAMETER = "database.rolename";
+	private Subject subject;
     private Group rolesgrp;
     @SuppressWarnings("rawtypes")
 	private Map sharedState;
     @SuppressWarnings({ "rawtypes", "unused" })
 	private Map options;
-    private boolean loginOk=false, require_password_change=false, change_password=false;
+    private boolean loginOk=false, requirePasswordChange=false, change_password=false;
     private String rolesgrpname, dsjndiname, rolesquery, rolescolumns, changePasswordRole;
     private String[] defaultroles=null;
     private HashMap<String,String> userprof = new HashMap<String,String>();
@@ -59,21 +67,21 @@ public class LoadProfileLoginModule implements LoginModule{
         this.subject = subject;
         this.sharedState = sharedState;
         this.options = options;
-        rolesgrpname = (String) options.get("database.rolename");
-        dsjndiname = (String) options.get("database.jndiname");
-        rolesquery = (String) options.get("database.rolesquery");
-        rolescolumns = (String) options.get("database.rolescolumns");
-        String defaultroles_str = (String) options.get("database.defaultroles");
+        rolesgrpname = (String) options.get(DATABASE_ROLENAMEPARAMETER);
+        dsjndiname = (String) options.get(DATABASE_JNDINAMEPARAMETER);
+        rolesquery = (String) options.get(DATABASE_ROLESQUERYPARAMETER);
+        rolescolumns = (String) options.get(DATABASE_ROLESCOLUMNSPARAMETER);
+        String defaultroles_str = (String) options.get(DATABASE_DEFAULTROLESPARAMETER);
         
 
-        resOrientPort = Boolean.parseBoolean((String)options.get("result_orientation_potrait"));
-        require_password_change = Boolean.parseBoolean((String)options.get("require_password_change"));
+        resOrientPort = Boolean.parseBoolean((String)options.get(RESULT_ORIENTATION_POTRAITPARAMETER));
+        requirePasswordChange = Boolean.parseBoolean((String)options.get(REQUIRE_PASSWORD_CHANGEPARAMETER));
         
-        if(require_password_change){
-        	changePasswordRole = (String)options.get("changePasswordRole");
+        if(requirePasswordChange){
+        	changePasswordRole = (String)options.get(CHANGE_PASSWORD_ROLEPARAMETER);
         }
         
-        require_password_change = require_password_change && (changePasswordRole!=null);
+        requirePasswordChange = requirePasswordChange && (changePasswordRole!=null);
                 
         if (rolesgrpname == null)
          rolesgrpname = new String("Roles");

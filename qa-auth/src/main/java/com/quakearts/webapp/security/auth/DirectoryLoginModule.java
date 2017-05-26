@@ -33,7 +33,24 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DirectoryLoginModule implements LoginModule{
-	public static final String DEFAULT_AUTH_GRP = "com.quakearts.webapp.security.auth";
+	public static final String USE_FIRST_PASSPARAMETER = "use_first_pass";
+	public static final String LDAP_SEARCH_ACCPARAMETER = "ldap.search.acc";
+	public static final String LDAP_SEARCH_DNPARAMETER = "ldap.search.dn";
+	public static final String LOCKOUT_TIMEPARAMETER = "lockout_time";
+	public static final String MAX_TRY_ATTEMPTSPARAMETER = "max_try_attempts";
+	public static final String DIRECTORY_ATTRIBUTESPARAMETER = "directory.attributes";
+	public static final String DIRECTORY_DEFAULTROLESPARAMETER = "directory.defaultroles";
+	public static final String LDAP_PASSWORD_PARAMETER = "ldap.password.param";
+	public static final String LDAP_ALLOW_ANONYMOUSBINDPARAMETER = "ldap.allow.anonymousbind";
+	public static final String LDAP_FILTERPARAMETER = "ldap.filter";
+	public static final String DIRECTORY_ROLENAMEPARAMETER = "directory.rolename";
+	public static final String LDAP_SEARCH_BASE_DNPARAMETER = "ldap.search.baseDN";
+	public static final String LDAP_COMPARE_USEPARAMETER = "ldap.compare.use";
+	public static final String LDAP_SSL_USEPARAMETER = "ldap.ssl.use";
+	public static final String LDAP_KEYSTOREPARAMETER = "ldap.keystore";
+	public static final String LDAP_PORTPARAMETER = "ldap.port";
+	public static final String LDAP_SERVERPARAMETER = "ldap.server";
+	public static final String DEFAULT_AUTH_GRPPARAMETER = "com.quakearts.webapp.security.auth";
     private Subject subject;
     private Group rolesgrp;
     private CallbackHandler callbackHandler;
@@ -42,9 +59,9 @@ public class DirectoryLoginModule implements LoginModule{
     @SuppressWarnings({ "unused", "rawtypes" })
 	private Map options;
     private int ldapPort;
-    private String ldapHost, keyStorePath,searchuser,searchpass,searchbasedn,filterParam,subject_username,password_param;
+    private String ldapHost, keyStorePath,searchuser,searchpass,searchbasedn,filterParam,subject_username,passwordParam;
     private LDAPConnection conn;
-    private boolean loginOk=false, use_first_pass,usecompare,usessl,allowEmptyPassword;
+    private boolean loginOk=false, useFirstPass,usecompare,usessl,allowEmptyPassword;
     private LDAPSocketFactory ssf;
     /* attribute variable must be a list of exactly 9 directory attributes corresponding to the following (in strict order)
      * (firstname), (surname), (email address), (unit), (department), (branch), (position), (grade), (staff number)
@@ -69,23 +86,23 @@ public class DirectoryLoginModule implements LoginModule{
         this.sharedState = sharedState;
         this.options = options;
         String ldapPort_str = null;
-        ldapHost = (String) options.get("ldap.server");        	        	
-        ldapPort_str = (String) options.get("ldap.port");
-        keyStorePath = (String) options.get("ldap.keystore");
-        usessl = Boolean.parseBoolean((String)options.get("ldap.ssl.use"));
+        ldapHost = (String) options.get(LDAP_SERVERPARAMETER);        	        	
+        ldapPort_str = (String) options.get(LDAP_PORTPARAMETER);
+        keyStorePath = (String) options.get(LDAP_KEYSTOREPARAMETER);
+        usessl = Boolean.parseBoolean((String)options.get(LDAP_SSL_USEPARAMETER));
         
-        usecompare = Boolean.parseBoolean((String) options.get("ldap.compare.use"));
-        searchbasedn=(String) options.get("ldap.search.baseDN");
-        rolesgrpname = (String) options.get("directory.rolename");
-        filterParam = (String) options.get("ldap.filter");
-        allowEmptyPassword = Boolean.parseBoolean((String) options.get("ldap.allow.anonymousbind"));
-        password_param = (String) options.get("ldap.password.param");
+        usecompare = Boolean.parseBoolean((String) options.get(LDAP_COMPARE_USEPARAMETER));
+        searchbasedn=(String) options.get(LDAP_SEARCH_BASE_DNPARAMETER);
+        rolesgrpname = (String) options.get(DIRECTORY_ROLENAMEPARAMETER);
+        filterParam = (String) options.get(LDAP_FILTERPARAMETER);
+        allowEmptyPassword = Boolean.parseBoolean((String) options.get(LDAP_ALLOW_ANONYMOUSBINDPARAMETER));
+        passwordParam = (String) options.get(LDAP_PASSWORD_PARAMETER);
         
-        String defaultroles_str = (String) options.get("directory.defaultroles");
-        String attributes_str = (String) options.get("directory.attributes");
+        String defaultroles_str = (String) options.get(DIRECTORY_DEFAULTROLESPARAMETER);
+        String attributes_str = (String) options.get(DIRECTORY_ATTRIBUTESPARAMETER);
         
-        String maxAttempts_str = (String) options.get("max_try_attempts");
-        String lockoutTime_str = (String) options.get("lockout_time");
+        String maxAttempts_str = (String) options.get(MAX_TRY_ATTEMPTSPARAMETER);
+        String lockoutTime_str = (String) options.get(LOCKOUT_TIMEPARAMETER);
         
         if(maxAttempts_str == null && lockoutTime_str == null){
         	checker = AttemptChecker.getChecker(ldapHost);
@@ -120,8 +137,8 @@ public class DirectoryLoginModule implements LoginModule{
         		defaultroles[i] = defaultroles[i].trim();
         }
         
-    	searchuser = (String) options.get("ldap.search.dn");
-    	searchpass = (String) options.get("ldap.search.acc");
+    	searchuser = (String) options.get(LDAP_SEARCH_DNPARAMETER);
+    	searchpass = (String) options.get(LDAP_SEARCH_ACCPARAMETER);
 		if(searchuser==null || searchpass==null){
 		    searchuser="";
 			searchpass="";
@@ -138,7 +155,7 @@ public class DirectoryLoginModule implements LoginModule{
 
         ldapPort = ldapPort_str == null? (usessl?LDAPConnection.DEFAULT_SSL_PORT:LDAPConnection.DEFAULT_PORT):Integer.parseInt(ldapPort_str);
         
-        use_first_pass = Boolean.parseBoolean((String)options.get("use_first_pass"));
+        useFirstPass = Boolean.parseBoolean((String)options.get(USE_FIRST_PASSPARAMETER));
         
         log.fine("Initialization complete.\n"+
                   "\t\tZeDirectoryLoginModule options:\n"+
@@ -164,7 +181,7 @@ public class DirectoryLoginModule implements LoginModule{
         	throw new LoginException("No ldap base dn");
         if(filterParam==null)
         	throw new LoginException("No ldap filter param");
-        if(usecompare && password_param == null)
+        if(usecompare && passwordParam == null)
         	throw new LoginException("No ldap password param");
         
         String loginDN = null,username=null;
@@ -173,7 +190,7 @@ public class DirectoryLoginModule implements LoginModule{
 
         Callback[] callbacks = new Callback[2];
 
-        if(use_first_pass){
+        if(useFirstPass){
             if(sharedState != null){
                 log.fine("Using first pass....");
                 Object loginDN_val = sharedState.get("javax.security.auth.login.name");
@@ -183,7 +200,7 @@ public class DirectoryLoginModule implements LoginModule{
             }
         }
         
-        if(!use_first_pass || username==null || password==null){
+        if(!useFirstPass || username==null || password==null){
             NameCallback name = new NameCallback("Enter your username.");
             PasswordCallback pass = new PasswordCallback("Enter your password:",false);           
             callbacks[0] = name;
@@ -203,12 +220,13 @@ public class DirectoryLoginModule implements LoginModule{
             password = (new String(pass.getPassword())).getBytes();
             
             if (sharedState != null){
-                log.fine("Storing state....");
-                UserPrincipal shareduser = new UserPrincipal(username);
-                sharedState.put("javax.security.auth.login.name", shareduser);
-                char[] sharedpass = new String(password).toCharArray();
-                sharedState.put("javax.security.auth.login.password", sharedpass);
-            }
+				log.fine("Storing state....");
+				UserPrincipal shareduser = new UserPrincipal(username);
+				sharedState.put("javax.security.auth.login.name",
+						shareduser);
+				char[] sharedpass = pass.getPassword();
+				sharedState.put("javax.security.auth.login.password",
+						sharedpass);            }
         }
         
         if(username == null || password == null)
@@ -257,19 +275,19 @@ public class DirectoryLoginModule implements LoginModule{
             loginOk = true;
             log.fine("Login is successful.");
         } catch (LDAPException e) {
-            log.log(Level.SEVERE, "Error while logging in: "+e.getMessage(),e);
-            if ( e.getResultCode() == LDAPException.NO_SUCH_OBJECT ) {
-                log.log(Level.SEVERE, "Error: No such entry.",e);
-            } else if ( e.getResultCode() == LDAPException.NO_SUCH_ATTRIBUTE ) {
-                log.log(Level.SEVERE, "Error: No such attribute",e);
+            log.log(Level.SEVERE, "Error while logging in: "+e.getMessage(), e);
+            if (e.getResultCode() == LDAPException.NO_SUCH_OBJECT ) {
+                log.log(Level.SEVERE, "Error: No such entry.", e);
+            } else if (e.getResultCode() == LDAPException.NO_SUCH_ATTRIBUTE ) {
+                log.log(Level.SEVERE, "Error: No such attribute", e);
             } else {
-                log.log(Level.SEVERE, "Error while authenticating",e);
+                log.log(Level.SEVERE, "Error while authenticating", e);
             }
         } finally {
             try {
                 conn.disconnect();
             } catch (LDAPException e) {
-                log.log(Level.SEVERE, "Error disconnecting from LDAP server. ",e);
+                log.log(Level.SEVERE, "Error disconnecting from LDAP server. ", e);
                 e.printStackTrace();
             }
             loginDN = null;
@@ -318,7 +336,7 @@ public class DirectoryLoginModule implements LoginModule{
             StaffNumberPrincipal number = (attribute == null)? new StaffNumberPrincipal("NONE"): new StaffNumberPrincipal(attribute.getStringValue());
 
             Set<Principal> principalset = subject.getPrincipals();            
-            if(use_first_pass){
+            if(useFirstPass){
         		log.fine("Fetching already existing roles group...");
 				for (Iterator i = principalset.iterator(); i.hasNext();) {
 					Object obj = i.next();

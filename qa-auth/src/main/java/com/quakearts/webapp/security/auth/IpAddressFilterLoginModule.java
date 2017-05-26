@@ -34,13 +34,20 @@ import java.util.logging.Logger;
 import com.quakearts.webapp.security.auth.util.AttemptChecker;
 
 public class IpAddressFilterLoginModule implements LoginModule {
-	public static final String DEFAULT_AUTH_GRP = "com.quakearts.webapp.security.auth";
+	public static final String USE_FIRST_PASSPARAMETER = "use_first_pass";
+	public static final String LOCKOUT_TIMEPARAMETER = "lockout_time";
+	public static final String MAX_TRY_ATTEMPTSPARAMETER = "max_try_attempts";
+	public static final String ROLENAMEPARAMETER = "rolename";
+	public static final String DEFAULTROLESPARAMETER = "defaultroles";
+	public static final String ALLOW_ANONYMOUSPARAMETER = "allow.anonymous";
+	public static final String PROPERTIES_FILEPARAMETER = "properties.file";
+	public static final String DEFAULT_AUTH_GRPPARAMETER = "com.quakearts.webapp.security.auth";
     private Group rolesgrp;
     private Subject subject;
     private CallbackHandler callbackHandler;
     @SuppressWarnings("rawtypes")
 	private Map sharedState;
-    private boolean loginOk=false, use_first_pass;
+    private boolean loginOk=false, usefirstPass;
 	private boolean allowEmptyPassword;
     private AttemptChecker checker;
     private static final Logger log = Logger.getLogger(IpAddressFilterLoginModule.class.getName());
@@ -56,16 +63,16 @@ public class IpAddressFilterLoginModule implements LoginModule {
         this.callbackHandler = callbackHandler;
         this.sharedState = sharedState;
 
-        propertiesFile  = (String) options.get("properties.file");
-        allowEmptyPassword = Boolean.parseBoolean((String) options.get("allow.anonymous"));
-        String defaultroles_str = (String) options.get("defaultroles");
-        rolesgrpname = (String) options.get("rolename");
+        propertiesFile  = (String) options.get(PROPERTIES_FILEPARAMETER);
+        allowEmptyPassword = Boolean.parseBoolean((String) options.get(ALLOW_ANONYMOUSPARAMETER));
+        String defaultroles_str = (String) options.get(DEFAULTROLESPARAMETER);
+        rolesgrpname = (String) options.get(ROLENAMEPARAMETER);
 
-        String maxAttempts_str = (String) options.get("max_try_attempts");
-        String lockoutTime_str = (String) options.get("lockout_time");
+        String maxAttempts_str = (String) options.get(MAX_TRY_ATTEMPTSPARAMETER);
+        String lockoutTime_str = (String) options.get(LOCKOUT_TIMEPARAMETER);
         
         if(maxAttempts_str == null && lockoutTime_str == null){
-        	checker = AttemptChecker.getChecker(DEFAULT_AUTH_GRP);
+        	checker = AttemptChecker.getChecker(DEFAULT_AUTH_GRPPARAMETER);
         }else{
 	        int maxAttempts, lockoutTime;
 	        try {
@@ -79,8 +86,8 @@ public class IpAddressFilterLoginModule implements LoginModule {
 			} catch (Exception e) {
 				lockoutTime = 3600000;
 			}
-        	AttemptChecker.createChecker(DEFAULT_AUTH_GRP, maxAttempts, lockoutTime);
-        	checker = AttemptChecker.getChecker(DEFAULT_AUTH_GRP);
+        	AttemptChecker.createChecker(DEFAULT_AUTH_GRPPARAMETER, maxAttempts, lockoutTime);
+        	checker = AttemptChecker.getChecker(DEFAULT_AUTH_GRPPARAMETER);
         }
 
         if(defaultroles_str != null){
@@ -89,7 +96,7 @@ public class IpAddressFilterLoginModule implements LoginModule {
         		defaultroles[i] = defaultroles[i].trim();
         }
 
-        use_first_pass = Boolean.parseBoolean((String)options.get("use_first_pass"));
+        usefirstPass = Boolean.parseBoolean((String)options.get(USE_FIRST_PASSPARAMETER));
         
         log.fine("Initialization complete.\n"+
                 "\t\tIpAddressFilterLoginModule options:\n"+
@@ -97,7 +104,7 @@ public class IpAddressFilterLoginModule implements LoginModule {
                 "\t\tdefaultroles_str: "+defaultroles_str+"\n"+
                 "\t\tmaxAttempts_str: "+maxAttempts_str+"\n"+
                 "\t\tlockoutTime_str: "+lockoutTime_str+"\n"+
-                "\t\tuse_first_pass: "+use_first_pass+"\n"+
+                "\t\tuse_first_pass: "+usefirstPass+"\n"+
                 "\t\trolesgrpname: "+rolesgrpname);
 	}
 
@@ -108,7 +115,7 @@ public class IpAddressFilterLoginModule implements LoginModule {
         String username=null;
         byte[] password = null;
 
-        if(use_first_pass){
+        if(usefirstPass){
             if(sharedState != null){
                 log.fine("Using first pass....");
                 Object loginDN_val = sharedState.get("javax.security.auth.login.name");
@@ -118,7 +125,7 @@ public class IpAddressFilterLoginModule implements LoginModule {
             }
         }
         
-        if(!use_first_pass || username==null || password==null){
+        if(!usefirstPass || username==null || password==null){
             NameCallback name = new NameCallback("Enter your username.");
             PasswordCallback pass = new PasswordCallback("Enter your password:",false);           
             callbacks[0] = name;
@@ -176,7 +183,7 @@ public class IpAddressFilterLoginModule implements LoginModule {
 		String[] roles = rolesStr.split(";,");
 		
 		Set<Principal> principalset = subject.getPrincipals();            
-        if(use_first_pass){
+        if(usefirstPass){
     		log.fine("Fetching already existing roles group...");
             for(Iterator<?> i=principalset.iterator();i.hasNext();){
                 Object obj = i.next();

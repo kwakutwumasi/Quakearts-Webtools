@@ -41,12 +41,19 @@ import com.quakearts.webapp.security.auth.webserviceclient.LoginBean;
 import com.quakearts.webapp.security.auth.webserviceclient.Type;
 
 public class WebServiceLoginModule implements LoginModule {
+	public static final String USE_FIRST_PASSPARAMETER = "use_first_pass";
+	public static final String LOCKOUT_TIMEPARAMETER = "lockout_time";
+	public static final String MAX_TRY_ATTEMPTSPARAMETER = "max_try_attempts";
+	public static final String DEFAULTROLESPARAMETER = "defaultroles";
+	public static final String LOGIN_SERVICE_LOCATIONPARAMETER = "login.service.location";
+	public static final String LOGIN_SERVICE_URLPARAMETER = "login.service.url";
+	public static final String LOGIN_DOMAINPARAMETER = "login.domain";
 	private Subject subject;
     private Group rolesgrp;
 	private com.quakearts.webapp.security.auth.webserviceclient.Subject profile;
 	private String domain,webserviceLocation,webserviceBaseURL,rolesgrpname;
 	private String[] defaultroles;
-	private boolean loginOk = false, use_first_pass=false;
+	private boolean loginOk = false, useFirstPass=false;
 	private AttemptChecker checker;
 	@SuppressWarnings("rawtypes")
 	private Map sharedState;
@@ -60,10 +67,10 @@ public class WebServiceLoginModule implements LoginModule {
 		this.subject = subject;
 		this.sharedState = sharedState;
 		this.callbackHandler = callbackHandler;
-		domain = (String) options.get("login.domain");
-		webserviceBaseURL = (String) options.get("login.service.url");
-		webserviceLocation = (String) options.get("login.service.location");
-        String defaultroles_str = (String) options.get("defaultroles");
+		domain = (String) options.get(LOGIN_DOMAINPARAMETER);
+		webserviceBaseURL = (String) options.get(LOGIN_SERVICE_URLPARAMETER);
+		webserviceLocation = (String) options.get(LOGIN_SERVICE_LOCATIONPARAMETER);
+        String defaultroles_str = (String) options.get(DEFAULTROLESPARAMETER);
         
         if (rolesgrpname == null)
          rolesgrpname = "Roles";
@@ -74,8 +81,8 @@ public class WebServiceLoginModule implements LoginModule {
         		defaultroles[i] = defaultroles[i].trim();
         }
         
-        String maxAttempts_str = (String) options.get("max_try_attempts");
-        String lockoutTime_str = (String) options.get("lockout_time");
+        String maxAttempts_str = (String) options.get(MAX_TRY_ATTEMPTSPARAMETER);
+        String lockoutTime_str = (String) options.get(LOCKOUT_TIMEPARAMETER);
         
         if(maxAttempts_str == null && lockoutTime_str == null){
         	checker = AttemptChecker.getChecker(domain);
@@ -96,9 +103,9 @@ public class WebServiceLoginModule implements LoginModule {
         	checker = AttemptChecker.getChecker(domain);
         }
         
-        Object use_first_pass_val = options.get("use_first_pass");
+        Object use_first_pass_val = options.get(USE_FIRST_PASSPARAMETER);
         if(use_first_pass_val != null?use_first_pass_val instanceof String:false)
-            use_first_pass = Boolean.parseBoolean((String)use_first_pass_val);
+            useFirstPass = Boolean.parseBoolean((String)use_first_pass_val);
         
 	}
 
@@ -111,7 +118,7 @@ public class WebServiceLoginModule implements LoginModule {
 			
             Callback[] callbacks = new Callback[2];
 
-            if(use_first_pass){
+            if(useFirstPass){
                 if(sharedState != null){
                     log.fine("Using first pass....");
                     Object loginDN_val = sharedState.get("javax.security.auth.login.name");
@@ -121,7 +128,7 @@ public class WebServiceLoginModule implements LoginModule {
                 }
             }
             
-            if(!use_first_pass || username==null || password==null){
+            if(!useFirstPass || username==null || password==null){
                 NameCallback name = new NameCallback("Enter your username");
                 PasswordCallback pass = new PasswordCallback("Enter your password:",false);           
                 callbacks[0] = name;
@@ -193,7 +200,7 @@ public class WebServiceLoginModule implements LoginModule {
 	public boolean commit() throws LoginException {
 		if(loginOk){
             Set<Principal> principalset = subject.getPrincipals();            
-            if(use_first_pass){
+            if(useFirstPass){
         		log.fine("Fetching already existing roles group...");
 				for (Iterator i = principalset.iterator(); i.hasNext();) {
 					Object obj = i.next();
