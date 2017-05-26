@@ -328,9 +328,6 @@ public class DatabaseLoginModule implements LoginModule {
 						for (String role : roles) {
 							userprof.put(role, rs.getString(role));
 						}
-					} else {
-						throw new LoginException(
-								"No profile found for " + username);
 					}
 				} else {
 					if (rs.next()) {
@@ -340,9 +337,6 @@ public class DatabaseLoginModule implements LoginModule {
 							userprof.put("" + (i++), rs.getString(rolescolumns));
 						} while (rs.next());
 						log.fine("Got roles: " + userprof);
-					} else {
-						throw new LoginException(
-								"No profile found for " + username);
 					}
 				}
 				rs.close();
