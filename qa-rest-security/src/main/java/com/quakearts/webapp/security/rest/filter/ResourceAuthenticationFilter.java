@@ -15,6 +15,10 @@ public class ResourceAuthenticationFilter extends AuthenticationFilter {
 			throw new ServletException("Filter parameter 'resourcePatterns' required");	
 		
 		resourcePatterns = resourcePatternsString.split(",");
+		
+		for (int index = 0; index < resourcePatterns.length; index++) {
+			resourcePatterns[index] = resourcePatterns[index].replace("*", ".*");
+		}
 	}
 	
 	@Override
