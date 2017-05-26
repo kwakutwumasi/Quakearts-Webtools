@@ -26,16 +26,16 @@ import com.quakearts.webapp.security.jwt.factory.JWTFactory;
 
 public class JWTLoginModule implements LoginModule {
 
-	private static final String ACTIVATEAFTERPARAMETER = "activate.after";
-	private static final String ACTIVATEAFTERPERIODPARAMETER = "activate.after.period";
-	private static final String ADDITIONALCLAIMSPARAMETER = "additional.claims";
-	private static final String GRACEPERIODPARAMETER = "grace.period";
-	private static final String VALIDITY_PERIODPARAMETER = "validity.period";
-	private static final String VALIDITYPARAMETER = "validity";
-	private static final String ROLESGROUPNAMEPARAMETER = "rolesgroupname";
-	private static final String ISSUERPARAMETER = "issuer";
-	private static final String AUDIENCEPARAMETER = "audience";
-	private static final String ALGORITHMPARAMETER = "algorithm";
+	public static final String ACTIVATEAFTERPARAMETER = "activate.after";
+	public static final String ACTIVATEAFTERPERIODPARAMETER = "activate.after.period";
+	public static final String ADDITIONALCLAIMSPARAMETER = "additional.claims";
+	public static final String GRACEPERIODPARAMETER = "grace.period";
+	public static final String VALIDITY_PERIODPARAMETER = "validity.period";
+	public static final String VALIDITYPARAMETER = "validity";
+	public static final String ROLESGROUPNAMEPARAMETER = "rolesgroupname";
+	public static final String ISSUERPARAMETER = "issuer";
+	public static final String AUDIENCEPARAMETER = "audience";
+	public static final String ALGORITHMPARAMETER = "algorithm";
 	private boolean loginOk;
 	private Map<String, Object> sharedState;
 	private Subject subject;
@@ -48,7 +48,7 @@ public class JWTLoginModule implements LoginModule {
 	private static final Logger log = Logger.getLogger(JWTLoginModule.class.getName());
 	private String issuer = JWTLoginModule.class.getName();
 	private String audience = JWTLoginModule.class.getName();
-	private long validity = 1800000;
+	public static long DEFAULTVALIDITY = 54000;
 	private long activateAfter = 0;
 	private int gracePeriod = 10;
 	private JWTVerifier verifier;
@@ -95,7 +95,7 @@ public class JWTLoginModule implements LoginModule {
 			
 		try {
 			if (options.containsKey(VALIDITYPARAMETER)){
-			validity = Long.parseLong(options.get(VALIDITYPARAMETER).toString()) * 1000;
+			DEFAULTVALIDITY = Long.parseLong(options.get(VALIDITYPARAMETER).toString()) * 1000;
 			}
 		} catch (Exception e) {
 			log.severe("Invalid parameter: " + VALIDITYPARAMETER + "; " + e.getMessage());
@@ -103,7 +103,7 @@ public class JWTLoginModule implements LoginModule {
 
 		try {
 			if (options.containsKey(VALIDITY_PERIODPARAMETER)) {
-				validity = parseDuration(options.get(VALIDITY_PERIODPARAMETER).toString());
+				DEFAULTVALIDITY = parseDuration(options.get(VALIDITY_PERIODPARAMETER).toString(), options);
 			}
 		} catch (Exception e) {
 			log.severe("Invalid parameter: " + VALIDITY_PERIODPARAMETER + "; " + e.getMessage());
@@ -119,7 +119,7 @@ public class JWTLoginModule implements LoginModule {
 
 		try {
 			if (options.containsKey(ACTIVATEAFTERPERIODPARAMETER)) {
-				activateAfter = parseDuration(options.get(ACTIVATEAFTERPERIODPARAMETER).toString());
+				activateAfter = parseDuration(options.get(ACTIVATEAFTERPERIODPARAMETER).toString(), options);
 			}
 		} catch (Exception e) {
 			log.severe("Invalid parameter: " + ACTIVATEAFTERPERIODPARAMETER + "; " + e.getMessage());
@@ -129,7 +129,7 @@ public class JWTLoginModule implements LoginModule {
 		authenticationMode = null;
 	}
 
-	private long parseDuration(String parameter) {
+	public static long parseDuration(String parameter, Map<String, ?> options) {
 		String durationString = options.get(parameter).toString();
 		String[] durationStringParts = durationString.split("[\\s]+", 2);
 
@@ -239,8 +239,8 @@ public class JWTLoginModule implements LoginModule {
 				claims.setAudience(audience);
 				claims.setIssuer(issuer);
 
-				if(validity > 0)
-					claims.setExpiry((claims.getIssuedAt())+validity);
+				if(DEFAULTVALIDITY > 0)
+					claims.setExpiry((claims.getIssuedAt())+DEFAULTVALIDITY);
 				
 				if(activateAfter>0){
 					claims.setNotBefore(claims.getIssuedAt()+activateAfter);
