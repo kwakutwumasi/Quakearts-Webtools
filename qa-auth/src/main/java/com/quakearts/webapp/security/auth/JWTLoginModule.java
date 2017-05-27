@@ -239,7 +239,7 @@ public class JWTLoginModule implements LoginModule {
 			}
 
 			if (authenticationMode == AuthenticationMode.GENERATE) {
-				JWTPrincipal principal = new JWTPrincipal(generateJWTToken());
+				JWTPrincipal principal = new JWTPrincipal(generateJWTToken(username));
 				rolesgrp.addMember(principal);
 				principalset.add(principal);				
 			} else if (authenticationMode == AuthenticationMode.VERIFY) {
@@ -262,7 +262,7 @@ public class JWTLoginModule implements LoginModule {
 		return loginOk;
 	}
 
-	public String generateJWTToken() throws LoginException{
+	public String generateJWTToken(String username) throws LoginException{
 		JWTClaims claims = JWTFactory.getInstance().createEmptyClaims();
 		claims.setAudience(audience);
 		claims.setIssuer(issuer);
