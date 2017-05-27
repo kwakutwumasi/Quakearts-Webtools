@@ -126,7 +126,7 @@ public class IpAddressFilterLoginModule implements LoginModule {
         }
         
         if(!usefirstPass || username==null || password==null){
-            NameCallback name = new NameCallback("Enter your username.");
+            NameCallback name = new NameCallback("Enter your username.","annonymous");
             PasswordCallback pass = new PasswordCallback("Enter your password:",false);           
             callbacks[0] = name;
             callbacks[1] = pass;

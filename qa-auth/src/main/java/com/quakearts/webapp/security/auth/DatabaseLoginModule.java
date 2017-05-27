@@ -231,7 +231,7 @@ public class DatabaseLoginModule implements LoginModule {
 
 			if (!use_first_pass || username == null || password == null) {
 				log.fine("Authenticating....");
-				NameCallback name = new NameCallback("Enter your username");
+				NameCallback name = new NameCallback("Enter your username","annonymous");
 				PasswordCallback pass = new PasswordCallback(
 						"Enter your password:", false);
 				callbacks[0] = name;

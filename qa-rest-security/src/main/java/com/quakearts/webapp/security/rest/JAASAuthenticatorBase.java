@@ -56,8 +56,8 @@ public abstract class JAASAuthenticatorBase {
 					((PasswordCallback) cb).setPassword(context.getCredentials().toCharArray());
 				}
 			}
-			context.clearSensitiveData();
 		}, contextName);
+		context.clearSensitiveData();
 	}
 	
 	protected void authenticateViaByteCredentials(String contextName) throws LoginException{
@@ -68,10 +68,9 @@ public abstract class JAASAuthenticatorBase {
 				if(cb instanceof TokenCallback){
 					((TokenCallback)cb).setTokenData(context.getCredentialData());
 				}
-			}
-			
-			context.clearSensitiveData();
+			}			
 		}, contextName);
+		context.clearSensitiveData();
 	}
 	
 	protected void authenticate(CallbackHandler handler, String contextName) 

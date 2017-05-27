@@ -125,7 +125,8 @@ public class AuthenticationFilter extends JAASAuthenticatorBase implements Filte
 				sendError(401, "{\"message\":\"Missing identity and credential parameters. Authentication required\"}", httpResponse);
 				return;
 			} else {
-				chain.doFilter( request, response);				
+				chain.doFilter( request, response);
+				return;
 			}
 			
 			chain.doFilter( new AuthenticationServletRequestWrapper(httpRequest), httpResponse);

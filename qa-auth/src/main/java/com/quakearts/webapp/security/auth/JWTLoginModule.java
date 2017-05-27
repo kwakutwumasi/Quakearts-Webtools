@@ -48,7 +48,8 @@ public class JWTLoginModule implements LoginModule {
 	private static final Logger log = Logger.getLogger(JWTLoginModule.class.getName());
 	private String issuer = JWTLoginModule.class.getName();
 	private String audience = JWTLoginModule.class.getName();
-	public static long DEFAULTVALIDITY = 54000;
+	public static final long DEFAULTVALIDITY = 54000;
+	public long validity = DEFAULTVALIDITY;
 	private long activateAfter = 0;
 	private int gracePeriod = 10;
 	private JWTVerifier verifier;
@@ -95,7 +96,7 @@ public class JWTLoginModule implements LoginModule {
 			
 		try {
 			if (options.containsKey(VALIDITYPARAMETER)){
-			DEFAULTVALIDITY = Long.parseLong(options.get(VALIDITYPARAMETER).toString()) * 1000;
+			validity = Long.parseLong(options.get(VALIDITYPARAMETER).toString()) * 1000;
 			}
 		} catch (Exception e) {
 			log.severe("Invalid parameter: " + VALIDITYPARAMETER + "; " + e.getMessage());
@@ -103,7 +104,7 @@ public class JWTLoginModule implements LoginModule {
 
 		try {
 			if (options.containsKey(VALIDITY_PERIODPARAMETER)) {
-				DEFAULTVALIDITY = parseDuration(options.get(VALIDITY_PERIODPARAMETER).toString(), options);
+				validity = parseDuration(options.get(VALIDITY_PERIODPARAMETER).toString(), options);
 			}
 		} catch (Exception e) {
 			log.severe("Invalid parameter: " + VALIDITY_PERIODPARAMETER + "; " + e.getMessage());
@@ -187,7 +188,7 @@ public class JWTLoginModule implements LoginModule {
 						return loginOk;
 					}
 					
-					if(!audience.equals(claims.getIssuer())){
+					if(!audience.equals(claims.getAudience())){
 						loginOk = false;
 					}
 
@@ -238,40 +239,7 @@ public class JWTLoginModule implements LoginModule {
 			}
 
 			if (authenticationMode == AuthenticationMode.GENERATE) {
-				JWTClaims claims = JWTFactory.getInstance().createEmptyClaims();
-				claims.setAudience(audience);
-				claims.setIssuer(issuer);
-
-				if(DEFAULTVALIDITY > 0)
-					claims.setExpiry((claims.getIssuedAt())+DEFAULTVALIDITY);
-				
-				if(activateAfter>0){
-					claims.setNotBefore(claims.getIssuedAt()+activateAfter);
-				}
-				
-				if(username!=null)
-					claims.setSubject(username);
-				
-				if(additionalClaims != null 
-						&& !additionalClaims.trim().isEmpty()){
-					String[] additionalClaimsParts = additionalClaims.split(";");
-					for(String additionalClaimsPart:additionalClaimsParts){
-						String[] claimParts = additionalClaimsPart.split(":",2);
-						if(claimParts.length == 2
-								&& claimParts[0] != null
-								&& !claimParts[0].trim().isEmpty()
-								&& claimParts[1] != null
-								&& !claimParts[1].trim().isEmpty()) {
-							claims.addPrivateClaim(claimParts[0].toLowerCase(), claimParts[1]);
-						}
-					}
-				}
-				
-				JWTHeader header = JWTFactory.getInstance().createEmptyClaimsHeader();
-				
-				JWTSigner signer = JWTFactory.getInstance().getSigner(algorithm, options);
-				JWTPrincipal principal = new JWTPrincipal(signer.sign(header, claims));
-				
+				JWTPrincipal principal = new JWTPrincipal(generateJWTToken());
 				rolesgrp.addMember(principal);
 				principalset.add(principal);				
 			} else if (authenticationMode == AuthenticationMode.VERIFY) {
@@ -294,6 +262,43 @@ public class JWTLoginModule implements LoginModule {
 		return loginOk;
 	}
 
+	public String generateJWTToken() throws LoginException{
+		JWTClaims claims = JWTFactory.getInstance().createEmptyClaims();
+		claims.setAudience(audience);
+		claims.setIssuer(issuer);
+
+		if(validity > 0)
+			claims.setExpiry((claims.getIssuedAt())+validity);
+		
+		if(activateAfter>0){
+			claims.setNotBefore(claims.getIssuedAt()+activateAfter);
+		}
+		
+		if(username!=null)
+			claims.setSubject(username);
+		
+		if(additionalClaims != null 
+				&& !additionalClaims.trim().isEmpty()){
+			String[] additionalClaimsParts = additionalClaims.split(";");
+			for(String additionalClaimsPart:additionalClaimsParts){
+				String[] claimParts = additionalClaimsPart.split(":",2);
+				if(claimParts.length == 2
+						&& claimParts[0] != null
+						&& !claimParts[0].trim().isEmpty()
+						&& claimParts[1] != null
+						&& !claimParts[1].trim().isEmpty()) {
+					claims.addPrivateClaim(claimParts[0].toLowerCase(), claimParts[1]);
+				}
+			}
+		}
+		
+		JWTHeader header = JWTFactory.getInstance().createEmptyClaimsHeader();
+		
+		JWTSigner signer = JWTFactory.getInstance().getSigner(algorithm, options);
+		
+		return signer.sign(header, claims);
+	}
+	
 	@Override
 	public boolean abort() throws LoginException {
 		return loginOk;
