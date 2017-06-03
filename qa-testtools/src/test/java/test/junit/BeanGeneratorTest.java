@@ -47,8 +47,8 @@ public class BeanGeneratorTest {
 		assertThat("Could not create Person.", person.getDateOfBirth() != null, is(true));
 
 		for(int count=0; count < 1000; count++){
-			BeanGenerator<Person> generator = new BeanGenerator<>(Person.class).init()
-					.replaceGeneratorFor("name").with(new StringGenerator().useField("names"));
+			BeanGenerator<Person> generator = new BeanGenerator<>(Person.class)
+					.use(new StringGenerator().useField("names")).forField("name").init();
 			person = generator.generateRandom();
 	
 			assertThat("Did not use list:names",("Sophia;Jackson;Emma;Aiden;Olivia;Lucas;Ava;Liam;Mia;Noah;"

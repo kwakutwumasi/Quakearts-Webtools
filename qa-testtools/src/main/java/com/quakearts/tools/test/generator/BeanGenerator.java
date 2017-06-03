@@ -50,6 +50,8 @@ public final class BeanGenerator<T> extends GeneratorBase<T> {
 	private Map<PropertyDescriptor, MethodHandle> handleMap = new HashMap<>();
 	private Map<PropertyDescriptor, MethodHandle> collectionHandleMap = new HashMap<>();
 	private Class<?> beanClass;
+	private Set<String> skipField = new HashSet<>();
+	private Map<String, Generator<?>> replaceWith = new HashMap<>();
 
 	static {
 		GeneratorBootstrap.init();
@@ -75,6 +77,9 @@ public final class BeanGenerator<T> extends GeneratorBase<T> {
 				if (excludes(descriptor.getName(), beanClass))
 					continue;
 
+				if(skipField.contains(descriptor.getName()))
+					continue;
+
 				if (descriptor.getReadMethod() != null && descriptor.getWriteMethod() != null) {
 					// We have a bean property!
 					
@@ -84,7 +89,7 @@ public final class BeanGenerator<T> extends GeneratorBase<T> {
 					
 					MethodHandle handle = getMethodHandle(descriptor.getWriteMethod());
 					Class<?> propertyType = getPropertyType(descriptor);
-					Generator<?> generator = getGenerator(propertyType);
+					Generator<?> generator = getGenerator(descriptor.getName(), propertyType);
 					if(!(generator instanceof BeanGenerator)){//Must always refer to the same type. Does not use 
 						//per object settings, unlike primitive and perhaps custome generators
 						UseGeneratorProperty setting = getAnnotation(descriptor, UseGeneratorProperty.class);
@@ -142,7 +147,10 @@ public final class BeanGenerator<T> extends GeneratorBase<T> {
 		return propertyType;
 	}
 
-	private Generator<?> getGenerator(Class<?> propertyType) {
+	private Generator<?> getGenerator(String fieldName, Class<?> propertyType) {
+		if(replaceWith.containsKey(fieldName))
+			return replaceWith.get(fieldName);
+		
 		return GeneratorFactory.getInstance().getGenerator(propertyType);
 	}
 
@@ -168,53 +176,25 @@ public final class BeanGenerator<T> extends GeneratorBase<T> {
 			throw new GeneratorException("Unable to instantiate new generator: " + generator.getClass().getName());
 		}
 	}
-
-	private Tuple<PropertyDescriptor, Generator<?>> tupleForReplacing;
 	
-	public BeanGenerator<T> replaceGeneratorFor(String field){
-		if(generatorSet.size()==0)
-			throw new GeneratorException("Bean Generator has not been initiated");
-		
-		for(Tuple<PropertyDescriptor, Generator<?>> tuple:generatorSet){
-			if(tuple.getFirst().getName().equals(field)){
-				tupleForReplacing = tuple;
-				break;
-			}
-		}
-		
-		if(tupleForReplacing==null)
-			throw new GeneratorException("Bean Generator does not have property "+field);
-		
+	public BeanGenerator<T> forField(String field){
+		if(replacement == null)
+			throw new GeneratorException("Call to #forField(String) must be preceeded by #use(Generator). Generator must also not be null");
+
+		replaceWith.put(field, replacement);
+		replacement = null;
 		return this;
 	}
 	
-	public BeanGenerator<T> with(Generator<?> generator){
-		if(tupleForReplacing==null)
-			throw new GeneratorException("Invalid state. #replace(String) must be called before #with");
-		
-		tupleForReplacing.setSecond(generator);
-
-		tupleForReplacing = null;
-		
+	private Generator<?> replacement;
+	
+	public BeanGenerator<T> use(Generator<?> generator){
+		replacement = generator;
 		return this;
 	}
 
 	public BeanGenerator<T> doNotGenerate(String field){
-		if(generatorSet.size()==0)
-			throw new GeneratorException("Bean Generator has not been initiated");
-		
-		Tuple<PropertyDescriptor, Generator<?>> tupleForReplacing = null;
-	
-		for(Tuple<PropertyDescriptor, Generator<?>> tuple:generatorSet){
-			if(tuple.getFirst().getName().equals(field)){
-				tupleForReplacing = tuple;
-				break;
-			}
-		}
-		
-		if(tupleForReplacing!=null)
-			generatorSet.remove(tupleForReplacing);		
-		
+		skipField.add(field);
 		return this;
 	}
 
