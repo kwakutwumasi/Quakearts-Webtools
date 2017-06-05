@@ -113,10 +113,10 @@ public abstract class HibernateBean {
 			String[] keyParts = key.split("\\.");
 			StringBuilder aliasBuilder = new StringBuilder();
 
-			aliasBuilder.append(keyParts.length);
+			aliasBuilder.append(keyParts[0]);
 			
-			for(int index=0;index < keyParts.length-1; index++)
-				aliasBuilder.append(".").append(keyParts.length);
+			for(int index=1;index < keyParts.length-1; index++)
+				aliasBuilder.append(".").append(keyParts[index]);
 			
 			if(!context.getKeys().contains(aliasBuilder.toString())){
 				StringBuilder associationPathBuilder = new StringBuilder(keyParts[0]);
