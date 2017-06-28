@@ -1,9 +1,9 @@
 package com.quakearts.webapp.security.jwt;
 
-import javax.security.auth.login.LoginException;
+import com.quakearts.webapp.security.jwt.exception.JWTException;
 
 public interface JWTVerifier extends JWTBase {
-	void verify(byte[] token) throws LoginException;
+	void verify(byte[] token) throws JWTException;
 	JWTHeader getHeader();
 	JWTClaims getClaims();
 }

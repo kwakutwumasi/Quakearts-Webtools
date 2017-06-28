@@ -4,13 +4,11 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
-
-import javax.security.auth.login.LoginException;
-
 import com.quakearts.webapp.security.jwt.JWTClaims;
 import com.quakearts.webapp.security.jwt.JWTHeader;
 import com.quakearts.webapp.security.jwt.JWTSigner;
 import com.quakearts.webapp.security.jwt.JWTVerifier;
+import com.quakearts.webapp.security.jwt.exception.JWTException;
 import com.quakearts.webapp.security.jwt.factory.JWTFactory;
 import com.quakearts.webapp.security.util.UtilityMethods;
 
@@ -22,19 +20,19 @@ public abstract class SignerBase implements JWTSigner, JWTVerifier {
 	private JWTClaims claims;
 	
 	@Override
-	public String sign(JWTHeader header, JWTClaims claims) throws LoginException {
+	public String sign(JWTHeader header, JWTClaims claims) throws JWTException {
 		byte[] signed;
 		setHeaderAlgorithm(header);
 		String payload = prepare(header, claims);
 		try {
 			signed = doSigning(payload);
 		} catch (InvalidKeyException | NoSuchAlgorithmException | SignatureException e) {
-			throw new LoginException("Unable to sign: "+e.getMessage());
+			throw new JWTException("Unable to sign: "+e.getMessage());
 		}
 		try {
 			return payload + "." + UtilityMethods.base64EncodeWithoutPadding(signed);
 		} catch (IOException e) {
-			throw new LoginException("Unable to encode: "+e.getMessage());
+			throw new JWTException("Unable to encode: "+e.getMessage());
 		}
 	}
 
@@ -48,27 +46,27 @@ public abstract class SignerBase implements JWTSigner, JWTVerifier {
 	}
 
 	@Override
-	public void verify(byte[] token) throws LoginException {
+	public void verify(byte[] token) throws JWTException {
 		split(token);
 
 		byte[] signatureDecoded;
 		try {
 			signatureDecoded = UtilityMethods.base64DecodeMissingPaddingToBytes(new String(signature));
 		} catch (IOException e) {
-			throw new LoginException("Unable to decode signature: "+e.getMessage());
+			throw new JWTException("Unable to decode signature: "+e.getMessage());
 		}
 
 		try {
 			doVerification(payload, signatureDecoded);
 		} catch (InvalidKeyException | SignatureException | NoSuchAlgorithmException e) {
-			throw new LoginException("Unable to verify token: "+e.getMessage());
+			throw new JWTException("Unable to verify token: "+e.getMessage());
 		}
 	}
 
 	protected abstract void doVerification(byte[] payload, byte[] signatureDecoded)
 			throws InvalidKeyException, SignatureException, NoSuchAlgorithmException;
 
-	private void split(byte[] token) throws LoginException {
+	private void split(byte[] token) throws JWTException {
 		int signatureSplitPoint = -1;
 		int payloadSplitPoint = -1;
 		int currPos = 0;
@@ -86,7 +84,7 @@ public abstract class SignerBase implements JWTSigner, JWTVerifier {
 		}
 
 		if (pointCount != 2)
-			throw new LoginException("Invalid token. Must be separated by two '.'");
+			throw new JWTException("Invalid token. Must be separated by two '.'");
 
 		payload = new byte[signatureSplitPoint];
 		signature = new byte[token.length - signatureSplitPoint - 1];
@@ -95,7 +93,7 @@ public abstract class SignerBase implements JWTSigner, JWTVerifier {
 		System.arraycopy(token, payload.length + 1, signature, 0, signature.length);
 		
 		if(payloadSplitPoint+1 == payload.length)
-			throw new LoginException("Invalid token. Claims are not present");			
+			throw new JWTException("Invalid token. Claims are not present");			
 		
 		byte[] headerBytes = new byte[payloadSplitPoint];
 		byte[] claimsBytes = new byte[payload.length - payloadSplitPoint - 1];

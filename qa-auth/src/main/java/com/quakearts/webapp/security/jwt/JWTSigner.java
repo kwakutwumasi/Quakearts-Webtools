@@ -1,7 +1,7 @@
 package com.quakearts.webapp.security.jwt;
 
-import javax.security.auth.login.LoginException;
+import com.quakearts.webapp.security.jwt.exception.JWTException;
 
 public interface JWTSigner extends JWTBase {
-	String sign(JWTHeader header, JWTClaims claims) throws LoginException;
+	String sign(JWTHeader header, JWTClaims claims) throws JWTException;
 }

@@ -15,6 +15,7 @@ public interface JWTClaims extends Iterable<JWTClaims.Claim> {
 	JWTClaims setNotBefore(long time);
 	long getNotBefore();
 	long getIssuedAt();
+	JWTClaims setIssuedAt(long time);
 	JWTClaims addPrivateClaim(String name, String value);
 	String getPrivateClaim(String name);
 	String compact();

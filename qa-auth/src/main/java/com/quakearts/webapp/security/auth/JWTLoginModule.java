@@ -22,6 +22,7 @@ import com.quakearts.webapp.security.jwt.JWTClaims;
 import com.quakearts.webapp.security.jwt.JWTHeader;
 import com.quakearts.webapp.security.jwt.JWTSigner;
 import com.quakearts.webapp.security.jwt.JWTVerifier;
+import com.quakearts.webapp.security.jwt.exception.JWTException;
 import com.quakearts.webapp.security.jwt.factory.JWTFactory;
 
 public class JWTLoginModule implements LoginModule {
@@ -177,8 +178,12 @@ public class JWTLoginModule implements LoginModule {
 					byte[] token = headerCallback.getTokenData() != null ? headerCallback.getTokenData()
 							: new String(passwordCallback.getPassword()).getBytes();
 
-					verifier = JWTFactory.getInstance().getVerifier(algorithm, options);
-					verifier.verify(token);
+					try {
+						verifier = JWTFactory.getInstance().getVerifier(algorithm, options);
+						verifier.verify(token);
+					} catch (JWTException e) {
+						throw new LoginException(e.getMessage());
+					}
 
 					loginOk = true;
 					JWTClaims claims = verifier.getClaims();
@@ -294,9 +299,13 @@ public class JWTLoginModule implements LoginModule {
 		
 		JWTHeader header = JWTFactory.getInstance().createEmptyClaimsHeader();
 		
-		JWTSigner signer = JWTFactory.getInstance().getSigner(algorithm, options);
-		
-		return signer.sign(header, claims);
+		JWTSigner signer;
+		try {
+			signer = JWTFactory.getInstance().getSigner(algorithm, options);
+			return signer.sign(header, claims);
+		} catch (JWTException e) {
+			throw new LoginException(e.getMessage());
+		}
 	}
 	
 	@Override

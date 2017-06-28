@@ -89,10 +89,7 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	}
 
 	@TransactionParticipant(TransactionType.SINGLETON)
-	public void pushLogsToDB() throws Exception {
-		if(getSaveLogCache()==null)
-			return;
-		
+	public void pushLogsToDB() throws Exception {		
 		List<ProcessingLog> sortList = new ArrayList<>(getSaveLogCache().values());
 		sortList.sort(logComparator);
 		

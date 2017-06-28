@@ -110,6 +110,12 @@ public class JWTClaimsImpl extends JWTJsonObjectBase implements JWTClaims {
 	}
 
 	@Override
+	public JWTClaims setIssuedAt(long time) {
+		jsonObject.add(IAT, time);
+		return this;
+	}
+	
+	@Override
 	public JWTClaims addPrivateClaim(String name, String value) {
 		if (name.equals(SUB) || name.equals(AUD) || name.equals(EXP) || name.equals(IAT) || name.equals(ISS)
 				|| name.equals(NBF))
@@ -121,6 +127,10 @@ public class JWTClaimsImpl extends JWTJsonObjectBase implements JWTClaims {
 
 	@Override
 	public String getPrivateClaim(String name) {
+		if (name.equals(SUB) || name.equals(AUD) || name.equals(EXP) || name.equals(IAT) || name.equals(ISS)
+				|| name.equals(NBF))
+			throw new UnsupportedOperationException("Invalid private claim:" + name);
+
 		try {
 			return jsonObject.get(name).asString();
 		} catch (UnsupportedOperationException e) {
