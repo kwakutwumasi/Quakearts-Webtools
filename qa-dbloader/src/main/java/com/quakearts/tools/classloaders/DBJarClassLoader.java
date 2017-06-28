@@ -20,10 +20,10 @@ import java.net.URLStreamHandler;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipInputStream;
 import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import com.quakearts.tools.classloaders.hibernate.JarFileEntry;
 import com.quakearts.tools.classloaders.utils.UtilityMethods;
-import com.quakearts.webapp.hibernate.HibernateHelper;
+import com.quakearts.webapp.orm.DataStore;
+import com.quakearts.webapp.orm.DataStoreFactory;
 
 public class DBJarClassLoader extends ClassLoader {//TODO Implement with URL class loader
 
@@ -63,12 +63,12 @@ public class DBJarClassLoader extends ClassLoader {//TODO Implement with URL cla
 	}
 
 	private JarFileEntry loadEntry(String entryName) throws HibernateException, IOException {
-		Session session;
+		DataStore store;
 		if(domain==null)
-			session = HibernateHelper.getCurrentSession();
+			store = DataStoreFactory.getInstance().getDataStore();
 		else
-			session = HibernateHelper.getSession(domain);
-		return (JarFileEntry)session.get(JarFileEntry.class,entryName);
+			store = DataStoreFactory.getInstance().getDataStore(domain);
+		return (JarFileEntry)store.get(JarFileEntry.class,entryName);
 	}
 
 	private byte[] getBytes(JarFileEntry jarFileEntry) throws IOException{

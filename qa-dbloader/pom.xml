@@ -39,8 +39,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
-			<artifactId>qa-common</artifactId>
-			<version>2.2</version>			
+			<artifactId>qa-orm</artifactId>
+			<version>2.3</version>			
 		</dependency>
 	</dependencies>
 		

@@ -16,12 +16,11 @@ import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-
 import com.quakearts.tools.classloaders.hibernate.JarFile;
 import com.quakearts.tools.classloaders.hibernate.JarFileEntry;
-import com.quakearts.webapp.hibernate.HibernateHelper;
+import com.quakearts.webapp.orm.DataStore;
+import com.quakearts.webapp.orm.DataStoreFactory;
+import com.quakearts.webapp.orm.exception.DataStoreException;
 
 public class JarFileStorer {
 	
@@ -35,22 +34,22 @@ public class JarFileStorer {
 		this.domain=domain;
 	}
 	
-	public void storeJarFile(byte[] jarBytes, String jarName) throws HibernateException, IOException {
-		Session session;
+	public void storeJarFile(byte[] jarBytes, String jarName) throws DataStoreException, IOException {
+		DataStore store;
 		if(domain==null)
-			session = HibernateHelper.getCurrentSession();
+			store = DataStoreFactory.getInstance().getDataStore();
 		else
-			session = HibernateHelper.getSession(domain);
+			store = DataStoreFactory.getInstance().getDataStore(domain);
 		
-		storeJarFile(jarBytes, jarName, session);
+		storeJarFile(jarBytes, jarName, store);
 	}
 	
-	public void storeJarFile(byte[] jarBytes,String jarName, Session session) throws HibernateException, IOException {
+	public void storeJarFile(byte[] jarBytes,String jarName, DataStore store) throws DataStoreException, IOException {
 		JarFile jarFile = new JarFile();
 		jarFile.setJarData(jarBytes);
 		jarFile.setJarName(jarName);
-		session.save(jarFile);
-		session.flush();
+		store.save(jarFile);
+		store.flushBuffers();
 		
 		ZipInputStream jarStream = new ZipInputStream(new ByteArrayInputStream(jarBytes));		
 		ZipEntry zipEntry;
@@ -68,9 +67,9 @@ public class JarFileStorer {
 				continue;
 				
 			try{
-				JarFileEntry duplicateJarFileEntry = (JarFileEntry) session.get(JarFileEntry.class,zipEntry.getName());
+				JarFileEntry duplicateJarFileEntry = (JarFileEntry) store.get(JarFileEntry.class,zipEntry.getName());
 				if(duplicateJarFileEntry==null){
-					session.save(new JarFileEntry(zipEntry.getName(), jarFile));
+					store.save(new JarFileEntry(zipEntry.getName(), jarFile));
 					builder.append("Loaded "+zipEntry.getName()).append("\n");
 					++savecount;
 				}else{
@@ -81,13 +80,13 @@ public class JarFileStorer {
 					if(duplicateZipEntry == null){
 						builder.append(", but its corresponding jar file entry was not found. Replacing with new file.");
 						duplicateJarFileEntry.setJarFile(jarFile);
-						session.update(duplicateJarFileEntry);
+						store.update(duplicateJarFileEntry);
 						++savecount;
 					} else {
 						if(duplicateZipEntry.getTime()<zipEntry.getTime()){
 							builder.append(", but it is older than current file. Replacing with current file.");
 							duplicateJarFileEntry.setJarFile(jarFile);
-							session.update(duplicateJarFileEntry);
+							store.update(duplicateJarFileEntry);
 							++savecount;
 						}else{
 							builder.append(", and is newer than the current file. Current file will be skipped.");
@@ -115,24 +114,21 @@ public class JarFileStorer {
 		summary = builder.toString();
 	}
 
-	public JarFile[] cleanOrphanJars() throws HibernateException, IOException {
-		Session session;
-		if (this.domain == null) {
-			session = HibernateHelper.getCurrentSession();
-		} else {
-			session = HibernateHelper.getSession(this.domain);
-		}
-		return cleanOrphanJars(session);
+	public JarFile[] cleanOrphanJars() throws DataStoreException, IOException {
+		DataStore store;
+		if(domain==null)
+			store = DataStoreFactory.getInstance().getDataStore();
+		else
+			store = DataStoreFactory.getInstance().getDataStore(domain);
+		return cleanOrphanJars(store);
 	}
 
-	@SuppressWarnings("unchecked")
-	public JarFile[] cleanOrphanJars(Session session) {
-		java.util.List<JarFile> files = session.createCriteria(JarFile.class)
-				.list();
+	public JarFile[] cleanOrphanJars(DataStore store) {
+		java.util.List<JarFile> files = store.list(JarFile.class,null);
 		ArrayList<JarFile> deleteList = new ArrayList<JarFile>();
 		for (JarFile file : files) {
 			if (file.getJarFileEntries().size() == 0) {
-				session.delete(file);
+				store.delete(file);
 				deleteList.add(file);
 			}
 		}
