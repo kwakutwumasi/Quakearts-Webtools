@@ -52,7 +52,7 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	private Comparator<ProcessingLog> logComparator = (n1,n2)-> n1.getLogDt().compareTo(n2.getLogDt());
 	private final Logger log = LoggerFactory.getLogger(ProcessLoggerImpl.class);
 	private final Timer log_timer = new Timer(true);
-	private static Cache<String, ResultExceptionLog> result_exception_log_cache;
+	private Cache<String, ResultExceptionLog> result_exception_log_cache;
 	private SystemDataStoreUtils systemDataStoreUtils = SystemDataStoreUtils.getInstance();
 		
 	ProcessLoggerImpl() {
@@ -136,7 +136,7 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 			try {
 				saveExceptionLogToDB(exceptionLog);
 			} catch (Exception e) {
-				log.error("Unable to persist notification log.");
+				log.error("Unable to persist result exception log.");
 				log.error("Message dump: ["+exceptionLog.toString()+"]");
 			} finally {
 				getResultExceptionLog().remove(exceptionLog.toString());

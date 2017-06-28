@@ -24,3 +24,5 @@ local.properties
 /derby.log
 /tmlog.lck
 /tmlog5.log
+/.DS_Store
+/syshub_log_cache/

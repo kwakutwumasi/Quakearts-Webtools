@@ -64,7 +64,7 @@ public class CacheManagerUtil {
     }
 
     public<T> Cache<String, T> getCache(Class<T> cacheType){
-    	return getCacheContainer().getCache();
+    	return getCacheContainer().getCache(cacheType.getName());
     }
     
 }
