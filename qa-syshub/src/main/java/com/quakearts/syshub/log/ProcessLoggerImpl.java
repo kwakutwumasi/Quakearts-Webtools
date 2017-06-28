@@ -72,8 +72,16 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 			@Override
 			public void run() {
 				log_timer.cancel();
-				for(String key:save_log_cache.keySet()){
-					save_log_cache.evict(key);
+				for(String key:getSaveLogCache().keySet()){
+					getSaveLogCache().evict(key);
+				}
+				
+				for(String key:getUpdateLogCache().keySet()){
+					getUpdateLogCache().evict(key);
+				}
+
+				for(String key:getResultExceptionLog().keySet()){
+					getResultExceptionLog().evict(key);
 				}
 			}
 		}));
