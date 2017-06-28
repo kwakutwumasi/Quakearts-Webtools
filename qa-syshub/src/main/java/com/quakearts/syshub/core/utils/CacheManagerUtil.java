@@ -63,8 +63,8 @@ public class CacheManagerUtil {
     	return cache_container;
     }
 
-    public<T> Cache<String, T> getCache(Class<T> cacheType){
-    	return getCacheContainer().getCache(cacheType.getName());
+    public<T> Cache<String, T> getCache(Class<T> cacheType, String suffix){
+    	return getCacheContainer().getCache(cacheType.getName()+suffix!=null?suffix:"");
     }
     
 }

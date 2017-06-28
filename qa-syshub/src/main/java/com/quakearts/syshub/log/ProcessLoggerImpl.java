@@ -324,21 +324,21 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	 */
 	private Cache<String, ProcessingLog> getSaveLogCache() {
 		if(save_log_cache==null){
-			save_log_cache = CacheManagerUtil.getInstance().getCache(ProcessingLog.class);
+			save_log_cache = CacheManagerUtil.getInstance().getCache(ProcessingLog.class,".NEW");
 		}
 		return save_log_cache;
 	}
 
 	private Cache<String, ProcessingLog> getUpdateLogCache() {
 		if(update_log_cache==null){
-			update_log_cache = CacheManagerUtil.getInstance().getCache(ProcessingLog.class);
+			update_log_cache = CacheManagerUtil.getInstance().getCache(ProcessingLog.class,".UPDATE");
 		}
 		return update_log_cache;
 	}
 	
 	private Cache<String, ResultExceptionLog> getResultExceptionLog(){
 		if(result_exception_log_cache == null){
-			result_exception_log_cache = CacheManagerUtil.getInstance().getCache(ResultExceptionLog.class);
+			result_exception_log_cache = CacheManagerUtil.getInstance().getCache(ResultExceptionLog.class, null);
 		}
 		
 		return result_exception_log_cache;
