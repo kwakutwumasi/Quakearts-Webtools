@@ -15,7 +15,6 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
 import static org.hamcrest.core.Is.*;
-import static org.hamcrest.core.IsNot.*;
 
 import org.junit.Test;
 
