@@ -1,6 +1,7 @@
 package com.quakearts.webapp.security.jwt.impl;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
@@ -63,6 +64,15 @@ public abstract class SignerBase implements JWTSigner, JWTVerifier {
 		}
 	}
 
+	@Override
+	public void verify(String token) throws JWTException {
+		try {
+			verify(token.getBytes("UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			//never happens
+		}
+	}
+	
 	protected abstract void doVerification(byte[] payload, byte[] signatureDecoded)
 			throws InvalidKeyException, SignatureException, NoSuchAlgorithmException;
 
