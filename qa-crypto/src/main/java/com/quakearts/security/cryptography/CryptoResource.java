@@ -19,21 +19,14 @@ import com.quakearts.security.cryptography.exception.IllegalCryptoActionExceptio
 import com.quakearts.security.cryptography.permission.CrytographyOperationPermission;
 
 public class CryptoResource {
-    private Cipher cipher;
     private Key secretKey;
+    private String cipherInstance;
     private CrytographyOperationPermission decryptPermission, encryptPermission;
     
     public CryptoResource(Key key, String instance, String name) throws NoSuchAlgorithmException, NoSuchPaddingException 
     {
-        try {
-            cipher = Cipher.getInstance(instance);
-            secretKey = key;
-        } catch (NoSuchAlgorithmException nsae) {
-            nsae.printStackTrace();
-        } catch (NoSuchPaddingException nspe) {
-            nspe.printStackTrace();
-        }
-        
+        secretKey = key;    
+        cipherInstance = instance;
         if(System.getSecurityManager()!=null){
         	decryptPermission = new CrytographyOperationPermission(name, "decrypt");        
         	encryptPermission = new CrytographyOperationPermission(name, "encrypt");
@@ -105,12 +98,21 @@ public class CryptoResource {
     		manager.checkPermission(decryptPermission);
     	}
 
-    	if(cipheredtext == null)
+    	Cipher cipher;
+        try {
+            cipher = Cipher.getInstance(cipherInstance);
+        } catch (NoSuchAlgorithmException nsae) {
+            throw new IllegalCryptoActionException(nsae);
+        } catch (NoSuchPaddingException nspe) {
+            throw new IllegalCryptoActionException(nspe);
+        }
+
+        if(cipheredtext == null)
     		return null;
     	
         try {
-                cipher.init(Cipher.DECRYPT_MODE, secretKey);
-                return cipher.doFinal(cipheredtext);
+           cipher.init(Cipher.DECRYPT_MODE, secretKey);
+           return cipher.doFinal(cipheredtext);
         } catch (Exception e) {
             throw new IllegalCryptoActionException("Error decrypting text.\nException " + e.getClass().getName() + ". Message is "
 					+ e.getMessage(),e);
@@ -123,12 +125,21 @@ public class CryptoResource {
     		manager.checkPermission(encryptPermission);
     	}
 
-    	if(plaintext == null)
+    	Cipher cipher;
+        try {
+            cipher = Cipher.getInstance(cipherInstance);
+        } catch (NoSuchAlgorithmException nsae) {
+            throw new IllegalCryptoActionException(nsae);
+        } catch (NoSuchPaddingException nspe) {
+            throw new IllegalCryptoActionException(nspe);
+        }
+
+        if(plaintext == null)
 			return null;
 
         try {
-                cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-                return cipher.doFinal(plaintext);
+           cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+           return cipher.doFinal(plaintext);
         } catch (Exception e) {
             throw new IllegalCryptoActionException("Cryptographic service failure.\n"+e.getMessage(),e.getCause());
         }
