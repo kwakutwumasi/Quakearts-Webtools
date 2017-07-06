@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:composition template="/base/template.xhtml">
+    <ui:define name="content">
+   		<h:form>
+			<b:messages showDetail="true" dismissible="true" id="messages"></b:messages>
+            <span class="h4">#{agentConfigurationPage.agentConfiguration.id != 0? 'Edit':'Create'} Agent Configuration</span>
+	 	 	<b:formGroup rendered="#{agentConfigurationPage.agentConfiguration.id != 0}">
+		 		<label id="fileUpload_label">Upload file</label>
+				<b:fileinput accept=".json" data="#{agentConfigurationPage.data}"
+					name="#{agentConfigurationPage.fileName}"
+					allowMultiple="false" onevent="#{loader.overlayAjaxLoader}">
+					<c:executeAction listener="#{agentConfigurationPage.completeUpload}"></c:executeAction>
+				</b:fileinput>
+			</b:formGroup>
+    		<ui:include src="/cp/agentConfiguration.crud.xhtml">
+				<ui:param name="agentConfiguration" value="#{agentConfigurationPage.agentConfiguration}"></ui:param>
+			</ui:include>
+			<div id="buttonsDiv">
+				<b:buttonGroup>
+					<b:button>
+						Save
+						<c:saveUpdate domain="system" object="#{agentConfigurationPage.agentConfiguration}" action="update" unless="#{agentConfigurationPage.agentConfiguration.id == 0}"></c:saveUpdate>
+						<c:saveUpdate domain="system" object="#{agentConfigurationPage.agentConfiguration}" action="save" unless="#{agentConfigurationPage.agentConfiguration.id != 0}"></c:saveUpdate>
+						<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+					</b:button>
+					<b:button disabled="#{agentConfigurationPage.agentConfiguration.id == 0}">
+						Delete
+						<c:delete domain="system" object="#{agentConfigurationPage.agentConfiguration}"></c:delete>
+						<c:set as="#{null}" var="#{agentConfigurationPage.agentConfiguration}"></c:set>
+						<f:ajax execute="@this" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+					</b:button>
+					<b:button disabled="#{agentConfigurationPage.agentConfiguration.id == 0}">
+						Reset
+						<c:set as="#{null}" var="#{agentConfigurationPage.agentConfiguration}"></c:set>
+						<f:ajax execute="@this" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+					</b:button>
+					<b:button disabled="#{!agentConfigurationPage.agentConfiguration.active or agentConfigurationPage.deployed or agentConfigurationPage.agentConfiguration.id == 0}" data-overlay-target="buttonsDiv">
+						Deploy
+						<f:ajax render="buttons messages" onevent="#{loader.miniAjaxLoader}" listener="#{agentConfigurationPage.deployThisAgent}"></f:ajax>
+					</b:button>
+					<b:button disabled="#{!agentConfigurationPage.deployed or agentConfigurationPage.agentConfiguration.id == 0}" data-overlay-target="buttonsDiv">
+						Un-Deploy
+						<f:ajax render="buttons messages" onevent="#{loader.miniAjaxLoader}" listener="#{agentConfigurationPage.unDeployThisAgent}"></f:ajax>
+					</b:button>
+				</b:buttonGroup>
+			</div>
+   		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

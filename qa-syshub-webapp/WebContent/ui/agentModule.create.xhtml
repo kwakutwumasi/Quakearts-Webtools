@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:composition template="/base/template.xhtml">
+    <ui:define name="content">
+   		<h:form>
+			<b:messages showDetail="true" dismissible="true"></b:messages>
+            <span class="h4">#{agentModulePage.agentModule.id != 0? 'Edit':'Create'} Agent Module</span>
+    		<ui:include src="/cp/agentModule.crud.xhtml">
+				<ui:param name="agentModule" value="#{agentModulePage.agentModule}"></ui:param>
+			</ui:include>
+			<div id="buttonsDiv">
+				<b:buttonGroup id="buttons">
+					<b:button>
+						Save
+						<c:saveUpdate domain="system" object="#{agentModulePage.agentModule}" action="update" unless="#{agentModulePage.agentModule.id == 0}"></c:saveUpdate>
+						<c:saveUpdate domain="system" object="#{agentModulePage.agentModule}" action="save" unless="#{agentModulePage.agentModule.id != 0}"></c:saveUpdate>
+						<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+					</b:button>
+					<b:button disabled="#{agentModulePage.agentModule.id == 0}">
+						Delete
+						<c:delete domain="system" object="#{agentModulePage.agentModule}"></c:delete>
+						<c:set as="#{null}" var="#{agentModulePage.agentModule}"></c:set>
+						<f:ajax execute="@this" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+					</b:button>
+					<b:button disabled="#{agentModulePage.agentModule.id == 0}">
+						Reset
+						<c:set as="#{null}" var="#{agentModulePage.agentModule}"></c:set>
+						<f:ajax execute="@this" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+					</b:button>
+				</b:buttonGroup>
+			</div>
+   		</h:form>
+	</ui:define>
+</ui:composition>
+</html>
