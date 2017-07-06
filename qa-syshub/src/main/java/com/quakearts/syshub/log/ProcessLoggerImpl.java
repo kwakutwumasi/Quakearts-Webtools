@@ -302,17 +302,7 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	}
 
 	private void saveLogToDB(ProcessingLog notificationLog) throws Exception{
-		DataStore dataStore = systemDataStoreUtils.getSystemDataStore();
-		ProcessingLog oldLog=findMessageLogByMid(notificationLog.getMid());
-		if(oldLog==null)
-			dataStore.save(notificationLog);
-		else{
-			notificationLog = (ProcessingLog) dataStore.refresh(notificationLog);
-			notificationLog.setRetries(notificationLog.getRetries()+1);
-			
-			dataStore.update(notificationLog);
-		}
-		
+		systemDataStoreUtils.getSystemDataStore().save(notificationLog);
 		log.trace("Saved message. ID is "+notificationLog.getLogID());
 	}
 	
