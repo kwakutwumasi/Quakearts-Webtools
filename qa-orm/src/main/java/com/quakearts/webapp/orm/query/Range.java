@@ -46,6 +46,6 @@ public class Range implements Serializable{
 	}
 	
 	public boolean isEmpty(){
-		return from == null || to == null;
+		return from == null && to == null;
 	}
 }
