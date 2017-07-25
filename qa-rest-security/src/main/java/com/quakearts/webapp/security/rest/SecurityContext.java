@@ -162,4 +162,8 @@ public final class SecurityContext implements Serializable {
 	public boolean isAuthenicated(){
 		return subject!=null;
 	}
+	
+	public void release() {
+		securityContext.remove();
+	}
 }
