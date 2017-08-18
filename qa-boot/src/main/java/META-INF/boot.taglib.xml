@@ -859,6 +859,22 @@ child component if present
 			<name>required</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to an integer which will be added or subtracted from the hour whenever the increment/decrement controls are clicked </description>
+			<name>hourStep</name>
+		</attribute>		
+		<attribute>
+			<description>A ValueExpression that evaluates to an integer which will be added or subtracted from the minute whenever the increment/decrement controls are clicked </description>
+			<name>minuteStep</name>
+		</attribute>		
+		<attribute>
+			<description>A ValueExpression that evaluates to an integer which will be added or subtracted from the second whenever the increment/decrement controls are clicked </description>
+			<name>secondStep</name>
+		</attribute>		
+		<attribute>
+			<description>A ValueExpression that evaluates to a boolean to determine if the time will be in 24 hour or 12 hour format </description>
+			<name>timeIs24hour</name>
+		</attribute>		
+		<attribute>
 			<description>The target for the overlay during AJAX calls. Used by the onevent handler of f:ajax to find the right target to overlay</description>
 			<name>data-overlay-target</name>
 		</attribute>

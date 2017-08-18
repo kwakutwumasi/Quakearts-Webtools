@@ -11,7 +11,6 @@
 package com.quakearts.webapp.facelets.bootstrap.renderers;
 
 import com.quakearts.webapp.facelets.bootstrap.components.BootDateButton;
-import com.quakearts.webapp.facelets.bootstrap.components.BootDateButton.DateFormat;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.Attribute;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.AttributeManager;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.AttributeManager.Key;
@@ -22,7 +21,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.TreeMap;
@@ -39,8 +37,10 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
     public static final int[] MONTHDAYS = new int[]{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     private static final Map<Integer,String> months = new TreeMap<Integer, String>();
     private static final Attribute[] ATTRIBUTES = AttributeManager.getAttributes(Key.DATEBUTTON);
-    public static final String DATE_SCRIPT_FUNCTION = "var dc_idVal = qab.dc('#dayVal',#monthVal,'#yearVal',"
-    		+ "'#idVal','#type');";
+    public static final String DATE_SCRIPT_FUNCTION = "var dc_idVal = qab.dc('#dayVal', #monthVal, '#yearVal',"
+    		+"#hourVal, #minVal, #secondVal,"
+    		+ "#hourStep, #minStep, #secondStep,"
+    		+ "#is24hr, #isAM, '#idVal', '#type');";
     
     static {
     	months.put(1,"Jan");
@@ -61,7 +61,7 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
     protected void getEndTextToRender(FacesContext context, UIComponent component, String currentValue)
         throws IOException
     {
-        int dayInt,monthInt,yearInt;
+        int dayInt,monthInt,yearInt, hourInt, minuteInt, secondInt;
         BootDateButton button;
         if(component instanceof BootDateButton)
         {
@@ -76,7 +76,7 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
         Calendar date;
         date = new GregorianCalendar();
 		SimpleDateFormat formatter;
-		formatter = new SimpleDateFormat(button.formatVal().getFormatString());
+		formatter = new SimpleDateFormat(button.formatVal().getDateFormatString());
         if(currentValue!=null){
 			try {
 				date.setTime(formatter.parse(currentValue));
@@ -87,18 +87,35 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
         		currentValue = formatter.format(date.getTime());
         }
         
-        if(button.formatVal()==DateFormat.DAYMONTH||button.formatVal()==DateFormat.DAYMONTHYEAR)
+        if(button.formatVal().hasDay())
         	dayInt = date.get(Calendar.DAY_OF_MONTH);
         else
         	dayInt = 1;
         
-        if(button.formatVal()!=DateFormat.YEAR)
+        if(button.formatVal().hasMonth())
         	monthInt = (date.get(Calendar.MONTH)+1);
         else
         	monthInt = 1;
 
         yearInt = date.get(Calendar.YEAR);
 		
+        if(button.formatVal().hasHour())
+        	hourInt = date.get(button.timeIs24Hours()?Calendar.HOUR_OF_DAY:Calendar.HOUR);
+        else
+        	hourInt = 0;
+        
+        if(button.formatVal().hasMinute())
+        	minuteInt = date.get(Calendar.MINUTE);
+        else
+        	minuteInt = 0;
+
+        if(button.formatVal().hasSeconds())
+        	secondInt = date.get(Calendar.SECOND);
+        else
+        	secondInt = 0;
+
+        boolean isAM = button.timeIs24Hours()?false:date.get(Calendar.AM_PM) == Calendar.AM;
+        
 		String id=component.getClientId(context), idJs = id.replace("-", "_");
         
         ResponseWriter writer = context.getResponseWriter();
@@ -122,7 +139,7 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
     	GregorianCalendar firstDay = new GregorianCalendar(date.get(Calendar.YEAR), date.get(Calendar.MONTH), 1);
     	offset = firstDay.get(Calendar.DAY_OF_WEEK)-1;
         
-        if(button.formatVal()== DateFormat.DAYMONTH || button.formatVal()== DateFormat.DAYMONTHYEAR){
+        if(button.formatVal().hasDay()){
         	String dayClass = button.get("dayClass");
         	
 			generateSelectDay(idJs, dayInt,
@@ -130,16 +147,18 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
 					currentValue==null,
 					getDisplayType(button, context, "dayType"), dayClass, componentDisabled);
         }
-       writer.write("\n");
-       if(!(button.formatVal()== DateFormat.YEAR)){
+
+        if(button.formatVal().hasMonth()){
+           writer.write("\n");
         	String monthClass = button.get("monthClass");
 
         	generateSelect("month", idJs, monthInt, months, writer, button,
         			currentValue==null,
 					getDisplayType(button, context, "monthType"),monthClass, componentDisabled);
-       }
-       writer.write("\n");
-        if((button.formatVal()!= DateFormat.DAYMONTH) && (button.formatVal()!= DateFormat.MONTH)){
+        }
+
+        if(button.formatVal().hasYear()){
+            writer.write("\n");
         	String yearClass = button.get("yearClass");
 
         	generateSelect("year", idJs, yearInt,
@@ -147,6 +166,39 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
 					writer, button, currentValue==null,
 					getDisplayType(button, context, "yearType"),yearClass, componentDisabled);
         }
+        
+        if(button.formatVal().hasDay() 
+        		&& button.formatVal().hasHour()){
+            writer.write("\n");
+        	writer.startElement("span", component);
+        	writer.writeAttribute("class", "time-text", null);
+        	writer.write("@");
+        	writer.endElement("span");
+        }
+        
+        if(button.formatVal().hasHour()){
+            writer.write("\n");
+        	writer.startElement("div", component);
+        	writer.writeAttribute("class", "time-control-group time-md", null);
+        	generateTimeControl(writer, component, idJs, "hour", "vhr", "hrup", "hrdown", currentValue == null, hourInt);
+        	if(button.formatVal().hasMinute()){
+            	generateTimeControl(writer, component, idJs, "min", "vmn", "mnup","mndown", currentValue == null, minuteInt);
+        	}        	
+        	if(button.formatVal().hasSeconds()){
+            	generateTimeControl(writer, component, idJs, "sec", "vsc", "scup","scdown", currentValue == null, secondInt);
+        	}
+        	writer.endElement("div");        	
+        	if(!button.timeIs24Hours()){
+                writer.write("\n");
+        		writer.startElement("div", component);
+        		writer.writeAttribute("class", "btn-group time-ampm-group", null);
+        		writer.write("\n");
+        		generateAMPMButton(writer, component, idJs, isAM, true);
+        		generateAMPMButton(writer, component, idJs, isAM, false);
+        		writer.endElement("div");
+        	}
+        }
+        
         writer.write("\n");
         if(button.nullable()){
  			writer.startElement("a", component);
@@ -173,14 +225,65 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
 			writer.startElement("script", button);
 			writer.writeAttribute("type", "text/javascript", null);
 	        writer.write("\n");    	
-			writer.writeText(getContents(button,context), null);	
+			writer.writeText(getContents(button,context,idJs,button.nullable() && currentValue == null, 
+					dayInt, monthInt, yearInt,
+					hourInt, minuteInt, secondInt,
+					button.hourStepVal(),button.minuteStepVal(), button.secondStepVal(),
+					button.timeIs24Hours(), isAM), null);	
 	        writer.write("\n");
 			writer.endElement("script");
 	        writer.write("\n");   
 		}
     }
     
-    private void generateSelectDay(String idJs, int value,
+    private void generateTimeControl(ResponseWriter writer, UIComponent component, String idJs,
+    		String id, String validateFunction, String upFunction, String downFunction, boolean isNull, int value) throws IOException {
+        writer.write("\n");
+    	writer.startElement("input", component);
+    	writer.writeAttribute("class", "time-form-control", null);
+    	writer.writeAttribute("onblur", "dc_"+idJs+"."+validateFunction+"(this)", null);
+    	writer.writeAttribute("id", idJs+"_"+id, null);
+    	writer.writeAttribute("value", isNull?"":value+"", null);
+    	writer.endElement("input");
+        writer.write("\n");
+    	writer.startElement("div", component);
+    	writer.writeAttribute("class", "time-btn-group", null);
+    	generateTimeButtons(writer, component, idJs, upFunction, "up");
+    	generateTimeButtons(writer, component, idJs, downFunction, "down");
+        writer.write("\n");
+    	writer.endElement("div");
+	}
+
+	private void generateTimeButtons(ResponseWriter writer, UIComponent component, String idJs,
+    		String function, String chevron)
+    		throws IOException {
+        writer.write("\n");
+    	writer.startElement("button", component);
+    	writer.writeAttribute("class", "btn btn-default time-btn-"+chevron, null);
+    	writer.writeAttribute("type", "button", null);
+    	writer.writeAttribute("onclick", "dc_"+idJs+"."+function+"(this)", null);
+        writer.write("\n");
+    	writer.startElement("span", component);
+    	writer.writeAttribute("class", "glyphicon glyphicon-chevron-"+chevron, null);
+    	writer.endElement("span");
+        writer.write("\n");
+    	writer.endElement("button");
+	}
+	
+	private void generateAMPMButton(ResponseWriter writer, UIComponent component, String idJs,
+			boolean isAM, boolean generateAM) throws IOException{
+		writer.startElement("button", component);
+		writer.writeAttribute("class", "btn btn-default"
+				+((isAM && generateAM)||(!isAM && !generateAM)?" active":""), null);
+		writer.writeAttribute("onclick", "dc_"+idJs+".tglampm(this,"+generateAM+")", null);
+		writer.writeAttribute("type", "button", null);
+        writer.write(generateAM?"AM":"PM");
+        writer.endElement("button");
+		writer.write("\n");  
+
+	}
+
+	private void generateSelectDay(String idJs, int value,
 			int days, int offset, ResponseWriter writer,
 			BootDateButton component, boolean isnull,
 			String type, String styleClass, boolean componentDisabled) throws IOException {
@@ -277,7 +380,7 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
 	    	String onChangeEvent;
 	    	if(part.equals("month")){
 	    		onChangeEvent = "dc_"+idJs+".um(this,val);"
-	    				+(component.formatVal()==DateFormat.DAYMONTH||component.formatVal()==DateFormat.DAYMONTHYEAR?"dc_"+idJs+".sd(val);":"");   		
+	    				+(component.formatVal().hasDay()?"dc_"+idJs+".sd(val);":"");   		
 	    	} else {
 	    		onChangeEvent = "dc_"+idJs+".uy(this);";    		
 	    	}
@@ -305,47 +408,25 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
     	writer.endElement("div");
     }   
 	
-	private String getContents(BootDateButton dateComponent, FacesContext context) {
-		String idJs=dateComponent.getClientId(context).replace("-", "_");
-	    int dayInt,monthInt,yearInt;
-	    Calendar date;
-        date = new GregorianCalendar();
-		Object object = dateComponent.getValue();
-		boolean isNull = false;
-		
-        if(object instanceof String){
-    		SimpleDateFormat formatter;
-    		formatter = new SimpleDateFormat(dateComponent.formatVal().getFormatString());
-			try {
-				date.setTime(formatter.parse((String) object));
-			} catch (ParseException e) {
-			}
-        } else if(object instanceof Date){
-        	date.setTime((Date)object);
-        } else if(object==null){
-        	isNull = dateComponent.nullable();
-        }
-        
-        if(dateComponent.formatVal()==DateFormat.DAYMONTH||dateComponent.formatVal()==DateFormat.DAYMONTHYEAR)
-        	dayInt = date.get(Calendar.DAY_OF_MONTH);
-        else
-        	dayInt = 1;
-        
-        if(dateComponent.formatVal()!=DateFormat.YEAR)
-        	monthInt = (date.get(Calendar.MONTH)+1);
-        else
-        	monthInt = 1;
-
-        yearInt = date.get(Calendar.YEAR);
-		
-		
+	private String getContents(BootDateButton dateComponent, FacesContext context, 
+			String idJs, boolean isNull, int dayInt, int monthInt, int yearInt, 
+			int hourInt, int minInt, int secondInt,
+			int hourStep, int minStep, int secondStep, boolean is24hr, boolean isAM) {
 		return DATE_SCRIPT_FUNCTION
 				.replace("idVal", idJs)
 				.replace("#dayVal",isNull?"":(dayInt<10?"0"+dayInt:""+dayInt))
 				.replace("#monthVal",isNull?"0":(monthInt+""))
 				.replace("#yearVal", isNull?"":(""+yearInt))
+				.replace("#hourVal", isNull?"0":hourInt+"")
+				.replace("#minVal", isNull?"0":minInt+"")
+				.replace("#secondVal", isNull?"0":secondInt+"")
+				.replace("#hourStep", hourStep+"")
+				.replace("#minStep", minStep+"")
+				.replace("#secondStep", secondStep+"")
+				.replace("#is24hr", is24hr+"")
+				.replace("#isAM", isAM+"")
 				.replace("#type", dateComponent.formatVal()
-						.getFormatValue());
+						.getFormat());
 	}
     
     private Map<Integer, String> getYearsMap(int max,int min, int yearInt){

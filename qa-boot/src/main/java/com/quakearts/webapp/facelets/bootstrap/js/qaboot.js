@@ -252,12 +252,17 @@ qab.icbe = function(obj){
 	}
 };
 qab.mons=new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
-qab.dc = function(day,month,year,idBase,type){
+qab.dc = function(day,month,year,hour,minute,second,
+		hrstep,mnstep,scstep,is24hr,isAM,
+		idBase,type){
 	var dsel=idBase+"_day",
 	msel=idBase+"_month",
 	ysel=idBase+"_year",
 	insel=idBase+"_input",
-	dbsel=idBase+"_btn_day";
+	dbsel=idBase+"_btn_day",
+	hrsel=idBase+"_hour",
+	mnsel=idBase+"_min",
+	scsel=idBase+"_sec";
 	return  {
 		"day":day,
 		"month":month,
@@ -331,34 +336,206 @@ qab.dc = function(day,month,year,idBase,type){
 						}
 					});
 		},
+		"hrsel":hrsel,
+		"hrstep":hrstep,
+		"hour":hour,
+		"minhr":is24hr?0:1,
+		"maxhr":is24hr?23:12,
+		"is24hr":is24hr,
+		"hrup":function(){
+			if(this.hour<this.maxhr && (this.hour+this.hrstep)<=this.maxhr){
+				this.hour+=(this.hrstep - (this.hour % this.hrstep));
+				$(this.hrsel).val(this.hour);
+				this.uc();
+			}
+		},
+		"hrdown":function(){
+			if(this.hour>this.minhr && (this.hour-this.hrstep)>=this.minhr){
+				var subtrahand = this.hour % this.hrstep;
+				this.hour-=(subtrahand===0?hrstep:subtrahand);
+				$(this.hrsel).val(this.hour);
+				this.uc();
+			}
+		},
+		"vhr":function(obj){
+			if(!this.vn(obj))
+				return;
+				
+			var value = parseInt(obj.value);
+			if(this.minhr >= value || value >= this.maxhr){
+				obj.value = this.minhr+"";
+				this.hour = this.minhr;
+			} else {
+				this.hour = value;
+			}
+			this.uc();
+		},
+		"mnsel":mnsel,
+		"mnstep":mnstep,
+		"minute":minute,
+		"mnup":function(){
+			if(this.minute<60 && (this.minute+this.mnstep)<=59){
+				this.minute+=(this.mnstep - (this.minute % this.mnstep));
+				$(this.mnsel).val(this.minute);
+				this.uc();
+			}
+		},
+		"mndown":function(){
+			if(this.minute>0 && (this.minute-this.mnstep)>=0){
+				var subtrahand = this.minute % this.mnstep;
+				this.minute-=(subtrahand === 0?mnstep:subtrahand);
+				$(this.mnsel).val(this.minute);
+				this.uc();
+			}
+		},
+		"vmn":function(obj){
+			if(!this.vn(obj))
+				return;
+				
+			var value = parseInt(obj.value);
+			if(0 > value || value > 60){
+				obj.value = "0";
+				this.minute = 0;
+			} else {
+				this.minute = value;
+			}
+			this.uc();
+		},
+		"scsel":scsel,
+		"scstep":scstep,
+		"second":second,
+		"scup":function(){
+			if(this.second<60 && (this.second+this.scstep)<=59){
+				this.second+=(this.scstep - (this.second % this.scstep));
+				$(this.scsel).val(this.second);
+				this.uc();
+			}
+		},
+		"scdown":function(){
+			if(this.second>0 && (this.second-this.scstep)>=0){
+				var subtrahand = (this.second % this.scstep);
+				this.second-=(subtrahand === 0?scstep:subtrahand);
+				$(this.scsel).val(this.second);
+				this.uc();
+			}
+		},
+		"vsc":function(obj){
+			if(!this.vn(obj))
+				return;
+				
+			var value = parseInt(obj.value);
+			if(0 > value || value > 60){
+				obj.value = "0";
+				this.second = 0;
+			} else {
+				this.second = value;	
+			}
+			this.uc();
+		},
+		"vn":function(obj){
+			var numbexp = /^\d+$/;
+			if(!numbexp.test(obj.value)){
+				obj.value = "0";
+				return false;
+			}
+			return true;
+		},
+		"isAM":isAM,
+		"tglampm":function(obj, isAM){
+			this.isAM = isAM;
+			$(obj).parent().children().removeClass('active');
+			$(obj).addClass('active');
+			this.uc();
+		},
 		"cc" : function() {
 			$(this.insel).val('');
 			$(this.dsel).html('&nbsp;');
 			$(this.msel).html('&nbsp;');
 			$(this.ysel).html('&nbsp;');
+			$(this.hrsel).val('');
+			$(this.mnsel).val('');
+			$(this.scsel).val('');
+			
+			this.day = "";
+			this.month = 0;
+			this.year = "";
+			this.hour = 0;
+			this.minute = 0;
+			this.second = 0;
 		},
 		"uc" : function() {
-			var mnStr = this.month + "";
-			switch(this.type){
-			case "dm":
-					$(this.insel).val((this.day.length == 1 ? "0" + this.day : this.day)
-							+ "/"+ (mnStr.length == 1 ? "0" + mnStr: mnStr));
-					break;
-			case "m":
-					$(this.insel).val(mnStr.length == 1 ? "0" + mnStr: mnStr);
-					break;
-			case "my":
-					$(this.insel).val((mnStr.length == 1 ? "0" + mnStr: this.month) 
-							+ "/" + this.year);
-					break;
-			case "y":
-					$(this.insel).val(this.year);
-					break;
-			default:
-				$(this.insel).val((this.day.length == 1 ? "0" + this.day : this.day)
-									+ "/"+ (mnStr.length == 1 ? "0" + mnStr: mnStr) 
-									+ "/" + this.year);
+			var hour = this.hour;
+			if(!this.is24hr){
+				if(this.isAM){
+					if(this.hour === 12){
+						hour = 0;
+					}
+				} else {
+					if(this.hour !== 12){
+						hour+=12;
+					}
+				}
 			}
+			var mnStr = (this.month<10 ? "0" : "")+ this.month + "";
+			var hourString = (hour<10 ? "0" : "") + hour + "";
+			var minuteString = (this.minute<10 ? "0" : "") + this.minute + "";
+			var secondString = (this.second<10 ? "0" : "") + this.second + "";
+			var dateString = "";
+			var parts = this.type.split("");
+			for(var i=0;i<parts.length;i++){
+				var part = parts[i];
+				switch(part){
+				case 'd':
+					if(this.day.length == 0)
+						return;
+					
+					dateString = this.day.length == 1 ? "0" + this.day : this.day;
+					break;
+				case 'm':
+					if(this.month == 0)
+						return;
+					
+					if(dateString.length>0)
+						dateString = dateString + "/";
+					dateString = dateString + mnStr;
+					break;
+				case 'y':
+					if(this.year.length == 0)
+						return;
+					
+					if(dateString.length>0)
+						dateString = dateString + "/";
+					dateString = dateString + this.year
+					break;
+				case 'h':
+					if(this.hour == 0)
+						return;
+					
+					if(dateString.length>0)
+						dateString = dateString + " ";
+					dateString = dateString + hourString;
+					break;
+				case 'n':
+					if(this.minute == 0)
+						return;
+					
+					if(dateString.length>0)
+						dateString = dateString + ":";
+					dateString = dateString + minuteString;
+					break;
+				case 's':
+					if(this.second == 0)
+						return;
+						
+					if(dateString.length>0)
+						dateString = dateString + ":";
+					dateString = dateString + secondString;
+					break;
+				default:
+					break;
+				}
+			};
+			$(this.insel).val(dateString);
 			$(this.insel).change();
 		}
 	};

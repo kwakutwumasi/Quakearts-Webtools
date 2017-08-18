@@ -270,3 +270,92 @@
 	top:12px;
 	cursor: pointer;
 }
+
+.time-control-group {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.time-form-control {
+	margin-bottom: 0;
+	font-weight: normal;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle;
+	-ms-touch-action: manipulation;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	background-image: none;
+	border: 1px solid #adadad;
+	display: table-cell;
+	float: left;
+	width: 40px;
+}
+
+.time-btn-up {
+	border-radius: 0px;
+	display: block;
+}
+
+.time-btn-down {
+	border-radius: 0px;
+	display: block;
+}
+
+.time-md>.time-form-control {
+	padding: 6px 12px;
+	font-size: 14px;
+	line-height: 1.42857143;
+}
+
+.time-md>.time-btn-group .btn {
+	height: 16.5px;
+	padding-top: 0px;
+}
+
+.time-lg>.time-form-control {
+	padding: 10px 16px;
+	font-size: 18px;
+	line-height: 1.3333333;
+}
+
+.time-sm>.time-form-control {
+	padding: 5px 10px;
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.time-xs>.time-form-control {
+	padding: 1px 5px;
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.time-form-control:first-child {
+	border-radius: 4px 0px 0px 4px;
+}
+
+.time-btn-group:last-child .time-btn-up {
+	border-radius: 0px 4px 0px 0px;
+}
+
+.time-btn-group:last-child .time-btn-down {
+	border-radius: 0px 0px 4px 0px;
+}
+
+.time-btn-group {
+	display: table-cell;
+	float: left;
+}
+
+.time-ampm-group {
+}
+
+.time-text {
+	display: inline-block;
+	margin-right: 15px;
+	margin-left: 15px;
+}

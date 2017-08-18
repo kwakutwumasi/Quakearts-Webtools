@@ -12,6 +12,10 @@ package com.quakearts.webapp.facelets.bootstrap.components;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.el.ValueExpression;
 import javax.faces.component.html.HtmlInputText;
@@ -22,49 +26,89 @@ import com.quakearts.webapp.facelets.util.ObjectExtractor;
 public class BootDateButton extends HtmlInputText {
 	public static final String COMPONENT_FAMILY = "com.quakearts.bootstrap.date";
     public static final String RENDERER_TYPE = "com.quakearts.bootstrap.date.renderer";
+	private static final String DMY = "dmy";
     private DateFormat formatVal;
-    private int minAsInt=-1,maxAsInt=-1;
-    private boolean checkedNullable = false, nullable = false;
+    private int minAsInt=-1,maxAsInt=-1, hourStep = -1, minStep = -1, secondStep = -1;
+    private boolean checkedNullable = false, nullable = false, checked24hr = false, is24hr = false;
     
-    public static enum DateFormat{
-    	DAYMONTH("dd/MM","dm"),
-    	MONTH("MM","m"),
-    	MONTHYEAR("MM/yyyy","my"),
-    	YEAR("yyyy","y"),
-    	DAYMONTHYEAR("dd/MM/yyyy","dmy");
-    	
-    	private String formatString, formatValue;
-    	private DateFormat(String formatString, String formatValue) {
-			this.formatString = formatString;
-			this.formatValue = formatValue;
+    private static class FormatStringProducer {
+    	private String separator;
+    	private String format;
+		
+    	FormatStringProducer(String separator, String format) {
+			this.separator = separator;
+			this.format = format;
 		}
     	
-    	public static DateFormat getFormat(String format){
-    		if(format == null)
-    			return DAYMONTHYEAR;
-    		
-    		if(format.equals("dm")){
-    			return DAYMONTH;
-    		} else if(format.equals("m")){
-    			return MONTH;
-    		} else if(format.equals("my")){
-    			return MONTHYEAR;
-    		} else if(format.equals("y")){
-    			return YEAR;
-    		}  else {
-    			return DAYMONTHYEAR;
+    	String getFormatString(boolean isFirst){
+    		return (isFirst?"":separator)+format;
+    	}
+    }
+    
+    public static class DateFormat {
+    	private static final String checkRegex = "m|y|my|(dm)y?(h|(hn)s?)?";
+    	private Set<Character> formatChars = new HashSet<>();
+    	private String dateFormatString, format;
+    	
+    	private static final Map<Character, FormatStringProducer> formatProducerMap = new HashMap<>(); 
+    	
+    	static {
+    		formatProducerMap.put('d', new FormatStringProducer("", "dd"));
+    		formatProducerMap.put('m', new FormatStringProducer("/", "MM"));
+    		formatProducerMap.put('y', new FormatStringProducer("/", "yyyy"));
+    		formatProducerMap.put('h', new FormatStringProducer(" ", "HH"));
+    		formatProducerMap.put('n', new FormatStringProducer(":", "mm"));
+    		formatProducerMap.put('s', new FormatStringProducer(":", "ss"));
+    	}
+    	
+    	public DateFormat(String formatString) {
+    		if(!formatString.matches(checkRegex)){
+    			throw new IllegalArgumentException(formatString+" is not a valid format string.");
     		}
+
+    		format = formatString;    		
+    		char[] parts = formatString.toCharArray();
+    		StringBuilder builder = new StringBuilder();
+    		for(char part:parts){
+    			formatChars.add(part);
+    			builder.append(formatProducerMap.get(part).getFormatString(builder.length() == 0));
+    		}
+    		dateFormatString = builder.toString();
+		}
+    	
+    	public boolean hasDay(){
+    		return formatChars.contains('d');
+    	}
+
+    	public boolean hasMonth(){
+    		return formatChars.contains('m');
     	}
     	
-    	public String getFormatString(){
-    		return formatString;
+    	public boolean hasYear(){
+    		return formatChars.contains('y');
     	}
     	
-    	public String getFormatValue() {
-			return formatValue;
+    	public boolean hasHour(){
+    		return formatChars.contains('h');
+    	}
+
+    	public boolean hasMinute(){
+    		return formatChars.contains('n');
+    	}
+    	
+    	public boolean hasSeconds(){
+    		return formatChars.contains('s');
+    	}
+
+    	public String getDateFormatString(){
+    		return dateFormatString;
+    	}
+    	
+    	public String getFormat() {
+			return format;
 		}
     }
-       
+    
     public String getFamily()
     {
         return COMPONENT_FAMILY;
@@ -125,16 +169,67 @@ public class BootDateButton extends HtmlInputText {
 			String format;
 			if(formatExpression !=null){
 				try {
-					formatVal = DateFormat.getFormat(formatExpression.getValue(FacesContext.getCurrentInstance().getELContext()).toString());
+					formatVal = new DateFormat(formatExpression.getValue(FacesContext.getCurrentInstance().getELContext()).toString());
 				} catch (Exception e) {
 				}
 			} else if((format=(String)getAttributes().get("format")) !=null){
-				formatVal = DateFormat.getFormat(format);
+				formatVal = new DateFormat(format);
 			} else{
-				formatVal = DateFormat.DAYMONTHYEAR;
+				formatVal = new DateFormat(DMY);
 			}
 		}
 		return formatVal;
+	}
+	
+	public int hourStepVal(){
+		if(hourStep == -1){
+			ValueExpression expression = getValueExpression("hourStep");
+			if(expression != null)
+				hourStep = ObjectExtractor.extractInteger(expression, FacesContext.getCurrentInstance().getELContext());
+			else if(getAttributes().containsKey("hourStep"))
+				try {
+					hourStep = Integer.parseInt(getAttributes().get("hourStep").toString());
+				} catch (Exception e) {
+					hourStep = 1;
+				}
+			else
+				hourStep = 1;
+		}
+		return hourStep;
+	}
+	
+	public int minuteStepVal(){
+		if(minStep == -1){
+			ValueExpression expression = getValueExpression("minuteStep");
+			if(expression != null)
+				minStep = ObjectExtractor.extractInteger(expression, FacesContext.getCurrentInstance().getELContext());
+			else if(getAttributes().containsKey("minuteStep"))
+				try {
+					minStep = Integer.parseInt(getAttributes().get("minuteStep").toString());
+				} catch (Exception e) {
+					minStep = 1;
+				}
+			else
+				minStep = 1;
+		}
+		return minStep;
+	}
+	
+	public int secondStepVal(){
+		if(secondStep == -1){
+			ValueExpression expression = getValueExpression("secondStep");
+			if(expression != null)
+				secondStep = ObjectExtractor.extractInteger(expression, FacesContext.getCurrentInstance().getELContext());
+			else if(getAttributes().containsKey("secondStep"))
+				try {
+					secondStep = Integer.parseInt(getAttributes().get("secondStep").toString());
+				} catch (Exception e) {
+					secondStep = 1;
+				}
+			else
+				secondStep = 1;
+		}
+		return secondStep;
 	}
 	
 	@Override
@@ -173,6 +268,22 @@ public class BootDateButton extends HtmlInputText {
 			checkedNullable = true;
 		}		
 		return nullable;
+	}
+	
+	public boolean timeIs24Hours(){
+		if(!checked24hr){
+			ValueExpression nullableExpression = getValueExpression("timeIs24hour");
+			if(nullableExpression !=null){
+				is24hr = ObjectExtractor.extractBoolean(nullableExpression, FacesContext.getCurrentInstance().getELContext());
+			} else {
+				if(getAttributes().containsKey("timeIs24hour"))
+					is24hr = Boolean.parseBoolean((String) getAttributes().get("timeIs24hour"));
+				else
+					is24hr = true;
+			}
+			checked24hr = true;
+		}
+		return is24hr;
 	}
 	
 	public String get(String attribute) {
