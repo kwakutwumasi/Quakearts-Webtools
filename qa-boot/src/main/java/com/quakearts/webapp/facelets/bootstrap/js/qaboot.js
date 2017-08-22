@@ -362,7 +362,7 @@ qab.dc = function(day,month,year,hour,minute,second,
 				return;
 				
 			var value = parseInt(obj.value);
-			if(this.minhr >= value || value >= this.maxhr){
+			if(this.minhr > value || value > this.maxhr){
 				obj.value = this.minhr+"";
 				this.hour = this.minhr;
 			} else {

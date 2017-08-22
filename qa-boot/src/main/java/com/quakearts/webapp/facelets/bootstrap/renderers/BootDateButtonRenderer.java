@@ -99,10 +99,13 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
 
         yearInt = date.get(Calendar.YEAR);
 		
-        if(button.formatVal().hasHour())
+        if(button.formatVal().hasHour()){
         	hourInt = date.get(button.timeIs24Hours()?Calendar.HOUR_OF_DAY:Calendar.HOUR);
-        else
-        	hourInt = 0;
+        	if(hourInt == 0 && !button.timeIs24Hours())
+        		hourInt = 12;
+        } else {
+        	hourInt = button.timeIs24Hours()?0:12;
+        }
         
         if(button.formatVal().hasMinute())
         	minuteInt = date.get(Calendar.MINUTE);
