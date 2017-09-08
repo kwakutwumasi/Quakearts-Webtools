@@ -183,12 +183,12 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
             writer.write("\n");
         	writer.startElement("div", component);
         	writer.writeAttribute("class", "time-control-group time-md", null);
-        	generateTimeControl(writer, component, idJs, "hour", "vhr", "hrup", "hrdown", currentValue == null, hourInt);
+        	generateTimeControl(writer, component, idJs, "hour", "vhr", "hrup", "hrdown", currentValue == null, hourInt, getDisplayType(button, context, "hourType"));
         	if(button.formatVal().hasMinute()){
-            	generateTimeControl(writer, component, idJs, "min", "vmn", "mnup","mndown", currentValue == null, minuteInt);
+            	generateTimeControl(writer, component, idJs, "min", "vmn", "mnup","mndown", currentValue == null, minuteInt, getDisplayType(button, context, "minuteType"));
         	}        	
         	if(button.formatVal().hasSeconds()){
-            	generateTimeControl(writer, component, idJs, "sec", "vsc", "scup","scdown", currentValue == null, secondInt);
+            	generateTimeControl(writer, component, idJs, "sec", "vsc", "scup","scdown", currentValue == null, secondInt, getDisplayType(button, context, "secondType"));
         	}
         	writer.endElement("div");        	
         	if(!button.timeIs24Hours()){
@@ -240,7 +240,8 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
     }
     
     private void generateTimeControl(ResponseWriter writer, UIComponent component, String idJs,
-    		String id, String validateFunction, String upFunction, String downFunction, boolean isNull, int value) throws IOException {
+    		String id, String validateFunction, String upFunction, 
+    		String downFunction, boolean isNull, int value, String type) throws IOException {
         writer.write("\n");
     	writer.startElement("input", component);
     	writer.writeAttribute("class", "time-form-control", null);
@@ -251,18 +252,18 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer
         writer.write("\n");
     	writer.startElement("div", component);
     	writer.writeAttribute("class", "time-btn-group", null);
-    	generateTimeButtons(writer, component, idJs, upFunction, "up");
-    	generateTimeButtons(writer, component, idJs, downFunction, "down");
+    	generateTimeButtons(writer, component, idJs, upFunction, "up", type);
+    	generateTimeButtons(writer, component, idJs, downFunction, "down", type);
         writer.write("\n");
     	writer.endElement("div");
 	}
 
 	private void generateTimeButtons(ResponseWriter writer, UIComponent component, String idJs,
-    		String function, String chevron)
+    		String function, String chevron, String type)
     		throws IOException {
         writer.write("\n");
     	writer.startElement("button", component);
-    	writer.writeAttribute("class", "btn btn-default time-btn-"+chevron, null);
+    	writer.writeAttribute("class", "btn btn-"+type+" time-btn-"+chevron, null);
     	writer.writeAttribute("type", "button", null);
     	writer.writeAttribute("onclick", "dc_"+idJs+"."+function+"(this)", null);
         writer.write("\n");

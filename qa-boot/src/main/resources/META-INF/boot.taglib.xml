@@ -835,23 +835,35 @@ child component if present
 			<name>yearClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the day button HTML tag</description>
+			<description>A ValueExpression to render as the Bootstrap day button type</description>
 			<name>dayType</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the month button HTML tag</description>
+			<description>A ValueExpression to render as the Bootstrap month button type</description>
 			<name>monthType</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the year button HTML tag</description>
+			<description>A ValueExpression to render as the Bootstrap year button type</description>
 			<name>yearType</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the Bootstrap hour button type</description>
+			<name>hourType</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render as the Bootstrap minute button type</description>
+			<name>minuteType</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render as the Bootstrap second button type</description>
+			<name>secondType</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render as the "class" element of the enclosing div</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" element of the enclosing div</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
