@@ -25,11 +25,11 @@ import javax.sql.DataSource;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.quakearts.appbase.exception.ConfigurationException;
 import com.quakearts.appbase.internal.properties.AppBasePropertiesLoader;
+import com.quakearts.appbase.internal.properties.ConfigurationPropertyMap;
 import com.quakearts.appbase.spi.DataSourceProviderSpi;
 import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
-import static com.quakearts.appbase.internal.properties.AppBasePropertiesLoader.get;
 
-public class AtomikosBeanDatasourceSpi implements DataSourceProviderSpi {
+public class AtomikosBeanDatasourceProviderSpiImpl implements DataSourceProviderSpi {
 
 	private static Map<String, DataSource> datasources = new ConcurrentHashMap<>();
 	
@@ -45,23 +45,23 @@ public class AtomikosBeanDatasourceSpi implements DataSourceProviderSpi {
 
 		AppBasePropertiesLoader appBasePropertiesLoader = new AppBasePropertiesLoader();
 		
-		List<Map<String, Serializable>> loadedConfigurationPropertyFiles = appBasePropertiesLoader
+		List<ConfigurationPropertyMap> loadedConfigurationPropertyFiles = appBasePropertiesLoader
 				.getAllConfigurationProperties("."+File.separator+"atomikos"+File.separator+"datasources", ".ds.json", "QA AppBase Atomikos datasource definition");
 		
-		for(Map<String, Serializable> loadedConfigurationPropertyFile:loadedConfigurationPropertyFiles){
+		for(ConfigurationPropertyMap loadedConfigurationPropertyFile:loadedConfigurationPropertyFiles){
 			getDataSource(loadedConfigurationPropertyFile);
 		}
 	}	
 	
 	@Override
-	public DataSource getDataSource(Map<String, Serializable> configurationParameters) {
+	public DataSource getDataSource(ConfigurationPropertyMap configurationParameters) {
 		AtomikosDataSourceBean atomikosDataSourceBean = new AtomikosDataSourceBean();
 		atomikosDataSourceBean.setXaDataSourceClassName((String) configurationParameters.get(DATASOURCECLASS));
 		atomikosDataSourceBean.setXaProperties(getProperties(configurationParameters));		
 		setOtherParameters(atomikosDataSourceBean, configurationParameters);
 		
 		if(configurationParameters.containsKey(NAME)){
-			atomikosDataSourceBean.setUniqueResourceName(get(NAME, String.class, configurationParameters));
+			atomikosDataSourceBean.setUniqueResourceName(configurationParameters.getString(NAME));
 			datasources.put(atomikosDataSourceBean.getUniqueResourceName(), atomikosDataSourceBean);
 			try {
 				JavaNamingDirectorySpiFactory.getInstance().getJavaNamingDirectorySpi().getInitialContext().bind("java:/jdbc/" + atomikosDataSourceBean.getUniqueResourceName(), atomikosDataSourceBean);
@@ -76,40 +76,40 @@ public class AtomikosBeanDatasourceSpi implements DataSourceProviderSpi {
 	}
 
 	private void setOtherParameters(AtomikosDataSourceBean atomikosDataSourceBean,
-			Map<String, Serializable> configurationParameters) {
+			ConfigurationPropertyMap configurationParameters) {
 		if (configurationParameters.containsKey("borrowConnectionTimeout"))
-			atomikosDataSourceBean.setBorrowConnectionTimeout(get("borrowConnectionTimeout", Integer.class, configurationParameters));
+			atomikosDataSourceBean.setBorrowConnectionTimeout(configurationParameters.getInt("borrowConnectionTimeout"));
 
 		if (configurationParameters.containsKey("loginTimeout"))
 			try {
-				atomikosDataSourceBean.setLoginTimeout(get("loginTimeout", Integer.class, configurationParameters));
+				atomikosDataSourceBean.setLoginTimeout(configurationParameters.getInt("loginTimeout"));
 			} catch (SQLException e) {
 				throw new ConfigurationException(e.getMessage(), e);
 			}
 
 		if (configurationParameters.containsKey("maintenanceInterval"))
-			atomikosDataSourceBean.setMaintenanceInterval(get("maintenanceInterval", Integer.class, configurationParameters));
+			atomikosDataSourceBean.setMaintenanceInterval(configurationParameters.getInt("maintenanceInterval"));
 
 		if (configurationParameters.containsKey("maxIdleTime"))
-			atomikosDataSourceBean.setMaxIdleTime(get("maxIdleTime", Integer.class, configurationParameters));
+			atomikosDataSourceBean.setMaxIdleTime(configurationParameters.getInt("maxIdleTime"));
 		
 		if (configurationParameters.containsKey("maxLifetime"))
-			atomikosDataSourceBean.setMaxLifetime(get("maxLifetime", Integer.class, configurationParameters));
+			atomikosDataSourceBean.setMaxLifetime(configurationParameters.getInt("maxLifetime"));
 		
 		if (configurationParameters.containsKey("maxPoolSize"))
-			atomikosDataSourceBean.setMaxPoolSize(get("maxPoolSize", Integer.class, configurationParameters));
+			atomikosDataSourceBean.setMaxPoolSize(configurationParameters.getInt("maxPoolSize"));
 		
 		if (configurationParameters.containsKey("minPoolSize"))
-			atomikosDataSourceBean.setMinPoolSize(get("minPoolSize", Integer.class, configurationParameters));
+			atomikosDataSourceBean.setMinPoolSize(configurationParameters.getInt("minPoolSize"));
 		
 		if (configurationParameters.containsKey("poolSize"))
-			atomikosDataSourceBean.setPoolSize(get("poolSize", Integer.class, configurationParameters));
+			atomikosDataSourceBean.setPoolSize(configurationParameters.getInt("poolSize"));
 		
 		if (configurationParameters.containsKey("reapTimeout"))
-			atomikosDataSourceBean.setReapTimeout(get("reapTimeout", Integer.class, configurationParameters));
+			atomikosDataSourceBean.setReapTimeout(configurationParameters.getInt("reapTimeout"));
 		
 		if (configurationParameters.containsKey("testQuery"))
-			atomikosDataSourceBean.setTestQuery(get("testQuery", String.class, configurationParameters));
+			atomikosDataSourceBean.setTestQuery(configurationParameters.getString("testQuery"));
 	}
 
 	@Override

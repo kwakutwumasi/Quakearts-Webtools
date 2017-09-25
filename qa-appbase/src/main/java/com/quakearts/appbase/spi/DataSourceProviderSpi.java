@@ -10,10 +10,9 @@
  ******************************************************************************/
 package com.quakearts.appbase.spi;
 
-import java.io.Serializable;
-import java.util.Map;
-
 import javax.sql.DataSource;
+
+import com.quakearts.appbase.internal.properties.ConfigurationPropertyMap;
 
 public interface DataSourceProviderSpi {
 	public static final String DATASOURCECLASS = "datasource.class", 
@@ -21,7 +20,7 @@ public interface DataSourceProviderSpi {
 
 	void initiateDataSourceSpi();
 
-	DataSource getDataSource(Map<String, Serializable> configurationParameters);
+	DataSource getDataSource(ConfigurationPropertyMap configurationParameters);
 
 	DataSource getDataSource(String name);
 

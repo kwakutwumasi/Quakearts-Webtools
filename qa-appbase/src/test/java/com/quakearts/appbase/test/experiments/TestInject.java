@@ -1,7 +1,5 @@
-package com.quakearts.test;
+package com.quakearts.appbase.test.experiments;
 
 public interface TestInject {
-
 	void sayHello();
-
 }

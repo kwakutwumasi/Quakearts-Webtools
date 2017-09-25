@@ -19,7 +19,7 @@ import org.apache.naming.NamingContext;
 import com.quakearts.appbase.exception.ConfigurationException;
 import com.quakearts.appbase.spi.JavaNamingDirectorySpi;
 
-public class NamingDirectorySpi implements JavaNamingDirectorySpi {
+public class JavaNamingDirectorySpiImpl implements JavaNamingDirectorySpi {
 
 	@Override
 	public void initiateJNDIServices() {

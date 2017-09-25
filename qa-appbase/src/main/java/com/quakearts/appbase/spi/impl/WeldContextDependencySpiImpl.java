@@ -43,7 +43,7 @@ public class WeldContextDependencySpiImpl implements ContextDependencySpi {
 	}
 	
 	@Override
-	public Object getMainSingleton(Class<?> mainClass) {
+	public <T> T getMainSingleton(Class<T> mainClass) {
 		return container.select(mainClass).get();
 	}
 	

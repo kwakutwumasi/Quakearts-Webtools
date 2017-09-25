@@ -178,7 +178,7 @@ public class Main {
 				return;
 			}
 			
-			while(waitInMain){
+			while(true){
 				Socket commandSocket;
 				try {
 					commandSocket = shutdownSocket.accept();

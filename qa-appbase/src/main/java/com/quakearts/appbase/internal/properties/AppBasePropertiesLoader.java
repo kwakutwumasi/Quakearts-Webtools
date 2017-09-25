@@ -4,13 +4,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Base64;
 import java.util.List;
-import java.util.Map;
 
 import com.quakearts.appbase.Main;
 import com.quakearts.appbase.exception.ConfigurationException;
@@ -22,8 +18,8 @@ import com.quakearts.appbase.internal.json.JsonObject.Member;
 
 public class AppBasePropertiesLoader {
 	
-	public List<Map<String, Serializable>> getAllConfigurationProperties(String fileLocation, String fileSuffix, String appName){
-		List<Map<String, Serializable>> configurationProperties = new ArrayList<>();
+	public List<ConfigurationPropertyMap> getAllConfigurationProperties(String fileLocation, String fileSuffix, String appName){
+		List<ConfigurationPropertyMap> configurationProperties = new ArrayList<>();
 		
 		List<File> configurationFiles = listConfigurationFiles(fileLocation, fileSuffix, appName);
 		for(File configurationFile:configurationFiles){
@@ -34,27 +30,7 @@ public class AppBasePropertiesLoader {
 	}
 	
 	public List<File> listConfigurationFiles(String fileLocation, String fileSuffix, String appName) {
-		List<File> configurationFiles = new ArrayList<>();
-		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		if(classLoader instanceof URLClassLoader){
-			URL[] urls = ((URLClassLoader) classLoader).getURLs();
-			for(URL url:urls){
-				try {
-					File directoryFile = new File(url.toURI());
-					if(directoryFile.exists() && directoryFile.isDirectory()){
-						for(File file:directoryFile.listFiles()){
-							if(file.exists() 
-									&& file.isFile() 
-									&& file.getName().endsWith(fileSuffix))
-								configurationFiles.add(file);
-						}
-					}
-				} catch (URISyntaxException e) {
-					//Skip
-				}
-			}
-		}
-		
+		List<File> configurationFiles = new ArrayList<>();		
 		File configurationFilesLocation = new File(fileLocation);
 		if(configurationFilesLocation.exists() && configurationFilesLocation.isDirectory()){
 			for(File file:configurationFilesLocation.listFiles()){
@@ -75,8 +51,8 @@ public class AppBasePropertiesLoader {
 		return configurationFiles;
 	}
 	
-	public Map<String, Serializable> loadParametersFromFile(File configurationFile){
-		Map<String, Serializable> map = new HashMap<>();
+	public ConfigurationPropertyMap loadParametersFromFile(File configurationFile){
+		ConfigurationPropertyMap map = new ConfigurationPropertyMap();
 		try(FileReader reader = new FileReader(configurationFile)) {
 			JsonValue datasourceValue = Json.parse(reader);
 			
@@ -88,8 +64,10 @@ public class AppBasePropertiesLoader {
 				if(c.getValue().isBoolean()){
 					map.put(c.getName(), c.getValue().asBoolean());
 				} else if(c.getValue().isNumber()){
-					if(c.getValue().toString().contains("."))
+					if(c.getValue().toString().matches("[\\d]*\\.[\\d]+"))
 						map.put(c.getName(), c.getValue().asDouble());
+					else if(c.getValue().toString().matches("[\\d]+(e)[\\d]+"))
+						map.put(c.getName(), c.getValue().asFloat());
 					else
 						map.put(c.getName(), new Double(c.getValue().asDouble()).intValue());
 				} else if(c.getValue().isString()){
@@ -102,20 +80,22 @@ public class AppBasePropertiesLoader {
 					Member objectMember = object.iterator().next();
 					Serializable value;
 					switch (objectMember.getName()) {
-					case "double":
-						value = objectMember.getValue().asDouble();
-						break;
-					case "float":
-						value = objectMember.getValue().asFloat();
-						break;
-					case "chars":
-						value = objectMember.getValue().asString().toCharArray();
-						break;
-					case "char":
-						value = objectMember.getValue().asString().toCharArray()[0];
-						break;
 					case "long":
+						if(!objectMember.getValue().isNumber())
+							throw new ConfigurationException("Invalid configuration parameter "+c.getName()+" found in "+configurationFile.getAbsolutePath()+". Must be a number.");
+
 						value = objectMember.getValue().asLong();
+						break;
+					case "binary":
+						if(!objectMember.getValue().isString())
+							throw new ConfigurationException("Invalid configuration parameter "+c.getName()+" found in "+configurationFile.getAbsolutePath()+". Must be a string enclosed by \"\".");
+
+						String base64String = objectMember.getValue().asString();
+						
+						if(!base64String.matches("(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"))
+							throw new ConfigurationException("Invalid configuration parameter "+c.getName()+" found in "+configurationFile.getAbsolutePath()+". Must be a valid Base 64 encoded string enclosed by \"\".");
+
+						value = Base64.getDecoder().decode(base64String);
 						break;
 					default:
 						throw new ConfigurationException("Invalid configuration parameter "+c.getName()+" found in "+configurationFile.getAbsolutePath()+". Conversion not understood: "+objectMember.getName());
@@ -133,11 +113,5 @@ public class AppBasePropertiesLoader {
 		}
 		
 		return map;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static <T> T get(String name, Class<T> clazz, Map<String, Serializable> configurationParameters){
-		return (T) configurationParameters.get(name);
-	}
-	
+	}	
 }

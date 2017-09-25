@@ -1,0 +1,9 @@
+{
+	"stringproperty":"property",
+	"integerproperty":1,
+	"doubleproperty":2.00,
+	"floatproperty":2e10,
+	"booleanproperty":true,
+	"specialproperty.binary":{"binary":"VGVzdA=="},
+	"specialproperty.long":{"long":2000000}
+}
