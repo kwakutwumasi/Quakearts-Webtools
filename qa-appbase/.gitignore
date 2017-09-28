@@ -4,7 +4,6 @@
 /.classpath
 /*.lck
 /*.log
-/webservers/
 /tomcat.8080/
 /PutObjectStoreDirHere/
 /ObjectStore/

@@ -1,0 +1,9 @@
+{
+	"port":8543,
+	"usessl":true,
+	"sslHostConfig.protocols":"TLS",
+	"sslHostConfig.certificateVerification":"false",
+	"sslHostConfig.certificateKeystoreType":"JCEKS",
+	"sslHostConfig.certificateKeystorePassword":"password1",
+	"sslHostConfig.certificateKeystoreFile":"conf/tomcat.keystore"
+}
