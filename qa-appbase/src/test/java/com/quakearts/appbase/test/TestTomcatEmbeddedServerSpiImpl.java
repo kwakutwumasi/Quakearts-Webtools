@@ -30,7 +30,7 @@ public class TestTomcatEmbeddedServerSpiImpl {
 		serverSpi.initiateEmbeddedWebServer();
 		
 		try {
-			HttpURLConnection connection = (HttpURLConnection) new URL("http", "localhost", 8180, "/test.war/test").openConnection();
+			HttpURLConnection connection = (HttpURLConnection) new URL("http", "localhost", 8180, "/test/test").openConnection();
 			
 			connection.connect();
 			
@@ -40,7 +40,17 @@ public class TestTomcatEmbeddedServerSpiImpl {
 		} catch (IOException e) {
 			fail("Unable to connect:" +e.getMessage());
 		}
-		
+
+		try {
+			HttpURLConnection connection = (HttpURLConnection) new URL("http", "localhost", 8190, "/testssl/test").openConnection();
+			
+			connection.connect();
+			
+			assertThat(connection.getResponseCode(), is(200));
+		} catch (IOException e) {
+			fail("Unable to connect:" +e.getMessage());
+		}
+
 		try {
 			TrustManager[] manager = new TrustManager[] {
 					new X509TrustManager() {
@@ -63,7 +73,7 @@ public class TestTomcatEmbeddedServerSpiImpl {
 			SSLContext context = SSLContext.getInstance("TLS");
 			context.init(null, manager, new SecureRandom());
 			
-			HttpsURLConnection connection = (HttpsURLConnection) new URL("https", "localhost", 8543, "/testssl.war/test").openConnection();
+			HttpsURLConnection connection = (HttpsURLConnection) new URL("https", "localhost", 8543, "/testssl/test").openConnection();
 			
 			connection.setSSLSocketFactory(context.getSocketFactory());
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      			
