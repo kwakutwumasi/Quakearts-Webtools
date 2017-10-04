@@ -80,21 +80,25 @@ public class ProcessingAgentBuilder {
 		List<DataSpooler> dataSpoolers = new ArrayList<>();
 		
 		for (AgentModule agentModule : agentModules){
+			Map<String, AgentConfigurationParameter> parameters = configuration.getAgentModuleConfigurationMap(agentModule);
+			
+			if(parameters == null)
+				parameters = configuration.getAgentConfigurationMap();
+			
 			switch (agentModule.getModuleType()) {
 			case DATASPOOLER:
-				dataSpoolers.add(DataSpoolerFactory.getFactory().getInstance(configuration
-						.getAgentModuleConfigurationMap(agentModule), 
+				dataSpoolers.add(DataSpoolerFactory.getFactory().getInstance(parameters, 
 						agentModule));
 				break;
 			case FORMATTER:
 				messageFormatters.put(agentModule.getModuleName() != null 
 				&& !agentModule.getModuleName().trim().isEmpty()?
 						agentModule.getModuleName():agentModule.getModuleClassName(), 
-						MessageFormatterFactory.getFactory().getInstance(configuration.getAgentModuleConfigurationMap(agentModule), 
+						MessageFormatterFactory.getFactory().getInstance(parameters, 
 								agentModule));
 				break;
 			case MESSENGER:
-				Messenger messenger = MessengerFactory.getFactory().getInstance(configuration.getAgentModuleConfigurationMap(agentModule),
+				Messenger messenger = MessengerFactory.getFactory().getInstance(parameters,
 						agentModule);
 				if(agentModule.getMappedModuleName() != null && !agentModule.getMappedModuleName().trim().isEmpty()) {
 					MessageFormatter formatter = messageFormatters.get(agentModule.getMappedModuleName());

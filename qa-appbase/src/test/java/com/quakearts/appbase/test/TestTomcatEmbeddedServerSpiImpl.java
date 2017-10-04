@@ -42,6 +42,16 @@ public class TestTomcatEmbeddedServerSpiImpl {
 		}
 
 		try {
+			HttpURLConnection connection = (HttpURLConnection) new URL("http", "localhost", 8180, "/testRoot").openConnection();
+			
+			connection.connect();
+			
+			assertThat(connection.getResponseCode(), is(200));
+		} catch (IOException e) {
+			fail("Unable to connect:" +e.getMessage());
+		}
+		
+		try {
 			HttpURLConnection connection = (HttpURLConnection) new URL("http", "localhost", 8190, "/testssl/test").openConnection();
 			
 			connection.connect();

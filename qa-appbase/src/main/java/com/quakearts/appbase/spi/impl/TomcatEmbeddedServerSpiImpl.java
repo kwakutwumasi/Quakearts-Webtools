@@ -178,11 +178,11 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 	        	
 		        StandardContext ctx;
 				try {
-					String contextName = webappFolder.getName().equals("webapp")?"":webappFolder.getName();
+					String contextName = webappFolder.getName().equals("webapp")?"":"/"+webappFolder.getName();
 					if(contextName.endsWith(".war"))
 						contextName = contextName.substring(0, contextName.indexOf(".war"));
 					
-					ctx = (StandardContext) tomcat.addWebapp("/"+contextName, webappFolder.getAbsolutePath());
+					ctx = (StandardContext) tomcat.addWebapp(contextName, webappFolder.getAbsolutePath());
 				} catch (ServletException e) {
 					throw new ConfigurationException("ServletException adding webapp "+webappFolder.getAbsolutePath(), e);
 				}

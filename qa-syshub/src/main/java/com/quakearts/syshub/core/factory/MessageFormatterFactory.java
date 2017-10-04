@@ -67,7 +67,8 @@ public class MessageFormatterFactory {
 
     	messageFormatter = getInstance(module.getModuleClassName());
         messageFormatter.setupWithConfigurationParameters(parameters);
-        messageFormatter.setAgentConfiguration(module.getAgentConfiguration().cloneById());
+        if(parameters != null)
+        	messageFormatter.setAgentConfiguration(module.getAgentConfiguration().cloneById());
         messageFormatter.setAgentModule(module.cloneById());
         
         if(module.getModuleName() != null && !module.getModuleName().trim().isEmpty()){
