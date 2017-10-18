@@ -97,7 +97,7 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	}
 
 	@TransactionParticipant(TransactionType.SINGLETON)
-	public void pushLogsToDB() throws Exception {		
+	public synchronized void pushLogsToDB() throws Exception {		
 		List<ProcessingLog> sortList = new ArrayList<>(getSaveLogCache().values());
 		sortList.sort(logComparator);
 		
@@ -106,7 +106,7 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 		while ( !logQueue.isEmpty() ) {
 			ProcessingLog notificationLog = logQueue.poll();
 			try {
-				saveLogToDB(notificationLog);
+				systemDataStoreUtils.getSystemDataStore().save(notificationLog);
 			} catch (Exception e) {
 				log.error("Unable to persist notification log.");
 				log.error("Message dump: ["+notificationLog.toString()+"]");
@@ -123,12 +123,12 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 		while(!logQueue.isEmpty()){
 			ProcessingLog notificationLog = logQueue.poll();
 			try {
-				updateLogToDB(notificationLog);
+				systemDataStoreUtils.getSystemDataStore().update(notificationLog);
 			} catch (Exception e) {
 				log.error("Unable to persist notification log.");
 				log.error("Message dump: ["+notificationLog.toString()+"]");
 			} finally {
-				getSaveLogCache().remove(notificationLog.getMid());
+				getUpdateLogCache().remove(notificationLog.getMid());
 			}
 		}
 		
@@ -139,7 +139,7 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 		while (!exceptionQueue.isEmpty()) {
 			ResultExceptionLog exceptionLog = exceptionQueue.poll();
 			try {
-				saveExceptionLogToDB(exceptionLog);
+				systemDataStoreUtils.getSystemDataStore().save(exceptionLog);
 			} catch (Exception e) {
 				log.error("Unable to persist result exception log.");
 				log.error("Message dump: ["+exceptionLog.toString()+"]");
@@ -199,7 +199,7 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	 * @see com.quakearts.notification.log.MessageLogger#store(com.quakearts.notification.core.Message, java.lang.String, boolean)
 	 */
 	@Override
-	public void storeMessage(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg,String details, boolean isError){
+	public void storeMessage(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg, String details, boolean isError){
 		saveLog(agentConfiguration, agentModule, mssg, LogType.STORED, details,isError);
 	}
 	
@@ -299,19 +299,6 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 		OrmStringConcatUtil.trimStrings(notelog);
 		
 		getSaveLogCache().put(notelog.getMid(), notelog);
-	}
-
-	private void saveLogToDB(ProcessingLog notificationLog) throws Exception{
-		systemDataStoreUtils.getSystemDataStore().save(notificationLog);
-		log.trace("Saved message. ID is "+notificationLog.getLogID());
-	}
-	
-	private void saveExceptionLogToDB(ResultExceptionLog exceptionLog) throws Exception{
-		systemDataStoreUtils.getSystemDataStore().save(exceptionLog);
-	}
-	
-	private void updateLogToDB(ProcessingLog notificationLog) throws Exception{
-		systemDataStoreUtils.getSystemDataStore().update(notificationLog);
 	}
 
 	/**
