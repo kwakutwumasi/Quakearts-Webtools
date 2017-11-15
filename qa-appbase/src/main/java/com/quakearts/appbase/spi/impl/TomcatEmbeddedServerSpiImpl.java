@@ -187,7 +187,7 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 					throw new ConfigurationException("ServletException adding webapp "+webappFolder.getAbsolutePath(), e);
 				}
 				
-				if(ctx.getJarScanner() instanceof StandardJarScanner)
+				if(ctx.getJarScanner() instanceof StandardJarScanner)//Prevent the scanning of the main app classpath to improve performance and prevent errors
 					((StandardJarScanner)ctx.getJarScanner()).setScanClassPath(false);
 		        
 				Main.log.debug("Configured web application with base directory: " +webappFolder.getAbsolutePath());

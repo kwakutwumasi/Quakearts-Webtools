@@ -11,6 +11,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -97,6 +98,24 @@ public class TestTomcatEmbeddedServerSpiImpl {
 		} catch (NoSuchAlgorithmException | IOException | KeyManagementException e) {
 			fail("Unable to connect:" +e.getMessage());
 		}
-	}
 
+		try {
+			HttpURLConnection connection = (HttpURLConnection) new URL("http", "localhost", 8180, "/test/test-secured").openConnection();
+
+			connection.connect();
+			
+			assertThat(connection.getResponseCode(), is(401));			
+
+			connection = (HttpURLConnection) new URL("http", "localhost", 8180, "/test/test-secured").openConnection();
+			
+			connection.addRequestProperty("Authorization","Basic "+Base64.getEncoder().encodeToString("test:test".getBytes()));
+			
+			connection.connect();
+			
+			assertThat(connection.getResponseCode(), is(200));			
+		} catch (IOException e) {
+			fail("Unable to connect:" +e.getMessage());
+		}
+	}
+	
 }
