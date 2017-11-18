@@ -94,7 +94,7 @@
 	</c:unique>	
 	<b:formGroup>
 		<label id="exceptionDt_label">Exception Date</label>
-		<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs" rendered="#{resultExceptionLogPage.inCreateOrEditMode}"
+		<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs" rendered="#{resultExceptionLogPage.inCreateOrEditMode}" format="dmyhns"
 			value="#{resultExceptionLog.exceptionDt}" converter="#{resultExceptionLogPage.webappmain.converter}" 
 			disabled="#{resultExceptionLogPage.webappmain.mode eq 'read'}">
 		</b:date>

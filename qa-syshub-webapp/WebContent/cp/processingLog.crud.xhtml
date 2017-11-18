@@ -8,7 +8,7 @@
 <ui:component>
 	<b:formGroup>
 		<label id="logDt_label">Log Date</label>
-		<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs" 
+		<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs" format="dmyhns"
 			value="#{processingLog.logDt}" converter="#{processingLogPage.webappmain.converter}" 
 			rendered="#{processingLogPage.inCreateOrEditMode}">
 		</b:date>
