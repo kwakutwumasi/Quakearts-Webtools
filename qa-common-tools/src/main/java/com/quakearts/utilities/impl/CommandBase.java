@@ -36,6 +36,9 @@ public abstract class CommandBase implements Command {
 			}
 			builder.append("\n");
 			
+			if(!metadata.descritpion().isEmpty())
+				builder.append("\n").append(metadata.descritpion()).append("\n");
+			
 			if(metadata.parameters().length>0)
 				builder.append("\n").append(SPECIALINSTRUCTIONS).append("\n");
 			
