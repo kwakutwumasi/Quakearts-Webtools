@@ -66,19 +66,20 @@
 		        <version>1.6.0</version>
 				<executions>
 					<execution>
-						<id></id>
+						<id>exec-generate-batch</id>
 						<phase>package</phase>
 						<goals>
 							<goal>exec</goal>
 						</goals>
-						<configuration>
-							<executable>java</executable>
-						</configuration>
 					</execution>
 				</executions>
 				<configuration>
-					<mainClass>com.quakearts.utilities.GenerateBatchFiles</mainClass>
-					<workingDirectory>target</workingDirectory>
+					<executable>java</executable>
+					<arguments>
+						<argument>-classpath</argument>
+						<classpath />
+						<argument>com.quakearts.utilities.GenerateBatchFiles</argument>
+					</arguments>
 				</configuration>
 			</plugin>
 		</plugins>
