@@ -65,7 +65,7 @@ public class TestCommand {
 	
 	@Test
 	public void testScripting() throws Exception {
-		new CommandMetadataAnnotationScanningListener().handle(TestCommandExecutor.class.getName(),
+		new CommandMetadataAnnotationScanningListener("common-tools").handle(TestCommandExecutor.class.getName(),
 				CommandMetadata.class.getName());
 		
 		File testExecutor = new File("testExecutor");

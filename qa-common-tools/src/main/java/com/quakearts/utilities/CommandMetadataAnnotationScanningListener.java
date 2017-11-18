@@ -11,6 +11,12 @@ public class CommandMetadataAnnotationScanningListener implements ClassAnnotatio
 	private static String JARPART = "java -jar %1$s %2$s", WINDOWSFORMAT = "@echo off\n"+JARPART+" %%*", 
 			NIXBASHFORMAT = "#!/bin/bash\n"+JARPART+" \"$@\""; 
 
+	private String mainjar;
+	
+	public CommandMetadataAnnotationScanningListener(String mainjar) {
+		this.mainjar = mainjar;
+	}
+
 	@Override
 	public String[] getAnnotationsToListenFor() {
 		return new String[]{CommandMetadata.class.getName()};
@@ -33,7 +39,7 @@ public class CommandMetadataAnnotationScanningListener implements ClassAnnotatio
 			String jarName = null;
 			File currentDirectory = new File(".");
 			for(File fileFolder:currentDirectory.listFiles()) {
-				if(fileFolder.isFile() && fileFolder.getName().startsWith("common-tools")) {
+				if(fileFolder.isFile() && fileFolder.getName().startsWith(mainjar)) {
 					jarName = fileFolder.getName();
 					break;
 				}
@@ -42,7 +48,7 @@ public class CommandMetadataAnnotationScanningListener implements ClassAnnotatio
 			currentDirectory = new File("."+File.separator+"target"); //when testing...
 			if(currentDirectory.exists() && currentDirectory.isDirectory())
 				for(File fileFolder:currentDirectory.listFiles()) {
-					if(fileFolder.isFile() && fileFolder.getName().startsWith("common-tools")) {
+					if(fileFolder.isFile() && fileFolder.getName().startsWith(mainjar)) {
 						jarName = fileFolder.getName();
 						break;
 					}
