@@ -14,6 +14,7 @@ import com.quakearts.utilities.CommandMetadataAnnotationScanningListener;
 import com.quakearts.utilities.annotation.CommandMetadata;
 import com.quakearts.utilities.test.beans.TestCommandExecutor;
 import com.quakearts.utilities.test.beans.TestCommandExecutor2;
+import com.quakearts.utilities.test.beans.TestCommandExecutor3;
 
 public class TestCommand {
 
@@ -55,6 +56,11 @@ public class TestCommand {
 		
 		assertThat(output.contains("Missing required parameter: parameter1"), is(true));
 		assertThat(output.contains("Missing required parameter: parameter2"), is(true));
+	}
+	
+	@Test
+	public void testNoParameterNames() throws Exception {
+		CommandMain.main(new String[] {TestCommandExecutor3.class.getName(),"test1","test2"});
 	}
 	
 	@Test

@@ -29,7 +29,14 @@ public class CommandMain {
 		Map<String, CommandParameter> commandParametersMap = new HashMap<>();
 		
 		CommandParameter parameter = null;
+		boolean skipfirst = false;
 		for(String arg:args) {
+			if(!skipfirst) {
+				skipfirst = true;
+				continue;
+			}
+				
+			
 			if(arg.length()>1 && (arg.startsWith("-")
 				||arg.startsWith("\\")
 				||(arg.startsWith("{") && arg.endsWith("}")))) {
@@ -55,8 +62,11 @@ public class CommandMain {
 					break;
 				}
 			} else {
-				if(parameter != null)
-					parameter.setValue(arg);
+				if(parameter == null) {
+					parameter = new CommandParameterImpl("no-name");
+					commandParameters.add(parameter);
+				}
+				parameter.setValue(arg);
 				continue;
 			}
 		}
@@ -88,6 +98,9 @@ public class CommandMain {
 			
 			if(!commandParameters.isEmpty())
 				command.setCommandParameters(commandParameters);
+			
+			if(!commandParametersMap.isEmpty())
+				command.setCommandParametersMap(commandParametersMap);
 			
 			try { 
 				command.execute();
