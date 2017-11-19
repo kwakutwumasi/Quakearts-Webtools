@@ -71,10 +71,10 @@ public abstract class CommandBase implements Command {
 			}
 			
 			if(!metadata.additionalInfo().isEmpty())
-				builder.append(metadata.additionalInfo()).append("\n");
+				builder.append("\n").append(metadata.additionalInfo()).append("\n");
 			
 			if(!metadata.examples().isEmpty())
-				builder.append(metadata.examples()).append("\n");
+				builder.append("\n").append(metadata.examples()).append("\n");
 			
 			builder.append(HELPTEXT);
 		} else {
