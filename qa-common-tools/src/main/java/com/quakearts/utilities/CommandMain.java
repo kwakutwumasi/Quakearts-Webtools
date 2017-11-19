@@ -1,8 +1,6 @@
 package com.quakearts.utilities;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.quakearts.utilities.annotation.CommandMetadata;
@@ -11,21 +9,37 @@ import com.quakearts.utilities.exception.CommandParameterException;
 import com.quakearts.utilities.impl.CommandParameterImpl;
 
 public class CommandMain {
-	@SuppressWarnings("unchecked")
-	public static void main(String[] args) {
-		if(args.length < 1)
+	public CommandMain() {
+	}
+
+	private void processAndExecute(String[] commandLineArguments) {
+		if(commandLineArguments.length < 1)
 			throw new RuntimeException("Invalid invocation of Command. No arguments passed");
 		
+		try {
+			execute(command(fromCommandClass(commandLineArguments[0]), withCommandParameters(commandLineArguments)));
+		} catch (CommandParameterException e) {
+			System.err.println("Invalid parameter "+e.getCommandParameterName()
+			+(e.getMessage()!=null?". "+e.getMessage():"")+
+			(e.getCause()!=null?"Cause: "+e.getCause().getMessage():""));
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected Class<Command> fromCommandClass(String className){
 		Class<Command> commandClass;
 		try {
-			commandClass = (Class<Command>) Class.forName(args[0]);
+			commandClass = (Class<Command>) Class.forName(className);
 		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("Invalid invocation of Command. Class "+args[0]+" was not found.");
+			throw new RuntimeException("Invalid invocation of Command. Class "+className+" was not found.");
 		} catch (ClassCastException e) {
-			throw new RuntimeException("Invalid invocation of Command. Class "+args[0]+" was not an implementation of "+Command.class.getName()+".");
+			throw new RuntimeException("Invalid invocation of Command. Class "+className+" was not an implementation of "+Command.class.getName()+".");
 		}
 		
-		List<CommandParameter> commandParameters = new ArrayList<>();
+		return commandClass;
+	}
+	
+	protected Map<String, CommandParameter> withCommandParameters(String[] args){
 		Map<String, CommandParameter> commandParametersMap = new HashMap<>();
 		
 		CommandParameter parameter = null;
@@ -35,7 +49,6 @@ public class CommandMain {
 				skipfirst = true;
 				continue;
 			}
-				
 			
 			if(arg.length()>1 && (arg.startsWith("-")
 				||arg.startsWith("\\")
@@ -45,7 +58,6 @@ public class CommandMain {
 				case "-":
 				case "\\":
 					parameter = new CommandParameterImpl(arg.substring(1));					
-					commandParameters.add(parameter);
 					commandParametersMap.put(parameter.getName(), parameter);
 					break;
 				case "{":
@@ -53,7 +65,6 @@ public class CommandMain {
 						String parts = arg.substring(1,arg.length()-1);
 						for(char c:parts.toCharArray()) {
 							parameter = new CommandParameterImpl(new Character(c).toString());
-							commandParameters.add(parameter);
 							commandParametersMap.put(parameter.getName(), parameter);
 						}
 					}
@@ -63,57 +74,60 @@ public class CommandMain {
 				}
 			} else {
 				if(parameter == null) {
-					parameter = new CommandParameterImpl("no-name");
-					commandParameters.add(parameter);
+					parameter = new CommandParameterImpl(CommandParameter.DEFAULT);
+					commandParametersMap.put(parameter.getName(), parameter);
 				}
 				parameter.setValue(arg);
 				continue;
 			}
 		}
 		
+		return commandParametersMap;
+	}
+	
+	protected Command command(Class<Command> commandClass, Map<String, CommandParameter> commandParametersMap) throws CommandParameterException {
+		Command command;
 		try {
-			Command command = commandClass.newInstance();
-
-			CommandMetadata metadata = commandClass.getAnnotation(CommandMetadata.class);
-			if(metadata != null) {
-				for(CommandParameterMetadata parameterMetadata : metadata.parameters()) {
-					if(!commandParametersMap.containsKey(parameterMetadata.value())) {
-						if(parameterMetadata.required()) {
-							System.err.println("Missing required parameter: "+parameterMetadata.value());
-							System.out.println(command.printUsage());
-							return;
-						} else if(!parameterMetadata.linkedParameters().isEmpty()) {
-							String[] linkedParameters = parameterMetadata.linkedParameters().split(";");
-							for(String linkedParameter:linkedParameters) {
-								if(commandParametersMap.containsKey(linkedParameter)) {
-									System.err.println("Missing required parameter: "+parameterMetadata.value());
-									System.out.println(command.printUsage());
-									return;								
-								}
+			command = commandClass.newInstance();
+		} catch (InstantiationException e) {
+			throw new RuntimeException("Invalid invocation of Command. Class "+commandClass.getName()+" cannot be instantiated.");
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException("Invalid invocation of Command. Class "+commandClass.getName()+" cannot be accessed.");
+		}
+		
+		CommandMetadata metadata = commandClass.getAnnotation(CommandMetadata.class);
+		if(metadata != null) {
+			for(CommandParameterMetadata parameterMetadata : metadata.parameters()) {
+				if(commandParametersMap.containsKey(parameterMetadata.alias()))
+					commandParametersMap.put(parameterMetadata.value(), 
+							commandParametersMap.get(parameterMetadata.alias()));
+				
+				if(!commandParametersMap.containsKey(parameterMetadata.value())) {
+					if(parameterMetadata.required()) {
+						throw new CommandParameterException("The parameter is required.\n"+command.printUsage(), parameterMetadata.value());
+					} else if(!parameterMetadata.linkedParameters().isEmpty()) {
+						String[] linkedParameters = parameterMetadata.linkedParameters().split(";");
+						for(String linkedParameter:linkedParameters) {
+							if(commandParametersMap.containsKey(linkedParameter)) {
+								throw new CommandParameterException("The parameter is required.\n"+command.printUsage(), parameterMetadata.value());
 							}
 						}
 					}
 				}
 			}
-			
-			if(!commandParameters.isEmpty())
-				command.setCommandParameters(commandParameters);
-			
-			if(!commandParametersMap.isEmpty())
-				command.setCommandParametersMap(commandParametersMap);
-			
-			try { 
-				command.execute();
-			} catch (CommandParameterException e) {
-				System.err.println("Invalid parameter "+e.getCommandParameterName()
-					+(e.getMessage()!=null?". "+e.getMessage():"")+
-					(e.getCause()!=null?"Cause: "+e.getCause().getMessage():""));
-				System.out.println(command.printUsage());
-			}
-		} catch (InstantiationException e) {
-			throw new RuntimeException("Invalid invocation of Command. Class "+args[0]+" cannot be instantiated.");
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException("Invalid invocation of Command. Class "+args[0]+" cannot be accessed.");
-		}
+		}	
+		
+		if(!commandParametersMap.isEmpty())
+			command.setCommandParametersMap(commandParametersMap);
+
+		return command;
+	}
+	
+	protected void execute(Command command) throws CommandParameterException {
+		command.execute();
+	}
+	
+	public static void main(String[] args) {
+		new CommandMain().processAndExecute(args);
 	}
 }

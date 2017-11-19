@@ -1,5 +1,6 @@
 package com.quakearts.utilities.test.beans;
 
+import com.quakearts.utilities.CommandParameter;
 import com.quakearts.utilities.annotation.CommandMetadata;
 import com.quakearts.utilities.exception.CommandParameterException;
 import com.quakearts.utilities.impl.CommandBase;
@@ -11,10 +12,9 @@ public class TestCommandExecutor3 extends CommandBase {
 
 	@Override
 	public void execute() throws CommandParameterException {
-		assertThat(getCommandParameters().size(), is(1));
-		assertThat(getCommandParameters().get(0).getValues().size(), is(2));
-		assertThat(getCommandParameters().get(0).getValues().get(0), is("test1"));
-		assertThat(getCommandParameters().get(0).getValues().get(1), is("test2"));		
+		assertThat(getCommandParametersMap().get(CommandParameter.DEFAULT).getValues().size(), is(2));
+		assertThat(getCommandParametersMap().get(CommandParameter.DEFAULT).getValues().get(0), is("test1"));
+		assertThat(getCommandParametersMap().get(CommandParameter.DEFAULT).getValues().get(1), is("test2"));		
 	}
 
 }

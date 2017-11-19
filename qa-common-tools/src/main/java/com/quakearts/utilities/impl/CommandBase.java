@@ -1,6 +1,5 @@
 package com.quakearts.utilities.impl;
 
-import java.util.List;
 import java.util.Map;
 
 import com.quakearts.utilities.Command;
@@ -10,13 +9,7 @@ import com.quakearts.utilities.annotation.CommandParameterMetadata;
 
 public abstract class CommandBase implements Command {
 	private static final String SPECIALINSTRUCTIONS = "Parameters can be prefixed with - or \\. Single letter parameters with no value can be grouped together in curly brackets {}\n";
-	private List<CommandParameter> commandParameters;
 	private Map<String, CommandParameter> commandParametersMap;
-	
-	@Override
-	public void setCommandParameters(List<CommandParameter> commandParameters) {
-		this.commandParameters = commandParameters;
-	}
 	
 	@Override
 	public void setCommandParametersMap(Map<String, CommandParameter> commandParametersMap) {
@@ -25,10 +18,6 @@ public abstract class CommandBase implements Command {
 	
 	protected Map<String, CommandParameter> getCommandParametersMap() {
 		return commandParametersMap;
-	}
-	
-	protected List<CommandParameter> getCommandParameters() {
-		return commandParameters;
 	}
 	
 	@Override

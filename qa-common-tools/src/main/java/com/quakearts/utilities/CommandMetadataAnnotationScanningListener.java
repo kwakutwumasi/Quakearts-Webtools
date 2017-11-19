@@ -36,28 +36,11 @@ public class CommandMetadataAnnotationScanningListener implements ClassAnnotatio
 		
 		CommandMetadata metadata = commandClass.getAnnotation(CommandMetadata.class);
 		if(metadata != null) {
-			String jarName = null;
-			File currentDirectory = new File(".");
-			for(File fileFolder:currentDirectory.listFiles()) {
-				if(fileFolder.isFile() && fileFolder.getName().startsWith(mainjar)) {
-					jarName = fileFolder.getName();
-					break;
-				}
-			}
-
-			currentDirectory = new File("."+File.separator+"target"); //when testing...
-			if(currentDirectory.exists() && currentDirectory.isDirectory())
-				for(File fileFolder:currentDirectory.listFiles()) {
-					if(fileFolder.isFile() && fileFolder.getName().startsWith(mainjar)) {
-						jarName = fileFolder.getName();
-						break;
-					}
-				}
-			if(jarName!=null) {
+			if(mainjar!=null) {
 				File windowsBatchFile = new File(metadata.value()+".bat");
 				if(!windowsBatchFile.exists()) {
 					try(FileOutputStream windowsBatchFileOutputStream = new FileOutputStream(windowsBatchFile)){
-						windowsBatchFileOutputStream.write(String.format(WINDOWSFORMAT, jarName, className).getBytes());
+						windowsBatchFileOutputStream.write(String.format(WINDOWSFORMAT, mainjar, className).getBytes());
 						windowsBatchFileOutputStream.flush();
 					} catch (IOException e) {
 						throw new RuntimeException(e);
@@ -66,7 +49,7 @@ public class CommandMetadataAnnotationScanningListener implements ClassAnnotatio
 				File nixBashFile = new File(metadata.value());
 				if(!nixBashFile.exists()) {
 					try(FileOutputStream nixBashFileOutputStream = new FileOutputStream(nixBashFile)){
-						nixBashFileOutputStream.write(String.format(NIXBASHFORMAT, jarName, className).getBytes());
+						nixBashFileOutputStream.write(String.format(NIXBASHFORMAT, mainjar, className).getBytes());
 						nixBashFileOutputStream.flush();
 					} catch (IOException e) {
 						throw new RuntimeException(e);

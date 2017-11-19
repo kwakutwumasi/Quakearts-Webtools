@@ -20,8 +20,7 @@ public class TestCommand {
 
 	@Test
 	public void testCommand() {
-		String[] args1 = {TestCommandExecutor.class.getName(),"{vf}","-test1","value1","-test2","-test3","value2"};
-		CommandMain.main(args1);
+		CommandMain.main(new String[]{TestCommandExecutor.class.getName(),"{vf}","-test1","value1","-test2","-test3","value2"});
 	}
 
 	@Test(expected=RuntimeException.class)
@@ -54,13 +53,18 @@ public class TestCommand {
 		System.setErr(oldError);
 		System.setOut(oldOut);
 		
-		assertThat(output.contains("Missing required parameter: parameter1"), is(true));
-		assertThat(output.contains("Missing required parameter: parameter2"), is(true));
+		assertThat(output.contains("Invalid parameter parameter1. The parameter is required."), is(true));
+		assertThat(output.contains("Invalid parameter parameter2. The parameter is required."), is(true));
 	}
 	
 	@Test
 	public void testNoParameterNames() throws Exception {
 		CommandMain.main(new String[] {TestCommandExecutor3.class.getName(),"test1","test2"});
+	}
+	
+	@Test
+	public void testParameterAlias() throws Exception {
+		CommandMain.main(new String[]{TestCommandExecutor.class.getName(),"{vf}","-alias1","value1","-test2","-test3","value2"});		
 	}
 	
 	@Test
