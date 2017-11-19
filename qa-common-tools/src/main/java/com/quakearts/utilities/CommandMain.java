@@ -95,6 +95,13 @@ public class CommandMain {
 			throw new RuntimeException("Invalid invocation of Command. Class "+commandClass.getName()+" cannot be accessed.");
 		}
 		
+		if(commandParametersMap.size()==1 && commandParametersMap.containsKey("help")) {
+			System.out.println(command.printUsage());
+			return null;
+		}
+		
+		command.setCommandParametersMap(commandParametersMap);
+
 		CommandMetadata metadata = commandClass.getAnnotation(CommandMetadata.class);
 		if(metadata != null) {
 			for(CommandParameterMetadata parameterMetadata : metadata.parameters()) {
@@ -117,14 +124,12 @@ public class CommandMain {
 			}
 		}	
 		
-		if(!commandParametersMap.isEmpty())
-			command.setCommandParametersMap(commandParametersMap);
-
 		return command;
 	}
 	
 	protected void execute(Command command) throws CommandParameterException {
-		command.execute();
+		if(command!=null)
+			command.execute();
 	}
 	
 	public static void main(String[] args) {

@@ -58,6 +58,23 @@ public class TestCommand {
 	}
 	
 	@Test
+	public void testHelp() throws Exception {
+		PrintStream oldOut = System.out, oldError = System.err;		
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		PrintStream replaceOutput = new PrintStream(bos);
+		System.setOut(replaceOutput);
+		System.setErr(replaceOutput);
+
+		CommandMain.main(new String[]{TestCommandExecutor2.class.getName(),"-help"});
+
+		String output = new String(bos.toByteArray());
+		System.setErr(oldError);
+		System.setOut(oldOut);
+		
+		assertThat(output.startsWith("Usage"), is(true));
+	}
+	
+	@Test
 	public void testNoParameterNames() throws Exception {
 		CommandMain.main(new String[] {TestCommandExecutor3.class.getName(),"test1","test2"});
 	}

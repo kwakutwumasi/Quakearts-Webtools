@@ -9,6 +9,7 @@ import com.quakearts.utilities.annotation.CommandParameterMetadata;
 
 public abstract class CommandBase implements Command {
 	private static final String SPECIALINSTRUCTIONS = "Parameters can be prefixed with - or \\. Single letter parameters with no value can be grouped together in curly brackets {}\n";
+	private static final String HELPTEXT = "\n\nTo show this help message use the -help parameter";
 	private Map<String, CommandParameter> commandParametersMap;
 	
 	@Override
@@ -74,6 +75,8 @@ public abstract class CommandBase implements Command {
 			
 			if(!metadata.examples().isEmpty())
 				builder.append(metadata.examples()).append("\n");
+			
+			builder.append(HELPTEXT);
 		} else {
 			builder.append("No usage specified");
 		}
