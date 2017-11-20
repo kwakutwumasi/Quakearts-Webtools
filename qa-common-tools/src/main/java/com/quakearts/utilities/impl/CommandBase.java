@@ -9,7 +9,7 @@ import com.quakearts.utilities.annotation.CommandParameterMetadata;
 
 public abstract class CommandBase implements Command {
 	private static final String SPECIALINSTRUCTIONS = "Parameters can be prefixed with - or \\. Single letter parameters with no value can be grouped together in curly brackets {}\n";
-	private static final String HELPTEXT = "\n\nTo show this help message use the -help parameter";
+	private static final String HELPTEXT = "\nTo show this help message use the -help parameter.\n";
 	private Map<String, CommandParameter> commandParametersMap;
 	
 	@Override
@@ -28,11 +28,12 @@ public abstract class CommandBase implements Command {
 		if(metadata!=null) {			
 			builder.append(metadata.value());
 			for(CommandParameterMetadata parameterMetadata:metadata.parameters()) {
-				builder.append(" -").append(!parameterMetadata.required()?"(":"")
+				builder.append(!parameterMetadata.required() || parameterMetadata.canOmitName()?" (":" ").append("-")
 				.append(parameterMetadata.value());
 				if(!parameterMetadata.format().isEmpty())
-					builder.append(" [")
-					.append(parameterMetadata.format()).append("]");
+					builder.append(parameterMetadata.canOmitName() && parameterMetadata.required()?")":"")
+					.append(" [").append(parameterMetadata.format()).append("]");
+				
 				builder.append(!parameterMetadata.required()?")":"");
 			}
 			builder.append("\n");
@@ -50,7 +51,7 @@ public abstract class CommandBase implements Command {
 						|| !parameterMetadata.alias().isEmpty()) {
 					builder.append(parameterMetadata.value());
 					if(!parameterMetadata.alias().isEmpty())
-						builder.append(" \\ ").append(parameterMetadata.alias());
+						builder.append("|(").append(parameterMetadata.alias()).append(")");
 					
 					if(parameterMetadata.required() 
 							|| !parameterMetadata.format().isEmpty() 
@@ -74,7 +75,7 @@ public abstract class CommandBase implements Command {
 				builder.append("\n").append(metadata.additionalInfo()).append("\n");
 			
 			if(!metadata.examples().isEmpty())
-				builder.append("\n").append(metadata.examples()).append("\n");
+				builder.append("\nExamples:\n").append(metadata.examples()).append("\n");
 			
 			builder.append(HELPTEXT);
 		} else {

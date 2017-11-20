@@ -15,4 +15,5 @@ public @interface CommandParameterMetadata {
 	String description() default "";
 	boolean required() default false;
 	String linkedParameters() default "";
+	boolean canOmitName() default false;
 }

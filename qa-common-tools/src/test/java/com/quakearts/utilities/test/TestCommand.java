@@ -15,6 +15,7 @@ import com.quakearts.utilities.annotation.CommandMetadata;
 import com.quakearts.utilities.test.beans.TestCommandExecutor;
 import com.quakearts.utilities.test.beans.TestCommandExecutor2;
 import com.quakearts.utilities.test.beans.TestCommandExecutor3;
+import com.quakearts.utilities.test.beans.TestCommandExecutor4;
 
 public class TestCommand {
 
@@ -97,4 +98,22 @@ public class TestCommand {
 		assertThat(testExecutorBat.exists(), is(true));
 		testExecutorBat.delete();
 	}
+	
+	@Test
+	public void testCanOmitNamesRequired() throws Exception {
+		PrintStream oldOut = System.out, oldError = System.err;		
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		PrintStream replaceOutput = new PrintStream(bos);
+		System.setOut(replaceOutput);
+		System.setErr(replaceOutput);
+		
+		CommandMain.main(new String[] {TestCommandExecutor4.class.getName(),"value1"});
+	
+		String output = new String(bos.toByteArray());
+		System.setErr(oldError);
+		System.setOut(oldOut);
+		
+		assertThat(output.isEmpty(), is(true));
+	}
+
 }

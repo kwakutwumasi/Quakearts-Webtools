@@ -110,7 +110,7 @@ public class CommandMain {
 							commandParametersMap.get(parameterMetadata.alias()));
 				
 				if(!commandParametersMap.containsKey(parameterMetadata.value())) {
-					if(parameterMetadata.required()) {
+					if(parameterMetadata.required() && !parameterMetadata.canOmitName()) {
 						throw new CommandParameterException("The parameter is required.\n"+command.printUsage(), parameterMetadata.value());
 					} else if(!parameterMetadata.linkedParameters().isEmpty()) {
 						String[] linkedParameters = parameterMetadata.linkedParameters().split(";");
