@@ -12,9 +12,20 @@ public class CommandMetadataAnnotationScanningListener implements ClassAnnotatio
 			NIXBASHFORMAT = "#!/bin/bash\n"+JARPART+" \"$@\""; 
 
 	private String mainjar;
+	private File folder;
 	
-	public CommandMetadataAnnotationScanningListener(String mainjar) {
+	public CommandMetadataAnnotationScanningListener(String mainjar, String folder) {
 		this.mainjar = mainjar;
+		if(mainjar == null)
+			throw new NullPointerException("mainjar is required");
+			
+		if(folder == null)
+			throw new NullPointerException("folder is required");
+
+		this.folder = new File(folder);
+		
+		if(!this.folder.exists() || !this.folder.isDirectory())
+			throw new IllegalArgumentException("Folder "+folder+" does not exists");
 	}
 
 	@Override
@@ -36,25 +47,20 @@ public class CommandMetadataAnnotationScanningListener implements ClassAnnotatio
 		
 		CommandMetadata metadata = commandClass.getAnnotation(CommandMetadata.class);
 		if(metadata != null) {
-			if(mainjar!=null) {
-				File windowsBatchFile = new File(metadata.value()+".bat");
-				if(!windowsBatchFile.exists()) {
-					try(FileOutputStream windowsBatchFileOutputStream = new FileOutputStream(windowsBatchFile)){
-						windowsBatchFileOutputStream.write(String.format(WINDOWSFORMAT, mainjar, className).getBytes());
-						windowsBatchFileOutputStream.flush();
-					} catch (IOException e) {
-						throw new RuntimeException(e);
-					}
-				}
-				File nixBashFile = new File(metadata.value());
-				if(!nixBashFile.exists()) {
-					try(FileOutputStream nixBashFileOutputStream = new FileOutputStream(nixBashFile)){
-						nixBashFileOutputStream.write(String.format(NIXBASHFORMAT, mainjar, className).getBytes());
-						nixBashFileOutputStream.flush();
-					} catch (IOException e) {
-						throw new RuntimeException(e);
-					}
-				}
+			File windowsBatchFile = new File(folder, metadata.value()+".bat");
+			try(FileOutputStream windowsBatchFileOutputStream = new FileOutputStream(windowsBatchFile)){
+				windowsBatchFileOutputStream.write(String.format(WINDOWSFORMAT, mainjar, className).getBytes());
+				windowsBatchFileOutputStream.flush();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			
+			File nixBashFile = new File(folder, metadata.value());
+			try(FileOutputStream nixBashFileOutputStream = new FileOutputStream(nixBashFile)){
+				nixBashFileOutputStream.write(String.format(NIXBASHFORMAT, mainjar, className).getBytes());
+				nixBashFileOutputStream.flush();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
 	}

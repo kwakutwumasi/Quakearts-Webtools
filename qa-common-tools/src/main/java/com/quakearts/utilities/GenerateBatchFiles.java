@@ -10,14 +10,16 @@ public class GenerateBatchFiles extends CommandMain {
 	}
 	
 	private void processAndScan(String args[]) {
-		processAndScan(withCommandParameters(args));
+		Map<String, CommandParameter> parameterMap = getCommandParametersFrom(args);
+		processAndScan(parameterMap);
 	}
 	
 	private void processAndScan(Map<String, CommandParameter> commandParametersMap) {	
 		ClasspathScanner classpathScanner = new ClasspathScanner(commandParametersMap.containsKey("package")?
 				commandParametersMap.get("package").getValue():"com.quakearts.utilities");
-		classpathScanner.addAnnotationListener(new CommandMetadataAnnotationScanningListener(commandParametersMap.containsKey("jar-name")?
-				commandParametersMap.get("jar-name").getValue():"qa-common-tools.1.0.0.jar"));
+		classpathScanner.addAnnotationListener(new CommandMetadataAnnotationScanningListener(
+				commandParametersMap.containsKey("name")?commandParametersMap.get("name").getValue():null,
+				commandParametersMap.containsKey("folder")?commandParametersMap.get("folder").getValue():"."));
 		classpathScanner.scan();		
 	}
 	

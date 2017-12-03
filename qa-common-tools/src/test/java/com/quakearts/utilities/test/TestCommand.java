@@ -5,6 +5,8 @@ import static org.hamcrest.core.Is.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 
 import org.junit.Test;
@@ -54,8 +56,8 @@ public class TestCommand {
 		System.setErr(oldError);
 		System.setOut(oldOut);
 		
-		assertThat(output.contains("Invalid parameter parameter1. The parameter is required."), is(true));
-		assertThat(output.contains("Invalid parameter parameter2. The parameter is required."), is(true));
+		assertThat(output.contains("Invalid parameter 'parameter1'. The parameter is required"), is(true));
+		assertThat(output.contains("Invalid parameter 'parameter2'. The parameter is required"), is(true));
 	}
 	
 	@Test
@@ -87,16 +89,29 @@ public class TestCommand {
 	
 	@Test
 	public void testScripting() throws Exception {
-		new CommandMetadataAnnotationScanningListener("common-tools").handle(TestCommandExecutor.class.getName(),
+		new CommandMetadataAnnotationScanningListener("test-common-tools.jar", ".").handle(TestCommandExecutor.class.getName(),
 				CommandMetadata.class.getName());
 		
 		File testExecutor = new File("testExecutor");
+		testExecutor.deleteOnExit();
 		assertThat(testExecutor.exists(), is(true));
-		testExecutor.delete();
 
+		try(FileInputStream fis = new FileInputStream(testExecutor)){
+			String content;
+			byte[] contentBytes = new byte[fis.available()];
+			
+			fis.read(contentBytes);
+			
+			content = new String(contentBytes);
+			
+			assertThat(content, is("#!/bin/bash\njava -jar test-common-tools.jar com.quakearts.utilities.test.beans.TestCommandExecutor \"$@\""));
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
+		
 		File testExecutorBat = new File("testExecutor.bat");
+		testExecutorBat.deleteOnExit();
 		assertThat(testExecutorBat.exists(), is(true));
-		testExecutorBat.delete();
 	}
 	
 	@Test

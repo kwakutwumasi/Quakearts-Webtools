@@ -16,17 +16,26 @@ public class CommandMain {
 		if(commandLineArguments.length < 1)
 			throw new RuntimeException("Invalid invocation of Command. No arguments passed");
 		
-		try {
-			execute(command(fromCommandClass(commandLineArguments[0]), withCommandParameters(commandLineArguments)));
-		} catch (CommandParameterException e) {
-			System.err.println("Invalid parameter "+e.getCommandParameterName()
-			+(e.getMessage()!=null?". "+e.getMessage():"")+
-			(e.getCause()!=null?"Cause: "+e.getCause().getMessage():""));
-		}
+		Map<String, CommandParameter> withCommandParameterMap = getCommandParametersFrom(commandLineArguments);
+		
+		Class<Command> withCommandClass = getCommandClassNamed(commandLineArguments[0]);
+				
+		Command command = getCommand(withCommandClass, withCommandParameterMap);
+		
+		if(command != null)
+			try {
+				checkCommandParameter(withCommandClass, withCommandParameterMap)
+					.thenExecute(command);
+			} catch (CommandParameterException e) {
+				System.err.println("Invalid parameter '"+e.getCommandParameterName()
+				+(e.getMessage()!=null?"'. "+e.getMessage():"")+
+				(e.getCause()!=null?". Cause: "+e.getCause().getMessage():"")+
+				"\n"+command.printUsage());
+			}
 	}
 	
 	@SuppressWarnings("unchecked")
-	protected Class<Command> fromCommandClass(String className){
+	protected Class<Command> getCommandClassNamed(String className){
 		Class<Command> commandClass;
 		try {
 			commandClass = (Class<Command>) Class.forName(className);
@@ -39,7 +48,7 @@ public class CommandMain {
 		return commandClass;
 	}
 	
-	protected Map<String, CommandParameter> withCommandParameters(String[] args){
+	protected Map<String, CommandParameter> getCommandParametersFrom(String[] args){
 		Map<String, CommandParameter> commandParametersMap = new HashMap<>();
 		
 		CommandParameter parameter = null;
@@ -85,7 +94,7 @@ public class CommandMain {
 		return commandParametersMap;
 	}
 	
-	protected Command command(Class<Command> commandClass, Map<String, CommandParameter> commandParametersMap) throws CommandParameterException {
+	protected Command getCommand(Class<Command> commandClass, Map<String, CommandParameter> commandParametersMap) {
 		Command command;
 		try {
 			command = commandClass.newInstance();
@@ -101,7 +110,11 @@ public class CommandMain {
 		}
 		
 		command.setCommandParametersMap(commandParametersMap);
-
+		
+		return command;
+	}
+	
+	protected CommandMain checkCommandParameter(Class<Command> commandClass, Map<String, CommandParameter> commandParametersMap) throws CommandParameterException {
 		CommandMetadata metadata = commandClass.getAnnotation(CommandMetadata.class);
 		if(metadata != null) {
 			for(CommandParameterMetadata parameterMetadata : metadata.parameters()) {
@@ -111,12 +124,12 @@ public class CommandMain {
 				
 				if(!commandParametersMap.containsKey(parameterMetadata.value())) {
 					if(parameterMetadata.required() && !parameterMetadata.canOmitName()) {
-						throw new CommandParameterException("The parameter is required.\n"+command.printUsage(), parameterMetadata.value());
+						throw new CommandParameterException("The parameter is required", parameterMetadata.value());
 					} else if(!parameterMetadata.linkedParameters().isEmpty()) {
 						String[] linkedParameters = parameterMetadata.linkedParameters().split(";");
 						for(String linkedParameter:linkedParameters) {
 							if(commandParametersMap.containsKey(linkedParameter)) {
-								throw new CommandParameterException("The parameter is required.\n"+command.printUsage(), parameterMetadata.value());
+								throw new CommandParameterException("The parameter is required", parameterMetadata.value());
 							}
 						}
 					}
@@ -124,12 +137,11 @@ public class CommandMain {
 			}
 		}	
 		
-		return command;
+		return this;
 	}
 	
-	protected void execute(Command command) throws CommandParameterException {
-		if(command!=null)
-			command.execute();
+	protected void thenExecute(Command command) throws CommandParameterException {
+		command.execute();
 	}
 	
 	public static void main(String[] args) {
