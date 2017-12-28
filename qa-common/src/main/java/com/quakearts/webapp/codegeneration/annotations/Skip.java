@@ -16,5 +16,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD,ElementType.METHOD})
-public @interface Skip {}
+@Target({ElementType.FIELD,ElementType.METHOD,ElementType.TYPE})
+public @interface Skip {
+	/**A list of skipped bean elements. Should be used only when used as a type annotation.
+	 * Useful when you need to skip modeling of inherited get/set methods
+	 * @return
+	 */
+	String[] value() default {};
+}
