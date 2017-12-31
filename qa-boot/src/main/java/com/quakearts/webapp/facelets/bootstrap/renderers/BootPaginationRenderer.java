@@ -103,13 +103,13 @@ public class BootPaginationRenderer extends HtmlBasicRenderer {
 		int currentPage = pagination.currentPage();
 		
 		int totalPages = pagination.calculatedTotalPages();		
-		int limit = pagination.calculatedLimit();
-		int startPage = totalPages>0?1:0, endPage=totalPages<limit?totalPages:limit;
+		int maxPages = pagination.calculatedMaxPages();
+		int startPage = totalPages>0?1:0, endPage=totalPages<maxPages?totalPages:maxPages;
 		
 		boolean doDots = false;
-		if(totalPages>limit && currentPage>limit){
-			startPage = currentPage - (limit/2);
-			endPage = startPage+limit;
+		if(totalPages>maxPages && currentPage>maxPages){
+			startPage = currentPage - (maxPages/2);
+			endPage = startPage+maxPages;
 			doDots = true;
 		}
 		
@@ -196,7 +196,7 @@ public class BootPaginationRenderer extends HtmlBasicRenderer {
 		    	writer.write("\n");
 			}
 		
-		if(totalPages>limit && endPage<totalPages){
+		if(totalPages>maxPages && endPage<totalPages){
 			writer.startElement("li", component);
 			writer.writeAttribute("class", "disabled",null);
 	    	writer.write("\n");

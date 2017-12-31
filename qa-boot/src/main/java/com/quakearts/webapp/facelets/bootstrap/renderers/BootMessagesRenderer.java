@@ -152,10 +152,7 @@ public class BootMessagesRenderer extends HtmlBasicRenderer {
 
 			boolean wroteTooltip = false;
 			if (showSummary && showDetail && isTooltip) {
-				String title = (String) component.getAttributes().get("title");
-				if (title == null || title.length() == 0) {
-					writer.writeAttribute("title", summary, "title");
-				}
+				writer.writeAttribute("title", summary, "title");
 				wroteTooltip = true;
 			}
 			

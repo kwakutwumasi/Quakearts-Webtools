@@ -330,18 +330,14 @@ public abstract class HtmlBasicRenderer extends Renderer {
 			String forComponent, UIComponent component) {
 
         Iterator messageIter;
-        if (null != forComponent) {
-            if (forComponent.length() == 0) {
-                messageIter = context.getMessages(null);
+        if (forComponent != null && forComponent.trim().length() != 0) {
+            UIComponent result = getForComponent(context, forComponent,
+                                                 component);
+            if (result == null) {
+                messageIter = Collections.EMPTY_LIST.iterator();
             } else {
-                UIComponent result = getForComponent(context, forComponent,
-                                                     component);
-                if (result == null) {
-                    messageIter = Collections.EMPTY_LIST.iterator();
-                } else {
-                    messageIter =
-                          context.getMessages(result.getClientId(context));
-                }
+                messageIter =
+                      context.getMessages(result.getClientId(context));
             }
         } else {
             messageIter = context.getMessages();

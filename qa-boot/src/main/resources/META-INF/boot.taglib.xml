@@ -92,7 +92,7 @@ The second test evaluates a ValueExpression to determine if it should be rendred
 			<name>id</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
@@ -144,11 +144,11 @@ The second test evaluates a ValueExpression to determine if it should be rendred
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<description>A ValueExpression to render the "title" attribute of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 	</tag>
@@ -174,7 +174,11 @@ Encode behavior: Renders any UIOutput child component.
 			<name>id</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the Body of the bread crumb</description>
+			<name>styleClass</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
@@ -246,11 +250,11 @@ Encode behavior: Renders any UIOutput child component.
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<description>A ValueExpression to render the "title" attribute of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 	</tag>
@@ -286,11 +290,11 @@ Encode behavior: Renders a &lt;div&gt; element with the button group classes. Re
 			<name>label</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 	</tag>
@@ -326,11 +330,11 @@ Encode behavior: Renders a &lt;div&gt; element with the button group classes. Re
 			<name>label</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 	</tag>
@@ -459,30 +463,35 @@ child component if present
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "style" element of the div HTML tag that wraps the element</description>
+			<description>A ValueExpression to render the "style" attribute of the div HTML tag that wraps the element</description>
 			<name>mainStyle</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "class" element of the div HTML tag that wraps the element</description>
+			<description>A ValueExpression to render the "class" attribute of the div HTML tag that wraps the element</description>
 			<name>mainClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<description>A ValueExpression to render the "title" attribute of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the tab index of this component. A tab index is the value used 
+				to determine the order in which input components will be navigated in an HTML form when the 'Tab' key is pressed. 
+				A smaller value gives higher priority i.e. a tab index of 1 means it will be the first input to be navigated to, an index of 2
+				means it will be the second input to be navigated to and so on
+			</description>
 			<name>tabindex</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
+			<description>A ValueExpression that evaluates to a boolean. When true the JSf lifecycle will end at the process validations stage and return an error to the view if value of the component is null</description>
 			<name>required</name>
 		</attribute>
 		<attribute>
@@ -530,11 +539,11 @@ child component if present
 			<name>lg</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
@@ -582,27 +591,27 @@ child component if present
 			<name>converter</name>
 		</attribute>
 		<attribute>
-			<description>Error message to be displayed on a conversion error</description>
+			<description>A ValueExpression that evaluates to the error message to be displayed on a conversion error</description>
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
-			<description>Bootstrap button type to render</description>
+			<description>A ValueExpression that evaluates to the bootstrap button type to render</description>
 			<name>displayType</name>
 		</attribute>
 		<attribute>
-			<description>Image to render on the button</description>
+			<description>A ValueExpression that evaluates to the image to render on the button</description>
 			<name>image</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>Button type (submit, button)</description>
+			<description>A ValueExpression that evaluates to the button type to render. One of 'submit' or 'button'</description>
 			<name>type</name>
 		</attribute>
 		<attribute>
-			<description>A MethodExpression of a managed bean method to execute when an ActionEvent is triggered. The method must have the signature 'void methodName(ActionListener)' </description>
+			<description>A MethodExpression of a managed bean method to execute when an ActionEvent is triggered. The method must have the signature 'void methodName(ActionEvent)' </description>
 			<name>actionListener</name>
 		</attribute>
 		<attribute>
@@ -686,20 +695,24 @@ child component if present
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "tabindex" element of the HTML tag</description>
+			<description>A ValueExpression to render as the tab index of this component. A tab index is the value used 
+				to determine the order in which input components will be navigated in an HTML form when the 'Tab' key is pressed. 
+				A smaller value gives higher priority i.e. a tab index of 1 means it will be the first input to be navigated to, an index of 2
+				means it will be the second input to be navigated to and so on
+			</description>
 			<name>tabindex</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<description>A ValueExpression to render the "title" attribute of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
-			<name>required</name>
+			<description>A ValueExpression for disabling the UInput component</description>
+			<name>disabled</name>
 		</attribute>
 		<attribute>
 			<description>The target for the overlay during AJAX calls. Used by the onevent handler of f:ajax to find the right target to overlay</description>
@@ -730,11 +743,11 @@ child component if present
 			<name>fluid</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 	</tag>
@@ -823,15 +836,15 @@ child component if present
 			<name>nullable</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the day button HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the day button HTML tag</description>
 			<name>dayClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the month button HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the month button HTML tag</description>
 			<name>monthClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the year button HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the year button HTML tag</description>
 			<name>yearClass</name>
 		</attribute>
 		<attribute>
@@ -859,15 +872,15 @@ child component if present
 			<name>secondType</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the enclosing div</description>
+			<description>A ValueExpression to render as the "class" attribute of the enclosing div</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the enclosing div</description>
+			<description>A ValueExpression to render as the "style" attribute of the enclosing div</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
+			<description>A ValueExpression that evaluates to a boolean. When true the JSf lifecycle will end at the process validations stage and return an error to the view if value of the component is null</description>
 			<name>required</name>
 		</attribute>
 		<attribute>
@@ -951,28 +964,36 @@ child component if present
 			<name>converter</name>
 		</attribute>
 		<attribute>
-			<description>Error message to be displayed on a conversion error</description>
+			<description>A ValueExpression to render the error message to be displayed on a conversion error</description>
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
-			<description>Bootstrap button type to render</description>
+			<description>A ValueExpression to render the bootstrap button type</description>
 			<name>displayType</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the menu type. One of 'default' or 'navbar'. 
+				'default' renders a standalone drop down menu. 'navbar' renders a navigation bar drop down menu
+			</description>
 			<name>type</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to true or false. A true value indicates that the menu should be 
+				wrapped in a Bootstrap Button Group container.
+			</description>
 			<name>no-group</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to true or false. A true value indicates that the menu render as a drop-up
+			</description>
 			<name>dropup</name>
 		</attribute>
 	</tag>
@@ -992,9 +1013,11 @@ child component if present
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to list the component ids of components that should be re-rendered.</description>
 			<name>render</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to list the component ids of components that should be executed.</description>
 			<name>execute</name>
 		</attribute>
 		<attribute>
@@ -1006,19 +1029,24 @@ child component if present
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression for triggering javascript upon execution of the components AJAX event</description>
 			<name>onevent</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression for triggering javascript upon failure to execute the components AJAX event</description>
 			<name>onerror</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression for triggering javascript upon failure to execute the components AJAX event</description>
 			<name>accept</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking to a backing bean property of type byte[] for holding inputed data</description>
 			<name>data</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression linking to a backing bean property of type String for holding the uploaded filename</description>
 			<name>name</name>
 		</attribute>
 		<attribute>
@@ -1026,18 +1054,19 @@ child component if present
 			<name>value</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean to determine if multiple file uploads are allowed</description>
 			<name>allowMultiple</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
+			<description>A ValueExpression that evaluates to a boolean. When true the JSf lifecycle will end at the process validations stage and return an error to the view if value of the component is null</description>
 			<name>required</name>
 		</attribute>
 		<attribute>
@@ -1065,18 +1094,19 @@ child component if present
 			<name>binding</name>
 		</attribute>
 		<attribute>
-			<name>prependId</name>
-		</attribute>
-		<attribute>
+			<description>A ValueExpression to render as the "target" attribute of the HTML tag</description>
 			<name>target</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "accept" attribute of the HTML tag</description>
 			<name>accept</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "acceptcharset" attribute of the HTML tag</description>
 			<name>acceptcharset</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "enctype" attribute of the HTML tag</description>
 			<name>enctype</name>
 		</attribute>
 		<attribute>
@@ -1136,24 +1166,29 @@ child component if present
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
+			<description>The HTML form reset event handler. This attribute can hold ValueExpressions</description>
 			<name>onreset</name>
 		</attribute>
 		<attribute>
+			<description>The HTML form submission event handler. This attribute can hold ValueExpressions</description>
 			<name>onsubmit</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<description>A ValueExpression to render the "title" attribute of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the form type. One of 'default' or 'horizontal'. 
+				'horizontal' renders a horizontal form. 'navbar' renders a navigation bar form
+			</description>
 			<name>type</name>
 		</attribute>
 	</tag>
@@ -1177,11 +1212,11 @@ child component if present
 			<name>binding</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 	</tag>
@@ -1209,15 +1244,15 @@ child component if present
 			<name>value</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<description>A ValueExpression to render the "title" attribute of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
@@ -1253,15 +1288,15 @@ child component if present
 			<name>value</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<description>A ValueExpression to render the "title" attribute of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
@@ -1297,15 +1332,15 @@ child component if present
 			<name>value</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<description>A ValueExpression to render the "title" attribute of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
@@ -1369,15 +1404,22 @@ child component if present
 			<name>requiredMessage</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the JSf lifecycle 
+				processes component in the Apply Request Values Phases and skips other Phases if required by the component.
+				This makes it possible to implement a cancel button for instance that ignores other component values 
+			</description>
 			<name>immediate</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "accesskey" attribute of the HTML tag</description>
 			<name>accesskey</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "alt" attribute of the HTML tag</description>
 			<name>alt</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "autocomplete" attribute of the HTML tag</description>
 			<name>autocomplete</name>
 		</attribute>
 		<attribute>
@@ -1389,7 +1431,7 @@ child component if present
 			<name>lang</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
+			<description>A ValueExpression that evaluates to a boolean. When true the JSf lifecycle will end at the process validations stage and return an error to the view if value of the component is null</description>
 			<name>required</name>
 		</attribute>
 		<attribute>
@@ -1461,27 +1503,35 @@ child component if present
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<description>A ValueExpression to render the "title" attribute of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true this component will be set to read only and will ignore submitted values</description>
 			<name>readonly</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "size" attribute of the HTML tag</description>
 			<name>size</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the tab index of this component. A tab index is the value used 
+				to determine the order in which input components will be navigated in an HTML form when the 'Tab' key is pressed. 
+				A smaller value gives higher priority i.e. a tab index of 1 means it will be the first input to be navigated to, an index of 2
+				means it will be the second input to be navigated to and so on
+			</description>
 			<name>tabindex</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "placeholder" attribute of the HTML tag</description>
 			<name>placeholder</name>
 		</attribute>
 		<attribute>
@@ -1517,11 +1567,11 @@ child component if present
 			<name>binding</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
@@ -1537,6 +1587,7 @@ child component if present
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the bootstrap label type to render</description>
 			<name>type</name>
 		</attribute>
 	</tag>
@@ -1560,12 +1611,15 @@ child component if present
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true info messages will be rendered using the Bootstrap 'Success' alert type</description>
 			<name>successMessage</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression that evaluates to the ID of the component that is the target of the messages</description>
 			<name>for</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true only global messages will be rendered. Overrides the 'for' attribute</description>
 			<name>globalOnly</name>
 		</attribute>
 		<attribute>
@@ -1577,9 +1631,11 @@ child component if present
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true error details will be rendered</description>
 			<name>showDetail</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true error summary will be rendered. Defaults to 'true'</description>
 			<name>showSummary</name>
 		</attribute>
 		<attribute>
@@ -1587,27 +1643,35 @@ child component if present
 			<name>dir</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the css class to apply to error messages</description>
 			<name>errorClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag of the error message</description>
 			<name>errorStyle</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the css class to apply to fatal messages</description>
 			<name>fatalClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag of the fatal message</description>
 			<name>fatalStyle</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the css class to apply to info messages</description>
 			<name>infoClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag of the info message</description>
 			<name>infoStyle</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the css class to apply to warning messages</description>
 			<name>warnClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag of the warning message</description>
 			<name>warnStyle</name>
 		</attribute>
 		<attribute>
@@ -1615,24 +1679,19 @@ child component if present
 			<name>lang</name>
 		</attribute>
 		<attribute>
-			<name>layout</name>
-		</attribute>
-		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "title" element of the HTML tag</description>
-			<name>title</name>
-		</attribute>
-		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the summary of the error message will be written as the 'title' tooltip of the HTML tag</description>
 			<name>tooltip</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the error message is dismissible</description>
 			<name>dismissible</name>
 		</attribute>
 	</tag>
@@ -1656,16 +1715,21 @@ child component if present
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the navigation elements will be stacked i.e.
+			 displayed horizontally. Only works when the attribute 'type' is 'pills'
+			</description>
 			<name>stacked</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the navigation elements will justified. Only works when attribute 'stacked' is true</description>
 			<name>justified</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the Bootstrap nav type to render. One of 'bar', 'pills' or none</description>
 			<name>type</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
@@ -1709,11 +1773,11 @@ child component if present
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<description>A ValueExpression to render the "title" attribute of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 	</tag>
@@ -1737,23 +1801,28 @@ child component if present
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the Bootstrap navbar type to render. One of 'inverse' or 'default' </description>
 			<name>type</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the Bootstrap navbar position. One of 'fixed',
+			'fixed-top','fixed-bottom','static','static-top' or 'static-bottom' </description>
 			<name>position</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the navbar will behave as a Bootstrap fluid navbar</description>
 			<name>fluid</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the navbar will behave as a Bootstrap responsive navbar</description>
 			<name>responsive</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 	</tag>
@@ -1777,10 +1846,11 @@ child component if present
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the Bootstrap panel type to render.</description>
 			<name>type</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
@@ -1824,11 +1894,11 @@ child component if present
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<description>A ValueExpression to render the "title" attribute of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
@@ -1856,35 +1926,43 @@ child component if present
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression that evaluates to an integer. Determines the number of data-table rows to render per page</description>
 			<name>pageSize</name>
 		</attribute>
 		<attribute>
-			<name>limit</name>
+			<description>The ValueExpression that evaluates to an integer. The maximum number of page navigation buttons to display. Defaults to 5</description>
+			<name>maxPages</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression that evaluates to the ID of the data table component this paginator is tied to</description>
 			<name>for</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression for triggering javascript upon execution of the components AJAX event</description>
 			<name>onevent</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression for triggering javascript upon failure to execute the components AJAX event</description>
 			<name>onerror</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to list the component ids of components that should be re-rendered.</description>
 			<name>render</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to list the component ids of components that should be executed.</description>
 			<name>execute</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. If true, the pagination will be reset to page 1</description>
 			<name>reset</name>
 		</attribute>
 		<attribute>
@@ -1944,11 +2022,11 @@ child component if present
 			<name>binding</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 	</tag>
@@ -2006,10 +2084,6 @@ child component if present
 		<attribute>
 			<description>A string indicating the java.util.Collecton implementation class of the component's value</description>
 			<name>collectionType</name>
-		</attribute>
-		<attribute>
-			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
-			<name>required</name>
 		</attribute>
 		<attribute>
 			<description>A ValueExpression to determine the processing of javax.faces.component.SelectItem's marked as a hideNoSelection. A value of true prevents such components from being rendered</description>
@@ -2088,31 +2162,43 @@ child component if present
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the main HTML div of the rendered component</description>
 			<name>mainStyle</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" attribute of the main HTML div of the rendered component</description>
 			<name>mainClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the HTML div of the select portion of the rendered component</description>
 			<name>selectStyle</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" attribute of the HTML div of the select portion of the rendered component</description>
 			<name>selectClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<description>A ValueExpression to render the "title" attribute of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true this component will be set to read only and will ignore submitted values</description>
 			<name>readonly</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to an integer. Determines the number of list items to render at a time. Only works when the attribute 'limit' is true</description>
 			<name>size</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true this component will limit the number of items displayed in the list</description>
 			<name>limit</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the tab index of this component. A tab index is the value used 
+				to determine the order in which input components will be navigated in an HTML form when the 'Tab' key is pressed. 
+				A smaller value gives higher priority i.e. a tab index of 1 means it will be the first input to be navigated to, an index of 2
+				means it will be the second input to be navigated to and so on
+			</description>
 			<name>tabindex</name>
 		</attribute>
 		<attribute>
@@ -2180,10 +2266,6 @@ child component if present
 			<name>collectionType</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
-			<name>required</name>
-		</attribute>
-		<attribute>
 			<description>A ValueExpression to determine the processing of javax.faces.component.SelectItem's marked as a hideNoSelection. A value of true prevents such components from being rendered</description>
 			<name>hideNoSelectionOption</name>
 		</attribute>
@@ -2260,87 +2342,120 @@ child component if present
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<description>A ValueExpression to render the "title" attribute of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true this component will be set to read only and will ignore submitted values</description>
 			<name>readonly</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to an integer. Determines the number of list items to render at a time. Only works when the attribute 'limit' is true</description>
 			<name>size</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true this component will limit the number of items displayed in the list</description>
 			<name>limit</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the tab index of this component. A tab index is the value used 
+				to determine the order in which input components will be navigated in an HTML form when the 'Tab' key is pressed. 
+				A smaller value gives higher priority i.e. a tab index of 1 means it will be the first input to be navigated to, an index of 2
+				means it will be the second input to be navigated to and so on
+			</description>
 			<name>tabindex</name>
 		</attribute>
 		<attribute>
-			<description>Bootstrap button type to render</description>
+			<description>A ValueExpression that evaluates to the Bootstrap button type to render</description>
 			<name>displayType</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the rendered HTML will fill the entire container</description>
 			<name>fill</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the selections will be auto-completable</description>
 			<name>autocomplete</name>
 		</attribute>
 		<attribute>
+			<description>A MethodExpression executed when the UIInput component's auto-complete value changes</description>
 			<name>listener</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to list the component ids of components that should be re-rendered.</description>
 			<name>render</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to list the component ids of components that should be executed.</description>
 			<name>execute</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression for triggering javascript upon execution of the components AJAX event</description>
 			<name>onevent</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression for triggering javascript upon failure to execute the components AJAX event</description>
 			<name>onerror</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression that links to a backing bean to hold the auto-complete suggestion value</description>
 			<name>suggestion</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression that evaluates to a double. Determines the time in seconds before the auto-complete suggestion is submitted.
+				 Can be up to 3 significant digits after the decimal point. The value is multiplied by 1000 and cast to an integer
+			</description>
 			<name>delay</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression that evaluates to an integer. Determines the minimum number of characters required before 
+				triggering auto completion
+			</description>
 			<name>minchars</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression that evaluates to a boolean. When true indicates that the drop down select menu should be rendered opened</description>
 			<name>opened</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the main HTML div of the rendered component</description>
 			<name>mainStyle</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" attribute of the main HTML div of the rendered component</description>
 			<name>mainClass</name>
 		</attribute>
 		<attribute>
-			<name>buttonStyle</name>
-		</attribute>
-		<attribute>
-			<name>buttonClass</name>
-		</attribute>
-		<attribute>
-			<name>autoStyle</name>
-		</attribute>
-		<attribute>
-			<name>autoClass</name>
-		</attribute>
-		<attribute>
-			<name>groupStyle</name>
-		</attribute>
-		<attribute>
-			<name>groupClass</name>
-		</attribute>
-		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the HTML div of the select portion of the component</description>
 			<name>selectStyle</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" attribute of the HTML div of the select portion of the component</description>
 			<name>selectClass</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the HTML button</description>
+			<name>buttonStyle</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render the "class" attribute of the HTML button</description>
+			<name>buttonClass</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the HTML auto-complete input box</description>
+			<name>autoStyle</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render the "class" attribute of the HTML auto-complete input box</description>
+			<name>autoClass</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the HTML div of the Bootstrap button group</description>
+			<name>groupStyle</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render the "class" attribute of the HTML div of the Bootstrap button group</description>
+			<name>groupClass</name>
 		</attribute>
 		<attribute>
 			<description>The target for the overlay during AJAX calls. Used by the onevent handler of f:ajax to find the right target to overlay</description>
@@ -2407,10 +2522,6 @@ child component if present
 			<name>collectionType</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
-			<name>required</name>
-		</attribute>
-		<attribute>
 			<description>A ValueExpression to determine the processing of javax.faces.component.SelectItem's marked as a hideNoSelection. A value of true prevents such components from being rendered</description>
 			<name>hideNoSelectionOption</name>
 		</attribute>
@@ -2487,31 +2598,43 @@ child component if present
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the main HTML div of the rendered component</description>
 			<name>mainStyle</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" attribute of the main HTML div of the rendered component</description>
 			<name>mainClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the HTML div of the select portion of the rendered component</description>
 			<name>selectStyle</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" attribute of the HTML div of the select portion of the rendered component</description>
 			<name>selectClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<description>A ValueExpression to render the "title" attribute of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true this component will be set to read only and will ignore submitted values</description>
 			<name>readonly</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to an integer. Determines the number of list items to render at a time. Only works when the attribute 'limit' is true</description>
 			<name>size</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true this component will limit the number of items displayed in the list</description>
 			<name>limit</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the tab index of this component. A tab index is the value used 
+				to determine the order in which input components will be navigated in an HTML form when the 'Tab' key is pressed. 
+				A smaller value gives higher priority i.e. a tab index of 1 means it will be the first input to be navigated to, an index of 2
+				means it will be the second input to be navigated to and so on
+			</description>
 			<name>tabindex</name>
 		</attribute>
 		<attribute>
@@ -2579,10 +2702,6 @@ child component if present
 			<name>collectionType</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
-			<name>required</name>
-		</attribute>
-		<attribute>
 			<description>A ValueExpression to determine the processing of javax.faces.component.SelectItem's marked as a hideNoSelection. A value of true prevents such components from being rendered</description>
 			<name>hideNoSelectionOption</name>
 		</attribute>
@@ -2659,16 +2778,23 @@ child component if present
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<description>A ValueExpression to render the "title" attribute of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to an integer. Determines the number of list items to render at a time. Only works when the attribute 'limit' is true</description>
 			<name>size</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true this component will limit the number of items displayed in the list</description>
 			<name>limit</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the tab index of this component. A tab index is the value used 
+				to determine the order in which input components will be navigated in an HTML form when the 'Tab' key is pressed. 
+				A smaller value gives higher priority i.e. a tab index of 1 means it will be the first input to be navigated to, an index of 2
+				means it will be the second input to be navigated to and so on
+			</description>
 			<name>tabindex</name>
 		</attribute>
 		<attribute>
@@ -2676,67 +2802,92 @@ child component if present
 			<name>displayType</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the rendered HTML will fill the entire container</description>
 			<name>fill</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the selections will be auto-completable. 'listener' and 'suggestion' attributes must be set</description>
 			<name>autocomplete</name>
 		</attribute>
 		<attribute>
+			<description>A MethodExpression executed when the UIInput component's auto-complete value changes</description>
 			<name>listener</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to list the component ids of components that should be re-rendered when the autocomplete listener is triggered</description>
 			<name>render</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to list the component ids of components that should be executed when the autocomplete listener is triggered</description>
 			<name>execute</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression for triggering javascript upon execution of the components AJAX event</description>
 			<name>onevent</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression for triggering javascript upon failure to execute the components AJAX event</description>
 			<name>onerror</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression that links to a backing bean to hold the auto-complete suggestion value</description>
 			<name>suggestion</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression that evaluates to a double. Determines the time in seconds before the auto-complete suggestion is submitted.
+				 Can be up to 3 significant digits after the decimal point. The value is multiplied by 1000 and cast to an integer
+			</description>
 			<name>delay</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression that evaluates to an integer. Determines the minimum number of characters required before 
+				triggering auto completion
+			</description>
 			<name>minchars</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression that evaluates to a boolean. When true indicates that the drop down select menu should be rendered opened</description>
 			<name>opened</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the main HTML div of the rendered component</description>
 			<name>mainStyle</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" attribute of the main HTML div of the rendered component</description>
 			<name>mainClass</name>
 		</attribute>
 		<attribute>
-			<name>buttonStyle</name>
-		</attribute>
-		<attribute>
-			<name>buttonClass</name>
-		</attribute>
-		<attribute>
-			<name>autoStyle</name>
-		</attribute>
-		<attribute>
-			<name>autoClass</name>
-		</attribute>
-		<attribute>
-			<name>groupStyle</name>
-		</attribute>
-		<attribute>
-			<name>groupClass</name>
-		</attribute>
-		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the HTML div of the select portion of the rendered component</description>
 			<name>selectStyle</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" attribute of the HTML div of the select portion of the rendered component</description>
 			<name>selectClass</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the HTML button</description>
+			<name>buttonStyle</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render the "class" attribute of the HTML button</description>
+			<name>buttonClass</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the HTML auto-complete input box</description>
+			<name>autoStyle</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render the "class" attribute of the HTML auto-complete input box</description>
+			<name>autoClass</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the HTML div of the Bootstrap button group</description>
+			<name>groupStyle</name>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression to render the "class" attribute of the HTML div of the Bootstrap button group</description>
+			<name>groupClass</name>
 		</attribute>
 		<attribute>
 			<description>The target for the overlay during AJAX calls. Used by the onevent handler of f:ajax to find the right target to overlay</description>
@@ -2803,10 +2954,6 @@ child component if present
 			<name>collectionType</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
-			<name>required</name>
-		</attribute>
-		<attribute>
 			<description>A ValueExpression to determine the processing of javax.faces.component.SelectItem's marked as a hideNoSelection. A value of true prevents such components from being rendered</description>
 			<name>hideNoSelectionOption</name>
 		</attribute>
@@ -2883,52 +3030,75 @@ child component if present
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the main HTML div of the rendered component</description>
 			<name>mainStyle</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" attribute of the main HTML div of the rendered component</description>
 			<name>mainClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the HTML div of the Bootstrap input group</description>
 			<name>groupStyle</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the HTML div of the Bootstrap input group add-on</description>
 			<name>addonStyle</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the HTML div of the Bootstrap input group add-on input element</description>
 			<name>controlStyle</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<description>A ValueExpression to render the "title" attribute of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the tab index of this component. A tab index is the value used 
+				to determine the order in which input components will be navigated in an HTML form when the 'Tab' key is pressed. 
+				A smaller value gives higher priority i.e. a tab index of 1 means it will be the first input to be navigated to, an index of 2
+				means it will be the second input to be navigated to and so on
+			</description>
 			<name>tabindex</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the selections will be auto-completable</description>
 			<name>autocomplete</name>
 		</attribute>
 		<attribute>
+			<description>A MethodExpression executed when the UIInput component's auto-complete value changes</description>
 			<name>listener</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to list the component ids of components that should be re-rendered.</description>
 			<name>render</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to list the component ids of components that should be executed.</description>
 			<name>execute</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression for triggering javascript upon execution of the components AJAX event</description>
 			<name>onevent</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression for triggering javascript upon failure to execute the components AJAX event</description>
 			<name>onerror</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression that links to a backing bean to hold the auto-complete suggestion value</description>
 			<name>suggestion</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression that evaluates to a double. Determines the time in seconds before the auto-complete suggestion is submitted.
+				 Can be up to 3 significant digits after the decimal point. The value is multiplied by 1000 and cast to an integer
+			</description>
 			<name>delay</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression that evaluates to an integer. Determines the minimum number of characters required before 
+				triggering auto completion
+			</description>
 			<name>minchars</name>
 		</attribute>
 		<attribute>
@@ -2996,10 +3166,6 @@ child component if present
 			<name>collectionType</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression that evaluates to a boolean to determine the UIInput processing status. A value of true prevents the processing of the components decode phase</description>
-			<name>required</name>
-		</attribute>
-		<attribute>
 			<description>A ValueExpression to determine the processing of javax.faces.component.SelectItem's marked as a hideNoSelection. A value of true prevents such components from being rendered</description>
 			<name>hideNoSelectionOption</name>
 		</attribute>
@@ -3072,37 +3238,51 @@ child component if present
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the main HTML div of the rendered component</description>
 			<name>mainStyle</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" attribute of the main HTML div of the rendered component</description>
 			<name>mainClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" attribute of the HTML div wrapping the select portion of the component</description>
 			<name>wrapClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the HTML div wrapping the select portion of the component</description>
 			<name>wrapStyle</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" attribute of the HTML div wrapping the drop down portion of the component</description>
 			<name>dropClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the HTML div wrapping the drop down portion of the component</description>
 			<name>dropStyle</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<description>A ValueExpression to render the "title" attribute of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true this component will be set to read only and will ignore submitted values</description>
 			<name>readonly</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the tab index of this component. A tab index is the value used 
+				to determine the order in which input components will be navigated in an HTML form when the 'Tab' key is pressed. 
+				A smaller value gives higher priority i.e. a tab index of 1 means it will be the first input to be navigated to, an index of 2
+				means it will be the second input to be navigated to and so on
+			</description>
 			<name>tabindex</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a boolean. When true the selections will be auto-completable</description>
 			<name>autocomplete</name>
 		</attribute>
 		<attribute>
+			<description>A MethodExpression executed when the UIInput component's auto-complete value changes</description>
 			<name>listener</name>
 		</attribute>
 		<attribute>
@@ -3110,24 +3290,35 @@ child component if present
 			<name>displayType</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to list the component ids of components that should be re-rendered.</description>
 			<name>render</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to list the component ids of components that should be executed.</description>
 			<name>execute</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression for triggering javascript upon execution of the components AJAX event</description>
 			<name>onevent</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression for triggering javascript upon failure to execute the components AJAX event</description>
 			<name>onerror</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression that links to a backing bean to hold the auto-complete suggestion value</description>
 			<name>suggestion</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression that evaluates to a double. Determines the time in seconds before the auto-complete suggestion is submitted.
+				 Can be up to 3 significant digits after the decimal point. The value is multiplied by 1000 and cast to an integer
+			</description>
 			<name>delay</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression that evaluates to an integer. Determines the minimum number of characters required before 
+				triggering auto completion
+			</description>
 			<name>minchars</name>
 		</attribute>
 		<attribute>
@@ -3147,6 +3338,7 @@ child component if present
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>A ValueExpression that evaluates to an Integer. Determines the first element of the list to render. </description>
 			<name>first</name>
 		</attribute>
 		<attribute>
@@ -3158,6 +3350,7 @@ child component if present
 			<name>rendered</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to an integer. Determines the number of list items to render. </description>
 			<name>rows</name>
 		</attribute>
 		<attribute>
@@ -3165,30 +3358,39 @@ child component if present
 			<name>value</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the variable name used in the nested components to refer to the current row </description>
 			<name>var</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "bgcolor" attribute of the HTML table</description>
 			<name>bgcolor</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to list of integers. Determines the rows to wrap in a 'tbody' element. </description>
 			<name>bodyrows</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "border" attribute of the HTML table</description>
 			<name>border</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "class" attribute of the HTML caption facet</description>
 			<name>captionClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "style" attribute of the HTML caption facet</description>
 			<name>captionStyle</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "cellpadding" attribute of the HTML table</description>
 			<name>cellpadding</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "cellspacing" attribute of the HTML table</description>
 			<name>cellspacing</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a list of css classes to be applied, in order, on each column of the table</description>
 			<name>columnClasses</name>
 		</attribute>
 		<attribute>
@@ -3196,15 +3398,19 @@ child component if present
 			<name>dir</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a css class to be applied to the footer of the table</description>
 			<name>footerClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render the "frame" attribute of the HTML table</description>
 			<name>frame</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a css class to be applied to the header of the table</description>
 			<name>headerClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a list of css classes to be applied, in order, on each header column of the table</description>
 			<name>headerClasses</name>
 		</attribute>
 		<attribute>
@@ -3264,27 +3470,31 @@ child component if present
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a list of css classes to be applied, in order, on each row of the table</description>
 			<name>rowClasses</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "rules" attribute of the HTML table</description>
 			<name>rules</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML table</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML table</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "summary" attribute of the HTML table</description>
 			<name>summary</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<description>A ValueExpression to render the "title" attribute of the HTML table</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "width" attribute of the HTML table</description>
 			<name>width</name>
 		</attribute>
 		<attribute>
@@ -3292,6 +3502,7 @@ child component if present
 			<name>binding</name>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression of the variable to store the current index</description>
 			<name>idVar</name>
 		</attribute>
 	</tag>
@@ -3299,17 +3510,21 @@ child component if present
 		<tag-name>resource</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootResourceTagHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to the name of the resource</description>
 			<name>name</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the library of the resource</description>
 			<name>library</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the position to render to resource in the html header. one of 'top' or 'bottom' defaults to bottom</description>
 			<name>position</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the type of resource. Must be one of 'script' or 'css'</description>
 			<name>type</name>
 			<required>true</required>
 		</attribute>
@@ -3322,6 +3537,7 @@ child component if present
 		<tag-name>paginationListener</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootPaginationListenerHandler</handler-class>
 		<attribute>
+			<description>A MethodExpression of a managed bean method to execute when an PaginationEvent is triggered. The method must have the signature 'void methodName(PaginationEvent)' </description>
 			<name>value</name>
 			<required>true</required>
 		</attribute>
@@ -3334,36 +3550,47 @@ child component if present
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
+			<description>A ValueExpression to render as the "align" attribute of the HTML image</description>
 			<name>align</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "alt" attribute of the HTML image</description>
 			<name>alt</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "border" attribute of the HTML image</description>
 			<name>border</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "crossorigin" attribute of the HTML image</description>
 			<name>crossorigin</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "height" attribute of the HTML image</description>
 			<name>height</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "hspace" attribute of the HTML image</description>
 			<name>hspace</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "ismap" attribute of the HTML image</description>
 			<name>ismap</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "longdesc" attribute of the HTML image</description>
 			<name>longdesc</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "usemap" attribute of the HTML image</description>
 			<name>usemap</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "vspace" attribute of the HTML image</description>
 			<name>vspace</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "width" attribute of the HTML image</description>
 			<name>width</name>
 		</attribute>
 		<attribute>
@@ -3407,15 +3634,15 @@ child component if present
 			<name>onmouseleave</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<description>A ValueExpression to render the "title" attribute of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
@@ -3431,10 +3658,12 @@ child component if present
 		<tag-name>imageEntry</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootImageEntryHandler</handler-class>
 		<attribute>
+			<description>The ValueExpression that evaluates to an integer. Determines the minimum screen size the image should be rendered to</description>
 			<name>size</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>The ValueExpression that evaluates to the image path relative to the root of site holding the image</description>
 			<name>imagePath</name>
 			<required>true</required>
 		</attribute>
@@ -3447,15 +3676,15 @@ child component if present
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 		<attribute>
-			<description>A ValueExpression to render as the "style" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "style" attribute of the HTML tag</description>
 			<name>style</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render as the "class" element of the HTML tag</description>
+			<description>A ValueExpression to render as the "class" attribute of the HTML tag</description>
 			<name>styleClass</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression to render the "title" element of the HTML tag</description>
+			<description>A ValueExpression to render the "title" attribute of the HTML tag</description>
 			<name>title</name>
 		</attribute>
 		<attribute>
@@ -3487,7 +3716,7 @@ child component if present
 			<name>onmouseout</name>
 		</attribute>
 		<attribute>
-			<description>The HTML mouse over event handler. This attribute can hold ValueExpressions</description>
+			<description>The ValueExpression that evaluates to an integer. Determines the minimum screen size the image should be rendered to</description>
 			<name>onmouseover</name>
 		</attribute>
 		<attribute>

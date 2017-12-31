@@ -28,7 +28,7 @@ import com.quakearts.webapp.facelets.util.ObjectExtractor;
 
 public class BootPagination extends HtmlCommandButton {
 
-	private int totalPages, pageSize, limit, currentPage=1;
+	private int totalPages, pageSize, maxPages, currentPage=1;
 	public static final String COMPONENT_FAMILY="com.quakearts.bootstrap.pagination";
 	public static final String RENDERER_TYPE="com.quakearts.bootstrap.pagination.renderer";
 	public static final String PAGINATION_KEY="com.quakearts.bootstrap.pagination.key";
@@ -51,8 +51,8 @@ public class BootPagination extends HtmlCommandButton {
 		return pageSize;
 	}
 
-	public int calculatedLimit() {
-		return limit;
+	public int calculatedMaxPages() {
+		return maxPages;
 	}
 
 	public int currentPage() {
@@ -91,21 +91,21 @@ public class BootPagination extends HtmlCommandButton {
 				pageSize = 10;
 		}
 		
-		String limitString;
-		ValueExpression limitExpression = getValueExpression("limit");
+		String maxPagesString;
+		ValueExpression limitExpression = getValueExpression("maxPages");
 		if(limitExpression!=null)
-			limit = ObjectExtractor.extractInteger(limitExpression, context.getELContext());
+			maxPages = ObjectExtractor.extractInteger(limitExpression, context.getELContext());
 		else {
-			limitString = (String) getAttributes().get("limit");
+			maxPagesString = (String) getAttributes().get("maxPages");
 
-			if (limitString != null)
+			if (maxPagesString != null)
 				try {
-					limit = Integer.parseInt(limitString);
+					maxPages = Integer.parseInt(maxPagesString);
 				} catch (Exception e) {
-					limit = 5;
+					maxPages = 5;
 				}
 			else
-				limit = 5;
+				maxPages = 5;
 		}
 
 		int totalRows;

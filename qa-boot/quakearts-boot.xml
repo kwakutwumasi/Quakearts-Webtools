@@ -133,6 +133,13 @@
 				</value>
 			</trait>
 		</entity>
+		<entity id="no-group">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.BooleanType
+				</value>
+			</trait>
+		</entity>
 	</entity>
 	
 	<entity id="flaticon" type="tag">
@@ -1785,6 +1792,35 @@
 					<item>inline</item>
 					<item>horizontal</item>
 					<item>navbar</item>
+				</value>
+			</trait>
+		</entity>
+	</entity>	
+
+	<entity id="resource" type="tag">
+		<entity id="type">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>css</item>
+					<item>script</item>
+				</value>
+			</trait>
+		</entity>
+		<entity id="position">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>top</item>
+					<item>bottom</item>
 				</value>
 			</trait>
 		</entity>

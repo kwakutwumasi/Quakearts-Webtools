@@ -33,7 +33,7 @@ public class AutoCompleteBehavior extends ClientBehaviorBase {
 	private String onerror;
 	private String onevent;
 	private String execute;
-	private int delay = 5;
+	private double delay = 5;
 	private int minchars = 3;
 	private static final String ATTRIBUTE = "suggestion";
 	public static final String SUGGESTIONPRESENT = "com.quakearts.boot.SUGGESTIONPRESENT";
@@ -72,7 +72,7 @@ public class AutoCompleteBehavior extends ClientBehaviorBase {
 		this.execute = execute;
 	}
 	
-	public int getDelay() {
+	public double getDelay() {
 		return delay;
 	}
 	
@@ -161,7 +161,7 @@ public class AutoCompleteBehavior extends ClientBehaviorBase {
 			 delay = ObjectExtractor.extractInteger(delayExpression, context.getELContext());
 		} else {
 			try {
-				delay = Integer.parseInt((String)component.getAttributes().get("delay"));
+				delay = Double.parseDouble((String)component.getAttributes().get("delay"));
 			} catch (Exception e) {
 			}
 		}
@@ -202,7 +202,7 @@ public class AutoCompleteBehavior extends ClientBehaviorBase {
 				+(onevent!=null&&onevent.length()>0? ", onevent: "+onevent+"":"")
 				+(onerror!=null&&onerror.length()>0?", onerror: "+onerror+"":"")
 				+",'javax.faces.behavior.event':'"+event+"'});},"
-				+(delay*100)+");";
+				+(new Double(delay*1000d).intValue())+");";
 	}
 	
 	@Override
