@@ -11,16 +11,21 @@
 package com.quakearts.security.cryptography.factory;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.crypto.NoSuchPaddingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.quakearts.security.cryptography.CryptoResource;
+import com.quakearts.security.cryptography.exception.KeyProviderException;
 import com.quakearts.security.cryptography.provider.KeyProvider;
 
 public class CrytpoServiceFactory {
@@ -37,7 +42,9 @@ public class CrytpoServiceFactory {
 		return instance;
 	}
 	
-	public CryptoResource getCryptoResource(String instance, String keyProviderClass, Map<Object, Object> properties, String name) throws Exception{
+	public CryptoResource getCryptoResource(String instance, String keyProviderClass, Map<Object, Object> properties,
+			String name) throws ClassNotFoundException, InstantiationException, IllegalAccessException,
+			KeyProviderException, NoSuchAlgorithmException, NoSuchPaddingException {
 		KeyProvider provider;
 		Key key;
 		
@@ -55,7 +62,9 @@ public class CrytpoServiceFactory {
 	
 	private static final Map<String, CryptoResource> localResources = new ConcurrentHashMap<>();
 	
-	public CryptoResource getCryptoResource(String name) throws Exception {
+	public CryptoResource getCryptoResource(String name)
+			throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
+			NoSuchAlgorithmException, NoSuchPaddingException, KeyProviderException {
 		CryptoResource resource = localResources.get(name);
 		if(resource==null){
 			Properties properties = new Properties();

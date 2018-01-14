@@ -13,14 +13,20 @@ package com.quakearts.security.cryptography.provider.impl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.Key;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.quakearts.security.cryptography.exception.KeyProviderException;
 import com.quakearts.security.cryptography.provider.KeyProvider;
 
 public class KeystoreKeyProvider implements KeyProvider {
@@ -32,9 +38,7 @@ public class KeystoreKeyProvider implements KeyProvider {
 	}
 	
 	@Override
-	public Key getKey() throws Exception {
-		Exception exception = null;
-			
+	public Key getKey() throws KeyProviderException {			
 		if(keyStoreType == null)
 			throw new NullPointerException("keyStoreType is null");
 		if(keyStoreFile == null)
@@ -46,33 +50,25 @@ public class KeystoreKeyProvider implements KeyProvider {
 		if(storePass == null)
 			throw new NullPointerException("storePass is null");
 		
-		KeyStore store = KeyStore.getInstance(keyStoreType);
-		
-		InputStream stream;
-
-		File file = new File(keyStoreFile);
-		if(file.exists()){
-			stream = new FileInputStream(file);
-		} else {
-			stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(keyStoreFile);
+		KeyStore store;
+		try {
+			store = KeyStore.getInstance(keyStoreType);
+		} catch (KeyStoreException e) {
+			throw new KeyProviderException(e);
 		}
 		
-		if(stream == null)
-			throw new FileNotFoundException("The keystore file "+file+" does not exists");
+		File file = new File(keyStoreFile);
+		Key key;;
+		try(InputStream stream = file.exists()? new FileInputStream(file): Thread.currentThread().getContextClassLoader().getResourceAsStream(keyStoreFile)){
+			if(stream == null)
+				throw new FileNotFoundException("The keystore file "+file+" does not exists");
 		
-		Key key = null;
-		try {
 			store.load(stream, storePass.toCharArray());
 			key = store.getKey(keyAlias, keyPass.toCharArray());
-		} catch (Exception e) {
-			log.log(Level.SEVERE, "Exception " + e.getClass().getName() + ". Message is "
-					+ e.getMessage(),e);
-			exception = e;
-		} finally {
-			stream.close();
-			if(exception !=null)
-				throw exception;
-		}
+		} catch (IOException | NoSuchAlgorithmException | CertificateException | UnrecoverableKeyException | KeyStoreException e) {
+			log.log(Level.SEVERE, "Exception " + e.getClass().getName() + ". Message is "+ e.getMessage(),e);
+			throw new KeyProviderException(e);
+		} 
 		return key;
 	}
 

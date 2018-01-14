@@ -12,6 +12,7 @@ package com.quakearts.security.cryptography.jboss;
 
 import com.quakearts.security.cryptography.CryptoProxy;
 import com.quakearts.security.cryptography.CryptoResource;
+import com.quakearts.security.cryptography.exception.KeyProviderException;
 
 public class CryptoProxyImpl implements CryptoProxy {
 	
@@ -24,7 +25,7 @@ public class CryptoProxyImpl implements CryptoProxy {
 	private CryptoProxyImpl(){		
 	}
 	
-	public CryptoResource getResource() throws Exception {
+	public CryptoResource getResource() throws KeyProviderException {
 		return service.getResource();
 	}
 }

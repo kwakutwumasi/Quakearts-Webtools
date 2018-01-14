@@ -10,8 +10,10 @@
  ******************************************************************************/
 package com.quakearts.security.cryptography.jboss;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Properties;
 
+import javax.crypto.NoSuchPaddingException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -19,6 +21,7 @@ import org.jboss.system.ServiceMBeanSupport;
 
 import com.quakearts.security.cryptography.CryptoResource;
 import com.quakearts.security.cryptography.CryptoUtils;
+import com.quakearts.security.cryptography.exception.KeyProviderException;
 import com.quakearts.security.cryptography.factory.CrytpoServiceFactory;
 
 public class CryptoService extends ServiceMBeanSupport implements CryptoServiceMBean{
@@ -48,8 +51,13 @@ public class CryptoService extends ServiceMBeanSupport implements CryptoServiceM
 	}
 
 	@Override
-	public CryptoResource getResource() throws Exception {
-		return CrytpoServiceFactory.getInstance().getCryptoResource(instance, keyProviderClass, properties, jndiName);
+	public CryptoResource getResource() throws KeyProviderException {
+		try {
+			return CrytpoServiceFactory.getInstance().getCryptoResource(instance, keyProviderClass, properties, jndiName);
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchAlgorithmException
+				| NoSuchPaddingException e) {
+			throw new KeyProviderException(e);
+		}
 	}
 
 	@Override

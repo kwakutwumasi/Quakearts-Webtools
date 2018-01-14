@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.quakearts.security.cryptography;
 
+import com.quakearts.security.cryptography.exception.KeyProviderException;
+
 public interface CryptoProxy {
-	public CryptoResource getResource() throws Exception;
+	public CryptoResource getResource() throws KeyProviderException;
 }

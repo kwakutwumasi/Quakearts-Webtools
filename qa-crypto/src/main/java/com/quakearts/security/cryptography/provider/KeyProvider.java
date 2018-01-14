@@ -13,7 +13,9 @@ package com.quakearts.security.cryptography.provider;
 import java.security.Key;
 import java.util.Map;
 
+import com.quakearts.security.cryptography.exception.KeyProviderException;
+
 public interface KeyProvider {
-	public Key getKey() throws Exception;
+	public Key getKey() throws KeyProviderException;
 	public void setProperties(Map<Object, Object> props);
 }
