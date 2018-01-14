@@ -32,9 +32,10 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-			<version>5.1.0.Final</version>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>7.0</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
@@ -45,15 +46,11 @@
 			<groupId>org.wildfly</groupId>
 			<artifactId>wildfly-system-jmx</artifactId>
 			<version>9.0.2.Final</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.25</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
 			<version>1.7.25</version>
 		</dependency>
 	</dependencies>	
