@@ -50,60 +50,6 @@
 			<artifactId>qa-syshub</artifactId>
 			<version>1.0</version>
 			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>com.quakearts.webtools</groupId>
-					<artifactId>qa-orm-hibernate</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.hibernate</groupId>
-					<artifactId>hibernate-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.logging</groupId>
-					<artifactId>jboss-logging</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.weld</groupId>
-					<artifactId>weld-spi</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.weld.environment</groupId>
-					<artifactId>weld-environment-common</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.weld.probe</groupId>
-					<artifactId>weld-probe-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.weld</groupId>
-					<artifactId>weld-core-impl</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.weld</groupId>
-					<artifactId>weld-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.enterprise</groupId>
-					<artifactId>cdi-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.quakearts.webtools</groupId>
-			<artifactId>qa-orm-hibernate</artifactId>
-			<version>2.3</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.jboss.logging</groupId>
-					<artifactId>jboss-logging</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.javassist</groupId>
-					<artifactId>javassist</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
@@ -149,12 +95,6 @@
 					<artifactId>javassist</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.javassist</groupId>
-			<artifactId>javassist</artifactId>
-			<version>3.21.0-GA</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.faces</groupId>
