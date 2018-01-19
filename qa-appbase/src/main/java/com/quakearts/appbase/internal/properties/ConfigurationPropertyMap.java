@@ -86,13 +86,12 @@ public class ConfigurationPropertyMap extends HashMap<String, Serializable> {
 			throw new ConfigurationException(property+" is not a valid binary string");
 	}
 	
-	@SuppressWarnings("unchecked")
 	public <T> T get(String property, Class<T> clazz){
 		Serializable object = get(property);
-		if(object == null)
+		if(object == null || !clazz.isAssignableFrom(object.getClass()))
 			return null;
 		
-		return (T) object;
+		return clazz.cast(object);
 	}	
 
 }

@@ -13,6 +13,7 @@ package com.quakearts.syshub.core.scheduler.impl;
 import java.util.Map;
 
 import org.quartz.CronScheduleBuilder;
+import org.quartz.CronTrigger;
 import org.quartz.TriggerBuilder;
 
 import com.quakearts.syshub.core.scheduler.Schedule;
@@ -50,11 +51,12 @@ public class QuartzScheduleServiceFactory extends SchedulerServiceFactory {
 			
 			@SuppressWarnings("unchecked")
 			@Override
-			public <T> T getSchedule() {
-				return (T) TriggerBuilder
+			public CronTrigger getSchedule() {
+				return TriggerBuilder
 						.newTrigger()
 						.withSchedule(CronScheduleBuilder
-								.cronSchedule(schedule));
+								.cronSchedule(schedule))
+						.build();
 			}
 		};
 	}
