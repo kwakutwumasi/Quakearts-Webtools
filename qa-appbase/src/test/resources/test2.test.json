@@ -1,9 +1,13 @@
 {
-	"stringproperty":"property",
-	"integerproperty":1,
-	"doubleproperty":2.00,
-	"floatproperty":2e10,
-	"booleanproperty":true,
-	"specialproperty.binary":{"binary":"VGVzdA=="},
-	"specialproperty.long":{"long":2000000}
+	"testString":"String",
+	"testInt":1,
+	"testDouble":2.00,
+	"testFloat":2e10,
+	"testBoolean":true,
+	"testBinary":{"binary":"VGVzdA=="},
+	"testLong":"2000000l",
+	"testChar":"c",
+	"testByte":1,
+	"testShort":1,
+	"testBigInteger":"100000000000000000000000000"
 }

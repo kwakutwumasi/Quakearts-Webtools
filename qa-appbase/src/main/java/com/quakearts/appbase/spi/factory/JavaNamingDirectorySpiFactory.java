@@ -32,13 +32,16 @@ public class JavaNamingDirectorySpiFactory {
 	}
 	
 	public JavaNamingDirectorySpi createJavaNamingDirectorySpi(String javaNamingDirectorySpiClassName){
-		try {
-			Class<?> javaTmSpiClass = Class.forName(javaNamingDirectorySpiClassName);
-			Main.log.info("EmbeddedWebServerSpi class: "+javaNamingDirectorySpiClassName+" loaded");
-			javaNamingDirectorySpi = (JavaNamingDirectorySpi) javaTmSpiClass.newInstance();
-			return javaNamingDirectorySpi;
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException| ClassCastException e) {
-			throw new ConfigurationException("Unable to instantiate class "+javaNamingDirectorySpiClassName, e);
-		}
+		if(javaNamingDirectorySpi == null)
+			try {
+				Class<?> javaTmSpiClass = Class.forName(javaNamingDirectorySpiClassName);
+				Main.log.info("EmbeddedWebServerSpi class: "+javaNamingDirectorySpiClassName+" loaded");
+				javaNamingDirectorySpi = (JavaNamingDirectorySpi) javaTmSpiClass.newInstance();
+				return javaNamingDirectorySpi;
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException| ClassCastException e) {
+				throw new ConfigurationException("Unable to instantiate class "+javaNamingDirectorySpiClassName, e);
+			}
+		else
+			throw new ConfigurationException("Cannot create two instances of "+JavaNamingDirectorySpi.class.getName());
 	}
 }

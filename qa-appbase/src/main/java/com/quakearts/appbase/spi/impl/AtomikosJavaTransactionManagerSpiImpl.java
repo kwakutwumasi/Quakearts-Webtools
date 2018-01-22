@@ -53,7 +53,6 @@ public class AtomikosJavaTransactionManagerSpiImpl implements JavaTransactionMan
 				new ConfigurationException(e.getMessage(),e);
 			}
 			
-			
 		}
 	}
 

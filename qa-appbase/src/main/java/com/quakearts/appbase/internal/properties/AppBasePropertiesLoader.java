@@ -3,10 +3,14 @@ package com.quakearts.appbase.internal.properties;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import com.quakearts.appbase.Main;
 import com.quakearts.appbase.exception.ConfigurationException;
@@ -39,12 +43,12 @@ public class AppBasePropertiesLoader {
 						&& file.getName().endsWith(fileSuffix))
 					configurationFiles.add(file);
 			}
-		} else if(!configurationFilesLocation.isFile()){
+		} else if(!configurationFilesLocation.exists()){
 			configurationFilesLocation.mkdirs();
 			Main.log.info("Created "+configurationFilesLocation.getAbsolutePath()
 				+" to store "+appName+" files (*"+fileSuffix+")");
 		} else {
-			Main.log.warn("File "+configurationFilesLocation.getAbsolutePath()+" is not a directory. "
+			throw new ConfigurationException("File "+configurationFilesLocation.getAbsolutePath()+" is not a directory. "
 					+ "This location must be a folder to hold configuration files");
 		}
 		
@@ -52,57 +56,8 @@ public class AppBasePropertiesLoader {
 	}
 	
 	public ConfigurationPropertyMap loadParametersFromFile(File configurationFile){
-		ConfigurationPropertyMap map = new ConfigurationPropertyMap();
 		try(FileReader reader = new FileReader(configurationFile)) {
-			JsonValue datasourceValue = Json.parse(reader);
-			
-			if(!datasourceValue.isObject()){
-				throw new ConfigurationException("Invalid configuration file "+configurationFile.getAbsolutePath()+". Must be a single json object with name:value pairs.");
-			}
-			
-			datasourceValue.asObject().forEach((c)->{
-				if(c.getValue().isBoolean()){
-					map.put(c.getName(), c.getValue().asBoolean());
-				} else if(c.getValue().isNumber()){
-					if(c.getValue().toString().matches("[\\d]*\\.[\\d]+"))
-						map.put(c.getName(), c.getValue().asDouble());
-					else if(c.getValue().toString().matches("[\\d]+(e)[\\d]+"))
-						map.put(c.getName(), c.getValue().asFloat());
-					else
-						map.put(c.getName(), new Double(c.getValue().asDouble()).intValue());
-				} else if(c.getValue().isString()){
-					map.put(c.getName(), c.getValue().asString());
-				} else if(c.getValue().isObject()){
-					JsonObject object = c.getValue().asObject();
-					if(object.isEmpty())
-						throw new ConfigurationException("Invalid configuration parameter "+c.getName()+" found in "+configurationFile.getAbsolutePath()+". Must not be empty.");
-						
-					Member objectMember = object.iterator().next();
-					Serializable value;
-					switch (objectMember.getName()) {
-					case "long":
-						if(!objectMember.getValue().isNumber())
-							throw new ConfigurationException("Invalid configuration parameter "+c.getName()+" found in "+configurationFile.getAbsolutePath()+". Must be a number.");
-
-						value = objectMember.getValue().asLong();
-						break;
-					case "binary":
-						if(!objectMember.getValue().isString())
-							throw new ConfigurationException("Invalid configuration parameter "+c.getName()+" found in "+configurationFile.getAbsolutePath()+". Must be a string enclosed by \"\".");
-
-						String base64String = objectMember.getValue().asString();
-						
-						if(!base64String.matches("(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"))
-							throw new ConfigurationException("Invalid configuration parameter "+c.getName()+" found in "+configurationFile.getAbsolutePath()+". Must be a valid Base 64 encoded string enclosed by \"\".");
-
-						value = Base64.getDecoder().decode(base64String);
-						break;
-					default:
-						throw new ConfigurationException("Invalid configuration parameter "+c.getName()+" found in "+configurationFile.getAbsolutePath()+". Conversion not understood: "+objectMember.getName());
-					}
-					map.put(c.getName(), value);
-				}
-			});
+			return loadParametersFromReader(configurationFile.getAbsolutePath(), reader);
 		} catch (IOException | ParseException e) {
 			throw new ConfigurationException("Exception of type " 
 					+ e.getClass().getName() 
@@ -110,8 +65,154 @@ public class AppBasePropertiesLoader {
 					+ e.getMessage()
 					+ ". Exception occured whiles reading configuration file "
 					+ configurationFile.getAbsolutePath(), e);
+		}	
+	}
+
+	public ConfigurationPropertyMap loadParametersFromReader(String filePath, Reader reader)
+			throws IOException {
+		ConfigurationPropertyMap map = new ConfigurationPropertyMap();
+		JsonValue datasourceValue = Json.parse(reader);
+		
+		if(!datasourceValue.isObject()){
+			throw new ConfigurationException("Invalid configuration file "+filePath+". Must be a single json object with name:value pairs.");
 		}
 		
+		extractProperties(filePath, map, datasourceValue.asObject(), null);
 		return map;
+	}
+
+	private class ParseContext {
+		String filePath;
+		String path;
+		
+		ParseContext(String filePath, String path) {
+			this.filePath = filePath;
+			this.path = path;
+		}
+		
+		public String getFilePath() {
+			return filePath;
+		}
+		public String getPath() {
+			return path;
+		}
+	}
+	
+	private void extractProperties(String filePath, Map<String, Serializable> map, JsonObject jsonObject, String path) {
+		jsonObject.forEach((c)->{
+			map.put(c.getName(), extractValue(new ParseContext(filePath, (path!=null?path+".":"")+c.getName()), c.getValue()));
+		});
+	}
+
+	private Serializable extractValue(ParseContext ctx, JsonValue jsonValue) {
+		Serializable value;
+		if(jsonValue.isBoolean()){
+			value = jsonValue.asBoolean();
+		} else if(jsonValue.isNumber()){
+			if(jsonValue.toString().matches("[\\d]*\\.[\\d]+"))
+				value =  jsonValue.asDouble();
+			else if(jsonValue.toString().matches("[\\d]+(e)[\\d]+"))
+				value =  jsonValue.asFloat();
+			else
+				value = jsonValue.asInt();
+		} else if(jsonValue.isString()){
+			String stringValue = jsonValue.asString();
+			if(stringValue.matches("[\\d]+(l)")) {
+				value = Long.parseLong(stringValue.substring(0, stringValue.length()-1));
+			} else { 						
+				value = stringValue;
+			}
+		} else if(jsonValue.isObject()){
+			value = handleSpecialObject(ctx, jsonValue.asObject());
+		} else {
+			throw new ConfigurationException("Invalid configuration parameter "+ctx.getPath()+" found in "
+					+ctx.getFilePath()+". Json type "+jsonValue.getClass().getName()+" is handled.");
+		}
+		
+		return value;
+	}
+
+	private Serializable handleSpecialObject(ParseContext ctx, JsonObject object) {
+		if(object.isEmpty())
+			throw new ConfigurationException("Invalid configuration parameter "+ctx.getPath()+" found in "
+					+ctx.getFilePath()+". Must not be empty.");
+			
+		Serializable value;
+		Member objectMember = object.iterator().next();
+		JsonValue objectValue = objectMember.getValue();
+		String objectName = objectMember.getName();
+		String memberPath = ctx.getPath()+"."+objectName;
+
+		switch (objectMember.getName()) {
+		case "set":
+			value = extractSpecialObjectSet(new ParseContext(ctx.getFilePath(), memberPath), objectValue);
+			break;
+		case "list":
+			value = extractSpecialObjectList(new ParseContext(ctx.getFilePath(), memberPath), objectValue);
+			break;
+		case "map":
+			value = extractSpecialObjectMap(new ParseContext(ctx.getFilePath(), memberPath), objectValue);
+			break;
+		case "binary":
+			value = extractSpecialObjectBinary(new ParseContext(ctx.getFilePath(), memberPath), objectValue);
+			break;
+		default:
+			throw new ConfigurationException("Invalid configuration parameter "+ctx.getPath()+" found in "
+					+ctx.getFilePath()+". Conversion not understood: "+objectName);
+		}
+		
+		return value;
+	}
+
+	private Serializable extractSpecialObjectList(ParseContext ctx, JsonValue jsonValue) {
+		Serializable value;
+		if(!jsonValue.isArray())
+			throw new ConfigurationException("Invalid configuration parameter "+ctx.getPath()+" found in "
+					+ctx.getFilePath()+". Must be a json object.");
+
+		ArrayList<Serializable> arrayList = new ArrayList<>();
+		jsonValue.asArray().forEach((v)->{
+			arrayList.add(extractValue(ctx, v));
+		});
+		value = arrayList;
+		return value;
+	}
+
+	private Serializable extractSpecialObjectSet(ParseContext ctx, JsonValue jsonValue) {
+		Serializable value;
+		if(!jsonValue.isArray())
+			throw new ConfigurationException("Invalid configuration parameter "+ctx.getPath()+" found in "
+					+ctx.getFilePath()+". Must be a json object.");
+		
+		HashSet<Serializable> hashSet = new HashSet<>();
+		jsonValue.asArray().forEach((v)->{
+			hashSet.add(extractValue(ctx, v));
+		});
+		value = hashSet;
+		return value;
+	}
+
+	private Serializable extractSpecialObjectBinary(ParseContext ctx, JsonValue jsonValue) {
+		if(!jsonValue.isString())
+			throw new ConfigurationException("Invalid configuration parameter "+ctx.getPath()+" found in "
+					+ctx.getFilePath()+". Must be a string enclosed by \"\".");
+
+		String base64String = jsonValue.asString();
+		
+		if(!base64String.matches("(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"))
+			throw new ConfigurationException("Invalid configuration parameter "+ctx.getPath()+" found in "
+					+ctx.getFilePath()+". Must be a valid Base 64 encoded string enclosed by \"\".");
+
+		return Base64.getDecoder().decode(base64String);
+	}
+
+	private Serializable extractSpecialObjectMap(ParseContext ctx, JsonValue jsonValue) {
+		if(!jsonValue.isObject())
+			throw new ConfigurationException("Invalid configuration parameter "+ctx.getPath()
+					+" found in "+ctx.getFilePath()+". Must be a json object.");
+
+		HashMap<String, Serializable> subMap = new HashMap<>();
+		extractProperties(ctx.getFilePath(), subMap, jsonValue.asObject(), ctx.getPath());
+		return subMap;
 	}	
 }

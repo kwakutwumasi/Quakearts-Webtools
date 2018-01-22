@@ -11,6 +11,7 @@
 package com.quakearts.appbase.cdi;
 
 import javax.annotation.Priority;
+import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
@@ -32,7 +33,6 @@ public class TransactionalInterceptor {
 	
 	@AroundInvoke
 	public Object intercept(InvocationContext context) throws Exception {
-				
 		TransactionParticipant transactional = context.getMethod().getAnnotation(TransactionParticipant.class);
 		if(transactional == null)
 			transactional = context.getMethod().getDeclaringClass().getAnnotation(TransactionParticipant.class);
@@ -64,15 +64,15 @@ public class TransactionalInterceptor {
 				|| transaction.getStatus() == Status.STATUS_PREPARING
 				||transaction.getStatus() == Status.STATUS_ACTIVE) {
 			proceed = true;
-		} else if(transaction.getStatus() == Status.STATUS_UNKNOWN) {
+		}
+		
+		if(!proceed) {
 			throw new SystemException("Transaction state is unknown. Cannot execute "
 					+context.getMethod().getName()
 					+" for "
 					+context.getMethod().getDeclaringClass().getName());						
 		}
-		
-		if(!proceed)
-			return null;
+
 		try {
 			Object object = context.proceed();
 			return object;

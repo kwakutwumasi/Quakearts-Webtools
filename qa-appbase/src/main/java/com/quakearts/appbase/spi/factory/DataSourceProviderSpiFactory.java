@@ -14,14 +14,14 @@ import com.quakearts.appbase.Main;
 import com.quakearts.appbase.exception.ConfigurationException;
 import com.quakearts.appbase.spi.DataSourceProviderSpi;
 
-public class DataSourceSpiFactory {
+public class DataSourceProviderSpiFactory {
 
-	private DataSourceSpiFactory() {
+	private DataSourceProviderSpiFactory() {
 	}
 
-	private static final DataSourceSpiFactory instance = new DataSourceSpiFactory();
+	private static final DataSourceProviderSpiFactory instance = new DataSourceProviderSpiFactory();
 	
-	public static DataSourceSpiFactory getInstance() {
+	public static DataSourceProviderSpiFactory getInstance() {
 		return instance;
 	}
 	
@@ -32,13 +32,16 @@ public class DataSourceSpiFactory {
 	}
 	
 	public DataSourceProviderSpi createDataSourceProviderSpi(String dataSourceProviderSpiClassName){
-		try {
-			Class<?> javaTmSpiClass = Class.forName(dataSourceProviderSpiClassName);
-			Main.log.info("DataSourceProviderSpi class: "+dataSourceProviderSpiClassName+" loaded");
-			dataSourceProviderSpi = (DataSourceProviderSpi) javaTmSpiClass.newInstance();
-			return dataSourceProviderSpi;
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException| ClassCastException e) {
-			throw new ConfigurationException("Unable to instantiate class "+dataSourceProviderSpiClassName, e);
-		}
+		if(dataSourceProviderSpi == null)
+			try {
+				Class<?> javaTmSpiClass = Class.forName(dataSourceProviderSpiClassName);
+				Main.log.info("DataSourceProviderSpi class: "+dataSourceProviderSpiClassName+" loaded");
+				dataSourceProviderSpi = (DataSourceProviderSpi) javaTmSpiClass.newInstance();
+				return dataSourceProviderSpi;
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException| ClassCastException e) {
+				throw new ConfigurationException("Unable to instantiate class "+dataSourceProviderSpiClassName, e);
+			}
+		else
+			throw new ConfigurationException("Cannot create two instances of "+DataSourceProviderSpi.class.getName());
 	}
 }

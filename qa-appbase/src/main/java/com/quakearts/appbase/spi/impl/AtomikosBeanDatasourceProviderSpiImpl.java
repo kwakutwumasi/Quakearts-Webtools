@@ -13,6 +13,7 @@ package com.quakearts.appbase.spi.impl;
 import java.io.File;
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,7 +32,8 @@ import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
 
 public class AtomikosBeanDatasourceProviderSpiImpl implements DataSourceProviderSpi {
 
-	private static Map<String, DataSource> datasources = new ConcurrentHashMap<>();
+	private Map<String, DataSource> datasources = new ConcurrentHashMap<>();
+	private List<AtomikosDataSourceBean> dataSourceBeans = new ArrayList<>();
 	
 	@Override
 	public void initiateDataSourceSpi() {
@@ -71,7 +73,6 @@ public class AtomikosBeanDatasourceProviderSpiImpl implements DataSourceProvider
 		} else {
 			throw new ConfigurationException("Missing unique datasource name");
 		}
-		
 		return atomikosDataSourceBean;
 	}
 
@@ -129,5 +130,9 @@ public class AtomikosBeanDatasourceProviderSpiImpl implements DataSourceProvider
 	
 	@Override
 	public void shutDownDataSourceProvider() {
+		if(dataSourceBeans.isEmpty())
+			return;
+		
+		dataSourceBeans.stream().forEach((dataSourceBean)-> dataSourceBean.close());
 	}
 }

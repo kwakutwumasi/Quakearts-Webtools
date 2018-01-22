@@ -15,7 +15,7 @@ import static org.hamcrest.core.Is.*;
 import org.junit.Test;
 
 import com.quakearts.appbase.spi.DataSourceProviderSpi;
-import com.quakearts.appbase.spi.JavaNamingDirectorySpi;
+import com.quakearts.appbase.spi.factory.DataSourceProviderSpiFactory;
 import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
 import com.quakearts.appbase.spi.impl.AtomikosBeanDatasourceProviderSpiImpl;
 import com.quakearts.appbase.spi.impl.JavaNamingDirectorySpiImpl;
@@ -23,7 +23,7 @@ import com.quakearts.appbase.spi.impl.JavaNamingDirectorySpiImpl;
 public class TestAtomikosBeanDatasourceSpiImpl {
 
 	@Test
-	public void testAtomikosBeanDatasourceSpiImpl() {
+	public void testAtomikosBeanDatasourceSpiImpl() throws Exception {
 		Runtime.getRuntime().addShutdownHook(new Thread(()->{
 			try {
 				DriverManager.getConnection("jdbc:derby:;shutdown=true");
@@ -31,11 +31,12 @@ public class TestAtomikosBeanDatasourceSpiImpl {
 			}
 		}));
 		
-		JavaNamingDirectorySpi directorySpi = JavaNamingDirectorySpiFactory.getInstance().createJavaNamingDirectorySpi(JavaNamingDirectorySpiImpl.class.getName());
+		JavaNamingDirectorySpiFactory.getInstance().createJavaNamingDirectorySpi(JavaNamingDirectorySpiImpl.class.getName())
+		.initiateJNDIServices();
 		
-		directorySpi.initiateJNDIServices();
+		DataSourceProviderSpiFactory.getInstance().createDataSourceProviderSpi(AtomikosBeanDatasourceProviderSpiImpl.class.getName());
 		
-		DataSourceProviderSpi providerSpi = new AtomikosBeanDatasourceProviderSpiImpl();
+		DataSourceProviderSpi providerSpi = DataSourceProviderSpiFactory.getInstance().getDataSourceProviderSpi();
 		providerSpi.initiateDataSourceSpi();
 
 		assertThat(providerSpi.getDataSource("TestDB") != null, is(true));
@@ -55,6 +56,14 @@ public class TestAtomikosBeanDatasourceSpiImpl {
 		} catch (NamingException | ClassCastException e) {
 			fail("unable to obtain a connection: "+e.getMessage());
 		}
+		
+		providerSpi.shutDownDataSourceProvider();
+		providerSpi.shutDownDataSourceProvider();
+		
+		JavaNamingDirectorySpiFactory.getInstance()
+		.getJavaNamingDirectorySpi()
+		.shutdownJNDIService();
+		new TestAppBaseMainStartup().clearInstanceVariables();
 	}
 
 }

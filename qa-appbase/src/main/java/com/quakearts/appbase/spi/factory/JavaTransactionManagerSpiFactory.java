@@ -27,19 +27,22 @@ public class JavaTransactionManagerSpiFactory {
 	
 	private JavaTransactionManagerSpi transactionManagerSpi;
 	
-	public JavaTransactionManagerSpi getTransactionManagerSpi() {
+	public JavaTransactionManagerSpi getJavaTransactionManagerSpi() {
 		return transactionManagerSpi;
 	}
 	
 	public JavaTransactionManagerSpi createJavaTransactionManagerSpi(String javaTmSpiClassname) {
-		try {
-			Class<?> javaTmSpiClass = Class.forName(javaTmSpiClassname);
-			Main.log.info("JavaTransactionManagerSpi class: "+javaTmSpiClassname+" loaded");
-			transactionManagerSpi = (JavaTransactionManagerSpi) javaTmSpiClass.newInstance();
-			return transactionManagerSpi;
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException| ClassCastException e) {
-			throw new ConfigurationException("Unable to instantiate class "+javaTmSpiClassname, e);
-		}
+		if(transactionManagerSpi == null)
+			try {
+				Class<?> javaTmSpiClass = Class.forName(javaTmSpiClassname);
+				Main.log.info("JavaTransactionManagerSpi class: "+javaTmSpiClassname+" loaded");
+				transactionManagerSpi = (JavaTransactionManagerSpi) javaTmSpiClass.newInstance();
+				return transactionManagerSpi;
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException| ClassCastException e) {
+				throw new ConfigurationException("Unable to instantiate class "+javaTmSpiClassname, e);
+			}
+		else
+			throw new ConfigurationException("Cannot create two instances of "+JavaTransactionManagerSpi.class.getName());
 	}
 
 }

@@ -10,15 +10,12 @@
  ******************************************************************************/
 package com.quakearts.appbase.spi.impl;
 
-import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,6 +28,7 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.webresources.DirResourceSet;
 import org.apache.catalina.webresources.StandardRoot;
+import org.apache.coyote.http2.Http2Protocol;
 import org.apache.tomcat.util.net.SSLHostConfig;
 import org.apache.tomcat.util.scan.StandardJarScanner;
 import com.quakearts.appbase.Main;
@@ -41,6 +39,8 @@ import com.quakearts.appbase.internal.properties.ConfigurationPropertyMap;
 
 
 public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
+	
+	private List<Tomcat> tomcatInstances = new ArrayList<>();
 	
 	@Override
 	public void initiateEmbeddedWebServer() {
@@ -95,14 +95,14 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 				Connector connector = new Connector(serverConfiguration.getString("connectorProtocol"));
 	            
 				if (serverConfiguration.containsKey("port")) {
-	            	connector.setPort(serverConfiguration.getInt("port"));
+	            		connector.setPort(serverConfiguration.getInt("port"));
 	            }
 	            
 				tomcat.setConnector(connector);
 			}
 			
 			try {
-				setPropertiesIfAvailable(tomcat.getConnector(), "connector", serverConfiguration);				
+				serverConfiguration.populateBean(tomcat.getConnector(), "connector");				
 			} catch (ConfigurationException e) {
 				throw new ConfigurationException("Invalid connector property in /"+configurationFile.getPath()+":"+e.getMessage(), e);
 			} catch (IntrospectionException e) {
@@ -113,14 +113,14 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 				String propertyName = key.substring(key.indexOf(".")+1);
 				String value = serverConfiguration.getString(key);
 				tomcat.getConnector().setProperty(propertyName, value);
-			});			
+			});
 
 			if (serverConfiguration.containsKey("usessl") 
 					&& serverConfiguration.getBoolean("usessl")) {
 				SSLHostConfig sslHostConfig = new SSLHostConfig();
 			
 				try {
-					setPropertiesIfAvailable(sslHostConfig, "sslHostConfig", serverConfiguration);
+					serverConfiguration.populateBean(sslHostConfig, "sslHostConfig");
 				} catch (ConfigurationException e) {
 					throw new ConfigurationException("Invalid ssl property in /"+configurationFile.getPath()+":"+e.getMessage());
 				} catch (IntrospectionException e) {
@@ -131,6 +131,22 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 				tomcat.getConnector().setScheme("https");
 				tomcat.getConnector().setProperty("SSLEnabled", "true");
 				tomcat.getConnector().setSecure(true);
+				
+				if(serverConfiguration.containsKey("usehttp2")
+						&& serverConfiguration.getBoolean("usehttp2")) {
+					//Only do this for the main connector. No need to use it for the second connector (i.e. when the
+					//main connector is TLS and the secondary connector is unsecured, to allow for redirection
+					Http2Protocol http2Protocol = new Http2Protocol();
+					try {
+						serverConfiguration.populateBean(http2Protocol, "connector.http2");
+					} catch (ConfigurationException e) {
+						throw new ConfigurationException("Invalid ssl property in /"+configurationFile.getPath()+":"+e.getMessage());
+					} catch (IntrospectionException e) {
+						throw new ConfigurationException("Unable to instrospect "+SSLHostConfig.class+": "+e.getMessage());
+					}
+					
+					tomcat.getConnector().addUpgradeProtocol(http2Protocol);
+				}
 				
 				if(serverConfiguration.containsKey("addunsecured") 
 						&& serverConfiguration.getBoolean("addunsecured")) {
@@ -148,7 +164,7 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 					}
 					
 					try {
-						setPropertiesIfAvailable(connector, "unsecuredConnector", serverConfiguration);				
+						serverConfiguration.populateBean(connector, "unsecuredConnector");				
 					} catch (ConfigurationException e) {
 						throw new ConfigurationException("Invalid unsecured connector property in /"+webserverLocation.getName()+":"+e.getMessage(), e);
 					} catch (IntrospectionException e) {
@@ -166,15 +182,15 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 				}
 			}			
 	    } else if(configurationFile.exists() && !configurationFile.isFile()) {
-        	throw new ConfigurationException("Invalid file in /"+webserverLocation+". conf/server.config.json is not a file.");
+	    		throw new ConfigurationException("Invalid file in /"+webserverLocation+". conf/server.config.json is not a file.");
         }
         
         File webappDirLocation = new File(webserverLocation,"webapps");
         
-        if(webappDirLocation.exists() && webappDirLocation.isDirectory())
-	        for(File webappFolder:webappDirLocation.listFiles()){
-	        	if(!webappFolder.isDirectory())
-	        		continue;
+        if(webappDirLocation.exists() && webappDirLocation.isDirectory()) {
+	        for(File webappFolder:webappDirLocation.listFiles()) {
+	        		if(!webappFolder.isDirectory())
+	        			continue;
 	        	
 		        StandardContext ctx;
 				try {
@@ -218,11 +234,12 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 					}
 		        }
 	        }
-        else if(webappDirLocation.exists() && webappDirLocation.isFile())
-        	throw new ConfigurationException("Invalid file in /"+webserverLocation+". webapps is not a directory.");
-        else
-        	webappDirLocation.mkdir();
-        	
+		} else if(webappDirLocation.exists() && webappDirLocation.isFile()) {
+        		throw new ConfigurationException("Invalid file in /"+webserverLocation+". webapps is not a directory.");
+		} else {
+        		webappDirLocation.mkdir();
+        }
+        
         try {
 			tomcat.start();
 		} catch (LifecycleException e) {
@@ -231,26 +248,9 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
         
         new Thread(()->{
             tomcat.getServer().await();
+            Main.log.info("Tomcat instance is shutting down");
         }).start();
-	}
-
-	private void setPropertiesIfAvailable(Object target, String prefix, ConfigurationPropertyMap properties) throws IntrospectionException{
-		BeanInfo info = Introspector.getBeanInfo(target.getClass());
-		
-		for(PropertyDescriptor propertyDescriptor: info.getPropertyDescriptors()){
-			String propertyName = (prefix!=null?prefix+".":"")+propertyDescriptor.getName();
-			try {
-				if(properties.containsKey(propertyName) &&
-						propertyDescriptor.getWriteMethod()!=null){
-					Method setMethod = propertyDescriptor.getWriteMethod();
-					setMethod.invoke(target, properties.get(propertyName,propertyDescriptor.getPropertyType()));
-				}
-			} catch (ClassCastException e) {
-				throw new ConfigurationException(propertyName+" cannot be cast to "+propertyDescriptor.getPropertyType());
-			} catch (IllegalAccessException | IllegalArgumentException |InvocationTargetException e) {
-				throw new ConfigurationException(propertyName+" cannot be written to "+target.getClass().getName()+": "+e.getMessage());
-			}
-		}
+        tomcatInstances.add(tomcat);
 	}
 	
 	private Map<String, Serializable> getProperties(String prefix, Map<String, Serializable> properties){
@@ -265,6 +265,16 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 	
 	@Override
 	public void shutdownEmbeddedWebServer() {
+		if(tomcatInstances.isEmpty())
+			return;
+		
+		tomcatInstances.stream().forEach((tomcat)-> {
+			try {
+				tomcat.stop();
+			} catch (LifecycleException e) {
+				Main.log.error("Error stopping tomcat instance: "+e.getMessage(), e);
+			}
+		});
 	}
 	
 }

@@ -27,15 +27,23 @@ public class EmbeddedWebServerSpiFactory {
 	
 	private EmbeddedWebServerSpi webServerSpi;
 	
+	public EmbeddedWebServerSpi getEmbeddedWebServerSpi() {
+		return webServerSpi;
+	}
+	
 	public EmbeddedWebServerSpi createEmbeddedWebServerSpi(String embeddedSpiClassname) {
-		try {
-			Class<?> javaTmSpiClass = Class.forName(embeddedSpiClassname);
-			Main.log.info("EmbeddedWebServerSpi class: "+embeddedSpiClassname+" loaded");
-			webServerSpi = (EmbeddedWebServerSpi) javaTmSpiClass.newInstance();
-			return webServerSpi;
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException| ClassCastException e) {
-			throw new ConfigurationException("Unable to instantiate class "+embeddedSpiClassname, e);
-		}
+		if(webServerSpi == null)
+			try {
+				Class<?> javaTmSpiClass = Class.forName(embeddedSpiClassname);
+				Main.log.info("EmbeddedWebServerSpi class: "+embeddedSpiClassname+" loaded");
+				webServerSpi = (EmbeddedWebServerSpi) javaTmSpiClass.newInstance();
+				return webServerSpi;
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException| ClassCastException e) {
+				throw new ConfigurationException("Unable to instantiate class "+embeddedSpiClassname, e);
+			}
+		else
+			throw new ConfigurationException("Cannot create two instances of "+EmbeddedWebServerSpi.class.getName());
+			
 	}
 
 }

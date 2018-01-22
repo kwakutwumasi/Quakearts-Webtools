@@ -30,7 +30,7 @@ import com.quakearts.appbase.spi.EmbeddedWebServerSpi;
 import com.quakearts.appbase.spi.JavaNamingDirectorySpi;
 import com.quakearts.appbase.spi.JavaTransactionManagerSpi;
 import com.quakearts.appbase.spi.factory.ContextDependencySpiFactory;
-import com.quakearts.appbase.spi.factory.DataSourceSpiFactory;
+import com.quakearts.appbase.spi.factory.DataSourceProviderSpiFactory;
 import com.quakearts.appbase.spi.factory.EmbeddedWebServerSpiFactory;
 import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
 import com.quakearts.appbase.spi.factory.JavaTransactionManagerSpiFactory;
@@ -45,7 +45,7 @@ public class Main {
 			+ "\t\t\tThis setting enables an external shutdown hook which can be called to shutdown the service.";
 	private static final String DONT_WAIT_IN_MAIN = "-dontwaitinmain";
 	public static final Logger log = LoggerFactory.getLogger(Main.class);
-	static Main instance;
+	private static Main instance;
 	private ContextDependencySpi contextDependencySpi;
 	private EmbeddedWebServerSpi embeddedWebServerSpi;
 	private JavaTransactionManagerSpi javaTransactionManagerSpi;
@@ -54,6 +54,9 @@ public class Main {
 	
 	public static Main getInstance() {
 		return instance;
+	}
+	
+	private Main() {
 	}
 	
 	void startUp(String mainClassName, Properties props){
@@ -75,7 +78,7 @@ public class Main {
 		contextDependencySpi.initiateContextDependency();
 		Main.log.info("Context Dependency service started");
 		
-		dataSourceProviderSpi = DataSourceSpiFactory.getInstance()
+		dataSourceProviderSpi = DataSourceProviderSpiFactory.getInstance()
 				.createDataSourceProviderSpi(props.getProperty("datasource.spi.class"));
 		
 		dataSourceProviderSpi.initiateDataSourceSpi();
@@ -109,6 +112,9 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
+		if(instance != null)
+			return;
+		
 		Properties props = new Properties();
 		String propertiesFilename, mainClassName;
 		mainClassName = null;
@@ -161,7 +167,10 @@ public class Main {
 		instance = new Main();
 		instance.startUp(mainClassName, props);
 		Runtime.getRuntime().addShutdownHook(new Thread(()->{
-			instance.shutDown();
+			try {
+				instance.shutDown();
+			} catch (Exception e) {
+			}
 		}));
 				
 		if(waitInMain){
@@ -184,8 +193,12 @@ public class Main {
 					commandSocket = shutdownSocket.accept();
 					if(commandSocket.getInetAddress().isLoopbackAddress()){
 						int b = commandSocket.getInputStream().read();
-						if(b==0xFA)
-							System.exit(0);
+						if(b==0xFA) {
+							Main.log.info("Shutdown called....");
+							instance.shutDown();
+							Main.log.info("Shutdown complete");
+							break;
+						}
 					}
 				} catch (IOException e) {
 					log.error("Could not understand message from shutdown command:"+e.getMessage());

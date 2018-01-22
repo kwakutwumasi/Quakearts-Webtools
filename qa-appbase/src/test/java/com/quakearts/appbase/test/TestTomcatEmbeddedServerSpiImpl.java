@@ -21,13 +21,15 @@ import javax.net.ssl.X509TrustManager;
 import org.junit.Test;
 
 import com.quakearts.appbase.spi.EmbeddedWebServerSpi;
+import com.quakearts.appbase.spi.factory.EmbeddedWebServerSpiFactory;
 import com.quakearts.appbase.spi.impl.TomcatEmbeddedServerSpiImpl;
 
 public class TestTomcatEmbeddedServerSpiImpl {
 
 	@Test
-	public void testTomcatEmbeddedServerSpiImpl() {
-		EmbeddedWebServerSpi serverSpi = new TomcatEmbeddedServerSpiImpl();
+	public void testTomcatEmbeddedServerSpiImpl() throws Exception {
+		EmbeddedWebServerSpiFactory.getInstance().createEmbeddedWebServerSpi(TomcatEmbeddedServerSpiImpl.class.getName());
+		EmbeddedWebServerSpi serverSpi = EmbeddedWebServerSpiFactory.getInstance().getEmbeddedWebServerSpi();
 		serverSpi.initiateEmbeddedWebServer();
 		
 		try {
@@ -116,6 +118,10 @@ public class TestTomcatEmbeddedServerSpiImpl {
 		} catch (IOException e) {
 			fail("Unable to connect:" +e.getMessage());
 		}
+		
+		serverSpi.shutdownEmbeddedWebServer();
+		serverSpi.shutdownEmbeddedWebServer();
+		new TestAppBaseMainStartup().clearInstanceVariables();
 	}
 	
 }

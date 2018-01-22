@@ -27,18 +27,21 @@ public class ContextDependencySpiFactory {
 	
 	private ContextDependencySpi dependencySpi;
 	
-	public ContextDependencySpi getDependencySpi() {
+	public ContextDependencySpi getContextDependencySpi() {
 		return dependencySpi;
 	}
 	
 	public ContextDependencySpi createContextDependencySpi(String cdiSpiClassname) {
-		try {
-			Class<?> cdiSpiClass = Class.forName(cdiSpiClassname);
-			Main.log.info("ContextDependencySpi class: "+cdiSpiClassname+" loaded");
-			dependencySpi = (ContextDependencySpi) cdiSpiClass.newInstance();
-			return dependencySpi;
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException| ClassCastException e) {
-			throw new ConfigurationException("Unable to instantiate class "+cdiSpiClassname, e);
-		}
+		if(dependencySpi == null)
+			try {
+				Class<?> cdiSpiClass = Class.forName(cdiSpiClassname);
+				Main.log.info("ContextDependencySpi class: "+cdiSpiClassname+" loaded");
+				dependencySpi = (ContextDependencySpi) cdiSpiClass.newInstance();
+				return dependencySpi;
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException| ClassCastException e) {
+				throw new ConfigurationException("Unable to instantiate class "+cdiSpiClassname, e);
+			}
+		else
+			throw new ConfigurationException("Cannot create two instances of "+ContextDependencySpi.class.getName());
 	}
 }

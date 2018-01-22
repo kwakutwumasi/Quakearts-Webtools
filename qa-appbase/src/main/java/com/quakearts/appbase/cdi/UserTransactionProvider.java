@@ -21,7 +21,7 @@ public class UserTransactionProvider {
 	@Produces
 	public @TransactionHandle UserTransaction getUserTransaction(){
 		return JavaTransactionManagerSpiFactory.getInstance()
-			.getTransactionManagerSpi()
+			.getJavaTransactionManagerSpi()
 			.getUserTransaction();
 	}
 }

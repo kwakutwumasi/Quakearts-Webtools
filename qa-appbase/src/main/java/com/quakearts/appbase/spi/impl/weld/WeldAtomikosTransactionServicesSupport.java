@@ -20,10 +20,15 @@ import javax.transaction.UserTransaction;
 import org.jboss.weld.transaction.spi.TransactionServices;
 
 import com.atomikos.icatch.jta.UserTransactionImp;
+import com.quakearts.appbase.Main;
 import com.quakearts.appbase.spi.factory.JavaTransactionManagerSpiFactory;
 
 public class WeldAtomikosTransactionServicesSupport implements TransactionServices {
 
+	public WeldAtomikosTransactionServicesSupport() {
+		Main.log.info("WeldAtomikosTransactionServicesSupport started");
+	}
+	
 	@Override
 	public void cleanup() {
 	}
@@ -33,7 +38,7 @@ public class WeldAtomikosTransactionServicesSupport implements TransactionServic
 		try {
 			Transaction transaction = JavaTransactionManagerSpiFactory
 					.getInstance()
-					.getTransactionManagerSpi()
+					.getJavaTransactionManagerSpi()
 					.getTransactionManager()
 					.getTransaction();
 			if(transaction.getStatus()==Status.STATUS_ACTIVE)
@@ -47,7 +52,7 @@ public class WeldAtomikosTransactionServicesSupport implements TransactionServic
 		try {
 			Transaction transaction = JavaTransactionManagerSpiFactory
 					.getInstance()
-					.getTransactionManagerSpi()
+					.getJavaTransactionManagerSpi()
 					.getTransactionManager()
 					.getTransaction();
 			return transaction.getStatus()==Status.STATUS_ACTIVE;
