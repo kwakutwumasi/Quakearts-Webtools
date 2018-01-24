@@ -214,8 +214,8 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	/* (non-Javadoc)
 	 * @see com.quakearts.notification.log.MessageLogger#findMessagesByDetails(java.lang.String, java.lang.Byte, java.lang.String, java.lang.String)
 	 */
-	@TransactionParticipant
 	@Override
+	@TransactionParticipant(TransactionType.SINGLETON)
 	public List<ProcessingLog> findMessagesByDetails(String messageDetails, Byte type, 
 			String errorStatus, String source) throws Exception {
 		List<ProcessingLog> list;
@@ -241,8 +241,8 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	/* (non-Javadoc)
 	 * @see com.quakearts.notification.log.MessageLogger#getLogByID(long)
 	 */
-	@TransactionParticipant
 	@Override
+	@TransactionParticipant(TransactionType.SINGLETON)
 	public ProcessingLog getLogByID(long logID){
 		return systemDataStoreUtils.getSystemDataStore().get(ProcessingLog.class, Long.valueOf(logID));
 	}
@@ -250,8 +250,8 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	/* (non-Javadoc)
 	 * @see com.quakearts.notification.log.MessageLogger#findMessageLogByMid(java.lang.String)
 	 */
-	@TransactionParticipant
 	@Override
+	@TransactionParticipant(TransactionType.SINGLETON)
 	public ProcessingLog findMessageLogByMid(String mid){
 		
 		ProcessingLog founndlog = getSaveLogCache().get(mid);
