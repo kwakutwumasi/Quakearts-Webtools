@@ -11,7 +11,6 @@
 package com.quakearts.appbase.cdi;
 
 import javax.annotation.Priority;
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
