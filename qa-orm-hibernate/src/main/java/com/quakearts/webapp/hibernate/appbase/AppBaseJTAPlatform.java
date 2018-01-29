@@ -26,12 +26,12 @@ public class AppBaseJTAPlatform extends AbstractJtaPlatform {
 
 	@Override
 	protected TransactionManager locateTransactionManager() {
-		return JavaTransactionManagerSpiFactory.getInstance().getTransactionManagerSpi().getTransactionManager();
+		return JavaTransactionManagerSpiFactory.getInstance().getJavaTransactionManagerSpi().getTransactionManager();
 	}
 
 	@Override
 	protected UserTransaction locateUserTransaction() {
-		return JavaTransactionManagerSpiFactory.getInstance().getTransactionManagerSpi().getUserTransaction();
+		return JavaTransactionManagerSpiFactory.getInstance().getJavaTransactionManagerSpi().getUserTransaction();
 	}
 	
 }
