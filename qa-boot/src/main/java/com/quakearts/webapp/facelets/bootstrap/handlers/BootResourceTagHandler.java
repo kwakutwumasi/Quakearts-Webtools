@@ -51,6 +51,7 @@ public class BootResourceTagHandler extends TagHandler {
 			if(!POSITION_TOP.equals(position)||!POSITION_BOTTOM.equals(position))
 				position = POSITION_BOTTOM;
 		}
+		
 		String name = ObjectExtractor.extractString(nameAttribute.getValueExpression(ctx, String.class), ctx);
 		String library = ObjectExtractor.extractString(libraryAttribute.getValueExpression(ctx, String.class), ctx);
 		String type = ObjectExtractor.extractString(typeAttribute.getValueExpression(ctx, String.class), ctx);
@@ -63,14 +64,14 @@ public class BootResourceTagHandler extends TagHandler {
 				.get(BOOT_LIBRARY_LOADED);
 		
 		UIOutput resource = new UIOutput();
-    	resource.getAttributes().put("name", name);
-    	resource.getAttributes().put("library", library);
-    	resource.setRendererType(type.equals(SCRIPT)?"javax.faces.resource.Script":"javax.faces.resource.Stylesheet");
+		resource.getAttributes().put("name", name);
+		resource.getAttributes().put("library", library);
+    		resource.setRendererType(type.equals(SCRIPT)?"javax.faces.resource.Script":"javax.faces.resource.Stylesheet");
 
-    	if(position.equals(POSITION_TOP)){
-        	component.addToTop(resource);
+    		if(position.equals(POSITION_TOP)){
+    			component.addToTop(resource);
 		} else {
-        	component.addToBottom(resource);
+        		component.addToBottom(resource);
 		}
 	}
 

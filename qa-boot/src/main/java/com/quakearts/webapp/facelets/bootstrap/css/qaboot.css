@@ -123,8 +123,9 @@
 }
 
 .menu-input {
-	cursor: text;
 	width: auto;
+	float: left;
+	border-radius: 4px 0px 0px 4px;
 }
 
 .fill5 {
