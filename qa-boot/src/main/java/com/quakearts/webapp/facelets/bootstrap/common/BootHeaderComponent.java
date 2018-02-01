@@ -111,8 +111,11 @@ public class BootHeaderComponent extends UIOutput {
 	public static void addBootComponentToHead(FacesContext ctx){			
         if(ctx.getAttributes().get(BOOT_LIBRARY_LOADED)==null){
 	    		if(ctx.getPartialViewContext().isPartialRequest()){
-    				ctx.getAttributes().put(BOOT_LIBRARY_LOADED, NULLCOMPONENT);//Dummy
-    				return;
+	    			if(!ctx.getPartialViewContext().getRenderIds().contains("javax.faces.ViewRoot")
+	    					&& !ctx.getPartialViewContext().getRenderIds().contains("@all")) {
+	    				ctx.getAttributes().put(BOOT_LIBRARY_LOADED, NULLCOMPONENT);//Dummy
+	    				return;
+	    			}
 	    		}
 
             if(!hasJSFResourceBeenInstalled(ctx)){
