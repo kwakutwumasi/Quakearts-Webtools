@@ -41,6 +41,7 @@
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-orm</artifactId>
 			<version>2.3</version>		
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.wildfly</groupId>
@@ -52,6 +53,19 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.25</version>
+			<scope>provided</scope>
 		</dependency>
-	</dependencies>	
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.quakearts.webtools.test</groupId>
+			<artifactId>qa-testtools</artifactId>
+			<version>1.0</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>
