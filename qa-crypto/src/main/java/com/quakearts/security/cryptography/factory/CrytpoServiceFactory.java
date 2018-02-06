@@ -38,51 +38,54 @@ public class CrytpoServiceFactory {
 
 	private static final CrytpoServiceFactory instance = new CrytpoServiceFactory();
 
+	private static Properties properties;
+
 	public static CrytpoServiceFactory getInstance() {
 		return instance;
 	}
 
+	public static Map<String, Key> loadedKeys = new ConcurrentHashMap<>();
+	
 	public CryptoResource getCryptoResource(String instance, String keyProviderClass, Map<Object, Object> properties,
 			String name) throws ClassNotFoundException, InstantiationException, IllegalAccessException,
 			KeyProviderException, NoSuchAlgorithmException, NoSuchPaddingException {
-		KeyProvider provider;
-		Key key;
-
-		provider = KeyProviderFactory.createKeyProvider(keyProviderClass);
-
-		if (properties == null) {
-			log.warn("Parameter 'properties' is null. Key Provider may not startup properly.");
-		} else {
-			provider.setProperties(properties);
+		Key key = loadedKeys.get(name);
+		if(loadedKeys == null) {
+			KeyProvider provider;
+	
+			provider = KeyProviderFactory.createKeyProvider(keyProviderClass);
+	
+			if (properties == null) {
+				log.warn("Parameter 'properties' is null. Key Provider may not startup properly.");
+			} else {
+				provider.setProperties(properties);
+			}
+	
+			key = provider.getKey();
+			loadedKeys.put(name, key);
 		}
-
-		key = provider.getKey();
+		
 		return new CryptoResource(key, instance, name);
 	}
-
-	private static final Map<String, CryptoResource> localResources = new ConcurrentHashMap<>();
 
 	public CryptoResource getCryptoResource(String name)
 			throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
 			NoSuchAlgorithmException, NoSuchPaddingException, KeyProviderException {
-		CryptoResource resource = localResources.get(name);
-		if (resource == null) {
-			Properties properties = new Properties();
-
+		if(properties == null) {
+			properties = new Properties();
+	
 			InputStream in = Thread.currentThread().getContextClassLoader()
 					.getResourceAsStream(name + CRYPTO_PROPERTIES);
 			if (in == null)
 				throw new FileNotFoundException("Unable to find " + name + CRYPTO_PROPERTIES);
-
+	
 			properties.load(in);
-
-			String instance = properties.getProperty("crypto.instance");
-			String keyProviderClass = properties.getProperty("crypto.key.provider.class");
-
-			resource = getCryptoResource(instance, keyProviderClass, properties, name);
-
-			localResources.put(name, resource);
 		}
+		
+		String instance = properties.getProperty("crypto.instance");
+		String keyProviderClass = properties.getProperty("crypto.key.provider.class");
+
+		CryptoResource resource = getCryptoResource(instance, keyProviderClass, properties, name);
 
 		return resource;
 	}

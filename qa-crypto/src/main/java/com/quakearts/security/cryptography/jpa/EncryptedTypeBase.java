@@ -25,18 +25,17 @@ public abstract class EncryptedTypeBase {
 
 	private transient CryptoResource resource;
 	private static final Logger log = Logger.getLogger(EncryptedStringConverter.class.getName());
-	
-	protected CryptoResource getCryptoResource(){
-		if(resource==null){
+
+	protected CryptoResource getCryptoResource() {
+		if (resource == null) {
 			try {
-				
-					String resourceName = DataStoreFactory.getInstance()
-							.getDataStore().getConfigurationProperty("com.quakearts.cryptoname");
-					
-					resource = CrytpoServiceFactory.getInstance().getCryptoResource(resourceName);
+				String resourceName = DataStoreFactory.getInstance().getDataStore()
+						.getConfigurationProperty("com.quakearts.cryptoname");
+
+				resource = CrytpoServiceFactory.getInstance().getCryptoResource(resourceName);
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchAlgorithmException
 					| NoSuchPaddingException | IOException | KeyProviderException e) {
-				log.severe("Cannot perform cryptography: "+e.getMessage()+". "+e.getClass().getName());
+				log.severe("Cannot perform cryptography: " + e.getMessage() + ". " + e.getClass().getName());
 				throw new CryptoResourceRuntimeException(e);
 			}
 		}
