@@ -12,6 +12,9 @@ package com.quakearts.test;
 
 import static org.junit.Assert.*;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -220,6 +223,25 @@ public class OrmDataStoreTest {
 		}
 	}
 
+	@Test
+	public void testDataStoreFunction() throws Exception {
+		DataStore dataStore = DataStoreFactory.getInstance().getDataStore();
+		
+		dataStore.executeFunction((dataStoreConnection)->{
+			Connection connection = dataStoreConnection.getConnection(Connection.class);
+			try {
+				ResultSet resultSet = connection.getMetaData().getSchemas();
+				System.out.println("Schemas");
+				if(resultSet.next())
+				do {
+					System.out.println(resultSet.getString(1));
+				} while(resultSet.next());
+			} catch (SQLException e) {
+				fail("Exception "+e.getClass().getName());
+			}
+		});
+	}
+	
 	private void printInventory(List<Inventory> inventories) {
 		System.out.println(String.format("%1$20s|%2$20s|%3$20s|%4$20s|%5$20s|%6$20s|%7$20s", "ID", "Brand", "Product",
 				"Description", "Price", "Quantity", "Date"));

@@ -19,12 +19,13 @@ import com.quakearts.webapp.orm.query.QueryOrder;
 
 public interface DataStore {
 	void save(Object object) throws DataStoreException;
-	<T> T get(Class<T> clazz, Serializable id) throws DataStoreException;
+	<Entity> Entity get(Class<Entity> clazz, Serializable id) throws DataStoreException;
 	void update(Object object) throws DataStoreException;
 	void delete(Object object) throws DataStoreException;
-	<T> List<T> list(Class<T> clazz, Map<String, Serializable> parameters, QueryOrder... orders) throws DataStoreException;
+	<Entity> List<Entity> list(Class<Entity> clazz, Map<String, Serializable> parameters, QueryOrder... orders) throws DataStoreException;
 	void saveOrUpdate(Object object) throws DataStoreException;
-	<T> T refresh(T object) throws DataStoreException;
-	void flushBuffers();
+	<Entity> Entity refresh(Entity object) throws DataStoreException;
+	void flushBuffers() throws DataStoreException;
+	void executeFunction(DataStoreFunction function) throws DataStoreException;
 	String getConfigurationProperty(String propertyName);
 }

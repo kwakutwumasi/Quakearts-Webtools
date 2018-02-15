@@ -41,6 +41,5 @@ public abstract class DataStoreFactory {
 	}
 
 	public abstract DataStore getDataStore();
-	
 	public abstract DataStore getDataStore(String storename);
 }

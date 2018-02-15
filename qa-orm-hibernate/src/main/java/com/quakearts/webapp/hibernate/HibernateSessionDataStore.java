@@ -11,12 +11,15 @@
 package com.quakearts.webapp.hibernate;
 
 import java.io.Serializable;
+import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
 import com.quakearts.webapp.orm.DataStore;
+import com.quakearts.webapp.orm.DataStoreConnection;
+import com.quakearts.webapp.orm.DataStoreFunction;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.webapp.orm.query.QueryOrder;
 
@@ -115,6 +118,30 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 		session.flush();
 	}
 
+	@Override
+	public void executeFunction(DataStoreFunction function) throws DataStoreException {
+		session.doWork((connection)->{
+			function.execute(new SqlDataStoreConnection(connection));
+		});
+	}
+	
+	class SqlDataStoreConnection implements DataStoreConnection{
+
+		Connection connection;
+		
+		SqlDataStoreConnection(Connection connection) {
+			this.connection = connection;
+		}
+
+		@Override
+		public <T> T getConnection(Class<T> expectedConnection) {
+			if(expectedConnection.isAssignableFrom(connection.getClass()))
+				return expectedConnection.cast(connection);
+			else
+				throw new DataStoreException("Unsupported connection class: "+expectedConnection);
+		}
+	}
+	
 	@Override
 	public String getConfigurationProperty(String propertyName) {
 		if(domain!=null)
