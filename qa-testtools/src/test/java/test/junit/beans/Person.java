@@ -12,13 +12,9 @@ package test.junit.beans;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
-
 public class Person {
 	private String name;
 	private int age;
-	@JsonFormat(pattern="dd/MM/yyyy HH:mm:ss.S", shape=Shape.STRING)
 	private Date dateOfBirth;
 	private double weight;
 

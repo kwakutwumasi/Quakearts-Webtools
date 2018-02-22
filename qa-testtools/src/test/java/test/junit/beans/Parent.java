@@ -35,4 +35,8 @@ public class Parent {
 		this.children = children;
 	}
 
+	@Override
+	public String toString() {
+		return "Parent [person=" + person + ", children=" + children + "]";
+	}
 }

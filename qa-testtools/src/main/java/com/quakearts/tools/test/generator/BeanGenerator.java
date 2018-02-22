@@ -272,15 +272,14 @@ public final class BeanGenerator<T> extends GeneratorBase<T> {
 			CollectionFactory factory = CollectionFactoryFinder.getInstance().findCollectionFactory(collectionClass);
 			objectCollection = factory.createNewCollection();
 			try {
-				objectCollection.addAll(collection);
 				setterMethodhandle.invoke(object, objectCollection);
 			} catch (Throwable e) {
 				throw new GeneratorException("Unable to pouplate " + beanClass.getName() + " with "
 						+ tuple.getFirst().getPropertyType().getName(), e);
 			}
-		} else {
-			objectCollection.addAll(collection);
 		}
+		
+		objectCollection.addAll(collection);
 	}
 
 	private int getSizeToGenerate(Tuple<PropertyDescriptor, Generator<?>> tuple) {

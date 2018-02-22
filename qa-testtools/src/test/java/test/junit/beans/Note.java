@@ -12,12 +12,9 @@ package test.junit.beans;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.quakearts.tools.test.generator.primitives.configuration.GenerateWith;
 
 public class Note {
-	@JsonFormat(shape=Shape.STRING, pattern="dd/MM/yyyy")
 	private Date createDate;
 	private String value;
 

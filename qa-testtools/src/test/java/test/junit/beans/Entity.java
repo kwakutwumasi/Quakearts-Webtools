@@ -13,8 +13,6 @@ package test.junit.beans;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.quakearts.tools.test.generator.annotation.UseGeneratorProperty;
 import com.quakearts.tools.test.generator.primitives.configuration.GenerateWith;
 
@@ -22,9 +20,7 @@ public class Entity {
 	private String name;
 	private int id;
 	private String accountNumber;
-	@JsonFormat(shape=Shape.NUMBER_FLOAT, pattern="#.00")
 	private BigDecimal balance;
-	@JsonFormat(shape=Shape.STRING, pattern="dd/MM/yyyy")
 	private Date accountCreateDate;
 
 	@UseGeneratorProperty("names")

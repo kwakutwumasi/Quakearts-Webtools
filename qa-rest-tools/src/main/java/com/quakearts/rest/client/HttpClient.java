@@ -8,29 +8,27 @@
  * Contributors:
  *     Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com> - initial API and implementation
  ******************************************************************************/
-package com.quakearts.webapp.facelets.base;
+package com.quakearts.rest.client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLSession;
 
-import com.quakearts.webapp.facelets.util.Base64;
-
-public abstract class BaseRESTClientBean extends BaseBean {
+public abstract class HttpClient implements Serializable {
 
 	/**
 	 * 
@@ -102,13 +100,13 @@ public abstract class BaseRESTClientBean extends BaseBean {
 		this.userAgent = userAgent;
 	}
 
-	public static class RESTResponse {
+	public static class HttpResponse {
 		private String output;
 		private String message;
 		private int httpCode;
 		private Map<String, List<String>> headers = new HashMap<>();
 		
-		private RESTResponse(String output, String message, int httpCode, Map<String, List<String>> headers) {
+		private HttpResponse(String output, String message, int httpCode, Map<String, List<String>> headers) {
 			this.output = output;
 			this.message = message;
 			this.httpCode = httpCode;
@@ -138,31 +136,28 @@ public abstract class BaseRESTClientBean extends BaseBean {
 		}
 	}
 	
-	protected RESTResponse sendRequest(String file, String requestValue, String method, String contentType) 
+	protected HttpResponse sendRequest(String file, String requestValue, String method, String contentType) 
 			throws MalformedURLException, IOException {
 		return sendRequest(file, requestValue, method, contentType, null);
 	}
 		
-	protected RESTResponse sendRequest(String file, String requestValue, String method, String contentType,
+	protected HttpResponse sendRequest(String file, String requestValue, String method, String contentType,
 			Map<String, String> additionalHeaders) throws MalformedURLException, IOException {
 		HttpURLConnection con;
 		
 		if(secured){
 			HttpsURLConnection scon = (HttpsURLConnection) new URL("https", host, port, file).openConnection();
-			scon.setHostnameVerifier(new HostnameVerifier() {
-				
-				@Override
-				public boolean verify(String hostname, SSLSession session) {
-					return hostname.equals(host);
-				}
-			});
+			if(host.matches("localhost") || host.matches("127.0.0.1"))
+				scon.setHostnameVerifier((hostname,session) -> {
+						return true;
+					});
 			con = scon;
 		} else {
 			con = (HttpURLConnection) new URL("http", host, port, file).openConnection();
 		}		
-		
+
 		if(username!=null && password !=null){
-			con.addRequestProperty("Authorization", "Basic "+(Base64.encode(username+":"+password)));
+			con.addRequestProperty("Authorization", "Basic "+(Base64.getEncoder().encodeToString((username+":"+password).getBytes())));
 		}
 		con.addRequestProperty("Accept", "application/json, text/*, application/xml");
 		con.addRequestProperty("User-Agent", userAgent==null? "Generic REST Client":userAgent);
@@ -216,7 +211,7 @@ public abstract class BaseRESTClientBean extends BaseBean {
 			output = response.toString();
 		}
 		
-		return new RESTResponse(output, con.getResponseMessage(), con.getResponseCode(), con.getHeaderFields());
+		return new HttpResponse(output, con.getResponseMessage(), con.getResponseCode(), con.getHeaderFields());
 	}
 
     public static String prettyPrintJSON(String jsonString){

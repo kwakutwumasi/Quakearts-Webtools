@@ -38,6 +38,10 @@
 			</plugin>
 		</plugins>
 	</build>
+	<properties>
+		<tomcat.version>8.5.9</tomcat.version>
+		<tomcat.juli.version>8.5.2</tomcat.juli.version>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
@@ -51,22 +55,14 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-			<version>2.5.4</version>
-			<scope>test</scope>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-core</artifactId>
+			<version>${tomcat.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.5.4</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
-			<version>2.5.4</version>
-			<scope>test</scope>
-		</dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-logging-juli</artifactId>
+			<version>${tomcat.juli.version}</version>
+		</dependency>		
 	</dependencies>
 </project>

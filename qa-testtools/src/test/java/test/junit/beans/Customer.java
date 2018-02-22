@@ -12,8 +12,6 @@ package test.junit.beans;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.quakearts.tools.test.generator.annotation.UseGeneratorProperty;
 import com.quakearts.tools.test.generator.primitives.configuration.GenerateWith;
 
@@ -21,9 +19,7 @@ public class Customer {
 	private int id;
 	private String name;
 	private String accountNumber;
-	@JsonFormat(shape=Shape.STRING, pattern="dd/MM/yyyy")
 	private Date accountCreateDate;
-	@JsonFormat(shape=Shape.NUMBER_FLOAT, pattern="#.00")
 	private double balance;
 	private CustomerClass customerClass;
 

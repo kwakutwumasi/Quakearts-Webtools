@@ -15,8 +15,6 @@ import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.*;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quakearts.tools.test.generator.BeanGenerator;
 import com.quakearts.tools.test.generator.primitives.StringGenerator;
 
@@ -157,9 +155,7 @@ public class BeanGeneratorTest {
 			BeanGenerator<Parent> generator = new BeanGenerator<>(Parent.class).init();
 			Parent parent = generator.generateRandom();
 			
-			ObjectMapper mapper = new ObjectMapper(new JsonFactory());
-			String parentString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(parent);
-			System.out.println(parentString);
+			System.out.println(parent);
 		} catch (Throwable e) {
 			fail("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()
 					+ ". Exception occured whiles generating nested beans");
