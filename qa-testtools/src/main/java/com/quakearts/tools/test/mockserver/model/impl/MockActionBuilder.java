@@ -15,7 +15,7 @@ public class MockActionBuilder {
 		mockAction = new MockActionImpl();
 	}
 	
-	public static MockActionBuilder createNewMockActionBuilder() {
+	public static MockActionBuilder createNewMockAction() {
 		return new MockActionBuilder();
 	}
 	

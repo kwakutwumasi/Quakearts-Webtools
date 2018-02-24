@@ -13,7 +13,7 @@ public class TestMockActionBuilder {
 
 	@Test
 	public void testGetMockAction() throws Exception {
-		MockActionBuilder.createNewMockActionBuilder()
+		MockActionBuilder.createNewMockAction()
 				.addRequest(HttpMessageBuilder.createNewHttpRequest()
 						.setId("testId1")
 						.setMethodAs("POST")
@@ -23,15 +23,15 @@ public class TestMockActionBuilder {
 								.createNewHttpResponse()
 								.setResponseCodeAs(400)
 								.setContentBytes("{\"error\":\"No such item\"}".getBytes())
-								.addHeader(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
+								.addHeaders(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
 								.thenBuild())
-						.addHeader(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
-						.addHeader(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
-						.addHeader(new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))
+						.addHeaders(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"),
+								new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"),
+								new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))
 						.thenBuild())
 				.thenBuild();
 		
-		MockActionBuilder.createNewMockActionBuilder()
+		MockActionBuilder.createNewMockAction()
 		.addRequest(HttpMessageBuilder.createNewHttpRequest()
 				.setId("testId2")
 				.setMethodAs("POST")
@@ -41,11 +41,11 @@ public class TestMockActionBuilder {
 						.createNewHttpResponse()
 						.setResponseCodeAs(400)
 						.setContentBytes("{\"error\":\"No such item\"}".getBytes())
-						.addHeader(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
+						.addHeaders(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
 						.thenBuild())
-				.addHeader(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
-				.addHeader(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
-				.addHeader(new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))
+				.addHeaders(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"),
+						new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"),
+						new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))
 				.thenBuild())
 		.addMatcher((httpRequest1,httpRequest2)->{
 			return true;
@@ -58,20 +58,20 @@ public class TestMockActionBuilder {
 
 	@Test(expected=BuilderException.class)
 	public void testGetMockActionWithoutRequest() throws Exception {
-		MockActionBuilder.createNewMockActionBuilder().thenBuild();
+		MockActionBuilder.createNewMockAction().thenBuild();
 	}
 
 	@Test(expected=BuilderException.class)
 	public void testGetMockActionWithoutResponseInRequest() throws Exception {
-		MockActionBuilder.createNewMockActionBuilder()
+		MockActionBuilder.createNewMockAction()
 		.addRequest(HttpMessageBuilder.createNewHttpRequest()
 				.setId("testId1")
 				.setMethodAs("POST")
 				.setResourceAs("/test/resource")
 				.setContentBytes("{\"test1\":\"value1\", \"test2\",\"value2\"}".getBytes())
-				.addHeader(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
-				.addHeader(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
-				.addHeader(new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))
+				.addHeaders(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"),
+						new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"),
+						new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))
 				.thenBuild())
 		.thenBuild();
 	}

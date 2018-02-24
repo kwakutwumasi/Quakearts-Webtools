@@ -12,6 +12,7 @@ public class HttpVerbUtil {
 	private static final String POST = "POST";
 	private static final String HEAD = "HEAD";
 	private static final String GET = "GET";
+	private static final String CONNECT = "CONNECT";
 
 	private HttpVerbUtil() {
 	}
@@ -26,6 +27,7 @@ public class HttpVerbUtil {
 		VALID_HTTP_VERBS.add(POST);
 		VALID_HTTP_VERBS.add(PUT);
 		VALID_HTTP_VERBS.add(DELETE);
+		VALID_HTTP_VERBS.add(CONNECT);
 		VALID_HTTP_VERBS.add(TRACE);
 		VALID_HTTP_VERBS.add(OPTIONS);
 		VALID_HTTP_VERBS.add(PATCH);
@@ -33,6 +35,7 @@ public class HttpVerbUtil {
 		REQUIRES_OUTPUT.add(POST);
 		REQUIRES_OUTPUT.add(PUT);
 		REQUIRES_OUTPUT.add(PATCH);
+		REQUIRES_OUTPUT.add(CONNECT);
 		
 		CAN_DO_OUTPUT.add(GET);
 		CAN_DO_OUTPUT.add(OPTIONS);

@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.ServletException;
@@ -180,10 +181,12 @@ public class MockServerServlet extends HttpServlet {
 				.setContentBytes(responseContent);
 		
 		Map<String, List<String>> headerMap = con.getHeaderFields();
-		headerMap.entrySet().forEach((entry)->{
-			HttpHeaderImpl headerImpl = new HttpHeaderImpl(entry.getKey(), entry.getValue());
-			builder.addHeader(headerImpl);
-		});
+		List<HttpHeader> headers = headerMap.entrySet().stream().map((entry)->{
+			return new HttpHeaderImpl(entry.getKey(), entry.getValue());
+		}).collect(Collectors.toList());
+
+		builder.addHeaders(headers.toArray(new HttpHeader[headers.size()]));
+
 		
 		HttpResponse response = builder.thenBuild();
 		HttpRequest requestToStore = HttpMessageBuilder.use(request)

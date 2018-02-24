@@ -64,7 +64,7 @@ public class TestHttpMessageBuilder {
 				.setMethodAs("POST")
 				.setResourceAs("/test/resource")
 				.setContentBytes("test=test&result=true".getBytes())
-				.addHeader(httpHeader)
+				.addHeaders(httpHeader)
 				.thenBuild();
 		
 		assertThat(httpRequest.getId(), is("testId"));
@@ -81,7 +81,7 @@ public class TestHttpMessageBuilder {
 				.setMethodAs("POST")
 				.setResourceAs("/test/resource")
 				.setContentBytes("test=test&result=true".getBytes())
-				.addHeader(new HttpHeaderImpl("Content-type","application/x-form-urlencoded; charset=utf-8"))
+				.addHeaders(new HttpHeaderImpl("Content-type","application/x-form-urlencoded; charset=utf-8"))
 				.thenBuild();
 		
 		assertThat(httpRequest.getContentEncoding(), is("UTF-8"));	
@@ -94,7 +94,7 @@ public class TestHttpMessageBuilder {
 				.setMethodAs("POST")
 				.setResourceAs("/test/resource")
 				.setContentBytes("test=test&result=true".getBytes())
-				.addHeader(new HttpHeaderImpl("Content-type","application/x-form-urlencoded; charset"))
+				.addHeaders(new HttpHeaderImpl("Content-type","application/x-form-urlencoded; charset"))
 				.thenBuild();
 		
 		assertThat(httpRequest.getContentEncoding() == null, is(true));	
@@ -107,9 +107,9 @@ public class TestHttpMessageBuilder {
 				.setMethodAs("POST")
 				.setResourceAs("/test/resource")
 				.setContentBytes("test=test&result=true".getBytes())
-				.addHeader(new HttpHeaderImpl("Content-Type","application/x-form-urlencoded"))
-				.addHeader(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
-				.addHeader(new HttpHeaderImpl("X-Application-Role", Arrays.asList("Role1", "Role2", "Role3")))
+				.addHeaders(new HttpHeaderImpl("Content-Type","application/x-form-urlencoded"))
+				.addHeaders(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
+				.addHeaders(new HttpHeaderImpl("X-Application-Role", Arrays.asList("Role1", "Role2", "Role3")))
 				.thenBuild(),
 				
 				httpRequest2 = HttpMessageBuilder.createNewHttpRequest()
@@ -123,9 +123,9 @@ public class TestHttpMessageBuilder {
 				.setMethodAs("POST")
 				.setResourceAs("/test/resource")
 				.setContentBytes("test=test&result=true".getBytes())
-				.addHeader(new HttpHeaderImpl("Content-Type","application/x-form-urlencoded"))
-				.addHeader(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
-				.addHeader(new HttpHeaderImpl("X-Application-Role", Arrays.asList("Role1", "Role2", "Role3")))
+				.addHeaders(new HttpHeaderImpl("Content-Type","application/x-form-urlencoded"))
+				.addHeaders(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
+				.addHeaders(new HttpHeaderImpl("X-Application-Role", Arrays.asList("Role1", "Role2", "Role3")))
 				.thenBuild(),
 				
 				httpRequest4 = HttpMessageBuilder.createNewHttpRequest()
@@ -156,13 +156,13 @@ public class TestHttpMessageBuilder {
 				.setId("testId1")
 				.setMethodAs("POST")
 				.setResourceAs("/test/resource")
-				.addHeader(new HttpHeaderImpl("X-Application-Role", Arrays.asList("Role1", "Role2", "Role3")))
+				.addHeaders(new HttpHeaderImpl("X-Application-Role", Arrays.asList("Role1", "Role2", "Role3")))
 				.thenBuild(),
 				httpRequest8 = HttpMessageBuilder.createNewHttpRequest()
 				.setId("testId1")
 				.setMethodAs("POST")
 				.setResourceAs("/test/resource")
-				.addHeader(new HttpHeaderImpl("X-Application-Role", Arrays.asList("Role1", "Role2", "Role3")))
+				.addHeaders(new HttpHeaderImpl("X-Application-Role", Arrays.asList("Role1", "Role2", "Role3")))
 				.thenBuild();
 		
 		assertThat(httpRequest5, is(httpRequest6));
@@ -181,18 +181,18 @@ public class TestHttpMessageBuilder {
 						.createNewHttpResponse()
 						.setResponseCodeAs(400)
 						.setContentBytes("{\"error\":\"No such item\"}".getBytes())
-						.addHeader(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
+						.addHeaders(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
 						.thenBuild())
-				.addHeader(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
-				.addHeader(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
-				.addHeader(new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))
+				.addHeaders(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
+				.addHeaders(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
+				.addHeaders(new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))
 				.thenBuild();
 		
 		HttpResponse response = HttpMessageBuilder
 				.createNewHttpResponse()
 				.setResponseCodeAs(400)
 				.setContentBytes("{\"error\":\"No such item\"}".getBytes())
-				.addHeader(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
+				.addHeaders(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
 				.thenBuild();
 		
 		assertThat(httpRequest.getResponse(), is(response));
@@ -209,20 +209,20 @@ public class TestHttpMessageBuilder {
 						.createNewHttpResponse()
 						.setResponseCodeAs(400)
 						.setContentBytes("{\"error\":\"No such item\"}".getBytes())
-						.addHeader(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
+						.addHeaders(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
 						.thenBuild())
-				.addHeader(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
-				.addHeader(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
-				.addHeader(new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))
+				.addHeaders(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
+				.addHeaders(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
+				.addHeaders(new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))
 				.thenBuild(), 
 				httpRequest2 = HttpMessageBuilder.createNewHttpRequest()
 				.setId("testId")
 				.setMethodAs("POST")
 				.setResourceAs("/test/resource")
 				.setContentBytes("{\"test1\":\"value1\", \"test2\",\"value2\"}".getBytes())
-				.addHeader(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
-				.addHeader(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
-				.addHeader(new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))
+				.addHeaders(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
+				.addHeaders(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
+				.addHeaders(new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))
 				.thenBuild();
 		
 		assertThat(httpRequest1, is(httpRequest2));
@@ -296,9 +296,9 @@ public class TestHttpMessageBuilder {
 		HttpResponse httpResponse = HttpMessageBuilder.createNewHttpResponse()
 				.setResponseCodeAs(400)
 				.setContentBytes("{\"error\":\"No such item\"}".getBytes())
-				.addHeader(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
-				.addHeader(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
-				.addHeader(new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))
+				.addHeaders(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"),
+						new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"),
+						new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))
 				.thenBuild();
 		
 		assertThat(httpResponse.getResponseCode(), is(400));
@@ -313,9 +313,9 @@ public class TestHttpMessageBuilder {
 				.setMethodAs("POST")
 				.setResourceAs("/test/resource")
 				.setContentBytes("{\"test1\":\"value1\", \"test2\",\"value2\"}".getBytes())
-				.addHeader(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
-				.addHeader(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
-				.addHeader(new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))
+				.addHeaders(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
+				.addHeaders(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
+				.addHeaders(new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))
 				.thenBuild(),
 				httpRequest2 = HttpMessageBuilder.use(httpRequest1)
 				.setResponseAs(HttpMessageBuilder.createNewHttpResponse()
@@ -334,9 +334,9 @@ public class TestHttpMessageBuilder {
 		HttpResponse httpResponse1 = HttpMessageBuilder.createNewHttpResponse()
 				.setResponseCodeAs(400)
 				.setContentBytes("{\"error\":\"No such item\"}".getBytes())
-				.addHeader(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
-				.addHeader(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
-				.addHeader(new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))
+				.addHeaders(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"),
+						new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"),
+						new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))
 				.thenBuild(),
 				httpResponse2 = HttpMessageBuilder.createNewHttpResponse()
 				.setResponseCodeAs(200)
@@ -344,9 +344,9 @@ public class TestHttpMessageBuilder {
 				httpResponse3 = HttpMessageBuilder.createNewHttpResponse()
 				.setResponseCodeAs(400)
 				.setContentBytes("{\"error\":\"No such item\"}".getBytes())
-				.addHeader(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
-				.addHeader(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
-				.addHeader(new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))
+				.addHeaders(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"),
+						new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"),
+						new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))
 				.thenBuild(),
 				httpResponse4 = HttpMessageBuilder.createNewHttpResponse()
 						.setResponseCodeAs(200)

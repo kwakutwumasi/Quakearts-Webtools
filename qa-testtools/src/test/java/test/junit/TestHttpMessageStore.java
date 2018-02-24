@@ -34,26 +34,26 @@ public class TestHttpMessageStore {
 				.setMethodAs("POST")
 				.setResourceAs("/test/resource/2")
 				.setContentBytes("test=test&result=true".getBytes())
-				.addHeader(new HttpHeaderImpl("Content-Type","application/x-form-urlencoded"))
-				.addHeader(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
-				.addHeader(new HttpHeaderImpl("X-Application-Role", Arrays.asList("Role1", "Role2", "Role3")))
+				.addHeaders(new HttpHeaderImpl("Content-Type","application/x-form-urlencoded"),
+						new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"),
+						new HttpHeaderImpl("X-Application-Role", Arrays.asList("Role1", "Role2", "Role3")))
 				.thenBuild(),
 				httpRequest2 = HttpMessageBuilder.createNewHttpRequest()
 				.setId("testId2")
 				.setMethodAs("PUT")
 				.setResourceAs("/test/resource/1")
 				.setContentBytes("test=test&result=true".getBytes())
-				.addHeader(new HttpHeaderImpl("Content-Type","application/x-form-urlencoded"))
-				.addHeader(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
-				.addHeader(new HttpHeaderImpl("X-Application-Role", Arrays.asList("Role1", "Role2", "Role3")))
+				.addHeaders(new HttpHeaderImpl("Content-Type","application/x-form-urlencoded"),
+						new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"),
+						new HttpHeaderImpl("X-Application-Role", Arrays.asList("Role1", "Role2", "Role3")))
 				.thenBuild(),
 				httpRequest3 = HttpMessageBuilder.createNewHttpRequest()
 				.setId("testId3")
 				.setMethodAs("GET")
 				.setResourceAs("/test/resource?test=test&result=true")
-				.addHeader(new HttpHeaderImpl("Content-Type","application/x-form-urlencoded"))
-				.addHeader(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
-				.addHeader(new HttpHeaderImpl("X-Application-Role", Arrays.asList("Role1", "Role2", "Role3")))
+				.addHeaders(new HttpHeaderImpl("Content-Type","application/x-form-urlencoded"),
+						new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"),
+						new HttpHeaderImpl("X-Application-Role", Arrays.asList("Role1", "Role2", "Role3")))
 				.thenBuild();
 		
 		saveObject(httpRequest1);
@@ -149,9 +149,9 @@ public class TestHttpMessageStore {
 				.setMethodAs("OPTIONS")
 				.setResourceAs("/test/resource/2")
 				.setContentBytes("test=test&result=true".getBytes())
-				.addHeader(new HttpHeaderImpl("Content-Type","application/x-form-urlencoded"))
-				.addHeader(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
-				.addHeader(new HttpHeaderImpl("X-Application-Role", Arrays.asList("Role1", "Role2", "Role3")))
+				.addHeaders(new HttpHeaderImpl("Content-Type","application/x-form-urlencoded"),
+						new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"),
+						new HttpHeaderImpl("X-Application-Role", Arrays.asList("Role1", "Role2", "Role3")))
 				.thenBuild();
 		
 		MockServletHttpMessageStore.getInstance().storeRequest(httpRequest1);
@@ -167,9 +167,9 @@ public class TestHttpMessageStore {
 				.setMethodAs("POST")
 				.setResourceAs("/test/resource/2")
 				.setContentBytes("test=test&result=true".getBytes())
-				.addHeader(new HttpHeaderImpl("Content-Type","application/x-form-urlencoded"))
-				.addHeader(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
-				.addHeader(new HttpHeaderImpl("X-Application-Role", Arrays.asList("Role1", "Role2", "Role3")))
+				.addHeaders(new HttpHeaderImpl("Content-Type","application/x-form-urlencoded"),
+						new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"),
+						new HttpHeaderImpl("X-Application-Role", Arrays.asList("Role1", "Role2", "Role3")))
 				.thenBuild();
 		
 		assertThat(httpRequest1, is(httpRequest2));	

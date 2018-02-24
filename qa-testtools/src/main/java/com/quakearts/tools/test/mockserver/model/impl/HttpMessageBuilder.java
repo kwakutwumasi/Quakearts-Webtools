@@ -222,7 +222,6 @@ public class HttpMessageBuilder {
 			int result = super.hashCode();
 			result = prime * result + ((method == null) ? 0 : method.hashCode());
 			result = prime * result + ((resource == null) ? 0 : resource.hashCode());
-			result = prime * result + ((id == null) ? 0 : id.hashCode());
 			return result;
 		}
 
@@ -244,11 +243,6 @@ public class HttpMessageBuilder {
 				if (other.resource != null)
 					return false;
 			} else if (!resource.equals(other.resource))
-				return false;
-			if (id == null) {
-				if (other.id != null)
-					return false;
-			} else if (!id.equals(other.id))
 				return false;
 			return super.equals(obj);
 		}
@@ -298,8 +292,8 @@ public class HttpMessageBuilder {
 		}
 		
 		@Override
-		public HttpRequestBuilder addHeader(HttpHeader header) {
-			super.addHeader(header);
+		public HttpRequestBuilder addHeaders(HttpHeader... headers) {
+			super.addHeaders(headers);
 			return this;
 		}
 		
@@ -405,8 +399,8 @@ public class HttpMessageBuilder {
 		}
 		
 		@Override
-		public HttpResponseBuilder addHeader(HttpHeader header) {
-			super.addHeader(header);
+		public HttpResponseBuilder addHeaders(HttpHeader... headers) {
+			super.addHeaders(headers);
 			return this;
 		}
 		
@@ -438,25 +432,27 @@ public class HttpMessageBuilder {
 		}
 	}
 	
-	public HttpMessageBuilder addHeader(HttpHeader header) {
-		HttpMessageImpl impl = asHttpMessageImpl();
-		impl.headers.put(header.getName(), header);
-		if(impl.contentEncoding == null
-				&& header.getName().trim().equalsIgnoreCase("Content-Type")
-				&& header.getValue().indexOf(";") != -1) {
-			Optional<String> foundCharset = Arrays.asList(header.getValue().split(";")).stream()
-			.filter((string)-> {
-				String[] parts = string.split("=");
-				if(parts.length==2 
-						&& parts[0].trim().equalsIgnoreCase("charset"))
-					return true;
-				return false;
-			}).map((string)->{
-				return string.split("=")[1].trim();
-			}).findFirst();
-			
-			if(foundCharset.isPresent())
-				impl.contentEncoding = foundCharset.get().trim();
+	public HttpMessageBuilder addHeaders(HttpHeader... headers) {
+		for(HttpHeader header:headers) {
+			HttpMessageImpl impl = asHttpMessageImpl();
+			impl.headers.put(header.getName(), header);
+			if(impl.contentEncoding == null
+					&& header.getName().trim().equalsIgnoreCase("Content-Type")
+					&& header.getValue().indexOf(";") != -1) {
+				Optional<String> foundCharset = Arrays.asList(header.getValue().split(";")).stream()
+				.filter((string)-> {
+					String[] parts = string.split("=");
+					if(parts.length==2 
+							&& parts[0].trim().equalsIgnoreCase("charset"))
+						return true;
+					return false;
+				}).map((string)->{
+					return string.split("=")[1].trim();
+				}).findFirst();
+				
+				if(foundCharset.isPresent())
+					impl.contentEncoding = foundCharset.get().trim();
+			}
 		}
 		return this;
 	}

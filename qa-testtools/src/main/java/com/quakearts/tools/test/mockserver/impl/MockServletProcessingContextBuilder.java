@@ -47,7 +47,7 @@ class MockServletProcessingContextBuilder {
 						+(req.getQueryString() != null?"?"+req.getQueryString():"");
 				requestBuilder.setResourceAs(resource);
 				requestBuilder.setContentEncoding(req.getCharacterEncoding());
-				requestBuilder.setId(urlToMock+"/"+resource);
+				requestBuilder.setId(req.getMethod()+"-"+urlToMock+(resource.startsWith("/")?"":"/")+resource);
 				
 				Enumeration<String> names = req.getHeaderNames();
 				if(names != null)
@@ -60,7 +60,7 @@ class MockServletProcessingContextBuilder {
 							String value = values.nextElement();
 							header.addValue(value);
 						}
-						requestBuilder.addHeader(header);
+						requestBuilder.addHeaders(header);
 					}
 				
 				try {
