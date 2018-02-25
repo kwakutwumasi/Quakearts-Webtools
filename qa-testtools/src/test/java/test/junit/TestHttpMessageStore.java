@@ -28,6 +28,15 @@ public class TestHttpMessageStore {
 
 	@BeforeClass
 	public static void setup() throws Exception {
+		File file = new File("http-messages");
+		if(file.exists()) {
+			if(file.listFiles() != null 
+					&& file.listFiles().length > 0)
+				for(File file2:file.listFiles())
+					file2.delete();
+			file.delete();
+		}
+
 		MockServletHttpMessageStore.getInstance();
 		
 		HttpRequest httpRequest1 = HttpMessageBuilder.createNewHttpRequest()
@@ -61,19 +70,7 @@ public class TestHttpMessageStore {
 		saveObject(httpRequest2);
 		saveObject(httpRequest3);
 	}
-	
-	@AfterClass
-	public static void clean() {
-		File file = new File("http-messages");
-		if(file.exists()) {
-			if(file.listFiles() != null 
-					&& file.listFiles().length > 0)
-				for(File file2:file.listFiles())
-					file2.delete();
-			file.delete();
-		}
-	}
-	
+		
 	private static void saveObject(HttpRequest httpRequest) throws Exception {
 		try(FileOutputStream fos = new FileOutputStream("http-messages/"+httpRequest.getId()+".mock");){
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
