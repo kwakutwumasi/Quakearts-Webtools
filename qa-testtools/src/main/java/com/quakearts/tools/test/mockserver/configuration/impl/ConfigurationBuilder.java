@@ -22,55 +22,59 @@ public class ConfigurationBuilder {
 		Properties props = new Properties();
 		props.load(in);
 		
-		if (props.contains("url.to.mock"))
+		if (props.containsKey("url.to.mock"))
 			setURLToMock(props.getProperty("url.to.mock"));
 		else
 			throw new ConfigurationException("url.to.mock property required");
 		
-		if (props.contains("mocking.mode"))
-			setMockingModeAs(MockingMode.valueOf(props.getProperty("mocking.mode")));
+		if (props.containsKey("mocking.mode"))
+			try {
+				setMockingModeAs(MockingMode.valueOf(props.getProperty("mocking.mode")));				
+			} catch (IllegalArgumentException e) {
+				throw new ConfigurationException(e);
+			}
 		else
 			throw new ConfigurationException("mocking.mode property required");
 				
-		if (props.contains("port"))
+		if (props.containsKey("port"))
 			try {
 				setPortAs(Integer.parseInt(props.getProperty("port")));
 			} catch (NumberFormatException e) {
 				throw new ConfigurationException("port property must be a valid integer");
 			}
 		
-		if (props.contains("ip.interface"))
+		if (props.containsKey("ip.interface"))
 			setIPInterfaceAs(props.getProperty("ip.interface"));
 		
-		if (props.contains("connect.timeout"))
+		if (props.containsKey("connect.timeout"))
 			try {
 				setConnectTimeoutAs(Integer.parseInt(props.getProperty("connect.timeout")));
 			} catch (NumberFormatException e) {
 				throw new ConfigurationException("connect.timeout property must be a valid integer");
 			}
 
-		if (props.contains("read.timeout"))
+		if (props.containsKey("read.timeout"))
 			try {
 				setReadTimeoutAs(Integer.parseInt(props.getProperty("read.timeout")));
 			} catch (NumberFormatException e) {
 				throw new ConfigurationException("read.timeout property must be a valid integer");
 			}
 
-		if (props.contains("use.tls")) {
-			useTLS(Boolean.getBoolean(props.getProperty("use.tls")));
+		if (props.containsKey("use.tls")) {
+			useTLS(Boolean.parseBoolean(props.getProperty("use.tls")));
 		
 			if(configuration.useTLS) {
-				if (props.contains("keystore"))
+				if (props.containsKey("keystore"))
 					setKeyStoreAs(props.getProperty("keystore"));
 				else
 					throw new ConfigurationException("keystore property required");
 				
-				if (props.contains("key.password"))
-					setKeyPasswordAs(props.getProperty("key.password"));
+				if (props.containsKey("keystore.password"))
+					setKeyStorePasswordAs(props.getProperty("keystore.password"));
 				else
 					throw new ConfigurationException("key.password property required");
 				
-				if (props.contains("keystore.type"))
+				if (props.containsKey("keystore.type"))
 					setKeyStoreTypeAs(props.getProperty("keystore.type"));
 				else
 					throw new ConfigurationException("keystore.type property required");
@@ -114,18 +118,13 @@ public class ConfigurationBuilder {
 		return this;
 	}
 
-	public ConfigurationBuilder setKeyPasswordAs(String keyPassword) {
-		configuration.keyPassword = keyPassword;
+	public ConfigurationBuilder setKeyStorePasswordAs(String keyPassword) {
+		configuration.keyStorePassword = keyPassword;
 		return this;
 	}
 
 	public ConfigurationBuilder setKeyStoreTypeAs(String keyStoreType) {
 		configuration.keyStoreType = keyStoreType;
-		return this;
-	}
-
-	public ConfigurationBuilder setVerifyClientCertifcateAs(boolean verifyClientCertifcate) {
-		configuration.verifyClientCertifcate = verifyClientCertifcate;
 		return this;
 	}
 	
@@ -150,7 +149,7 @@ public class ConfigurationBuilder {
 			if(configuration.keyStore == null)
 				throw new ConfigurationException("Property mode is required");
 			
-			if(configuration.keyPassword == null)
+			if(configuration.keyStorePassword == null)
 				throw new ConfigurationException("Property keyPassword is required");
 
 			if(configuration.keyStoreType == null)
@@ -167,9 +166,8 @@ public class ConfigurationBuilder {
 		String ipInterface;
 		boolean useTLS;
 		String keyStore;
-		String keyPassword;
+		String keyStorePassword;
 		String keyStoreType;
-		boolean verifyClientCertifcate;
 		int connectTimeout;
 		int readTimeout;
 		
@@ -204,8 +202,8 @@ public class ConfigurationBuilder {
 		}
 
 		@Override
-		public String getKeyPassword() {
-			return keyPassword;
+		public String getKeyStorePassword() {
+			return keyStorePassword;
 		}
 
 		@Override
@@ -213,11 +211,6 @@ public class ConfigurationBuilder {
 			return keyStoreType;
 		}
 
-		@Override
-		public boolean verifyClientCertificate() {
-			return verifyClientCertifcate;
-		}
-		
 		@Override
 		public int getConnectTimeout() {
 			return connectTimeout;

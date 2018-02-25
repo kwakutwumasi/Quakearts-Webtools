@@ -46,13 +46,15 @@ class MockServletProcessingContextBuilder {
 				String resource = req.getPathInfo()
 						+(req.getQueryString() != null?"?"+req.getQueryString():"");
 				requestBuilder.setResourceAs(resource);
-				requestBuilder.setContentEncoding(req.getCharacterEncoding());
+				if(req.getCharacterEncoding()!=null)
+					requestBuilder.setContentEncoding(req.getCharacterEncoding());
+				
 				requestBuilder.setId(req.getMethod()+"-"+urlToMock+(resource.startsWith("/")?"":"/")+resource);
 				
 				Enumeration<String> names = req.getHeaderNames();
 				if(names != null)
 					while (names.hasMoreElements()) {
-						String headerName = req.getHeaderNames().nextElement();
+						String headerName = names.nextElement();
 						HttpHeaderImpl header = new HttpHeaderImpl();
 						header.setName(headerName);
 						Enumeration<String> values = req.getHeaders(headerName);

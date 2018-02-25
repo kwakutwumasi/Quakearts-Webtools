@@ -7,14 +7,19 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.HashMap;
+import java.io.UnsupportedEncodingException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.quakearts.tools.test.mockserver.exception.MockServerRuntimeException;
+import com.quakearts.tools.test.mockserver.model.HttpHeader;
 import com.quakearts.tools.test.mockserver.model.HttpRequest;
+import com.quakearts.tools.test.mockserver.model.HttpResponse;
 import com.quakearts.tools.test.mockserver.store.HttpMessageStore;
 import com.quakearts.tools.test.mockserver.store.exception.HttpMessageStoreException;
 import com.quakearts.tools.test.mockserver.store.fi.HttpMessageStoreQuery;
@@ -22,17 +27,13 @@ import com.quakearts.tools.test.mockserver.store.fi.HttpMessageStoreQuery;
 public class MockServletHttpMessageStore implements HttpMessageStore {
 
 	private File saveLocation;
-	private Map<String, HttpRequest> savedRequests = new HashMap<>();
+	private Map<String, HttpRequest> savedRequests;
 	private static final String EXT = ".mock";
 	
 	private MockServletHttpMessageStore() {
 		saveLocation = new File("http-messages");
 		if(!saveLocation.exists()) {
 			saveLocation.mkdir();
-		} else {
-			for(String file:saveLocation.list()) {
-				savedRequests.put(file, null);
-			}
 		}
 	}
 
@@ -44,19 +45,19 @@ public class MockServletHttpMessageStore implements HttpMessageStore {
 	
 	@Override
 	public Iterator<HttpRequest> iterator() {
-		for(String id:savedRequests.keySet()) {
-			HttpRequest httpRequest = savedRequests.get(id);
-			if(httpRequest == null) {
+		for(String id:getSavedRequests().keySet()) {
+			HttpRequest httpRequest = getSavedRequests().get(id);
+			if(httpRequest == NULL) {
 				try {
 					httpRequest = loadHttpRequest(id);
 				} catch (HttpMessageStoreException e) {
 					throw new MockServerRuntimeException(e);
 				}
-				savedRequests.put(id, httpRequest);
+				getSavedRequests().put(id, httpRequest);
 			}
 		}
 		
-		return savedRequests.values().iterator();
+		return getSavedRequests().values().iterator();
 	}
 
 	@Override
@@ -70,7 +71,7 @@ public class MockServletHttpMessageStore implements HttpMessageStore {
 			} catch (IOException e) {
 				throw new HttpMessageStoreException("Cannot save httpRequest", e);
 			}
-			savedRequests.put(id, httpRequest);
+			getSavedRequests().put(id, httpRequest);
 		} else {
 			throw new HttpMessageStoreException("Cannot save httpRequest. HttpRequest implementation must be serializable");
 		}
@@ -78,11 +79,12 @@ public class MockServletHttpMessageStore implements HttpMessageStore {
 
 	@Override
 	public HttpRequest findRequestIdentifiedBy(String id) throws HttpMessageStoreException {
-		if(savedRequests.containsKey(id)) {
-			HttpRequest savedRequest = savedRequests.get(id);
-			if(savedRequest == null) {
+		id = sanitizeFileName(id)+EXT;
+		if(getSavedRequests().containsKey(id)) {
+			HttpRequest savedRequest = getSavedRequests().get(id);
+			if(savedRequest == NULL) {
 				savedRequest = loadHttpRequest(id);
-				savedRequests.put(id, savedRequest);
+				getSavedRequests().put(id, savedRequest);
 			}
 			return savedRequest;
 		}
@@ -92,9 +94,9 @@ public class MockServletHttpMessageStore implements HttpMessageStore {
 	@Override
 	public IntermediateResult findRequestsMatching(HttpMessageStoreQuery query) throws HttpMessageStoreException {
 		IntermediateResultImpl impl = new IntermediateResultImpl();
-		for(String id:savedRequests.keySet()) {
-			HttpRequest httpRequest = savedRequests.get(id);
-			if(httpRequest == null)
+		for(String id:getSavedRequests().keySet()) {
+			HttpRequest httpRequest = getSavedRequests().get(id);
+			if(httpRequest == NULL)
 				httpRequest = loadHttpRequest(id);
 			
 			if(query.matches(httpRequest)) {
@@ -140,5 +142,76 @@ public class MockServletHttpMessageStore implements HttpMessageStore {
 		} catch (IOException | ClassNotFoundException e) {
 			throw new HttpMessageStoreException("Unable to read stored httpRequest",e);
 		}
+	}
+
+	private Map<String, HttpRequest> getSavedRequests() {
+		if(savedRequests == null) {
+			savedRequests = new ConcurrentHashMap<>();
+			for(String file:saveLocation.list()) {
+				savedRequests.put(file, NULL);
+			}
+		}
+		return savedRequests;
+	}
+	
+	private static final NullHttpRequest NULL = new NullHttpRequest();
+	
+	private static class NullHttpRequest implements HttpRequest {
+
+		@Override
+		public Collection<HttpHeader> getHeaders() {
+			return null;
+		}
+
+		@Override
+		public String getHeaderValue(String name) {
+			return null;
+		}
+
+		@Override
+		public String getContentEncoding() {
+			return null;
+		}
+
+		@Override
+		public String getContent() throws UnsupportedEncodingException {
+			return null;
+		}
+
+		@Override
+		public String getMethod() {
+			return null;
+		}
+
+		@Override
+		public String getResource() {
+			return null;
+		}
+
+		@Override
+		public HttpResponse getResponse() {
+			return null;
+		}
+
+		@Override
+		public List<String> getParameterValue(String name) {
+			return null;
+		}
+
+		@Override
+		public boolean hasParameter(String name) {
+			return false;
+		}
+
+		@Override
+		public byte[] getContentBytes() {
+			return null;
+		}
+
+		@Override
+		public String getId() {
+			return null;
+		}
+		
 	}
 }

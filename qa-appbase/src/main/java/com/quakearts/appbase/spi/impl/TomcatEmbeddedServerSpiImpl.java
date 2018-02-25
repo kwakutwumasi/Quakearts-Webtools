@@ -118,7 +118,12 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 			if (serverConfiguration.containsKey("usessl") 
 					&& serverConfiguration.getBoolean("usessl")) {
 				SSLHostConfig sslHostConfig = new SSLHostConfig();
-			
+				
+				String protocols = serverConfiguration.getString("protocols");
+				if(protocols!=null) {
+					sslHostConfig.setProtocols(protocols);
+				}
+				
 				try {
 					serverConfiguration.populateBean(sslHostConfig, "sslHostConfig");
 				} catch (ConfigurationException e) {

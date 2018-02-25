@@ -12,9 +12,8 @@ public interface Configuration {
 	String getIPInterface();
 	boolean useTLS();
 	String getKeyStore();
-	String getKeyPassword();
+	String getKeyStorePassword();
 	String getKeyStoreType();
-	boolean verifyClientCertificate();
 	int getReadTimeout();
 	int getConnectTimeout();
 }

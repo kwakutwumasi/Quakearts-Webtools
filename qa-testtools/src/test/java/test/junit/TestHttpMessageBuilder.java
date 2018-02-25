@@ -53,7 +53,7 @@ public class TestHttpMessageBuilder {
 		assertThat(httpRequest.getId(), is("testId"));
 		assertThat(httpRequest.getMethod(), is("POST"));
 		assertThat(httpRequest.getResource(), is("/test/resource"));
-		assertThat(httpRequest.getContentEncoding() == null, is(true));
+		assertThat(httpRequest.getContentEncoding(), is("UTF-8"));
 	}
 
 	@Test
@@ -81,10 +81,33 @@ public class TestHttpMessageBuilder {
 				.setMethodAs("POST")
 				.setResourceAs("/test/resource")
 				.setContentBytes("test=test&result=true".getBytes())
-				.addHeaders(new HttpHeaderImpl("Content-type","application/x-form-urlencoded; charset=utf-8"))
+				.addHeaders(new HttpHeaderImpl("Content-type","application/x-form-urlencoded; charset=iso-8859-1"))
 				.thenBuild();
 		
-		assertThat(httpRequest.getContentEncoding(), is("UTF-8"));	
+		assertThat(httpRequest.getContentEncoding(), is("ISO-8859-1"));	
+	}
+	
+	@Test
+	public void testAddHeaderWithNullName() throws Exception {
+		HttpRequest httpRequest = HttpMessageBuilder.createNewHttpRequest()
+				.setId("testId")
+				.setMethodAs("POST")
+				.setResourceAs("/test/resource")
+				.setContentBytes("test=test&result=true".getBytes())
+				.addHeaders(new HttpHeaderImpl(null,"application/x-form-urlencoded; charset=iso-8859-1"))
+				.thenBuild();
+		
+		assertThat(httpRequest.getHeaders().isEmpty(), is(true));	
+		
+		httpRequest = HttpMessageBuilder.createNewHttpRequest()
+				.setId("testId")
+				.setMethodAs("POST")
+				.setResourceAs("/test/resource")
+				.setContentBytes("test=test&result=true".getBytes())
+				.addHeaders(new HttpHeaderImpl("","application/x-form-urlencoded; charset=iso-8859-1"))
+				.thenBuild();
+		
+		assertThat(httpRequest.getHeaders().isEmpty(), is(true));	
 	}
 	
 	@Test
@@ -97,7 +120,7 @@ public class TestHttpMessageBuilder {
 				.addHeaders(new HttpHeaderImpl("Content-type","application/x-form-urlencoded; charset"))
 				.thenBuild();
 		
-		assertThat(httpRequest.getContentEncoding() == null, is(true));	
+		assertThat(httpRequest.getContentEncoding(), is("UTF-8"));	
 	}
 	
 	@Test
@@ -136,7 +159,7 @@ public class TestHttpMessageBuilder {
 		
 		assertThat(httpRequest1, is(httpRequest3));
 		assertThat(httpRequest1.hashCode(), is(httpRequest3.hashCode()));
-		assertThat(httpRequest2, is(not(httpRequest4)));
+		assertThat(httpRequest2, is(httpRequest4));
 		assertThat(httpRequest2, is(not(httpRequest3)));
 		assertThat(httpRequest1.hashCode(), is(not(httpRequest4.hashCode())));
 		
@@ -238,7 +261,7 @@ public class TestHttpMessageBuilder {
 				httpRequest2 = HttpMessageBuilder.createNewHttpRequest()
 				.setId("testId2")
 				.setMethodAs("POST")
-				.setResourceAs("/?test1=value11&test2=value12&test2&test3=value3")
+				.setResourceAs("/?test1=value11&test1=value12&test2&test3=value3")
 				.thenBuild(),
 				httpRequest3 = HttpMessageBuilder.createNewHttpRequest()
 				.setId("testId3")
@@ -253,18 +276,18 @@ public class TestHttpMessageBuilder {
 
 		
 		assertThat(httpRequest1.getParameterValue("test1"), is(Arrays.asList("value11","value12")));
-		assertThat(httpRequest1.hasParameter("test2"), is(Arrays.asList("value11","value12")));
+		assertThat(httpRequest1.hasParameter("test2"), is(true));
 		assertThat(httpRequest1.getParameterValue("test3"), is(Arrays.asList("value3")));
 
 		assertThat(httpRequest2.getParameterValue("test1"), is(Arrays.asList("value11","value12")));
-		assertThat(httpRequest2.hasParameter("test2"), is(Arrays.asList("value11","value12")));
+		assertThat(httpRequest2.hasParameter("test2"), is(true));
 		assertThat(httpRequest2.getParameterValue("test3"), is(Arrays.asList("value3")));
 
 		assertThat(httpRequest3.getParameterValue("test") == null, is(true));
-		assertThat(httpRequest3.hasParameter("test"), is("false"));
+		assertThat(httpRequest3.hasParameter("test"), is(false));
 
 		assertThat(httpRequest4.getParameterValue("test") == null, is(true));
-		assertThat(httpRequest4.hasParameter("test"), is("false"));
+		assertThat(httpRequest4.hasParameter("test"), is(false));
 	}
 	
 	@Test(expected=BuilderException.class)

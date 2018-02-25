@@ -63,10 +63,9 @@ public class MockServerImpl implements MockServer {
 			
 			if(configuration.useTLS()) {
 				SSLHostConfig hostConfig = new SSLHostConfig();
-				hostConfig.setProtocols("TLS");
-				hostConfig.setCertificateVerification(Boolean.toString(configuration.verifyClientCertificate()));
+				hostConfig.setProtocols("TLSv1.2");
 				hostConfig.setCertificateKeystoreType(configuration.getKeyStoreType());
-				hostConfig.setCertificateKeyPassword(configuration.getKeyPassword());
+				hostConfig.setCertificateKeystorePassword(configuration.getKeyStorePassword());
 				hostConfig.setCertificateKeystoreFile(configuration.getKeyStore());
 				
 				tomcat.getConnector().addSslHostConfig(hostConfig);

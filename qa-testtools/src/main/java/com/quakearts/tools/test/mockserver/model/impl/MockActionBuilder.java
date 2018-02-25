@@ -46,7 +46,9 @@ public class MockActionBuilder {
 	
 	class MockActionImpl implements MockAction {
 		HttpRequest request;
-		HttpRequestMatcher matcher = (request,requestToMatch) -> { return request.equals(requestToMatch);};
+		HttpRequestMatcher matcher = (request,requestToMatch) -> { return 
+				request.equals(requestToMatch);
+		};
 		HttpResponseAction responseAction = (response) -> { return response;};
 		
 		@Override
@@ -54,7 +56,7 @@ public class MockActionBuilder {
 			if(matcher == null)
 				return false;
 			else
-				return matcher.canMatch(request, request);
+				return matcher.canMatch(this.request, request);
 		}
 		
 		@Override

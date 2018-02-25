@@ -12,7 +12,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.quakearts.tools.test.mockserver.model.HttpHeader;
@@ -25,8 +26,8 @@ import com.quakearts.tools.test.mockserver.store.impl.MockServletHttpMessageStor
 
 public class TestHttpMessageStore {
 
-	@Before
-	public void setup() throws Exception {
+	@BeforeClass
+	public static void setup() throws Exception {
 		MockServletHttpMessageStore.getInstance();
 		
 		HttpRequest httpRequest1 = HttpMessageBuilder.createNewHttpRequest()
@@ -61,7 +62,19 @@ public class TestHttpMessageStore {
 		saveObject(httpRequest3);
 	}
 	
-	private void saveObject(HttpRequest httpRequest) throws Exception {
+	@AfterClass
+	public static void clean() {
+		File file = new File("http-messages");
+		if(file.exists()) {
+			if(file.listFiles() != null 
+					&& file.listFiles().length > 0)
+				for(File file2:file.listFiles())
+					file2.delete();
+			file.delete();
+		}
+	}
+	
+	private static void saveObject(HttpRequest httpRequest) throws Exception {
 		try(FileOutputStream fos = new FileOutputStream("http-messages/"+httpRequest.getId()+".mock");){
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(httpRequest);
@@ -71,14 +84,16 @@ public class TestHttpMessageStore {
 	@Test
 	public void testIterator() {
 		List<String> savedIds = Arrays.asList("testId1","testId2","testId3");
+		int count = 0;
 		
 		Iterator<HttpRequest> requests = MockServletHttpMessageStore.getInstance().iterator();
 		while (requests.hasNext()) {
 			HttpRequest httpRequest = (HttpRequest) requests.next();
-			savedIds.remove(httpRequest.getId());
+			if(savedIds.contains(httpRequest.getId()))
+				count++;
 		}
 		
-		assertThat(savedIds.isEmpty(), is(true));
+		assertThat(count, is(3));
 	}
 
 	@Test(expected=HttpMessageStoreException.class)

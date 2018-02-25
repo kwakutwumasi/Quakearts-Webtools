@@ -65,11 +65,13 @@ public class MockServerServlet extends HttpServlet {
 			switch (configuration.getMockingMode()) {
 			case MOCK:
 				mock(context);
+				return;
 			case RECORD:
 				record(context);
+				return;
 			}
 		} catch (MockServerProcessingException | HttpMessageStoreException e) {
-			throw new ServletException(e);
+			resp.sendError(500, e.getMessage()+(e.getCause()!=null?"; Caused by "+e.getCause().getMessage():""));
 		}
 	}
 
@@ -90,28 +92,33 @@ public class MockServerServlet extends HttpServlet {
 		for(MockAction action:mockActions) {
 			if(action.requestMatches(context.getHttpRequest())) {
 				context.sendResponse(action.executeAction());
+				return;
 			}
 		}
 		context.sendHttpError(500, "No matching httpRequest found");
 	}
 
-	private void record(ProcessingContext context) throws IOException,
-			MockServerProcessingException, ServletException, HttpMessageStoreException {
+	private void record(ProcessingContext context) throws 
+			MockServerProcessingException, HttpMessageStoreException, ServletException {
 		HttpRequest request = context.getHttpRequest();
-		HttpURLConnection con = prepareConnection(request);
-		con.connect();
-		byte[] responseContent;
-		if(returningInputMethodsInclude(request.getMethod())) {
-			responseContent = getResponseContent(con);
-		} else {
-			responseContent = null;
+		try {
+			HttpURLConnection con = prepareConnection(request);
+			con.connect();
+			byte[] responseContent;
+			if(returningInputMethodsInclude(request.getMethod())) {
+				responseContent = getResponseContent(con);
+			} else {
+				responseContent = null;
+			}
+			HttpResponse response = getAndstoreResponse(request, con, responseContent);			
+			context.sendResponse(response);
+		} catch (IOException e) {
+			throw new MockServerProcessingException("Unable to connect to server", e);
 		}
-		HttpResponse response = getAndstoreResponse(request, con, responseContent);
-		context.sendResponse(response);
 	}
 
 	private HttpURLConnection prepareConnection(HttpRequest request)
-			throws IOException, ServletException {
+			throws IOException, MockServerProcessingException {
 		HttpURLConnection con = (HttpURLConnection) new URL(configuration.getURLToMock()
 				+(configuration.getURLToMock().endsWith("/")?"":"/")
 				+ request.getResource()).openConnection();
@@ -142,11 +149,12 @@ public class MockServerServlet extends HttpServlet {
 		
 		if(requiringOutputMethodsInclude(request.getMethod()) 
 				&& request.getContentBytes() == null)
-			throw new ServletException("Invalid http input");
-	
-		if(!optionalOutputMethodsInlude(request.getMethod())
+			throw new MockServerProcessingException("Invalid http input");
+		
+		if(!requiringOutputMethodsInclude(request.getMethod())
+				&& !optionalOutputMethodsInlude(request.getMethod())
 				&& request.getContentBytes() != null)
-			throw new ServletException("Invalid http input");
+			throw new MockServerProcessingException("Invalid http input");
 		
 		if(request.getContentBytes()!=null) {
 			con.setDoOutput(true);

@@ -66,12 +66,11 @@ public class TestConfiguration {
 		assertThat(configuration.getURLToMock(), is("http://localhost:8080"));
 		assertThat(configuration.getMockingMode(), is(Configuration.MockingMode.RECORD));
 		assertThat(configuration.getPort(), is(4080));
-		assertThat(configuration.getIPInterface(), is("0.0.0.0"));
 		assertThat(configuration.getConnectTimeout(), is(60000));
 		assertThat(configuration.getReadTimeout(), is(30000));
 		assertThat(configuration.useTLS(), is(true));
 		assertThat(configuration.getKeyStore(), is("conf/tomcat.keystore"));
-		assertThat(configuration.getKeyPassword(), is("password1"));
+		assertThat(configuration.getKeyStorePassword(), is("password1"));
 		assertThat(configuration.getKeyStoreType(), is("JCEKS"));	
 	}
 
@@ -89,22 +88,22 @@ public class TestConfiguration {
 	}
 	
 	@Test(expected = ConfigurationException.class)
-	public void testInValidPropertyFileWithInvlidMockingMode() throws Exception {
+	public void testInValidPropertyFileWithInvalidMockingMode() throws Exception {
 		loadPropertiesFile("testmock9.config");
 	}
 
 	@Test(expected = ConfigurationException.class)
-	public void testInValidPropertyFileWithInvlidPort() throws Exception {
+	public void testInValidPropertyFileWithInvalidPort() throws Exception {
 		loadPropertiesFile("testmock10.config");
 	}
 
 	@Test(expected = ConfigurationException.class)
-	public void testInValidPropertyFileWithInvlidConnectTimeout() throws Exception {
+	public void testInValidPropertyFileWithInvalidConnectTimeout() throws Exception {
 		loadPropertiesFile("testmock11.config");
 	}
 
 	@Test(expected = ConfigurationException.class)
-	public void testInValidPropertyFileWithInvlidReadTimeout() throws Exception {
+	public void testInValidPropertyFileWithInvalidReadTimeout() throws Exception {
 		loadPropertiesFile("testmock12.config");
 	}
 

@@ -1,7 +1,7 @@
 {
 	"port":8543,
 	"usessl":true,
-	"sslHostConfig.protocols":"TLS",
+	"protocols":"TLSv1.2",
 	"sslHostConfig.certificateVerification":"false",
 	"sslHostConfig.certificateKeystoreType":"JCEKS",
 	"sslHostConfig.certificateKeystorePassword":"password1",

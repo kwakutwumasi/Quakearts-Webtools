@@ -94,4 +94,9 @@ public class HttpHeaderImpl implements Serializable, HttpHeader {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "HttpHeaderImpl [name=" + name + ", values=" + values + "]";
+	}
 }
