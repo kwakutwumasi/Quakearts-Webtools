@@ -392,10 +392,7 @@ public class TestMockServer {
 				.addDefaultActions((context)->{
 					context.addHeader("Server", "Mock Server V1.0");
 				}).add(MockActionBuilder.createNewMockAction()
-						.addMatcher((request, requestToMatch)->{
-							return request.getResource().equals(requestToMatch.getResource())
-									&& request.getMethod().equals(requestToMatch.getMethod());
-						}).addRequest(HttpMessageBuilder
+					.addRequest(HttpMessageBuilder
 								.createNewHttpRequest()
 								.setId("testId1")
 								.setMethodAs("GET")
@@ -410,10 +407,7 @@ public class TestMockServer {
 								.thenBuild())
 						.thenBuild())
 				.add(MockActionBuilder.createNewMockAction()
-						.addMatcher((request, requestToMatch)->{
-							return request.getResource().equals(requestToMatch.getResource())
-									&& request.getMethod().equals(requestToMatch.getMethod());
-						}).addRequest(HttpMessageBuilder
+						.addRequest(HttpMessageBuilder
 								.createNewHttpRequest()
 								.setId("testId2")
 								.setMethodAs("POST")
@@ -430,10 +424,7 @@ public class TestMockServer {
 								.thenBuild())
 						.thenBuild())
 				.add(MockActionBuilder.createNewMockAction()
-						.addMatcher((request, requestToMatch)->{
-							return request.getResource().equals(requestToMatch.getResource())
-									&& request.getMethod().equals(requestToMatch.getMethod());
-						}).addRequest(HttpMessageBuilder
+						.addRequest(HttpMessageBuilder
 							.createNewHttpRequest()
 							.setId("testId3")
 							.setMethodAs("DELETE")
@@ -448,10 +439,7 @@ public class TestMockServer {
 							.thenBuild())
 				.thenBuild())
 				.add(MockActionBuilder.createNewMockAction()
-						.addMatcher((request, requestToMatch)->{
-							return request.getResource().equals(requestToMatch.getResource())
-									&& request.getMethod().equals(requestToMatch.getMethod());
-						}).addRequest(HttpMessageBuilder
+						.addRequest(HttpMessageBuilder
 							.createNewHttpRequest()
 							.setId("testId4")
 							.setMethodAs("HEAD")

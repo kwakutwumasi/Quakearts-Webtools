@@ -250,7 +250,7 @@ public class PrimitivesTest {
 					+ ". Exception occured whiles generating random date");
 		}
 		
-		assertThat("Invalid year: "+cal.get(Calendar.YEAR), 1970<cal.get(Calendar.YEAR) && cal.get(Calendar.YEAR)<2099, is(true));;
+		assertThat("Invalid year: "+cal.get(Calendar.YEAR), 1970<=cal.get(Calendar.YEAR) && cal.get(Calendar.YEAR)<=2099, is(true));;
 		
 		for(int count=0; count < 1000; count++){
 			generator = new DateGenerator();

@@ -18,10 +18,7 @@ import com.quakearts.tools.test.mockserver.model.impl.HttpHeaderImpl;
 import static com.quakearts.tools.test.mockserver.model.impl.HttpMessageBuilder.*;
 
 class MockServletProcessingContextBuilder {
-	
-	MockServletProcessingContextBuilder() {
-	}
-	
+		
 	static ProcessingContext createProcessingContext(HttpServletRequest req, HttpServletResponse res, String urlToMock) {
 		MockServletProcessingContext context = new MockServletProcessingContext();
 		context.req = req;

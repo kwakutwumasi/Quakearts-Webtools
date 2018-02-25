@@ -186,6 +186,11 @@ public class TestHttpMessageStore {
 		assertThat(httpRequest1, is(httpRequest2));	
 	}
 	
+	@Test(expected=HttpMessageStoreException.class)
+	public void testFindRequestByIdWithNonExistentId() throws Exception {
+		MockServletHttpMessageStore.getInstance().findRequestIdentifiedBy("NonExistentId");
+	}
+	
 	@Test
 	public void testUsingQuery() throws Exception {
 		HttpRequest[] httpRequests = MockServletHttpMessageStore.getInstance()
