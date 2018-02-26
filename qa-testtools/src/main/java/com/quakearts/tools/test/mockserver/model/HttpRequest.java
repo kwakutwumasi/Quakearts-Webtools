@@ -6,7 +6,7 @@ public interface HttpRequest extends HttpMessage {
 	String getMethod();
 	String getResource();
 	HttpResponse getResponse();
-	List<String> getParameterValue(String name);
+	List<String> getURIParameterValue(String name);
 	boolean hasParameter(String name);
 	byte[] getContentBytes();
 	String getId();

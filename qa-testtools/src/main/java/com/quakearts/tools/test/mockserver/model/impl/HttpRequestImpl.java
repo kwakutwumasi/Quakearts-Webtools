@@ -73,7 +73,7 @@ class HttpRequestImpl extends HttpMessageImpl implements HttpRequest {
 	 * @see com.quakearts.tools.test.mockserver.model.impl.HttpRequest#getParameter(java.lang.String)
 	 */
 	@Override
-	public List<String> getParameterValue(String name) {
+	public List<String> getURIParameterValue(String name) {
 		if(uriParameters == null) {
 			if(resource != null) {
 				uriParameters = new HashMap<>();

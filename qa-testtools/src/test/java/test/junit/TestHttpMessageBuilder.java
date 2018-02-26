@@ -275,18 +275,18 @@ public class TestHttpMessageBuilder {
 				.thenBuild();
 
 		
-		assertThat(httpRequest1.getParameterValue("test1"), is(Arrays.asList("value11","value12")));
+		assertThat(httpRequest1.getURIParameterValue("test1"), is(Arrays.asList("value11","value12")));
 		assertThat(httpRequest1.hasParameter("test2"), is(true));
-		assertThat(httpRequest1.getParameterValue("test3"), is(Arrays.asList("value3")));
+		assertThat(httpRequest1.getURIParameterValue("test3"), is(Arrays.asList("value3")));
 
-		assertThat(httpRequest2.getParameterValue("test1"), is(Arrays.asList("value11","value12")));
+		assertThat(httpRequest2.getURIParameterValue("test1"), is(Arrays.asList("value11","value12")));
 		assertThat(httpRequest2.hasParameter("test2"), is(true));
-		assertThat(httpRequest2.getParameterValue("test3"), is(Arrays.asList("value3")));
+		assertThat(httpRequest2.getURIParameterValue("test3"), is(Arrays.asList("value3")));
 
-		assertThat(httpRequest3.getParameterValue("test") == null, is(true));
+		assertThat(httpRequest3.getURIParameterValue("test") == null, is(true));
 		assertThat(httpRequest3.hasParameter("test"), is(false));
 
-		assertThat(httpRequest4.getParameterValue("test") == null, is(true));
+		assertThat(httpRequest4.getURIParameterValue("test") == null, is(true));
 		assertThat(httpRequest4.hasParameter("test"), is(false));
 	}
 	

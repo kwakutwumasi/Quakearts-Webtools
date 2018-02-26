@@ -44,13 +44,13 @@ public class CrytpoServiceFactory {
 		return instance;
 	}
 
-	public static Map<String, Key> loadedKeys = new ConcurrentHashMap<>();
+	private static Map<String, Key> loadedKeys = new ConcurrentHashMap<>();
 	
 	public CryptoResource getCryptoResource(String instance, String keyProviderClass, Map<Object, Object> properties,
 			String name) throws ClassNotFoundException, InstantiationException, IllegalAccessException,
 			KeyProviderException, NoSuchAlgorithmException, NoSuchPaddingException {
 		Key key = loadedKeys.get(name);
-		if(loadedKeys == null) {
+		if(key == null) {
 			KeyProvider provider;
 	
 			provider = KeyProviderFactory.createKeyProvider(keyProviderClass);

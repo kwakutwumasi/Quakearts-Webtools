@@ -132,7 +132,7 @@ public class TestHttpMessageStore {
 			}
 			
 			@Override
-			public List<String> getParameterValue(String name) {
+			public List<String> getURIParameterValue(String name) {
 				return null;
 			}
 			
