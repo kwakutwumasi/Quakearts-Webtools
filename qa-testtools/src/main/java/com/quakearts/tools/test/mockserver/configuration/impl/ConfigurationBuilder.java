@@ -22,10 +22,10 @@ public class ConfigurationBuilder {
 		Properties props = new Properties();
 		props.load(in);
 		
-		if (props.containsKey("url.to.mock"))
-			setURLToMock(props.getProperty("url.to.mock"));
+		if (props.containsKey("url.to.record"))
+			setURLToRecord(props.getProperty("url.to.record"));
 		else
-			throw new ConfigurationException("url.to.mock property required");
+			throw new ConfigurationException("url.to.record property required");
 		
 		if (props.containsKey("mocking.mode"))
 			try {
@@ -61,7 +61,7 @@ public class ConfigurationBuilder {
 			}
 
 		if (props.containsKey("use.tls")) {
-			useTLS(Boolean.parseBoolean(props.getProperty("use.tls")));
+			setUseTLSAs(Boolean.parseBoolean(props.getProperty("use.tls")));
 		
 			if(configuration.useTLS) {
 				if (props.containsKey("keystore"))
@@ -85,11 +85,11 @@ public class ConfigurationBuilder {
 	
 	private DefaultConfiguration configuration;
 	
-	public ConfigurationBuilder setURLToMock(String urlToMock) {
-		if(urlToMock == null || (!urlToMock.startsWith("http://")
-				&& !urlToMock.startsWith("https://")))
+	public ConfigurationBuilder setURLToRecord(String urlToRecord) {
+		if(urlToRecord == null || (!urlToRecord.startsWith("http://")
+				&& !urlToRecord.startsWith("https://")))
 			throw new ConfigurationException("Property is not valid. Must be a string of the form http://serveraddress[:port]");
-		configuration.urlToMock = urlToMock;
+		configuration.urlToRecord = urlToRecord;
 		return this;
 	}
 
@@ -108,7 +108,7 @@ public class ConfigurationBuilder {
 		return this;
 	}
 
-	public ConfigurationBuilder useTLS(boolean useTLS) {
+	public ConfigurationBuilder setUseTLSAs(boolean useTLS) {
 		configuration.useTLS = useTLS;
 		return this;
 	}
@@ -139,12 +139,13 @@ public class ConfigurationBuilder {
 	}
 	
 	public Configuration thenBuild() {
-		if(configuration.urlToMock == null) 
-			throw new ConfigurationException("Property urlToMock is required");
-
 		if(configuration.mode == null)
 			throw new ConfigurationException("Property mode is required");
 		
+		if(configuration.mode == MockingMode.RECORD 
+				&& configuration.urlToRecord == null) 
+			throw new ConfigurationException("Property urlToRecord is required when mocking mode is RECORD");
+
 		if(configuration.useTLS) {
 			if(configuration.keyStore == null)
 				throw new ConfigurationException("Property mode is required");
@@ -160,7 +161,7 @@ public class ConfigurationBuilder {
 	}
 	
 	public class DefaultConfiguration implements Configuration {
-		String urlToMock;
+		String urlToRecord;
 		MockingMode mode;
 		int port;
 		String ipInterface;
@@ -172,8 +173,8 @@ public class ConfigurationBuilder {
 		int readTimeout;
 		
 		@Override
-		public String getURLToMock() {
-			return urlToMock;
+		public String getURLToRecord() {
+			return urlToRecord;
 		}
 
 		@Override

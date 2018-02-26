@@ -6,7 +6,7 @@ public interface Configuration {
 		MOCK
 	}
 	
-	String getURLToMock();
+	String getURLToRecord();
 	MockingMode getMockingMode();
 	int getPort();
 	String getIPInterface();

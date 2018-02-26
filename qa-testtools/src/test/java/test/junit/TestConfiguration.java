@@ -8,6 +8,7 @@ import java.io.InputStream;
 import org.junit.Test;
 
 import com.quakearts.tools.test.mockserver.configuration.Configuration;
+import com.quakearts.tools.test.mockserver.configuration.Configuration.MockingMode;
 import com.quakearts.tools.test.mockserver.configuration.impl.ConfigurationBuilder;
 import com.quakearts.tools.test.mockserver.exception.ConfigurationException;
 
@@ -36,7 +37,7 @@ public class TestConfiguration {
 	public void testValidPropertyFileWithoutTLS() throws Exception {
 		Configuration configuration = loadPropertiesFile("testmock3.config");
 		
-		assertThat(configuration.getURLToMock(), is("http://localhost:8080"));
+		assertThat(configuration.getURLToRecord(), is("http://localhost:8080"));
 		assertThat(configuration.getMockingMode(), is(Configuration.MockingMode.MOCK));
 		assertThat(configuration.getPort(), is(8000));
 		assertThat(configuration.getIPInterface(), is("0.0.0.0"));
@@ -63,7 +64,7 @@ public class TestConfiguration {
 	public void testValidPropertyFileWithTLS() throws Exception {
 		Configuration configuration = loadPropertiesFile("testmock7.config");
 		
-		assertThat(configuration.getURLToMock(), is("http://localhost:8080"));
+		assertThat(configuration.getURLToRecord(), is("http://localhost:8080"));
 		assertThat(configuration.getMockingMode(), is(Configuration.MockingMode.RECORD));
 		assertThat(configuration.getPort(), is(4080));
 		assertThat(configuration.getConnectTimeout(), is(60000));
@@ -78,7 +79,7 @@ public class TestConfiguration {
 	public void testValidPropertyFileWithTLSFalse() throws Exception {
 		Configuration configuration = loadPropertiesFile("testmock8.config");
 		
-		assertThat(configuration.getURLToMock(), is("http://localhost:8080"));
+		assertThat(configuration.getURLToRecord(), is("http://localhost:8080"));
 		assertThat(configuration.getMockingMode(), is(Configuration.MockingMode.RECORD));
 		assertThat(configuration.getPort(), is(8000));
 		assertThat(configuration.getIPInterface(), is("0.0.0.0"));
@@ -111,12 +112,24 @@ public class TestConfiguration {
 	public void testValidPropertyFileWithMinimalConfig() throws Exception {
 		Configuration configuration = loadPropertiesFile("testmock13.config");
 		
-		assertThat(configuration.getURLToMock(), is("http://localhost:8080"));
+		assertThat(configuration.getURLToRecord(), is("http://localhost:8080"));
 		assertThat(configuration.getMockingMode(), is(Configuration.MockingMode.MOCK));
 		assertThat(configuration.getPort(), is(0));
 		assertThat(configuration.getIPInterface() == null, is(true));
 		assertThat(configuration.getConnectTimeout(), is(0));
 		assertThat(configuration.getReadTimeout(), is(0));
 		assertThat(configuration.useTLS(), is(false));
+		
+		configuration = ConfigurationBuilder.newConfiguration().setMockingModeAs(MockingMode.MOCK)
+				.thenBuild();
+		
+		assertThat(configuration.getURLToRecord() == null, is(true));
+		assertThat(configuration.getMockingMode(), is(Configuration.MockingMode.MOCK));
+		assertThat(configuration.getPort(), is(0));
+		assertThat(configuration.getIPInterface() == null, is(true));
+		assertThat(configuration.getConnectTimeout(), is(0));
+		assertThat(configuration.getReadTimeout(), is(0));
+		assertThat(configuration.useTLS(), is(false));
+		
 	}
 }

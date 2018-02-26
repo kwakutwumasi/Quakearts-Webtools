@@ -65,7 +65,7 @@ public class TestMockServer {
 		MockServer mockServer = MockServerFactory.getInstance().getMockServer()
 				.configure(ConfigurationBuilder
 						.newConfiguration().setMockingModeAs(MockingMode.RECORD)
-						.setURLToMock("https://localhost:4080")
+						.setURLToRecord("https://localhost:4080")
 						.thenBuild());
 		
 		try {
@@ -86,7 +86,7 @@ public class TestMockServer {
 		MockServer mockServer = MockServerFactory.getInstance().getMockServer()
 			.configure(ConfigurationBuilder
 					.newConfiguration().setMockingModeAs(MockingMode.MOCK)
-					.setURLToMock("https://localhost:4080")
+					.setURLToRecord("https://localhost:4080")
 					.thenBuild());
 		try {
 			mockServer.start();
@@ -100,7 +100,7 @@ public class TestMockServer {
 		MockServer mockServer = MockServerFactory.getInstance().getMockServer()
 				.configure(ConfigurationBuilder
 						.newConfiguration().setMockingModeAs(MockingMode.MOCK)
-						.setURLToMock("https://localhost:4080")
+						.setURLToRecord("https://localhost:4080")
 						.setPortAs(4082)
 						.thenBuild())
 				.add(MockActionBuilder.createNewMockAction()
@@ -195,7 +195,7 @@ public class TestMockServer {
 		MockServer mockServer = MockServerFactory.getInstance().getMockServer()
 				.configure(ConfigurationBuilder
 						.newConfiguration().setMockingModeAs(MockingMode.MOCK)
-						.setURLToMock("https://localhost:4080")
+						.setURLToRecord("https://localhost:4080")
 						.setPortAs(4081)
 						.thenBuild())
 				.add(MockActionBuilder.createNewMockAction()
@@ -502,7 +502,7 @@ public class TestMockServer {
 		MockServer mockServer = MockServerFactory.getInstance().getMockServer()
 				.configure(ConfigurationBuilder
 						.newConfiguration().setMockingModeAs(MockingMode.RECORD)
-						.setURLToMock("https://localhost:4443")
+						.setURLToRecord("https://localhost:4443")
 						.setPortAs(4084)
 						.thenBuild());
 		

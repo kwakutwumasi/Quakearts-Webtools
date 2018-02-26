@@ -85,7 +85,7 @@ public class MockServerServlet extends HttpServlet {
 	}
 
 	private ProcessingContext getProcessingContext(HttpServletRequest req, HttpServletResponse resp) {
-		return MockServletProcessingContextBuilder.createProcessingContext(req, resp, configuration.getURLToMock());
+		return MockServletProcessingContextBuilder.createProcessingContext(req, resp, configuration.getURLToRecord());
 	}
 
 	private void mock(ProcessingContext context) throws MockServerProcessingException {
@@ -119,12 +119,12 @@ public class MockServerServlet extends HttpServlet {
 
 	private HttpURLConnection prepareConnection(HttpRequest request)
 			throws IOException, MockServerProcessingException {
-		HttpURLConnection con = (HttpURLConnection) new URL(configuration.getURLToMock()
-				+(configuration.getURLToMock().endsWith("/")?"":"/")
+		HttpURLConnection con = (HttpURLConnection) new URL(configuration.getURLToRecord()
+				+(configuration.getURLToRecord().endsWith("/")?"":"/")
 				+ request.getResource()).openConnection();
 		if(con instanceof HttpsURLConnection 
-				&& (configuration.getURLToMock().startsWith("https://localhost")
-						||configuration.getURLToMock().startsWith("https://127.0.0.1"))) {
+				&& (configuration.getURLToRecord().startsWith("https://localhost")
+						||configuration.getURLToRecord().startsWith("https://127.0.0.1"))) {
 			((HttpsURLConnection)con).setHostnameVerifier((hostname,session) -> {
 				return true;
 			});
