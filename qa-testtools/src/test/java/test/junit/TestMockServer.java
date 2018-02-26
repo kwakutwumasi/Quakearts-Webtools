@@ -107,7 +107,7 @@ public class TestMockServer {
 						.addMatcher((httpRequest, httpRequestToMatch)->{
 							return httpRequest.getResource().equals(httpRequestToMatch.getResource());
 						})
-						.addResponseAction((response)->{
+						.addResponseAction((context, response)->{
 							System.out.println("Responding...");
 							return response;
 						}).addRequest(HttpMessageBuilder
@@ -201,7 +201,7 @@ public class TestMockServer {
 				.add(MockActionBuilder.createNewMockAction()
 						.addMatcher((httpRequest, httpRequestToMatch)->{
 							return httpRequest.getResource().equals(httpRequestToMatch.getResource());
-						}).addResponseAction((response)->{
+						}).addResponseAction((context, response)->{
 							System.out.println("Responding...");
 							return response;
 						}).addRequest(HttpMessageBuilder

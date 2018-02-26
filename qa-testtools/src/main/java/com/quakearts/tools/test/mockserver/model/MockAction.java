@@ -4,5 +4,5 @@ import com.quakearts.tools.test.mockserver.exception.MockServerProcessingExcepti
 
 public interface MockAction {
 	boolean requestMatches(HttpRequest httpRequest);
-	HttpResponse executeAction() throws MockServerProcessingException;
+	HttpResponse executeAction(HttpRequest httpRequest) throws MockServerProcessingException;
 }

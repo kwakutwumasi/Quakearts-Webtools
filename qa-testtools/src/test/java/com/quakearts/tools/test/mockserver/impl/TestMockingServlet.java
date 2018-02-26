@@ -60,7 +60,7 @@ public class TestMockingServlet extends HttpServlet {
 	private void mock(ProcessingContext context) throws MockServerProcessingException {
 		for(MockAction action:mockActions) {
 			if(action.requestMatches(context.getHttpRequest())) {
-				context.sendResponse(action.executeAction());
+				context.sendResponse(action.executeAction(context.getHttpRequest()));
 				return;
 			}
 		}

@@ -91,7 +91,9 @@ public class MockServerServlet extends HttpServlet {
 	private void mock(ProcessingContext context) throws MockServerProcessingException {
 		for(MockAction action:mockActions) {
 			if(action.requestMatches(context.getHttpRequest())) {
-				context.sendResponse(action.executeAction());
+				HttpResponse httpResponse = action.executeAction(context.getHttpRequest());
+				if(!context.responseSent())
+					context.sendResponse(httpResponse);
 				return;
 			}
 		}

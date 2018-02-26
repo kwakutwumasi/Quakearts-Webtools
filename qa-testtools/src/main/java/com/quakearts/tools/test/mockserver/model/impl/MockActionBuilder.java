@@ -50,8 +50,8 @@ public class MockActionBuilder {
 			return request.getMethod().equals(requestToMatch.getMethod())
 					&& request.getResource().equals(requestToMatch.getResource());
 		};
-		HttpResponseAction responseAction = (response) -> { 
-			return response;
+		HttpResponseAction responseAction = (request, response) -> { 
+			return null;
 		};
 		
 		@Override
@@ -63,9 +63,10 @@ public class MockActionBuilder {
 		}
 		
 		@Override
-		public HttpResponse executeAction() throws MockServerProcessingException {
+		public HttpResponse executeAction(HttpRequest recievedRequest) throws MockServerProcessingException {
 			if(responseAction != null) {
-				HttpResponse newResponse = responseAction.perfomResponseAction(request.getResponse());
+				HttpResponse newResponse = responseAction.perfomResponseAction(recievedRequest, 
+						request.getResponse());
 				if(newResponse != null)
 					return newResponse;
 			}
