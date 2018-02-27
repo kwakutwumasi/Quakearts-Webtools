@@ -107,7 +107,7 @@ class MockServletProcessingContextBuilder {
 
 		@Override
 		public void addHeader(String name, String value) {
-			res.setHeader(name, value);
+			res.addHeader(name, value);
 		}
 
 		@Override
