@@ -126,7 +126,7 @@ class MockServletProcessingContextBuilder {
 			res.setStatus(response.getResponseCode());
 			for(HttpHeader header:response.getHeaders()) {
 				for(String value:header.getValues())
-					res.setHeader(header.getName(), value);
+					res.addHeader(header.getName(), value);
 			}
 			
 			if(response.getContentBytes()!=null) {

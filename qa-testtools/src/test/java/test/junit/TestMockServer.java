@@ -12,6 +12,7 @@ import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -138,7 +139,8 @@ public class TestMockServer {
 									.createNewHttpResponse()
 									.setContentBytes("{\"status\":\"ok\"}".getBytes())
 									.setResponseCodeAs(200)
-									.addHeaders(new HttpHeaderImpl("Content-Type", "application/json"))
+									.addHeaders(new HttpHeaderImpl("Content-Type", "application/json"),
+											new HttpHeaderImpl("Set-Cookie", Arrays.asList("Cookie=Cookie1", "Cookie=Cookie2")))
 									.thenBuild())
 								.thenBuild())
 						.thenBuild());
@@ -184,6 +186,8 @@ public class TestMockServer {
 				bos.write(read);
 			}
 			assertThat(new String(bos.toByteArray()), is("{\"status\":\"ok\"}"));
+			assertThat(connection.getHeaderFields().containsKey("Set-Cookie"), is(true));
+			assertThat(connection.getHeaderFields().get("Set-Cookie").size(), is(2));
 			connection.disconnect();
 		} finally {
 			mockServer.stop();			
@@ -222,11 +226,11 @@ public class TestMockServer {
 								context.sendHttpError(404);
 						},(context)->{
 							if(context.getHttpRequest().getResource().equals("/test/send/http/error/with/message"))
-								context.sendHttpError(400, "Bad Message");;
+								context.sendHttpError(400, "Bad Message");
 						},(context)->{
 							if(context.getHttpRequest().getResource().equals("/test/write/to/output")) {
 								context.addHeader("Content-Type", "application/json");
-								context.writeToOutput(200, "{\"test\":\"value\"}");
+								context.writeToOutput(200, "{\"test\":\"value\",\"more\":\"values\", \"even-more\":\"values\",\"overflowing\":\"values\"}"); 
 							}
 						});
 		
@@ -260,7 +264,7 @@ public class TestMockServer {
 			while ((read=connection.getInputStream().read())!=-1) {
 				bos.write(read);
 			}
-			assertThat(new String(bos.toByteArray()), is("{\"test\":\"value\"}"));
+			assertThat(new String(bos.toByteArray()), is("{\"test\":\"value\",\"more\":\"values\", \"even-more\":\"values\",\"overflowing\":\"values\"}"));
 			connection.disconnect();
 
 		} finally {
