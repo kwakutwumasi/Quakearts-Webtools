@@ -10,23 +10,27 @@
  ******************************************************************************/
 package com.quakearts.rest.client;
 
-import java.io.BufferedReader;
+import static com.quakearts.rest.client.HttpVerb.*;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.net.CookieManager;
+import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.net.ssl.HttpsURLConnection;
+
+import com.quakearts.rest.client.exception.HttpClientException;
 
 public abstract class HttpClient implements Serializable {
 
@@ -34,38 +38,28 @@ public abstract class HttpClient implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 4822817405423965774L;
-	private int port;
-	private String host;
-	private String username;
-	private String password;
+	int port;
+	String host;
+	String username;
+	String password;
 	private SimpleDateFormat dateFormat = new SimpleDateFormat(
 				"DDD, dd MMM yyyy HH:mm:ss");
-	private String defaultCookie;
-	private boolean secured;
-	private String userAgent;
+	HttpCookie defaultCookie;
+	boolean secured;
+	String userAgent;
+	boolean followRedirects;
+	CookieManager cookieManager = new CookieManager();
 	
 	public int getPort() {
 		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
 	}
 
 	public String getHost() {
 		return host;
 	}
 
-	public void setHost(String host) {
-		this.host = host;
-	}
-
-	public String getDefaultCookie() {
+	public HttpCookie getDefaultCookie() {
 		return defaultCookie;
-	}
-
-	public void setDefaultCookie(String cookie) {
-		this.defaultCookie = cookie;
 	}
 
 	public boolean isSecured() {
@@ -76,73 +70,45 @@ public abstract class HttpClient implements Serializable {
 		return username;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
 	public String getPassword() {
 		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public void setSecured(boolean secured) {
-		this.secured = secured;
 	}
 
 	public String getUserAgent() {
 		return userAgent;
 	}
-
-	public void setUserAgent(String userAgent) {
-		this.userAgent = userAgent;
+	
+	public boolean followsRedirects() {
+		return followRedirects;
 	}
 
-	public static class HttpResponse {
-		private String output;
-		private String message;
-		private int httpCode;
-		private Map<String, List<String>> headers = new HashMap<>();
-		
-		private HttpResponse(String output, String message, int httpCode, Map<String, List<String>> headers) {
-			this.output = output;
-			this.message = message;
-			this.httpCode = httpCode;
-			if(headers!=null)
-				this.headers = headers;
-		}
-
-		public String getOutput() {
-			return output;
-		}
-
-		public String getMessage() {
-			return message;
-		}
-
-		public int getHttpCode() {
-			return httpCode;
-		}
-
-		public List<String> getHeaders(String headerName){
-			return headers.get(headerName);
-		}
-		
-		public String getHeader(String headerName){
-			List<String> headerFields = headers.get(headerName);
-			return headerFields != null && !headerFields.isEmpty()? headerFields.iterator().next():null;
-		}
+	public List<HttpCookie> getCookies(){
+		return cookieManager.getCookieStore().getCookies();
 	}
 	
-	protected HttpResponse sendRequest(String file, String requestValue, String method, String contentType) 
-			throws MalformedURLException, IOException {
+	protected HttpResponse sendRequest(String file, String requestValue, HttpVerb method, String contentType) 
+			throws MalformedURLException, IOException, HttpClientException {
 		return sendRequest(file, requestValue, method, contentType, null);
 	}
 		
-	protected HttpResponse sendRequest(String file, String requestValue, String method, String contentType,
-			Map<String, String> additionalHeaders) throws MalformedURLException, IOException {
+	protected HttpResponse sendRequest(String file, String requestValue, HttpVerb method, String contentType,
+			Map<String, List<String>> additionalHeaders) throws MalformedURLException, IOException, HttpClientException {
+		if(host == null)
+			throw new HttpClientException("Property host has not been set");	
+
+		if(port == 0)
+			throw new HttpClientException("Property port has not been set");	
+
+		if(file == null)
+			throw new HttpClientException("Parameter method is required");	
+
+		if(method == null)
+			throw new HttpClientException("Parameter method is required");	
+		
+		if(requiringOutputMethodsInclude(method) && requestValue == null) {
+			throw new HttpClientException("Http Verb "+method+" requires requestValue");
+		}
+		
 		HttpURLConnection con;
 		
 		if(secured){
@@ -156,25 +122,41 @@ public abstract class HttpClient implements Serializable {
 			con = (HttpURLConnection) new URL("http", host, port, file).openConnection();
 		}		
 
+		if(followRedirects)
+			con.setInstanceFollowRedirects(followRedirects);
+		
 		if(username!=null && password !=null){
 			con.addRequestProperty("Authorization", "Basic "+(Base64.getEncoder().encodeToString((username+":"+password).getBytes())));
 		}
+		
 		con.addRequestProperty("Accept", "application/json, text/*, application/xml");
 		con.addRequestProperty("User-Agent", userAgent==null? "Generic REST Client":userAgent);
 		con.addRequestProperty("Date", dateFormat.format(new Date()) + " GMT");
 		con.addRequestProperty("Accept-Language", "en-US");
 		if(defaultCookie!=null)
-			con.addRequestProperty("Cookie", defaultCookie);
+			con.addRequestProperty("Cookie", defaultCookie.toString());
 
-		if(additionalHeaders!=null){
-			for(Entry<String, String> entry:additionalHeaders.entrySet()){
-				con.addRequestProperty(entry.getKey(), entry.getValue());
-			}
+		for(HttpCookie cookie:cookieManager.getCookieStore().getCookies()) {
+			con.addRequestProperty("Cookie", cookie.toString());
 		}
 		
-		con.setRequestMethod(method);
-		con.setDoInput(true);
+		if(additionalHeaders!=null){
+			for(Entry<String, List<String>> entry:additionalHeaders.entrySet()){
+				for(String value:entry.getValue())
+					con.addRequestProperty(entry.getKey(), value);
+			}
+		}
+
+		con.setRequestMethod(method.name());
+		
+		if(returningInputMethodsInclude(method))
+			con.setDoInput(true);
+				
 		if (requestValue != null && !requestValue.isEmpty()) {
+			if(!requiringOutputMethodsInclude(method)
+					&& !optionalOutputMethodsInlude(method) && requestValue != null) {
+				throw new HttpClientException("Http Verb "+method+" cannot have a requestValue");
+			}
 			con.addRequestProperty("Content-Length",
 					Integer.toString((requestValue.length() / 8)));
 			con.addRequestProperty("Content-Type", contentType);
@@ -186,29 +168,30 @@ public abstract class HttpClient implements Serializable {
 		con.connect();
 
 		responseCode = con.getResponseCode();
-		con.getResponseMessage();
 		String output = null;
-		if(200<=responseCode && responseCode<300 && con.getHeaderField("Set-Cookie")!=null){
-			defaultCookie = con.getHeaderField("Set-Cookie");
-			defaultCookie = defaultCookie.substring(0, defaultCookie.indexOf(";"));
-		}
-
-		InputStream is;
-		if(responseCode==200){
+		InputStream is = null;
+		if(responseCode==200 
+				&& returningInputMethodsInclude(method)){
 			is = con.getInputStream();
-		} else{
+		} else if(responseCode > 399){
 			is = con.getErrorStream();
 		}
 		
 		if(is!=null){
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					is));
-			StringBuilder response = new StringBuilder();
-			String line;
-			while ((line = reader.readLine()) != null) {
-				response.append(line);
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			int read;
+			while ((read = is.read())!=-1) {
+				bos.write(read);
 			}
-			output = response.toString();
+			output = new String(bos.toByteArray());
+		}
+		
+		if(200<=responseCode 
+				&& responseCode<300 
+				&& con.getHeaderField("Set-Cookie")!=null){
+			for(String value:con.getHeaderFields().get("Set-Cookie"))
+				for(HttpCookie cookie: HttpCookie.parse(value))
+					cookieManager.getCookieStore().add(null, cookie);
 		}
 		
 		return new HttpResponse(output, con.getResponseMessage(), con.getResponseCode(), con.getHeaderFields());
