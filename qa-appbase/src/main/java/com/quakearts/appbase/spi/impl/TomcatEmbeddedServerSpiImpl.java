@@ -54,19 +54,17 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
         	throw new ConfigurationException(webserversDirLocation.getAbsolutePath()+ " is not a directory");
         } else {
         	AppBasePropertiesLoader loader = new AppBasePropertiesLoader();
-        	for(File webserverLocation:webserversDirLocation.listFiles()){
+        	File[] files = webserversDirLocation.listFiles();
+        	boolean isSingleWebserver = files.length == 1;
+        	for(File webserverLocation : files){
         		if(webserverLocation.isDirectory()){
-        			launchInstance(webserverLocation, loader);
+        			launchInstance(webserverLocation, loader, isSingleWebserver);
         		}
         	}
         }
 	}
 	
-	private void launchInstance(File webserverLocation, AppBasePropertiesLoader loader) throws ConfigurationException {
-        if(!webserverLocation.exists()){
-        	throw new ConfigurationException("Missing webapp: /"+webserverLocation);
-        }
-        
+	private void launchInstance(File webserverLocation, AppBasePropertiesLoader loader, boolean isSingleWebserver) throws ConfigurationException {
         final Tomcat tomcat = new Tomcat();
         
         tomcat.setBaseDir(webserverLocation.getPath());
@@ -193,7 +191,9 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
         File webappDirLocation = new File(webserverLocation,"webapps");
         
         if(webappDirLocation.exists() && webappDirLocation.isDirectory()) {
-	        for(File webappFolder:webappDirLocation.listFiles()) {
+        		File[] files = webappDirLocation.listFiles();
+        		boolean isSingleWebapp = files.length == 1;
+	        for(File webappFolder : files) {
 	        		if(!webappFolder.isDirectory())
 	        			continue;
 	        	
@@ -208,8 +208,10 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 					throw new ConfigurationException("ServletException adding webapp "+webappFolder.getAbsolutePath(), e);
 				}
 				
-				if(ctx.getJarScanner() instanceof StandardJarScanner)//Prevent the scanning of the main app classpath to improve performance and prevent errors
-					((StandardJarScanner)ctx.getJarScanner()).setScanClassPath(false);
+				if(ctx.getJarScanner() instanceof StandardJarScanner)
+					//Prevent the scanning of the main app classpath unless it is a single webserver with a single webapp
+					//to improve performance and prevent errors
+					((StandardJarScanner)ctx.getJarScanner()).setScanClassPath(isSingleWebserver && isSingleWebapp);
 		        
 				Main.log.debug("Configured web application with base directory: " +webappFolder.getAbsolutePath());
 		
