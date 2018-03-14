@@ -34,36 +34,37 @@ public class TestAtomikosBeanDatasourceSpiImpl {
 		JavaNamingDirectorySpiFactory.getInstance().createJavaNamingDirectorySpi(JavaNamingDirectorySpiImpl.class.getName())
 		.initiateJNDIServices();
 		
-		DataSourceProviderSpiFactory.getInstance().createDataSourceProviderSpi(AtomikosBeanDatasourceProviderSpiImpl.class.getName());
-		
-		DataSourceProviderSpi providerSpi = DataSourceProviderSpiFactory.getInstance().getDataSourceProviderSpi();
-		providerSpi.initiateDataSourceSpi();
-
-		assertThat(providerSpi.getDataSource("TestDB") != null, is(true));
-		
-		DataSource dataSource = providerSpi.getDataSource("TestDB");
-		try(Connection con = dataSource.getConnection()){
-		} catch (Exception e) {
-			fail("unable to obtain a connection: "+e.getMessage());
-		}
-		
-		InitialContext initialContext;
 		try {
-			initialContext = new InitialContext();
-			dataSource =(DataSource) initialContext.lookup("java:/jdbc/TestDB");
+			DataSourceProviderSpiFactory.getInstance().createDataSourceProviderSpi(AtomikosBeanDatasourceProviderSpiImpl.class.getName());
+			DataSourceProviderSpi providerSpi = DataSourceProviderSpiFactory.getInstance().getDataSourceProviderSpi();
+			providerSpi.initiateDataSourceSpi();
+	
+			assertThat(providerSpi.getDataSource("TestDB") != null, is(true));
 			
-			assertThat(dataSource != null, is(true));
-		} catch (NamingException | ClassCastException e) {
-			fail("unable to obtain a connection: "+e.getMessage());
+			DataSource dataSource = providerSpi.getDataSource("TestDB");
+			try(Connection con = dataSource.getConnection()){
+			} catch (Exception e) {
+				fail("unable to obtain a connection: "+e.getMessage());
+			}
+			
+			InitialContext initialContext;
+			try {
+				initialContext = new InitialContext();
+				dataSource =(DataSource) initialContext.lookup("java:/jdbc/TestDB");
+				
+				assertThat(dataSource != null, is(true));
+			} catch (NamingException | ClassCastException e) {
+				fail("unable to obtain a connection: "+e.getMessage());
+			}
+			
+			providerSpi.shutDownDataSourceProvider();
+			providerSpi.shutDownDataSourceProvider();
+		} finally {
+			JavaNamingDirectorySpiFactory.getInstance()
+			.getJavaNamingDirectorySpi()
+			.shutdownJNDIService();
+			new TestAppBaseMainStartup().clearInstanceVariables();
 		}
-		
-		providerSpi.shutDownDataSourceProvider();
-		providerSpi.shutDownDataSourceProvider();
-		
-		JavaNamingDirectorySpiFactory.getInstance()
-		.getJavaNamingDirectorySpi()
-		.shutdownJNDIService();
-		new TestAppBaseMainStartup().clearInstanceVariables();
 	}
 
 }

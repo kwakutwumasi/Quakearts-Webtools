@@ -10,7 +10,11 @@
  ******************************************************************************/
 package com.quakearts.appbase.spi;
 
+import com.quakearts.appbase.exception.ConfigurationException;
+import com.quakearts.appbase.spi.beans.WebAppListener;
+
 public interface EmbeddedWebServerSpi {
 	void initiateEmbeddedWebServer();
 	void shutdownEmbeddedWebServer();
+	void addDefaultListener(WebAppListener listener) throws ConfigurationException;
 }

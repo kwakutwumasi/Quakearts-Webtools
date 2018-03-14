@@ -7,7 +7,9 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({ TestAppBasePropertiesLoader.class, TestAtomikosBeanDatasourceSpiImpl.class,
 		TestAtomikosJavaTransactionManagerSpiImpl.class, TestAppBaseMainStartup.class, TestTomcatEmbeddedServerSpiImpl.class,
-		TestWeldContextDependencySpiImpl.class, TestFactoryClasses.class})
+		TestWeldContextDependencySpiImpl.class, TestFactoryClasses.class,
+		TestAppBaseVirtualDirectoryResourceSet.class,
+		TestAppBaseWebappClassLoader.class,
+		TestClasspathResourcesSpiImpl.class})
 public class AllTests {
-
 }

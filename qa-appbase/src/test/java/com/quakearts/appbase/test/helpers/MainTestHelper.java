@@ -18,12 +18,14 @@ import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 import javax.transaction.xa.XAResource;
 
+import com.quakearts.appbase.exception.ConfigurationException;
 import com.quakearts.appbase.internal.properties.ConfigurationPropertyMap;
 import com.quakearts.appbase.spi.ContextDependencySpi;
 import com.quakearts.appbase.spi.DataSourceProviderSpi;
 import com.quakearts.appbase.spi.EmbeddedWebServerSpi;
 import com.quakearts.appbase.spi.JavaNamingDirectorySpi;
 import com.quakearts.appbase.spi.JavaTransactionManagerSpi;
+import com.quakearts.appbase.spi.beans.WebAppListener;
 
 public class MainTestHelper
 		implements ContextDependencySpi, EmbeddedWebServerSpi, JavaNamingDirectorySpi,
@@ -223,5 +225,11 @@ public class MainTestHelper
 	@Override
 	public Transaction suspend() throws SystemException {
 		return this;
+	}
+
+	@Override
+	public void addDefaultListener(WebAppListener listener) throws ConfigurationException {
+		// TODO Auto-generated method stub
+		
 	}
 }

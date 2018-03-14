@@ -63,29 +63,25 @@ public class Main {
 		javaNamingDirectorySpi = JavaNamingDirectorySpiFactory
 				.getInstance()
 				.createJavaNamingDirectorySpi(props.getProperty("jndi.spi.class"));
-		javaNamingDirectorySpi.initiateJNDIServices();
-		Main.log.info("JNDI Naming provider service started");
-
 		javaTransactionManagerSpi = JavaTransactionManagerSpiFactory
 				.getInstance()
 				.createJavaTransactionManagerSpi(props.getProperty("java.tm.spi.class"));
-		javaTransactionManagerSpi.initiateJavaTransactionManager();
-		Main.log.info("Java Transaction Manager service started");
-
 		contextDependencySpi = ContextDependencySpiFactory
 				.getInstance()
 				.createContextDependencySpi(props.getProperty("cdi.spi.class"));
-		contextDependencySpi.initiateContextDependency();
-		Main.log.info("Context Dependency service started");
-		
 		dataSourceProviderSpi = DataSourceProviderSpiFactory.getInstance()
 				.createDataSourceProviderSpi(props.getProperty("datasource.spi.class"));
-		
-		dataSourceProviderSpi.initiateDataSourceSpi();
-		Main.log.info("DataSource provider service started");
-
 		embeddedWebServerSpi = EmbeddedWebServerSpiFactory
 				.getInstance().createEmbeddedWebServerSpi(props.getProperty("embedded.ws.spi.class"));
+
+		javaNamingDirectorySpi.initiateJNDIServices();
+		Main.log.info("JNDI Naming provider service started");
+		javaTransactionManagerSpi.initiateJavaTransactionManager();
+		Main.log.info("Java Transaction Manager service started");
+		contextDependencySpi.initiateContextDependency();
+		Main.log.info("Context Dependency service started");
+		dataSourceProviderSpi.initiateDataSourceSpi();
+		Main.log.info("DataSource provider service started");
 		embeddedWebServerSpi.initiateEmbeddedWebServer();
 		Main.log.info("Embedded Web Server service started");
 

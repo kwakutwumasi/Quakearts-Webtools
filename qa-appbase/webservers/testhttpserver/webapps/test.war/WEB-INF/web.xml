@@ -16,6 +16,7 @@
 		<servlet-class>com.quakearts.appbase.test.helpers.TestServlet</servlet-class>
 		<enabled>true</enabled>
 	</servlet>
+	
 	<servlet-mapping>
 		<servlet-name>Test Secured Servlet</servlet-name>
 		<url-pattern>/test-secured</url-pattern>

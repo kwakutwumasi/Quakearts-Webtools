@@ -23,27 +23,30 @@ public class TestAtomikosJavaTransactionManagerSpiImpl {
 			.createJavaNamingDirectorySpi(JavaNamingDirectorySpiImpl.class.getName())
 			.initiateJNDIServices();
 		
-		JavaTransactionManagerSpiFactory.getInstance().createJavaTransactionManagerSpi(AtomikosJavaTransactionManagerSpiImpl.class.getName());		
-		JavaTransactionManagerSpi transactionManagerSpi = JavaTransactionManagerSpiFactory.getInstance().getJavaTransactionManagerSpi();		
-		assertThat(transactionManagerSpi == null, is(false));
-		transactionManagerSpi.initiateJavaTransactionManager();
-		TransactionManager manager = transactionManagerSpi.getTransactionManager();
-		assertThat(manager != null, is(true));
-		UserTransaction transaction = transactionManagerSpi.getUserTransaction();
-		assertThat(transaction != null, is(true));
-		
-		InitialContext initialContext;
-		initialContext = new InitialContext();
-		
-		transaction = (UserTransaction) initialContext.lookup("java:comp/UserTransaction");
-		assertThat(transaction != null, is(true));
-
-		transactionManagerSpi.shutdownJavaTransactionManager();
-		transactionManagerSpi.shutdownJavaTransactionManager();
-		JavaNamingDirectorySpiFactory.getInstance()
-		.getJavaNamingDirectorySpi()
-		.shutdownJNDIService();
-		new TestAppBaseMainStartup().clearInstanceVariables();
+		try {
+			JavaTransactionManagerSpiFactory.getInstance().createJavaTransactionManagerSpi(AtomikosJavaTransactionManagerSpiImpl.class.getName());		
+			JavaTransactionManagerSpi transactionManagerSpi = JavaTransactionManagerSpiFactory.getInstance().getJavaTransactionManagerSpi();		
+			assertThat(transactionManagerSpi == null, is(false));
+			transactionManagerSpi.initiateJavaTransactionManager();
+			TransactionManager manager = transactionManagerSpi.getTransactionManager();
+			assertThat(manager != null, is(true));
+			UserTransaction transaction = transactionManagerSpi.getUserTransaction();
+			assertThat(transaction != null, is(true));
+			
+			InitialContext initialContext;
+			initialContext = new InitialContext();
+			
+			transaction = (UserTransaction) initialContext.lookup("java:comp/UserTransaction");
+			assertThat(transaction != null, is(true));
+	
+			transactionManagerSpi.shutdownJavaTransactionManager();
+			transactionManagerSpi.shutdownJavaTransactionManager();
+		} finally {
+			JavaNamingDirectorySpiFactory.getInstance()
+			.getJavaNamingDirectorySpi()
+			.shutdownJNDIService();
+			new TestAppBaseMainStartup().clearInstanceVariables();			
+		}
 	}
 
 }

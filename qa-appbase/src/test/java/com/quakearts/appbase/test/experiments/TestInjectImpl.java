@@ -1,5 +1,11 @@
 package com.quakearts.appbase.test.experiments;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+
 import javax.inject.Inject;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
@@ -8,6 +14,7 @@ import javax.transaction.UserTransaction;
 import com.quakearts.appbase.cdi.annotation.TransactionHandle;
 import com.quakearts.appbase.cdi.annotation.TransactionParticipant;
 import com.quakearts.appbase.cdi.annotation.TransactionParticipant.TransactionType;
+import com.quakearts.appbase.test.helpers.TestParameter;
 
 public class TestInjectImpl implements TestInject {
 	@Inject
@@ -18,6 +25,12 @@ public class TestInjectImpl implements TestInject {
 	private static boolean saidHello;
 	private static boolean testSubInjectLoaded;
 	private static boolean transactionWorked;
+	
+	public static void reset() {
+		saidHello = false;
+		testSubInjectLoaded = false;
+		transactionWorked = false;
+	}
 	
 	@Override
 	public void sayHello(){
@@ -47,5 +60,16 @@ public class TestInjectImpl implements TestInject {
 	
 	public static boolean transactionWorked() {
 		return transactionWorked;
+	}
+	
+	@Override
+	public TestParameter pullFromInputStream(InputStream in) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+		return new TestParameter().setContent(reader.readLine());
+	}
+	
+	@Override
+	public void pushToOutputStream(TestParameter parameter, OutputStream out) throws IOException {
+		out.write(parameter.getContent().getBytes());
 	}
 }

@@ -10,7 +10,7 @@ import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
 import com.quakearts.appbase.spi.factory.JavaTransactionManagerSpiFactory;
 import com.quakearts.appbase.test.helpers.MainTestHelper;
 import com.quakearts.appbase.test.helpers.TestBean;
-import com.quakearts.appbase.test.helpers.TestPrivateConstroctor;
+import com.quakearts.appbase.test.helpers.TestPrivateConstructor;
 
 public class TestFactoryClasses {
 
@@ -27,7 +27,7 @@ public class TestFactoryClasses {
 	@Test(expected = ConfigurationException.class)
 	public void testJavaNamingDirectorySpiFactoryIllegalAccessException() throws Exception {
 		JavaNamingDirectorySpiFactory.getInstance()
-				.createJavaNamingDirectorySpi(TestPrivateConstroctor.class.getName());
+				.createJavaNamingDirectorySpi(TestPrivateConstructor.class.getName());
 	}
 
 	@Test(expected = ConfigurationException.class)
@@ -58,7 +58,7 @@ public class TestFactoryClasses {
 	@Test(expected = ConfigurationException.class)
 	public void testJavaTransactionManagerSpiFactoryIllegalAccessException() throws Exception {
 		JavaTransactionManagerSpiFactory.getInstance()
-				.createJavaTransactionManagerSpi(TestPrivateConstroctor.class.getName());
+				.createJavaTransactionManagerSpi(TestPrivateConstructor.class.getName());
 	}
 
 	@Test(expected = ConfigurationException.class)
@@ -91,7 +91,7 @@ public class TestFactoryClasses {
 
 	@Test(expected = ConfigurationException.class)
 	public void testEmbeddedWebServerSpiFactoryIllegalAccessException() throws Exception {
-		EmbeddedWebServerSpiFactory.getInstance().createEmbeddedWebServerSpi(TestPrivateConstroctor.class.getName());
+		EmbeddedWebServerSpiFactory.getInstance().createEmbeddedWebServerSpi(TestPrivateConstructor.class.getName());
 	}
 
 	@Test(expected = ConfigurationException.class)
@@ -122,7 +122,7 @@ public class TestFactoryClasses {
 
 	@Test(expected = ConfigurationException.class)
 	public void testDataSourceSpiFactoryIllegalAccessException() throws Exception {
-		DataSourceProviderSpiFactory.getInstance().createDataSourceProviderSpi(TestPrivateConstroctor.class.getName());
+		DataSourceProviderSpiFactory.getInstance().createDataSourceProviderSpi(TestPrivateConstructor.class.getName());
 	}
 
 	@Test(expected = ConfigurationException.class)
@@ -153,7 +153,7 @@ public class TestFactoryClasses {
 
 	@Test(expected = ConfigurationException.class)
 	public void testContextDependencySpiFactoryIllegalAccessException() throws Exception {
-		ContextDependencySpiFactory.getInstance().createContextDependencySpi(TestPrivateConstroctor.class.getName());
+		ContextDependencySpiFactory.getInstance().createContextDependencySpi(TestPrivateConstructor.class.getName());
 	}
 
 	@Test(expected = ConfigurationException.class)
