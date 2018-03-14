@@ -86,6 +86,10 @@ public abstract class HttpClient implements Serializable {
 		return cookieManager.getCookieStore().getCookies();
 	}
 	
+	public CookieManager getCookieManager() {
+		return cookieManager;
+	}
+	
 	protected HttpResponse sendRequest(String file, String requestValue, HttpVerb method, String contentType) 
 			throws MalformedURLException, IOException, HttpClientException {
 		return sendRequest(file, requestValue, method, contentType, null);
