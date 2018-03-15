@@ -23,14 +23,19 @@ import javax.interceptor.InterceptorBinding;
 @InterceptorBinding
 @Retention(RUNTIME)
 @Target({ TYPE, METHOD })
-public @interface TransactionParticipant {
+public @interface Transactional {
 	@Nonbinding
 	TransactionType value() default TransactionType.JOIN;
 	
 	public static enum TransactionType{
-		/**Indicates that the method is part of a transaction chain.
-		 * If a transaction is already active do nothing.
+		/**Indicates that the method is at the start of a transaction chain.
+		 * If a transaction is already active throw an error.
 		 * If not start a transaction
+		 */
+		BEGIN,
+		/**Indicates that the method is part of a transaction chain.
+		 * If a transaction is not already active throw an error.
+		 *
 		 */
 		JOIN,
 		/**Indicates that the method or class should be encapsulated 

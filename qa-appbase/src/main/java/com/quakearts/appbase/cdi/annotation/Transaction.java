@@ -17,5 +17,5 @@ import javax.inject.Qualifier;
 
 @Qualifier
 @Retention(RUNTIME)
-public @interface TransactionHandle {
+public @interface Transaction {
 }

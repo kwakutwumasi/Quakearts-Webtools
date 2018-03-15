@@ -1,6 +1,12 @@
 package com.quakearts.appbase.test;
 
 import static org.junit.Assert.*;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import javax.enterprise.inject.spi.CDI;
 import static org.hamcrest.core.Is.*;
 
 import org.junit.Test;
@@ -17,6 +23,7 @@ import com.quakearts.appbase.test.experiments.TestAppBase;
 import com.quakearts.appbase.test.experiments.TestInjectImpl;
 import com.quakearts.appbase.test.experiments.TestSubInjectDecorator;
 import com.quakearts.appbase.test.experiments.TestSubInjectImpl;
+import com.quakearts.appbase.test.experiments.TransactionTestHarness;
 
 public class TestWeldContextDependencySpiImpl {
 
@@ -35,30 +42,78 @@ public class TestWeldContextDependencySpiImpl {
 		
 		EmbeddedWebServerSpiFactory.getInstance().createEmbeddedWebServerSpi(TomcatEmbeddedServerSpiImpl.class.getName());
 		ContextDependencySpiFactory.getInstance().createContextDependencySpi(WeldContextDependencySpiImpl.class.getName());
-		ContextDependencySpi dependencySpi = ContextDependencySpiFactory.getInstance().getContextDependencySpi();
-		dependencySpi.initiateContextDependency();
-		assertThat(dependencySpi.getBeanManager() != null, is(true));
-		
-		TestAppBase appBase = dependencySpi.getMainSingleton(TestAppBase.class);
-		
-		appBase.init();
-		
-		assertThat(TestInjectImpl.saidHello(), is(true));
-		assertThat(TestInjectImpl.testSubInjectLoaded(), is(true));		
-		assertThat(TestInjectImpl.transactionWorked(), is(true));
-		assertThat(TestSubInjectImpl.hasDoneSomething(), is(true));
-		assertThat(TestSubInjectDecorator.decoratedSubInject(), is(true));
-		
-		dependencySpi.shutDownContextDependency();
-		dependencySpi.shutDownContextDependency();
-		JavaTransactionManagerSpiFactory.getInstance()
-			.getJavaTransactionManagerSpi()
-			.shutdownJavaTransactionManager();
-		
-		JavaNamingDirectorySpiFactory.getInstance()
-			.getJavaNamingDirectorySpi()
-			.shutdownJNDIService();
-		new TestAppBaseMainStartup().clearInstanceVariables();
+		try {
+			ContextDependencySpi dependencySpi = ContextDependencySpiFactory.getInstance().getContextDependencySpi();
+			dependencySpi.initiateContextDependency();
+			assertThat(dependencySpi.getBeanManager() != null, is(true));
+			
+			TestAppBase appBase = dependencySpi.getMainSingleton(TestAppBase.class);
+			
+			appBase.init();
+			
+			assertThat(TestInjectImpl.saidHello(), is(true));
+			assertThat(TestInjectImpl.testSubInjectLoaded(), is(true));		
+			assertThat(TestInjectImpl.transactionWorked(), is(true));
+			assertThat(TestSubInjectImpl.hasDoneSomething(), is(true));
+			assertThat(TestSubInjectDecorator.decoratedSubInject(), is(true));
+			
+			TransactionTestHarness testHarness = CDI.current().select(TransactionTestHarness.class).get();
+			
+			ExecutorService executor = Executors.newFixedThreadPool(4);
+			
+			Future<Boolean> runTransactionTestExpected = executor.submit(()->{
+				testHarness.runTransactionTest();
+				return true;
+			});
+			Future<Boolean> runErrorStateActiveExpected = executor.submit(()->{
+				JavaTransactionManagerSpiFactory.getInstance()
+				.getJavaTransactionManagerSpi()
+				.getUserTransaction().begin();
+				try {
+					testHarness.runErrorStateActive();					
+				} catch (Exception e) {
+					return true;
+				} finally {
+					JavaTransactionManagerSpiFactory.getInstance()
+					.getJavaTransactionManagerSpi()
+					.getUserTransaction().commit();					
+				}
+				return false;
+			});
+			Future<Boolean> runErrorStateNotActiveEndExpected = executor.submit(()->{
+				try {
+					testHarness.runErrorStateNotActiveEnd();					
+				} catch (Exception e) {
+					return true;
+				}
+				return false;
+			});
+			Future<Boolean> runErrorStateNotActiveJoinExpected = executor.submit(()->{
+				try {
+					testHarness.runErrorStateNotActiveJoin();					
+				} catch (Exception e) {
+					return true;
+				}
+				return false;
+			});
+			
+			assertThat(runTransactionTestExpected.get(), is(true));
+			assertThat(runErrorStateActiveExpected.get(), is(true));
+			assertThat(runErrorStateNotActiveEndExpected.get(), is(true));
+			assertThat(runErrorStateNotActiveJoinExpected.get(), is(true));
+
+			dependencySpi.shutDownContextDependency();
+			dependencySpi.shutDownContextDependency();
+		} finally {
+			JavaTransactionManagerSpiFactory.getInstance()
+				.getJavaTransactionManagerSpi()
+				.shutdownJavaTransactionManager();
+			
+			JavaNamingDirectorySpiFactory.getInstance()
+				.getJavaNamingDirectorySpi()
+				.shutdownJNDIService();
+			new TestAppBaseMainStartup().clearInstanceVariables();
+		}
 	}
 
 }

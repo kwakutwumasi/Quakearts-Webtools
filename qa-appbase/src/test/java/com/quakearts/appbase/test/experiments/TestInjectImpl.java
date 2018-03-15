@@ -11,15 +11,15 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
-import com.quakearts.appbase.cdi.annotation.TransactionHandle;
-import com.quakearts.appbase.cdi.annotation.TransactionParticipant;
-import com.quakearts.appbase.cdi.annotation.TransactionParticipant.TransactionType;
+import com.quakearts.appbase.cdi.annotation.Transaction;
+import com.quakearts.appbase.cdi.annotation.Transactional;
+import com.quakearts.appbase.cdi.annotation.Transactional.TransactionType;
 import com.quakearts.appbase.test.helpers.TestParameter;
 
 public class TestInjectImpl implements TestInject {
 	@Inject
 	TestSubInject testSubInject;
-	@Inject @TransactionHandle
+	@Inject @Transaction
 	UserTransaction transaction;
 	
 	private static boolean saidHello;
@@ -42,7 +42,7 @@ public class TestInjectImpl implements TestInject {
 	}
 	
 	@Override
-	@TransactionParticipant(TransactionType.SINGLETON)
+	@Transactional(TransactionType.SINGLETON)
 	public void testTransaction() {
 		try {
 			transactionWorked = transaction != null && transaction.getStatus() == Status.STATUS_ACTIVE;

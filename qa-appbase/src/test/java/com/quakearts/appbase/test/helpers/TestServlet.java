@@ -12,9 +12,9 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
-import com.quakearts.appbase.cdi.annotation.TransactionHandle;
-import com.quakearts.appbase.cdi.annotation.TransactionParticipant;
-import com.quakearts.appbase.cdi.annotation.TransactionParticipant.TransactionType;
+import com.quakearts.appbase.cdi.annotation.Transaction;
+import com.quakearts.appbase.cdi.annotation.Transactional;
+import com.quakearts.appbase.cdi.annotation.Transactional.TransactionType;
 import com.quakearts.appbase.test.experiments.TestInject;
 
 @WebServlet("/test")
@@ -27,12 +27,12 @@ public class TestServlet extends HttpServlet {
 	@Inject
 	TestInject inject;
 	
-	@Inject @TransactionHandle
+	@Inject @Transaction
 	UserTransaction transaction;
 
 	private static boolean transactionWorked;
 
-	@Override @TransactionParticipant(TransactionType.SINGLETON)
+	@Override @Transactional(TransactionType.SINGLETON)
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		inject.sayHello();
 		inject.testTransaction();

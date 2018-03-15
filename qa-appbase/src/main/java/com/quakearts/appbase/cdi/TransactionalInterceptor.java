@@ -19,22 +19,22 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
-import com.quakearts.appbase.cdi.annotation.TransactionHandle;
-import com.quakearts.appbase.cdi.annotation.TransactionParticipant;
-import com.quakearts.appbase.cdi.annotation.TransactionParticipant.TransactionType;
+import com.quakearts.appbase.cdi.annotation.Transaction;
+import com.quakearts.appbase.cdi.annotation.Transactional;
+import com.quakearts.appbase.cdi.annotation.Transactional.TransactionType;
 
-@Interceptor @TransactionParticipant
+@Interceptor @Transactional
 @Priority(Interceptor.Priority.APPLICATION)
 public class TransactionalInterceptor {	
 
-	@Inject @TransactionHandle
+	@Inject @Transaction
 	private UserTransaction transaction;
 	
 	@AroundInvoke
 	public Object intercept(InvocationContext context) throws Exception {
-		TransactionParticipant transactional = context.getMethod().getAnnotation(TransactionParticipant.class);
+		Transactional transactional = context.getMethod().getAnnotation(Transactional.class);
 		if(transactional == null)
-			transactional = context.getMethod().getDeclaringClass().getAnnotation(TransactionParticipant.class);
+			transactional = context.getMethod().getDeclaringClass().getAnnotation(Transactional.class);
 		
 		if(transactional == null)
 			throw new SystemException("Transactional attribute cannot be found on method "
@@ -45,7 +45,8 @@ public class TransactionalInterceptor {
 		boolean proceed = false;
 		
 		if(transaction.getStatus() == Status.STATUS_NO_TRANSACTION) {
-			if(transactional.value() == TransactionType.END)
+			if(transactional.value() == TransactionType.END 
+					|| transactional.value() == TransactionType.JOIN)
 				throw new SystemException("Transaction is not active for "
 						+context.getMethod().getName()
 						+" of "
@@ -59,9 +60,14 @@ public class TransactionalInterceptor {
 						+context.getMethod().getName()
 						+" for "
 						+context.getMethod().getDeclaringClass().getName());			
-		} else if(transaction.getStatus() == Status.STATUS_PREPARED
+		} else if((transaction.getStatus() == Status.STATUS_PREPARED
 				|| transaction.getStatus() == Status.STATUS_PREPARING
-				||transaction.getStatus() == Status.STATUS_ACTIVE) {
+				|| transaction.getStatus() == Status.STATUS_ACTIVE) && transactional.value() == TransactionType.BEGIN) {
+			throw new SystemException("Transaction is active. Cannot execute "
+					+context.getMethod().getName()
+					+" for "
+					+context.getMethod().getDeclaringClass().getName());	
+		} else {
 			proceed = true;
 		}
 		

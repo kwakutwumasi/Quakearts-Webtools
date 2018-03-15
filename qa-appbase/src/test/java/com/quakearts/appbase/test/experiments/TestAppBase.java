@@ -12,5 +12,5 @@ public class TestAppBase {
 	public void init(){
 		inject.sayHello();
 		inject.testTransaction();
-	}	
+	}
 }
