@@ -1,0 +1,17 @@
+{
+	"webapp.libraries": {
+		"set": [
+			"resteasy-servlet-initializer-3.1.4.Final.jar",
+			"resteasy-jaxrs-3.1.4.Final.jar",
+			"resteasy-jaxrs-services-3.1.4.Final.jar",
+			"resteasy-jackson2-provider-3.1.4.Final.jar",
+			"jackson-core-2.8.9.jar",
+			"jackson-databind-2.8.9.jar",
+			"jackson-jaxrs-json-provider-2.8.9.jar",
+			"jackson-module-jaxb-annotations-2.8.9.jar"
+		]
+	},
+	"webapp.directories": {
+		"set" : ["target/classes","target/test-classes"]
+	}
+}
