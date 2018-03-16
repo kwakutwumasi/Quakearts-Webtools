@@ -2,7 +2,7 @@ package com.quakearts.appbase.test.experiments;
 
 public class TestSubInjectImpl implements TestSubInject {
 
-	private static boolean didSomething;
+	protected static boolean didSomething;
 	
 	@Override
 	public void doSomething() {

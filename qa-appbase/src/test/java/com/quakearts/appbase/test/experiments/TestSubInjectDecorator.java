@@ -13,11 +13,12 @@ public abstract class TestSubInjectDecorator implements TestSubInject {
 	@Any
 	private TestSubInject inject;
 	
-	private static boolean decorated;
+	protected static boolean decorated;
 	
 	@Override
 	public void doSomething() {
 		decorated = inject instanceof TestSubInjectImpl;
+		inject.doSomething();
 	}
 
 	public static boolean decoratedSubInject() {
@@ -25,6 +26,6 @@ public abstract class TestSubInjectDecorator implements TestSubInject {
 	}
 	
 	public static void reset() {
-		decorated = true;
+		decorated = false;
 	}
 }
