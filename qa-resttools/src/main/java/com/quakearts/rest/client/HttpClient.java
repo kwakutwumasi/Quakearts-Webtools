@@ -48,6 +48,7 @@ public abstract class HttpClient implements Serializable {
 	boolean secured;
 	String userAgent;
 	boolean followRedirects;
+	boolean matchHostname;
 	CookieManager cookieManager = new CookieManager();
 	
 	public int getPort() {
@@ -80,6 +81,10 @@ public abstract class HttpClient implements Serializable {
 	
 	public boolean followsRedirects() {
 		return followRedirects;
+	}
+	
+	public boolean matchedHostnames() {
+		return matchHostname;
 	}
 
 	public List<HttpCookie> getCookies(){
@@ -117,10 +122,14 @@ public abstract class HttpClient implements Serializable {
 		
 		if(secured){
 			HttpsURLConnection scon = (HttpsURLConnection) new URL("https", host, port, file).openConnection();
-			if(host.matches("localhost") || host.matches("127.0.0.1"))
+			if(matchHostname 
+					|| host.matches("localhost") 
+					|| host.matches("127.0.0.1")) {
 				scon.setHostnameVerifier((hostname,session) -> {
-						return true;
-					});
+					return true;
+				});
+			}
+			
 			con = scon;
 		} else {
 			con = (HttpURLConnection) new URL("http", host, port, file).openConnection();
@@ -200,66 +209,4 @@ public abstract class HttpClient implements Serializable {
 		
 		return new HttpResponse(output, con.getResponseMessage(), con.getResponseCode(), con.getHeaderFields());
 	}
-
-    public static String prettyPrintJSON(String jsonString){
-        int level = 0;
-        boolean newline=false, inLiteral=false;
-        StringBuilder builder = new StringBuilder();
-        char p='\0';
-        for(char c:jsonString.toCharArray()){
-            if(newline && (c!='}' &&  c!=']' && c!=',' && (c!='{' || p!='['))){           
-                builder.append('\n');
-                for(int i=0;i<level;i++)
-                    builder.append("  ");
-                newline = false;
-            }
-            switch (c) {
-            case '"':
-                builder.append(c);
-                if(!inLiteral)
-                	inLiteral=true;
-                else {
-                	if(p!='\\'){
-                		inLiteral = false;
-                	}
-                }      		
-                break;
-            case '{':
-            case '[':
-                builder.append(c);
-            	if(!inLiteral){
-            		level++;
-                	newline = true;
-            	}
-                break;
-            case ',':
-                builder.append(c);
-            	if(!inLiteral){
-            		newline = true;
-            	}
-                break;
-            case '}':
-            case ']':
-            	if(!inLiteral){
-	                level--;
-	                if(c!=']' || p!='}'){
-	                    builder.append('\n');
-	                    for(int i=0;i<level;i++)
-	                        builder.append("  ");
-	                }
-            	}
-                builder.append(c);
-            	if(!inLiteral){
-            		newline = true;
-            	}
-                break;
-            default:
-                builder.append(c);
-                break;
-            }
-            p=c;
-        }
-       
-        return builder.toString();
-    }
 }

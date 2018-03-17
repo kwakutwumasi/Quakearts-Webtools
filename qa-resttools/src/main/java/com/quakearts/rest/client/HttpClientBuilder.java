@@ -49,5 +49,10 @@ public abstract class HttpClientBuilder<T extends HttpClient> {
 		return this;
 	}
 
+	public HttpClientBuilder<T> setMatchesHostname(boolean matchHostname){
+		httpClient.matchHostname = true;
+		return this;
+	}
+	
 	public abstract T thenBuild();
 }

@@ -33,7 +33,6 @@ import org.apache.tomcat.util.http.Rfc6265CookieProcessor;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.quakearts.rest.client.HttpClient;
 import com.quakearts.rest.client.HttpResponse;
 import com.quakearts.rest.client.HttpVerb;
 import com.quakearts.rest.client.exception.HttpClientException;
@@ -125,6 +124,16 @@ public class TestHttpClient {
 					.setHostAs("127.0.0.1")
 					.setPortAs(8443)
 					.setSecuredAs(true)
+					.thenBuild();
+			httpResponse = client.sendRequest(httpRequest);
+			assertThat(httpResponse.getHttpCode(), is(200));
+			assertThat(httpResponse.getOutput(), is("Successful"));
+			
+			client = new MockHttpClientBuilder()
+					.setHostAs("127.0.0.1")
+					.setPortAs(8443)
+					.setSecuredAs(true)
+					.setMatchesHostname(true)
 					.thenBuild();
 			httpResponse = client.sendRequest(httpRequest);
 			assertThat(httpResponse.getHttpCode(), is(200));
@@ -382,16 +391,6 @@ public class TestHttpClient {
 				.setContentBytes("/test-post-with-no-request-value".getBytes())
 				.setId("testVerbThatCannotHaveRequestValueWithRequestValue")
 				.thenBuild());		
-	}
-	
-	@Test
-	public void testPrettyPrint() throws Exception {
-		System.out.println(HttpClient.prettyPrintJSON("{" + 
-				"\"Name\" : \"Xytrex Co.\"," + 
-				"\"Description\" : \"Industrial Cleaning Supply Company\"," + 
-				"\"Account Number\" : \"ABC15797531\"," +
-				"\"Object:\":{\"Array\":[1,2,3,4]}" +
-				"}"));
 	}
 	
 	public static class TestHttpRequest implements HttpRequest {
