@@ -68,7 +68,7 @@
 		
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
-			<artifactId>qa-rest-tools</artifactId>
+			<artifactId>qa-resttools</artifactId>
 			<version>1.0</version>
 			<scope>test</scope>
 		</dependency>

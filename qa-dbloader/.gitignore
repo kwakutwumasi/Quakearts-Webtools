@@ -20,3 +20,5 @@ local.properties
 .recommenders
 .project
 .classpath
+/derby.log
+/test/

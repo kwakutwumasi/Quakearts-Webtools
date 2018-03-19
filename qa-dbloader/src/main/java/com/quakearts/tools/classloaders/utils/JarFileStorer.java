@@ -13,6 +13,7 @@ package com.quakearts.tools.classloaders.utils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -124,7 +125,7 @@ public class JarFileStorer {
 	}
 
 	public JarFile[] cleanOrphanJars(DataStore store) {
-		java.util.List<JarFile> files = store.list(JarFile.class,null);
+		List<JarFile> files = store.list(JarFile.class, null);
 		ArrayList<JarFile> deleteList = new ArrayList<JarFile>();
 		for (JarFile file : files) {
 			if (file.getJarFileEntries().size() == 0) {

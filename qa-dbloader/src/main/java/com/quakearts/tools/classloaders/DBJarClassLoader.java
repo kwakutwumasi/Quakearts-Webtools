@@ -19,11 +19,11 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipInputStream;
-import org.hibernate.HibernateException;
 import com.quakearts.tools.classloaders.hibernate.JarFileEntry;
 import com.quakearts.tools.classloaders.utils.UtilityMethods;
 import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.DataStoreFactory;
+import com.quakearts.webapp.orm.exception.DataStoreException;
 
 public class DBJarClassLoader extends ClassLoader {//TODO Implement with URL class loader
 
@@ -51,7 +51,7 @@ public class DBJarClassLoader extends ClassLoader {//TODO Implement with URL cla
 				throw new ClassNotFoundException("Class "+className+" does not exist in database");
 			else
 				return defineClass(classObject,className);
-		}catch (HibernateException e) {
+		}catch (DataStoreException e) {
 			throw new ClassNotFoundException("Exception of type " + e.getClass().getName()
 					+ " was thrown. Message is " + e.getMessage()
 					+ ". Exception occured whiles finding class in database.",e);
@@ -62,7 +62,7 @@ public class DBJarClassLoader extends ClassLoader {//TODO Implement with URL cla
 		}
 	}
 
-	private JarFileEntry loadEntry(String entryName) throws HibernateException, IOException {
+	private JarFileEntry loadEntry(String entryName) throws DataStoreException, IOException {
 		DataStore store;
 		if(domain==null)
 			store = DataStoreFactory.getInstance().getDataStore();
