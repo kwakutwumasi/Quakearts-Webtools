@@ -49,6 +49,8 @@
 		<jee.version>7.0</jee.version>
 		<geronimo.version>1.1.1</geronimo.version>
 		<derby.version>10.13.1.1</derby.version>
+		<jspapi.version>2.3.1</jspapi.version>
+		<jstl.version>1.2.1</jstl.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -147,6 +149,16 @@
 			<artifactId>geronimo-jta_1.1_spec</artifactId>
 			<version>${geronimo.version}</version>
 		</dependency>
+		<dependency>
+		    <groupId>javax.servlet.jsp</groupId>
+		    <artifactId>javax.servlet.jsp-api</artifactId>
+		    <version>${jspapi.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>javax.servlet.jsp.jstl</groupId>
+		    <artifactId>javax.servlet.jsp.jstl-api</artifactId>
+		    <version>${jstl.version}</version>
+		</dependency>		
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
