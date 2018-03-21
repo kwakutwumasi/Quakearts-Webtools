@@ -142,11 +142,12 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public String getConfigurationProperty(String propertyName) {
 		if(domain!=null)
-			return HibernateHelper.getConfiguration(domain).getProperty(propertyName);
+			return (String) HibernateHelper.getRegistryBuilder(domain).getSettings().get(propertyName);
 		else
-			return HibernateHelper.getCurrentConfiguration().getProperty(propertyName);			
+			return (String) HibernateHelper.getRegistryBuilder().getSettings().get(propertyName);			
 	}
 }

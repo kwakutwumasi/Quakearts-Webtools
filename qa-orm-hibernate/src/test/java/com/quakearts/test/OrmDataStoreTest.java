@@ -218,6 +218,7 @@ public class OrmDataStoreTest {
 					.add("product.brand.id", 1).build());
 
 			assertThat("Failed to list disjoint with subcriteria", salesParts.size(), is(3));
+			assertThat(dataStore.getConfigurationProperty("com.quakearts.test"), is("TestValue"));
 		} catch (DataStoreException e) {
 			fail("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage());
 		}

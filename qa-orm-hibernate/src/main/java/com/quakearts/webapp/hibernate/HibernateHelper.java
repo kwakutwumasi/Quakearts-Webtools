@@ -24,6 +24,7 @@ public class HibernateHelper {
 	private static final Map<String, HelperStore> store = new HashMap<String, HelperStore>();
 	private static SessionFactory factory;
 	private static ServiceRegistry registry;
+	private static StandardServiceRegistryBuilder registryBuilder;
 	private static Configuration configuration;
 	private static final Logger log = Logger.getLogger(HibernateHelper.class.getName());
 
@@ -36,8 +37,8 @@ public class HibernateHelper {
 	}
 	
 	public synchronized static ServiceRegistry getRegistry() {
-		if(registry==null){
-			registry = new StandardServiceRegistryBuilder().configure().build();
+		if(registry==null) {
+			registry = getRegistryBuilder().build();
 		}
 		
 		return registry;
@@ -55,6 +56,13 @@ public class HibernateHelper {
 		return getCurrentSessionFactory().getCurrentSession();
 	}
 	
+	public synchronized static StandardServiceRegistryBuilder getRegistryBuilder() {
+		if(registryBuilder == null)
+			registryBuilder = new StandardServiceRegistryBuilder().configure();
+		
+		return registryBuilder;
+	}
+	
 	public synchronized static Configuration getConfiguration(String domain) throws HibernateException {
 		if(store.containsKey(domain)){
 			return store.get(domain).configuration;
@@ -67,10 +75,12 @@ public class HibernateHelper {
 	private static void configureDomain(String domain) throws HibernateException{
 		Configuration configuration = new Configuration();
 		HelperStore helperStore = new HelperStore();
-		helperStore.registry = new StandardServiceRegistryBuilder().configure(new StringBuilder(domain)
+		helperStore.registryBuilder = new StandardServiceRegistryBuilder().configure(new StringBuilder(domain)
 					.append(".")
 					.append(StandardServiceRegistryBuilder.DEFAULT_CFG_RESOURCE_NAME)
-					.toString()).applySetting(CurrentSessionContextHelper.DOMAIN, domain).build();
+					.toString()).applySetting(CurrentSessionContextHelper.DOMAIN, domain);
+				
+		helperStore.registry = helperStore.registryBuilder.build();
 		helperStore.configuration = configuration;
 		helperStore.factory = configuration.buildSessionFactory(helperStore.registry);
 		store.put(domain, helperStore);
@@ -89,10 +99,20 @@ public class HibernateHelper {
 		return getSessionFactory(domain).getCurrentSession();
 	}
 	
+	public static StandardServiceRegistryBuilder getRegistryBuilder(String domain) {
+		if(store.containsKey(domain)){
+			return store.get(domain).registryBuilder;
+		} else {
+			configureDomain(domain);
+			return store.get(domain).registryBuilder;
+		}
+	}
+	
 	private static class HelperStore {
 		SessionFactory factory;
 		Configuration configuration;
 		ServiceRegistry registry;
+		StandardServiceRegistryBuilder registryBuilder;
 	}
 	
 	public static Object refresh(Object object, String domain){
