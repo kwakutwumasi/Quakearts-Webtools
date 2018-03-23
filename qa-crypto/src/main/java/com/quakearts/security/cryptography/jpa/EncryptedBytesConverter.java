@@ -20,6 +20,9 @@ public class EncryptedBytesConverter extends EncryptedTypeBase implements Attrib
 	@Override
 	public byte[] convertToDatabaseColumn(byte[] attribute) {
 		try {
+			if(attribute == null)
+				return null;
+			
 			return getCryptoResource().doEncrypt(attribute);
 		} catch (IllegalCryptoActionException e) {
 			throw new DataStoreException("Exception " + e.getClass().getName() + ". Message is "
@@ -30,6 +33,9 @@ public class EncryptedBytesConverter extends EncryptedTypeBase implements Attrib
 	@Override
 	public byte[] convertToEntityAttribute(byte[] dbData) {
 		try {
+			if(dbData == null)
+				return null;
+			
 			return getCryptoResource().doDecrypt(dbData);
 		} catch (IllegalCryptoActionException e) {
 			throw new DataStoreException("Exception " + e.getClass().getName() + ". Message is "

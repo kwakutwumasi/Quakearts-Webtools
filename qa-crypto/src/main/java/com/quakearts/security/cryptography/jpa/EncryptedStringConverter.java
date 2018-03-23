@@ -22,6 +22,9 @@ public class EncryptedStringConverter extends EncryptedTypeBase implements Attri
 	@Override
 	public String convertToDatabaseColumn(String attribute) {
 		try {
+			if(attribute == null)
+				return null;
+			
 			return getCryptoResource()
 					.doEncrypt(attribute.toString());
 		} catch (IllegalCryptoActionException e) {
@@ -33,6 +36,9 @@ public class EncryptedStringConverter extends EncryptedTypeBase implements Attri
 	@Override
 	public String convertToEntityAttribute(String dbData) {
 		try {
+			if(dbData == null)
+				return null;
+			
 			return getCryptoResource().doDecrypt(dbData);
 		} catch (IllegalCryptoActionException e) {
 			throw new DataStoreException("Exception " + e.getClass().getName() + ". Message is "
