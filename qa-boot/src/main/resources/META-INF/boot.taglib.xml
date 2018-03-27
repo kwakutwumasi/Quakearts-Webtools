@@ -848,6 +848,10 @@ child component if present
 			<name>yearClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "class" attribute of the time div HTML tag</description>
+			<name>timeClass</name>
+		</attribute>
+		<attribute>
 			<description>A ValueExpression to render as the Bootstrap day button type</description>
 			<name>dayType</name>
 		</attribute>

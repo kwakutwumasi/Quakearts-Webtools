@@ -40,6 +40,12 @@ public class BootServlet extends HttpServlet {
 	public void init() throws ServletException {
 		bootResources.put("/css/bootstrap-theme.min.css",null);
 		bootResources.put("/css/bootstrap.min.css",null);
+		bootResources.put("/css/bootstrap.cerulean.min.css",null);
+		bootResources.put("/css/bootstrap.cyborg.min.css",null);
+		bootResources.put("/css/bootstrap.paper.min.css",null);
+		bootResources.put("/css/bootstrap.sandstone.min.css",null);
+		bootResources.put("/css/bootstrap.superhero.min.css",null);
+		bootResources.put("/css/bootstrap.min.css",null);
 		bootResources.put("/css/qaboot.min.css",null);
 		bootResources.put("/fonts/glyphicons-halflings-regular.eot",null);
 		bootResources.put("/fonts/glyphicons-halflings-regular.svg",null);

@@ -25,10 +25,6 @@
 		<component-class>com.quakearts.webapp.facelets.bootstrap.components.BootAjaxLoaderComponent</component-class>		
 	</component>
 	<component>
-		<component-type>com.quakearts.bootstrap.ajaxscriptloader</component-type>
-		<component-class>com.quakearts.webapp.facelets.bootstrap.components.BootAjaxLoaderScriptComponent</component-class>
-	</component>
-	<component>
 		<component-type>com.quakearts.bootstrap.breadcrumbs</component-type>
 		<component-class>com.quakearts.webapp.facelets.bootstrap.components.BootBreadCrumb</component-class>
 	</component>
@@ -175,11 +171,6 @@
 			<component-family>com.quakearts.bootstrap.ajaxloader</component-family>
 			<renderer-type>com.quakearts.bootstrap.ajaxloader.renderer</renderer-type>
 			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootAjaxLoaderRenderer</renderer-class>
-		</renderer>
-		<renderer>
-			<component-family>com.quakearts.bootstrap.ajaxscriptloader</component-family>
-			<renderer-type>com.quakearts.bootstrap.ajaxscriptloader.renderer</renderer-type>
-			<renderer-class>com.quakearts.webapp.facelets.bootstrap.renderers.BootAjaxLoaderScriptRenderer</renderer-class>
 		</renderer>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.breadcrumbs</component-family>

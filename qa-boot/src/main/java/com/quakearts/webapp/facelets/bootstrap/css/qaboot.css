@@ -293,7 +293,7 @@
 	border: 1px solid #adadad;
 	display: table-cell;
 	float: left;
-	width: 40px;
+	width: 50px;
 }
 
 .time-btn-up {
@@ -313,7 +313,7 @@
 }
 
 .time-md>.time-btn-group .btn {
-	height: 16.5px;
+	height: 17px;
 	padding-top: 0px;
 }
 
@@ -323,16 +323,31 @@
 	line-height: 1.3333333;
 }
 
+.time-lg>.time-btn-group .btn {
+	height: 17px;
+	padding-top: 0px;
+}
+
 .time-sm>.time-form-control {
 	padding: 5px 10px;
 	font-size: 12px;
 	line-height: 1.5;
 }
 
+.time-sm>.time-btn-group .btn {
+	height: 17px;
+	padding-top: 0px;
+}
+
 .time-xs>.time-form-control {
 	padding: 1px 5px;
-	font-size: 12px;
+	font-size: 9px;
 	line-height: 1.5;
+}
+
+.time-xs>.time-btn-group .btn {
+	height: 17px;
+	padding-top: 0px;
 }
 
 .time-form-control:first-child {

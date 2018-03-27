@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.quakearts.webapp.facelets.bootstrap.renderers;
 
+import com.quakearts.webapp.facelets.bootstrap.common.BootOnLoadComponent;
 import com.quakearts.webapp.facelets.bootstrap.components.BootDateButton;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.Attribute;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.AttributeManager;
@@ -172,7 +173,11 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer {
 		if (button.formatVal().hasHour()) {
 			writer.write("\n");
 			writer.startElement("div", component);
-			writer.writeAttribute("class", "time-control-group time-md", null);
+			String timeClass = button.get("timeClass");
+			if(timeClass == null)
+				timeClass = "time-md";
+			
+			writer.writeAttribute("class", "time-control-group "+timeClass, null);
 			generateTimeControl(writer, component, idJs, "hour", "vhr", "hrup", "hrdown", currentValue == null, hourInt,
 					getDisplayType(button, context, "hourType"), componentDisabled);
 			if (button.formatVal().hasMinute()) {
@@ -217,15 +222,9 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer {
 		writer.write("\n");
 
 		if (!componentDisabled) {
-			writer.startElement("script", button);
-			writer.writeAttribute("type", "text/javascript", null);
-			writer.write("\n");
-			writer.writeText(getContents(button, context, idJs, button.nullable() && currentValue == null, dayInt,
+			BootOnLoadComponent.addScriptContent("\n"+getContents(button, context, idJs, button.nullable() && currentValue == null, dayInt,
 					monthInt, yearInt, hourInt, minuteInt, secondInt, button.hourStepVal(), button.minuteStepVal(),
-					button.secondStepVal(), button.timeIs24Hours(), isAM), null);
-			writer.write("\n");
-			writer.endElement("script");
-			writer.write("\n");
+					button.secondStepVal(), button.timeIs24Hours(), isAM)+"\n", context);
 		}
 	}
 

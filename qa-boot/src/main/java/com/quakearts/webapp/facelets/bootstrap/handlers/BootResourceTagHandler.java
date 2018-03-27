@@ -17,9 +17,9 @@ import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagConfig;
 import javax.faces.view.facelets.TagHandler;
-import com.quakearts.webapp.facelets.bootstrap.common.BootHeaderComponent;
+import com.quakearts.webapp.facelets.bootstrap.common.BootResourceBase;
 import com.quakearts.webapp.facelets.util.ObjectExtractor;
-import static com.quakearts.webapp.facelets.bootstrap.common.BootHeaderComponent.*;
+import static com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler.*;
 
 public class BootResourceTagHandler extends TagHandler {
 
@@ -44,7 +44,7 @@ public class BootResourceTagHandler extends TagHandler {
 		if(!parent.getRendererType().equals("javax.faces.Head"))
 			throw new IOException("Component must be nested within a javax.faces.Head buffer component");
 		
-        addBootComponentToHead(ctx.getFacesContext());
+        addBootComponent(ctx.getFacesContext());
 		String position = POSITION_BOTTOM;
 		if(positionAttribute!=null){
 			position = ObjectExtractor.extractString(positionAttribute.getValueExpression(ctx, String.class),ctx);
@@ -59,15 +59,18 @@ public class BootResourceTagHandler extends TagHandler {
 		if(!CSS.equals(type)&&!SCRIPT.equals(type))
 			throw new IOException("Attribute type must be one of script or css");
 		
-		BootHeaderComponent component = (BootHeaderComponent) ctx
-				.getFacesContext().getAttributes()
-				.get(BOOT_LIBRARY_LOADED);
-		
 		UIOutput resource = new UIOutput();
 		resource.getAttributes().put("name", name);
 		resource.getAttributes().put("library", library);
     		resource.setRendererType(type.equals(SCRIPT)?"javax.faces.resource.Script":"javax.faces.resource.Stylesheet");
 
+    		BootResourceBase component;
+    		if(type.equals(SCRIPT)) {
+    			component = 	(BootResourceBase) ctx.getFacesContext().getAttributes().get(BOOT_ONLOAD);    			
+    		} else {
+    			component = 	(BootResourceBase) ctx.getFacesContext().getAttributes().get(BOOT_HEADER);    			
+    		}
+    		
     		if(position.equals(POSITION_TOP)){
     			component.addToTop(resource);
 		} else {

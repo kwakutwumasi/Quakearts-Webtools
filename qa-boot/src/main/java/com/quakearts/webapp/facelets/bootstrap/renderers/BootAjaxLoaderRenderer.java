@@ -15,11 +15,20 @@ import java.io.IOException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
+
+import com.quakearts.webapp.facelets.bootstrap.common.BootOnLoadComponent;
 import com.quakearts.webapp.facelets.bootstrap.components.BootAjaxLoaderComponent;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.html_basic.HtmlBasicRenderer;
 
 public class BootAjaxLoaderRenderer extends HtmlBasicRenderer {
-	
+	private static final String LOADERSCRIPT = "\r\nqab.adid =\"$ajaxdiv\";\r\n"
+			+ "qab.sd=$stime;\r\n"
+			+ "qab.ed=$etime;\r\n"
+			+ "qab.ovlimg=\"$overlayimg\";\r\n"
+			+ "qab.ovlimgcss=\"$overlayimagestyle\";\r\n"
+			+ "qab.miniimg=\"$miniimg\";\r\n"
+			+ "qab.miniimgcss=\"$miniimagestyle\";\r\n";
+
 	@Override
 	public void encodeBegin(FacesContext context, UIComponent component)
 			throws IOException {
@@ -60,6 +69,24 @@ public class BootAjaxLoaderRenderer extends HtmlBasicRenderer {
 		writer.write("\n");
 		writer.endElement("div");
 		writer.write("\n");
+		
+		if(!context.getPartialViewContext().isPartialRequest()){	
+			
+			String miniimagestyle = loaderComponent.get("miniimagestyle");
+			String startTimeout = loaderComponent.get("startTimeout");
+			String endTimeout = loaderComponent.get("endTimeout");
+			String overlayimagestyle = loaderComponent.get("overlayimagestyle");
+			
+			String script = LOADERSCRIPT.replace("$ajaxdiv", loaderComponent.getClientId(context))
+					.replace("$miniimg", loaderComponent.get("miniloaderimage"))
+					.replace("$miniimagestyle", miniimagestyle!=null?("style=\\\""+miniimagestyle+"\\\" "):"")
+					.replace("$overlayimg", loaderComponent.get("overlayloaderimage"))
+					.replace("$overlayimagestyle", overlayimagestyle!=null?("style=\\\""+overlayimagestyle+"\\\" "):"")
+					.replace("$stime", startTimeout)
+					.replace("$etime", endTimeout);
+			
+			BootOnLoadComponent.addScriptContent(script, context);
+		}
 	}
 	
 	@Override

@@ -12,10 +12,10 @@ package com.quakearts.webapp.facelets.bootstrap.common;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.component.UIComponentBase;
+
 import javax.faces.context.FacesContext;
 
-public class BootOnLoadComponent extends UIComponentBase {
+public class BootOnLoadComponent extends BootResourceBase {
 	public static final String COMPONENT_FAMILY = "com.quakearts.bootstrap.footer";
 	public static final String RENDERER_TYPE = "com.quakearts.bootstrap.footer.renderer";
 	public static final String SCRIPTCONTENTLIST = "com.quakearts.bootstrap.SCRIPTCONTENTLIST";
@@ -36,8 +36,6 @@ public class BootOnLoadComponent extends UIComponentBase {
 				.get(SCRIPTCONTENTLIST);
 
 		if(scriptContentList==null){
-			ctx.getViewRoot()
-				.addComponentResource(ctx, new BootOnLoadComponent(), "body");
 			scriptContentList = new ArrayList<>();
 			ctx.getAttributes().put(SCRIPTCONTENTLIST, scriptContentList);
 		}

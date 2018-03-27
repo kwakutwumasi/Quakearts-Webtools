@@ -386,7 +386,7 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 					styleBuilder.append("max-height:").append(size*44).append("px");
 				
 				if(holder.firstIndex>0)
-					addScriptContent("$('#list_"+id+"').scrollTop("+(holder.firstIndex*44)+");\n", context);
+					addScriptContent("$(function(){\n$('#list_"+id+"').scrollTop("+(holder.firstIndex*44)+");\n});\n", context);
 
 				writer.writeAttribute("style", styleBuilder.toString(), null);
 			}

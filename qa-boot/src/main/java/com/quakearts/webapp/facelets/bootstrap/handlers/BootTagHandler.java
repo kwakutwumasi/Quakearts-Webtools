@@ -15,7 +15,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.TagConfig;
 import javax.faces.view.facelets.TagHandler;
-import static com.quakearts.webapp.facelets.bootstrap.common.BootHeaderComponent.*;
+import static com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler.*;
 
 public class BootTagHandler extends TagHandler {
 	
@@ -29,7 +29,7 @@ public class BootTagHandler extends TagHandler {
 		if(!parent.getRendererType().equals("javax.faces.Head"))
 			throw new IOException("Component must be nested within a javax.faces.Head buffer component");
 		
-        addBootComponentToHead(ctx.getFacesContext());
+        addBootComponent(ctx.getFacesContext());
 	}
 
 }

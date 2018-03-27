@@ -54,7 +54,7 @@ public class BootResponsiveImageRenderer extends HtmlBasicRenderer {
 		
 		if(!context.getAttributes().containsKey(RESIZEWRITTEN)){
 			context.getAttributes().put(RESIZEWRITTEN,"");
-			addScriptContent("\t$(window).resize(qab.rsi);\n", context);
+			addScriptContent("$(function() {\n\t$(window).resize(qab.rsi);\n});\n", context);
 		}
 		
 		StringBuilder builder = new StringBuilder("\tqab.rsel.push({\"resizeImage\":function(windowWidth){\n\t\tvar src = \"\";\n");

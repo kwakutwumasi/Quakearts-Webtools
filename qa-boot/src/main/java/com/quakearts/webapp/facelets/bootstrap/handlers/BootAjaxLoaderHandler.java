@@ -14,13 +14,10 @@ import javax.faces.component.UIComponent;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.view.facelets.ComponentConfig;
 import javax.faces.view.facelets.FaceletContext;
-import com.quakearts.webapp.facelets.bootstrap.common.BootHeaderComponent;
-import com.quakearts.webapp.facelets.bootstrap.components.BootAjaxLoaderComponent;
-import com.quakearts.webapp.facelets.bootstrap.components.BootAjaxLoaderScriptComponent;
-import static com.quakearts.webapp.facelets.bootstrap.common.BootHeaderComponent.*;
 
-public class BootAjaxLoaderHandler extends BootBaseHandler {
-	
+import com.quakearts.webapp.facelets.bootstrap.components.BootAjaxLoaderComponent;
+
+public class BootAjaxLoaderHandler extends BootBaseHandler {	
 	public BootAjaxLoaderHandler(ComponentConfig config) {
 		super(config);
 	}
@@ -39,16 +36,6 @@ public class BootAjaxLoaderHandler extends BootBaseHandler {
 		if(component.getValueExpression("miniloaderimage")==null && component.getAttributes().get("miniloaderimage")==null)
 			throw new AbortProcessingException("Attribute miniloaderimage is required");
 		
-		if(!ctx.getFacesContext().getPartialViewContext().isPartialRequest()){
-			BootHeaderComponent headerComponent = (BootHeaderComponent) ctx
-					.getFacesContext().getAttributes()
-					.get(BOOT_LIBRARY_LOADED);
-			
-			BootAjaxLoaderScriptComponent scriptComponent = new BootAjaxLoaderScriptComponent();
-			
-			scriptComponent.setLoaderComponent((BootAjaxLoaderComponent)component);
-			headerComponent.addToBottom(scriptComponent);
-		}
 	}
 	
 
