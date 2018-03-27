@@ -46,7 +46,7 @@ public class BootDateButton extends HtmlInputText {
     }
     
     public static class DateFormat {
-    	private static final String checkRegex = "m|y|my|(dm)y?(h|(hn)s?)?";
+    	private static final String checkRegex = "(m|y|my|(dm)y?)?(h|(hn)s?)?";
     	private Set<Character> formatChars = new HashSet<>();
     	private String dateFormatString, format;
     	
@@ -74,7 +74,7 @@ public class BootDateButton extends HtmlInputText {
     			builder.append(formatProducerMap.get(part).getFormatString(builder.length() == 0));
     		}
     		dateFormatString = builder.toString();
-		}
+	}
     	
     	public boolean hasDay(){
     		return formatChars.contains('d');

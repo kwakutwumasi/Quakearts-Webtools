@@ -852,6 +852,10 @@ child component if present
 			<name>timeClass</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression to render as the "class" attribute of the AM-PM div HTML tag</description>
+			<name>ampmClass</name>
+		</attribute>
+		<attribute>
 			<description>A ValueExpression to render as the Bootstrap day button type</description>
 			<name>dayType</name>
 		</attribute>

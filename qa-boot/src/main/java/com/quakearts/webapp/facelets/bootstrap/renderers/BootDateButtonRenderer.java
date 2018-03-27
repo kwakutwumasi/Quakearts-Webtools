@@ -190,9 +190,11 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer {
 			}
 			writer.endElement("div");
 			if (!button.timeIs24Hours()) {
+				String ampmClass = button.get("ampmClass");
 				writer.write("\n");
 				writer.startElement("div", component);
-				writer.writeAttribute("class", "btn-group time-ampm-group", null);
+				writer.writeAttribute("class", "btn-group time-ampm-group"
+						+(ampmClass != null?" "+ampmClass:""), null);
 				writer.write("\n");
 				generateAMPMButton(writer, component, idJs, isAM, true);
 				generateAMPMButton(writer, component, idJs, isAM, false);

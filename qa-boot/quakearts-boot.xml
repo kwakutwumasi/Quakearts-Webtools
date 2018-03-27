@@ -1624,6 +1624,57 @@
 				</value>
 			</trait>
 		</entity>
+		<entity id="hourType">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>default</item>
+					<item>primary</item>
+					<item>success</item>
+					<item>info</item>
+					<item>warning</item>
+					<item>danger</item>
+				</value>
+			</trait>
+		</entity>
+		<entity id="minuteType">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>default</item>
+					<item>primary</item>
+					<item>success</item>
+					<item>info</item>
+					<item>warning</item>
+					<item>danger</item>
+				</value>
+			</trait>
+		</entity>
+		<entity id="secondType">
+			<trait id="attribute-value-runtime-type">
+				<value xsi:type="mdt:StringValue">
+					org.eclipse.jst.jsf.core.attributevalues.StringType
+				</value>
+			</trait>
+			<trait id="valid-values">
+				<value xsi:type="mdt:ListOfValues">
+					<item>default</item>
+					<item>primary</item>
+					<item>success</item>
+					<item>info</item>
+					<item>warning</item>
+					<item>danger</item>
+				</value>
+			</trait>
+		</entity>
 	</entity>
 
 	<entity id="resource" type="tag">
