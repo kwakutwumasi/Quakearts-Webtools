@@ -193,11 +193,10 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer {
 				String ampmClass = button.get("ampmClass");
 				writer.write("\n");
 				writer.startElement("div", component);
-				writer.writeAttribute("class", "btn-group time-ampm-group"
-						+(ampmClass != null?" "+ampmClass:""), null);
+				writer.writeAttribute("class", "btn-group time-ampm-group", null);
 				writer.write("\n");
-				generateAMPMButton(writer, component, idJs, isAM, true);
-				generateAMPMButton(writer, component, idJs, isAM, false);
+				generateAMPMButton(writer, component, idJs, isAM, true, ampmClass);
+				generateAMPMButton(writer, component, idJs, isAM, false, ampmClass);
 				writer.endElement("div");
 			}
 		}
@@ -271,16 +270,16 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer {
 	}
 
 	private void generateAMPMButton(ResponseWriter writer, UIComponent component, String idJs, boolean isAM,
-			boolean generateAM) throws IOException {
+			boolean generateAM, String ampmClass) throws IOException {
 		writer.startElement("button", component);
 		writer.writeAttribute("class",
-				"btn btn-default" + ((isAM && generateAM) || (!isAM && !generateAM) ? " active" : ""), null);
+				"btn btn-default"+(ampmClass != null?" "+ampmClass:"") 
+				+ ((isAM && generateAM) || (!isAM && !generateAM) ? " active" : ""), null);
 		writer.writeAttribute("onclick", "dc_" + idJs + ".tglampm(this," + generateAM + ")", null);
 		writer.writeAttribute("type", "button", null);
 		writer.write(generateAM ? "AM" : "PM");
 		writer.endElement("button");
 		writer.write("\n");
-
 	}
 
 	private void generateSelectDay(String idJs, int value, int days, int offset, ResponseWriter writer,
