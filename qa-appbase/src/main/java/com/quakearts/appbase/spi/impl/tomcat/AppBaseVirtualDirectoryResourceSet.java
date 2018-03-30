@@ -45,15 +45,9 @@ public class AppBaseVirtualDirectoryResourceSet extends AbstractResourceSet {
 		}
 	}
 
-	public synchronized void addUrl(URL libraryPathUrl) {
+	public synchronized void addUrl(String name, URL libraryPathUrl) {
 		if (!libraryPathUrl.getProtocol().equals("file"))
 			throw new ConfigurationException("libraryPathUrl must be a file url");
-
-		String name = libraryPathUrl.getFile();
-		name = libraryPathUrl.getFile();
-		if (name.indexOf(File.separator) >= 0 && name.indexOf(File.separator) != name.length()) {
-			name = name.substring(name.lastIndexOf(File.separator) + 1);
-		}
 
 		libraryUrls.put(name, libraryPathUrl);
 	}

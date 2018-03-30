@@ -24,8 +24,8 @@ public class TestAppBaseWebappClassLoader {
 		TestContext context = new TestContext();
 		WebResourceRoot root = context.getResources();
 		AppBaseVirtualDirectoryResourceSet resourceSet = new AppBaseVirtualDirectoryResourceSet(root, "/WEB-INF/lib", "/repo", "/");
-		resourceSet.addUrl(impl.getLibraryPath("tomcat-embed-el-8.5.9.jar"));
-		resourceSet.addUrl(impl.getLibraryPath("tomcat-embed-websocket-8.5.9.jar"));
+		resourceSet.addUrl("tomcat-embed-el-8.5.9.jar", impl.getLibraryPath("tomcat-embed-el-8.5.9.jar"));
+		resourceSet.addUrl("tomcat-embed-websocket-8.5.9.jar", impl.getLibraryPath("tomcat-embed-websocket-8.5.9.jar"));
 		root.addJarResources(resourceSet);
 				
 		try(AppBaseWebappClassLoader classLoader = new AppBaseWebappClassLoader(context);){
@@ -41,8 +41,8 @@ public class TestAppBaseWebappClassLoader {
 		
 		WebResourceRoot root = context.getResources();
 		AppBaseVirtualDirectoryResourceSet resourceSet = new AppBaseVirtualDirectoryResourceSet(root, "/WEB-INF/lib", "/repo", "/");
-		resourceSet.addUrl(impl.getLibraryPath("tomcat-embed-el-8.5.9.jar"));
-		resourceSet.addUrl(impl.getLibraryPath("tomcat-embed-websocket-8.5.9.jar"));
+		resourceSet.addUrl("tomcat-embed-el-8.5.9.jar", impl.getLibraryPath("tomcat-embed-el-8.5.9.jar"));
+		resourceSet.addUrl("tomcat-embed-websocket-8.5.9.jar", impl.getLibraryPath("tomcat-embed-websocket-8.5.9.jar"));
 		root.addJarResources(resourceSet);
 		root.start();
 		try(AppBaseWebappClassLoader classLoader = new AppBaseWebappClassLoader(context);){

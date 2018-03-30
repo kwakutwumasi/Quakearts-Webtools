@@ -312,7 +312,7 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 							AppBaseVirtualDirectoryResourceSet resourceSet = new AppBaseVirtualDirectoryResourceSet(resources, 
 									"/WEB-INF/lib", repoBase,"/");
 							for (String library : libraries) {
-								resourceSet.addUrl(ClassPathSupport.getClasspathResources().getLibraryPath(library));
+								resourceSet.addUrl(library, ClassPathSupport.getClasspathResources().getLibraryPath(library));
 							}
 							resources.addJarResources(resourceSet);
 						}

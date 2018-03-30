@@ -43,8 +43,8 @@ public class TestAppBaseVirtualDirectoryResourceSet {
 		impl.loadClassPath();
 		StandardRoot root = new StandardRoot();
 		AppBaseVirtualDirectoryResourceSet resourceSet = new AppBaseVirtualDirectoryResourceSet(root, "/WEB-INF/lib", "/repo", "/");
-		resourceSet.addUrl(impl.getLibraryPath("tomcat-embed-el-8.5.9.jar"));
-		resourceSet.addUrl(impl.getLibraryPath("tomcat-embed-websocket-8.5.9.jar"));
+		resourceSet.addUrl("tomcat-embed-el-8.5.9.jar", impl.getLibraryPath("tomcat-embed-el-8.5.9.jar"));
+		resourceSet.addUrl("tomcat-embed-websocket-8.5.9.jar", impl.getLibraryPath("tomcat-embed-websocket-8.5.9.jar"));
 		resourceSet.start();
 		
 		assertThat(resourceSet.getLibraryUrls().size(), is(2));
