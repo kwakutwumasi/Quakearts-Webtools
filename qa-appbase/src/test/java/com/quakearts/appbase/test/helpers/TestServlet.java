@@ -8,13 +8,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Status;
-import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 import com.quakearts.appbase.cdi.annotation.Transaction;
-import com.quakearts.appbase.cdi.annotation.Transactional;
-import com.quakearts.appbase.cdi.annotation.Transactional.TransactionType;
 import com.quakearts.appbase.test.experiments.TestInject;
 
 @WebServlet("/test")
@@ -30,23 +26,19 @@ public class TestServlet extends HttpServlet {
 	@Inject @Transaction
 	UserTransaction transaction;
 
-	private static boolean transactionWorked;
+	private static boolean transactionLoaded;
 
-	@Override @Transactional(TransactionType.SINGLETON)
+	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		inject.sayHello();
 		inject.testTransaction();
-		try {
-			transactionWorked = transaction != null && transaction.getStatus() == Status.STATUS_ACTIVE;
-		} catch (SystemException e) {
-			throw new ServletException(e);
-		}
+		transactionLoaded = transaction != null;
 		resp.getWriter().print("OK");
 		resp.getWriter().flush();
 		resp.getWriter().close();
 	}
 	
-	public static boolean transactionWorked() {
-		return transactionWorked;
+	public static boolean transactionLoaded() {
+		return transactionLoaded;
 	}
 }

@@ -40,6 +40,7 @@ import com.quakearts.appbase.spi.impl.WeldContextDependencySpiImpl;
 import com.quakearts.appbase.test.experiments.TestInjectImpl;
 import com.quakearts.appbase.test.experiments.TestSubInjectDecorator;
 import com.quakearts.appbase.test.experiments.TestSubInjectImpl;
+import com.quakearts.appbase.test.helpers.TestServlet;
 
 public class TestTomcatEmbeddedServerSpiImpl {
 
@@ -105,6 +106,7 @@ public class TestTomcatEmbeddedServerSpiImpl {
 				assertThat(connection.getResponseCode(), is(200));
 				assertThat(connection.getHeaderField("Server"), is("Test Server"));
 				assertThat(connection.getHeaderField("X-Powered-By") != null, is(true));
+				assertThat(TestServlet.transactionLoaded(), is(true));
 				assertThat(TestInjectImpl.saidHello(), is(true));
 				assertThat(TestInjectImpl.testSubInjectLoaded(), is(true));		
 				assertThat(TestInjectImpl.transactionWorked(), is(true));
