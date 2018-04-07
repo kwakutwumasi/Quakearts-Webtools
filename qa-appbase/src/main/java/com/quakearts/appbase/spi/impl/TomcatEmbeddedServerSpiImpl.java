@@ -54,7 +54,7 @@ import com.quakearts.appbase.internal.properties.ConfigurationPropertyMap;
 public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 	
 	private List<Tomcat> tomcatInstances = new ArrayList<>();
-	private AppBasePropertiesLoader propertiesLoader;
+	private AppBasePropertiesLoader propertiesLoader = new AppBasePropertiesLoader();
 	private Set<WebAppListener> webAppListeners = new HashSet<>();
 	private WebAppListener firstListener, lastListener;
 	
@@ -117,7 +117,6 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
         } else if(!webserversDirLocation.isDirectory()){
         		throw new ConfigurationException(webserversDirLocation.getAbsolutePath()+ " is not a directory");
         } else {
-        		this.propertiesLoader = new AppBasePropertiesLoader();        		
 	        	for(File webserverLocation : webserversDirLocation.listFiles()){
 	        		if(webserverLocation.isDirectory()){
 	        			launchInstance(webserverLocation);

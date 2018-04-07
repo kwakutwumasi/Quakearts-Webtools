@@ -48,7 +48,7 @@ public class AtomikosBeanDatasourceProviderSpiImpl implements DataSourceProvider
 		AppBasePropertiesLoader appBasePropertiesLoader = new AppBasePropertiesLoader();
 		
 		List<ConfigurationPropertyMap> loadedConfigurationPropertyFiles = appBasePropertiesLoader
-				.getAllConfigurationProperties("."+File.separator+"atomikos"+File.separator+"datasources", ".ds.json", "QA AppBase Atomikos datasource definition");
+				.getAllConfigurationProperties("atomikos"+File.separator+"datasources", ".ds.json", "QA AppBase Atomikos datasource definition");
 		
 		for(ConfigurationPropertyMap loadedConfigurationPropertyFile:loadedConfigurationPropertyFiles){
 			getDataSource(loadedConfigurationPropertyFile);
