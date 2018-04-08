@@ -9,3 +9,5 @@
 /ObjectStore/
 /testdb/
 /tomcat.keystore
+/test-*
+/testinternaldb/

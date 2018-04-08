@@ -47,10 +47,22 @@ public class TestAtomikosBeanDatasourceSpiImpl {
 				fail("unable to obtain a connection: "+e.getMessage());
 			}
 			
+			assertThat(providerSpi.getDataSource("TestInternalDB") != null, is(true));
+			
+			dataSource = providerSpi.getDataSource("TestInternalDB");
+			try(Connection con = dataSource.getConnection()){
+			} catch (Exception e) {
+				fail("unable to obtain a connection: "+e.getMessage());
+			}
+						
 			InitialContext initialContext;
 			try {
 				initialContext = new InitialContext();
 				dataSource =(DataSource) initialContext.lookup("java:/jdbc/TestDB");
+				
+				assertThat(dataSource != null, is(true));
+
+				dataSource =(DataSource) initialContext.lookup("java:/jdbc/TestInternalDB");
 				
 				assertThat(dataSource != null, is(true));
 			} catch (NamingException | ClassCastException e) {

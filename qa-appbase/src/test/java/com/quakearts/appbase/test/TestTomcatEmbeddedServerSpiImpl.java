@@ -3,7 +3,9 @@ package com.quakearts.appbase.test;
 import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.*;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.KeyManagementException;
@@ -11,7 +13,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.text.SimpleDateFormat;
 import java.util.Base64;
+import java.util.Date;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -215,4 +219,53 @@ public class TestTomcatEmbeddedServerSpiImpl {
 		}
 	}
 	
+	@Test
+	public void testCreateDefaults() throws Exception {
+		TomcatEmbeddedServerSpiImpl impl = new TomcatEmbeddedServerSpiImpl();
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+		File testWebappLocation = new File("test-"+format.format(new Date()));
+		ClassLoader loader = Thread.currentThread()
+				.getContextClassLoader();
+		InputStream webappconfigin = loader
+				.getResourceAsStream("main-webapp.config.json"),
+				webxmlin = loader
+					.getResourceAsStream("main-web.xml"),
+				serverconfigin = loader
+					.getResourceAsStream("main-server.config.json");
+		
+		impl.createWebserver(testWebappLocation, webappconfigin, webxmlin, serverconfigin);
+		assertThat(testWebappLocation.isDirectory(), is(true));
+		File testFile = new File(testWebappLocation, "default-server"
+				+File.separator
+				+"webapps"
+				+File.separator
+				+"webapp"
+				+File.separator
+				+"META-INF"
+				+File.separator
+				+"webapp.config.json");
+		assertThat(testFile.isFile(), is(true));
+		
+		testFile = new File(testWebappLocation, "default-server"
+				+File.separator
+				+"webapps"
+				+File.separator
+				+"webapp"
+				+File.separator
+				+"WEB-INF"
+				+File.separator
+				+"web.xml");
+		assertThat(testFile.isFile(), is(true));
+		
+		testFile = new File(testWebappLocation, "default-server"
+				+File.separator
+				+"conf"
+				+File.separator
+				+"server.config.json");
+		assertThat(testFile.isFile(), is(true));
+		
+		try(InputStream in = impl.getGenericWebXML()){
+			assertThat(in != null, is(true));
+		}
+	}
 }

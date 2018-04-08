@@ -11,6 +11,9 @@
 package com.quakearts.appbase.spi.impl;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -24,6 +27,7 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
+import com.quakearts.appbase.Main;
 import com.quakearts.appbase.exception.ConfigurationException;
 import com.quakearts.appbase.internal.properties.AppBasePropertiesLoader;
 import com.quakearts.appbase.internal.properties.ConfigurationPropertyMap;
@@ -50,6 +54,15 @@ public class AtomikosBeanDatasourceProviderSpiImpl implements DataSourceProvider
 		List<ConfigurationPropertyMap> loadedConfigurationPropertyFiles = appBasePropertiesLoader
 				.getAllConfigurationProperties("atomikos"+File.separator+"datasources", ".ds.json", "QA AppBase Atomikos datasource definition");
 		
+		InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("default.ds.json");
+		if(in!=null)
+			try(InputStream readin = in;) {
+				ConfigurationPropertyMap defaultConfigurationPropertyMap
+					= appBasePropertiesLoader.loadParametersFromReader(".classpath", new InputStreamReader(readin));
+				loadedConfigurationPropertyFiles.add(defaultConfigurationPropertyMap);
+			} catch (IOException e) {
+				Main.log.error("Unable to load default.ds.json", e);
+			}
 		for(ConfigurationPropertyMap loadedConfigurationPropertyFile:loadedConfigurationPropertyFiles){
 			getDataSource(loadedConfigurationPropertyFile);
 		}
