@@ -12,6 +12,10 @@ package com.quakearts.webapp.orm.query;
 
 import java.io.Serializable;
 
+/**Used to specify a range of values, within which the property of the object being searched should fall
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class Range implements Serializable{
 	/**
 	 * 

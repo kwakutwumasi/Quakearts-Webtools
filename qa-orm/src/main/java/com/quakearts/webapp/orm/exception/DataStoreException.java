@@ -10,6 +10,10 @@
  ******************************************************************************/
 package com.quakearts.webapp.orm.exception;
 
+/**Thrown when an error occurs in the persistent store
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class DataStoreException extends RuntimeException {
 
 	/**

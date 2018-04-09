@@ -12,6 +12,10 @@ package com.quakearts.webapp.orm.query;
 
 import java.io.Serializable;
 
+/**Represents a string pattern used to match the property of the object being searched for
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class VariableString implements Serializable {
 	/**
 	 * 

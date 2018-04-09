@@ -12,7 +12,16 @@ package com.quakearts.webapp.orm;
 
 import com.quakearts.webapp.orm.exception.DataStoreException;
 
+/**A functional interface for special data store functions
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @FunctionalInterface
 public interface DataStoreConnection {
+	/**Return a special connection object used to interface with the data store
+	 * @param expectedConnection the class of the expected connectiob
+	 * @return an instance of the expected connection, if any
+	 * @throws DataStoreException
+	 */
 	<Connection> Connection getConnection(Class<Connection> expectedConnection) throws DataStoreException;
 }

@@ -12,7 +12,17 @@ package com.quakearts.webapp.orm;
 
 import com.quakearts.webapp.orm.exception.DataStoreException;
 
+/**A functional interface for accessing persistent store specific interfaces to run
+ * store specific code
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @FunctionalInterface
 public interface DataStoreFunction {
+	/**This method once called will be passed a connection object that wraps the 
+	 * persistent store's interface
+	 * @param con The interface wrapper
+	 * @throws DataStoreException
+	 */
 	public void execute(DataStoreConnection con) throws DataStoreException;
 }

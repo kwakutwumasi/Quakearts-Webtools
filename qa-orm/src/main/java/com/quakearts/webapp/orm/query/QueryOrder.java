@@ -12,6 +12,10 @@ package com.quakearts.webapp.orm.query;
 
 import java.io.Serializable;
 
+/**Used to specify the order in which objects should be returned in the search
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class QueryOrder implements Serializable {
 
 	/**

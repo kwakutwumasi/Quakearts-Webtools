@@ -19,6 +19,10 @@ import com.quakearts.webapp.orm.query.Choice;
 import com.quakearts.webapp.orm.query.Range;
 import com.quakearts.webapp.orm.query.VariableString;
 
+/**A fluid API for defining persistent store slection criteria
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class ParameterMapBuilder {
 	private HashMap<String, Serializable> parameters;
 	private Stack<HashMap<String, Serializable>> stack = new Stack<>();

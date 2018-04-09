@@ -25,13 +25,17 @@ import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Transient;
 
-public class OrmStringConcat {	
+/**Internal method for concatenating strings
+ * @author kwakutwumasi-afriyie
+ *
+ */
+class OrmStringConcat {	
 	private Map<String, ConcatenatorEntry> fieldMap;
 	private Class<?> beanClass;
 	
 	final static Logger log = Logger.getLogger(OrmStringConcat.class.getName());
 	
-	public OrmStringConcat(Class<?> beanClass) {
+	OrmStringConcat(Class<?> beanClass) {
 		fieldMap = new HashMap<>();
 		
 		try {
@@ -121,7 +125,7 @@ public class OrmStringConcat {
 		return new ConstantCallSite(handle).dynamicInvoker();
 	}
 	
-	public void trimStrings(Object object) {
+	void trimStrings(Object object) {
 		if(object.getClass().isAssignableFrom(beanClass)){
 			if(fieldMap.size()<=0)
 				return;

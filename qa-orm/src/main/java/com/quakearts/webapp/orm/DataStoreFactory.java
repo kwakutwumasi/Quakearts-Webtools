@@ -15,9 +15,16 @@ import java.util.ServiceLoader;
 
 import com.quakearts.webapp.orm.exception.DataStoreException;
 
+/**Factory method for obtaining instances of an interface to the persistent store
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public abstract class DataStoreFactory {
 	private static DataStoreFactory instance;
 
+	/**Get the singleton factory instance
+	 * @return The current {@link DataStoreFactory}. Only one will exist per classloader
+	 */
 	public static DataStoreFactory getInstance() {
 		if(instance == null){
 			Iterator<DataStoreFactory> dataStoreFactoryIterator = ServiceLoader.load(DataStoreFactory.class).iterator();
@@ -30,6 +37,10 @@ public abstract class DataStoreFactory {
 		return instance;
 	}
 
+	/**Use this method to set this {@link DataStoreFactory} as the default.
+	 * If an instance has already been set, a {@link DataStoreException} will be thrown
+	 * @param instance 
+	 */
 	protected static void setInstance(DataStoreFactory instance) {
 		if(DataStoreFactory.instance == null)
 			DataStoreFactory.instance = instance;
@@ -40,6 +51,13 @@ public abstract class DataStoreFactory {
 					+ instance.getClass().getName());
 	}
 
+	/** Get an interface to the persistent store
+	 * @return the interface
+	 */
 	public abstract DataStore getDataStore();
+	/** Get an interface to the persistent store with a name equal to the passed in storename
+	 * @param storename the name of the specific store to load
+	 * @return the interface
+	 */
 	public abstract DataStore getDataStore(String storename);
 }

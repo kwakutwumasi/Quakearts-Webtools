@@ -14,6 +14,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**Represents a range of selection criteria, one of which the property of the object searched for should match
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class Choice implements Serializable{
 	/**
 	 * 
