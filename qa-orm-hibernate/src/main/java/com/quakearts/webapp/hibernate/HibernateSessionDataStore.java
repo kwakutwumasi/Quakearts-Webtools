@@ -41,6 +41,9 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.quakearts.webapp.orm.DataStore#save(java.lang.Object)
+	 */
 	@Override
 	public void save(Object object) {
 		try {
@@ -50,6 +53,9 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.quakearts.webapp.orm.DataStore#get(java.lang.Class, java.io.Serializable)
+	 */
 	@Override
 	public <T> T get(Class<T> clazz, Serializable id) {
 		try {
@@ -59,6 +65,9 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.quakearts.webapp.orm.DataStore#update(java.lang.Object)
+	 */
 	@Override
 	public void update(Object object) {
 		try {
@@ -68,6 +77,9 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.quakearts.webapp.orm.DataStore#delete(java.lang.Object)
+	 */
 	@Override
 	public void delete(Object object) {
 		try {
@@ -77,6 +89,9 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.quakearts.webapp.orm.DataStore#list(java.lang.Class, java.util.Map, com.quakearts.webapp.orm.query.QueryOrder[])
+	 */
 	@Override
 	public <T> List<T> list(Class<T> clazz, Map<String, Serializable> parameters, QueryOrder...orders) {
 		try {
@@ -86,6 +101,9 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.quakearts.webapp.orm.DataStore#saveOrUpdate(java.lang.Object)
+	 */
 	@Override
 	public void saveOrUpdate(Object object) {
 		try {
@@ -95,6 +113,9 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.quakearts.webapp.orm.DataStore#refresh(java.lang.Object)
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T refresh(T object) {
@@ -105,38 +126,58 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 		}
 	}
 
+	/**Get the Hibernate {@link Session}
+	 * @return 
+	 */
 	public Session getSession() {
 		return session;
 	}
 	
+	/**Get the domain
+	 * @return The domain
+	 */
 	public String getDomain() {
 		return domain;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.quakearts.webapp.orm.DataStore#flushBuffers()
+	 */
 	@Override
 	public void flushBuffers() {
 		session.flush();
 	}
 
+	/* (non-Javadoc)
+	 * @see com.quakearts.webapp.orm.DataStore#executeFunction(com.quakearts.webapp.orm.DataStoreFunction)
+	 */
 	@Override
 	public void executeFunction(DataStoreFunction function) throws DataStoreException {
-		session.doWork((connection)->{
-			function.execute(new SqlDataStoreConnection(connection));
-		});
+		try {
+			session.doWork((connection)->{
+				function.execute(new SessionDataStoreConnection(connection, session));
+			});			
+		} catch (HibernateException e) {
+			throw new DataStoreException(e);
+		}
 	}
 	
-	class SqlDataStoreConnection implements DataStoreConnection{
+	class SessionDataStoreConnection implements DataStoreConnection{
 
 		Connection connection;
+		Session session;
 		
-		SqlDataStoreConnection(Connection connection) {
+		SessionDataStoreConnection(Connection connection, Session session) {
 			this.connection = connection;
+			this.session = session;
 		}
 
 		@Override
 		public <T> T getConnection(Class<T> expectedConnection) {
 			if(expectedConnection.isAssignableFrom(connection.getClass()))
 				return expectedConnection.cast(connection);
+			else if(expectedConnection.isAssignableFrom(session.getClass()))
+				return expectedConnection.cast(session);
 			else
 				throw new DataStoreException("Unsupported connection class: "+expectedConnection);
 		}
