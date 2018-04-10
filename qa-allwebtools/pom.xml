@@ -22,9 +22,13 @@
   	<module>../qa-orm</module>
   	<module>../qa-orm-hibernate</module>
   	<module>../qa-orm-hibernate-web</module>
-  	<module>../qa-rest-security</module>
-  	<module>../qa-syshub</module>
-  	<module>../qa-syshub-webapp</module>
+  	
+  	
+  	
   	<module>../qa-testtools</module>
+  	<module>../qa-resteasy-cdi</module>
+  	<module>../qa-restsecurity</module>
+  	<module>../qa-resttools</module>
+  	<module>../qa-weldjsf-cdi</module>
   </modules>
 </project>
