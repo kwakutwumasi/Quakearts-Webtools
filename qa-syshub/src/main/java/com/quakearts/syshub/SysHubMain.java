@@ -20,8 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Singleton;
 
 import com.quakearts.appbase.Main;
-import com.quakearts.appbase.cdi.annotation.TransactionParticipant;
-import com.quakearts.appbase.cdi.annotation.TransactionParticipant.TransactionType;
+import com.quakearts.appbase.cdi.annotation.Transactional.TransactionType;
+import com.quakearts.appbase.cdi.annotation.Transactional;
 import com.quakearts.syshub.agent.ProcessingAgent;
 import com.quakearts.syshub.agent.builder.ProcessingAgentBuilder;
 import com.quakearts.syshub.core.factory.DataSpoolerFactory;
@@ -50,7 +50,7 @@ public class SysHubMain implements SysHub {
 		return instance;
 	}
 	
-	@TransactionParticipant(TransactionType.SINGLETON)
+	@Transactional(TransactionType.SINGLETON)
 	public void init() {
 		if(!hasRun){//Run only once per application
 			List<AgentConfiguration> agentConfigurations = SystemDataStoreUtils

@@ -15,7 +15,8 @@ import java.io.Serializable;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.spi.CDI;
 
-import com.quakearts.appbase.cdi.annotation.TransactionParticipant;
+import com.quakearts.appbase.cdi.annotation.Transactional;
+import com.quakearts.appbase.cdi.annotation.Transactional.TransactionType;
 import com.quakearts.syshub.model.VariableCache;
 import com.quakearts.webapp.orm.DataStore;
 
@@ -36,7 +37,7 @@ public class VariableCacheUtil {
 		return instance;
 	}
 	
-	@TransactionParticipant
+	@Transactional(TransactionType.SINGLETON)
 	public void storeVariable(String key, Serializable obj) throws Exception{
 		try{
 			VariableCache cache = new VariableCache();
@@ -49,7 +50,7 @@ public class VariableCacheUtil {
 		}		
 	}
 
-	@TransactionParticipant
+	@Transactional(TransactionType.SINGLETON)
 	public void updateVariable(String key, Serializable obj) throws Exception{
 		try{
 			DataStore systemDataStore = systemDataStoreUtils.getSystemDataStore();
@@ -66,7 +67,7 @@ public class VariableCacheUtil {
 	}
 
 	
-	@TransactionParticipant
+	@Transactional(TransactionType.SINGLETON)
 	public Object getVariable(String key,boolean remove) throws Exception{
 		Object obj;		
 		try {

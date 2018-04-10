@@ -27,8 +27,8 @@ import javax.enterprise.inject.spi.CDI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.quakearts.appbase.cdi.annotation.TransactionParticipant;
-import com.quakearts.appbase.cdi.annotation.TransactionParticipant.TransactionType;
+import com.quakearts.appbase.cdi.annotation.Transactional;
+import com.quakearts.appbase.cdi.annotation.Transactional.TransactionType;
 import com.quakearts.syshub.core.Message;
 import com.quakearts.syshub.core.Result;
 import com.quakearts.syshub.core.utils.CacheManagerUtil;
@@ -96,7 +96,7 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 		return instance;
 	}
 
-	@TransactionParticipant(TransactionType.SINGLETON)
+	@Transactional(TransactionType.SINGLETON)
 	public synchronized void pushLogsToDB() throws Exception {		
 		List<ProcessingLog> sortList = new ArrayList<>(getSaveLogCache().values());
 		sortList.sort(logComparator);
@@ -215,7 +215,7 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	 * @see com.quakearts.notification.log.MessageLogger#findMessagesByDetails(java.lang.String, java.lang.Byte, java.lang.String, java.lang.String)
 	 */
 	@Override
-	@TransactionParticipant(TransactionType.SINGLETON)
+	@Transactional(TransactionType.SINGLETON)
 	public List<ProcessingLog> findMessagesByDetails(String messageDetails, Byte type, 
 			String errorStatus, String source) throws Exception {
 		List<ProcessingLog> list;
@@ -242,7 +242,7 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	 * @see com.quakearts.notification.log.MessageLogger#getLogByID(long)
 	 */
 	@Override
-	@TransactionParticipant(TransactionType.SINGLETON)
+	@Transactional(TransactionType.SINGLETON)
 	public ProcessingLog getLogByID(long logID){
 		return systemDataStoreUtils.getSystemDataStore().get(ProcessingLog.class, Long.valueOf(logID));
 	}
@@ -251,7 +251,7 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	 * @see com.quakearts.notification.log.MessageLogger#findMessageLogByMid(java.lang.String)
 	 */
 	@Override
-	@TransactionParticipant(TransactionType.SINGLETON)
+	@Transactional(TransactionType.SINGLETON)
 	public ProcessingLog findMessageLogByMid(String mid){
 		
 		ProcessingLog founndlog = getSaveLogCache().get(mid);
