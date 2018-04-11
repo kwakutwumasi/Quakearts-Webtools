@@ -27,7 +27,8 @@ public abstract class DataStoreFactory {
 	 */
 	public static DataStoreFactory getInstance() {
 		if(instance == null){
-			Iterator<DataStoreFactory> dataStoreFactoryIterator = ServiceLoader.load(DataStoreFactory.class).iterator();
+			Iterator<DataStoreFactory> dataStoreFactoryIterator = 
+					ServiceLoader.load(DataStoreFactory.class, DataStoreFactory.class.getClassLoader()).iterator();
 			
 			while (dataStoreFactoryIterator.hasNext()) {//a run
 				dataStoreFactoryIterator.next();
