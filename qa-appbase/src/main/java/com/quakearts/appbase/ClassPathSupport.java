@@ -1,7 +1,10 @@
 package com.quakearts.appbase;
 
+import javax.enterprise.inject.Vetoed;
+
 import com.quakearts.appbase.impl.ClasspathResourcesImpl;
 
+@Vetoed
 public class ClassPathSupport {
 	private static ClasspathResources classpathResources;
 

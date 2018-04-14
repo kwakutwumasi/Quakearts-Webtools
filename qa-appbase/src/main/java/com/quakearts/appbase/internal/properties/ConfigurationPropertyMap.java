@@ -10,8 +10,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
+import javax.enterprise.inject.Vetoed;
+
 import com.quakearts.appbase.exception.ConfigurationException;
 
+@Vetoed
 public class ConfigurationPropertyMap extends HashMap<String, Serializable> {
 
 	/**

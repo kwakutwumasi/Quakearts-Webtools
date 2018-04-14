@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.quakearts.appbase.spi.impl;
 
+import javax.enterprise.inject.Vetoed;
 import javax.naming.NamingException;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
@@ -20,6 +21,7 @@ import com.quakearts.appbase.exception.ConfigurationException;
 import com.quakearts.appbase.spi.JavaTransactionManagerSpi;
 import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
 
+@Vetoed
 public class AtomikosJavaTransactionManagerSpiImpl implements JavaTransactionManagerSpi {
 
 	private static UserTransactionManager tm;

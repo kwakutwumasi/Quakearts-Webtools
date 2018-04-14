@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.enterprise.inject.Vetoed;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
@@ -34,6 +35,7 @@ import com.quakearts.appbase.internal.properties.ConfigurationPropertyMap;
 import com.quakearts.appbase.spi.DataSourceProviderSpi;
 import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
 
+@Vetoed
 public class AtomikosBeanDatasourceProviderSpiImpl implements DataSourceProviderSpi {
 
 	private Map<String, DataSource> datasources = new ConcurrentHashMap<>();

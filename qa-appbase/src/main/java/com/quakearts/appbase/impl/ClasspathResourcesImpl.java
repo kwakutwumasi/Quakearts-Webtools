@@ -1,3 +1,13 @@
+/*******************************************************************************
+* Copyright (C) 2016 Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com>.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com> - initial API and implementation
+ ******************************************************************************/
 package com.quakearts.appbase.impl;
 
 import java.io.File;
@@ -10,10 +20,13 @@ import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.jar.Manifest;
 
+import javax.enterprise.inject.Vetoed;
+
 import com.quakearts.appbase.ClasspathResources;
 import com.quakearts.appbase.Main;
 import com.quakearts.appbase.exception.ConfigurationException;
 
+@Vetoed
 public class ClasspathResourcesImpl implements ClasspathResources {
 
 	private HashMap<String, URL> libraryMap = new HashMap<>();

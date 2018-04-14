@@ -10,6 +10,9 @@
  ******************************************************************************/
 package com.quakearts.appbase.exception;
 
+import javax.enterprise.inject.Vetoed;
+
+@Vetoed
 public class ConfigurationException extends RuntimeException {
 
 	/**

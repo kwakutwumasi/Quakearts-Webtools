@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.enterprise.inject.Vetoed;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequestListener;
@@ -53,7 +54,7 @@ import com.quakearts.appbase.spi.impl.tomcat.AppBaseWebAppLoader;
 import com.quakearts.appbase.internal.properties.AppBasePropertiesLoader;
 import com.quakearts.appbase.internal.properties.ConfigurationPropertyMap;
 
-
+@Vetoed
 public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 	
 	private List<Tomcat> tomcatInstances = new ArrayList<>();

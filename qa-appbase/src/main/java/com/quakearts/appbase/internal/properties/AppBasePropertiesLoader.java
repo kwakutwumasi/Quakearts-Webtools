@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import javax.enterprise.inject.Vetoed;
+
 import com.quakearts.appbase.Main;
 import com.quakearts.appbase.exception.ConfigurationException;
 import com.quakearts.appbase.internal.json.Json;
@@ -20,6 +22,7 @@ import com.quakearts.appbase.internal.json.JsonValue;
 import com.quakearts.appbase.internal.json.ParseException;
 import com.quakearts.appbase.internal.json.JsonObject.Member;
 
+@Vetoed
 public class AppBasePropertiesLoader {
 	
 	public List<ConfigurationPropertyMap> getAllConfigurationProperties(String fileLocation, String fileSuffix, String appName){

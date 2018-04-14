@@ -12,6 +12,7 @@ package com.quakearts.appbase.spi.impl.naming;
 
 import java.util.Hashtable;
 
+import javax.enterprise.inject.Vetoed;
 import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.NamingException;
@@ -20,6 +21,7 @@ import javax.naming.spi.ObjectFactory;
 
 import org.apache.naming.NamingContext;
 
+@Vetoed
 public class AppBaseInitialContextFactory implements InitialContextFactory, ObjectFactory {
 
 	public static NamingContext context;

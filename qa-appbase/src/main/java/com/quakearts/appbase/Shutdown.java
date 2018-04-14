@@ -13,8 +13,10 @@ package com.quakearts.appbase;
 import java.io.IOException;
 import java.net.Socket;
 
+import javax.enterprise.inject.Vetoed;
 import javax.net.SocketFactory;
 
+@Vetoed
 public class Shutdown {
 
 	public static void main(String[] args) {

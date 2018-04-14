@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.quakearts.appbase.spi.impl;
 
+import javax.enterprise.inject.Vetoed;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -19,6 +20,7 @@ import org.apache.naming.NamingContext;
 import com.quakearts.appbase.exception.ConfigurationException;
 import com.quakearts.appbase.spi.JavaNamingDirectorySpi;
 
+@Vetoed
 public class JavaNamingDirectorySpiImpl implements JavaNamingDirectorySpi {
 
 	@Override

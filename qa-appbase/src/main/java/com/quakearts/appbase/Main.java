@@ -18,6 +18,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Properties;
 
+import javax.enterprise.inject.Vetoed;
 import javax.net.ServerSocketFactory;
 
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ import com.quakearts.appbase.spi.factory.EmbeddedWebServerSpiFactory;
 import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
 import com.quakearts.appbase.spi.factory.JavaTransactionManagerSpiFactory;
 
+@Vetoed
 public class Main {
 
 	private static final String USAGE = "Usage: appbase mainclass [filename] [-dontwaitinmain]\n"

@@ -1,5 +1,8 @@
 package com.quakearts.appbase.spi.beans;
 
+import javax.enterprise.inject.Vetoed;
+
+@Vetoed
 public class WebAppListener {
 	public static enum Priority {
 		ANY,

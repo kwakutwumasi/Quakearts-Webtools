@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.quakearts.appbase.spi.impl;
 
+import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.jboss.weld.bootstrap.api.helpers.RegistrySingletonProvider;
@@ -25,6 +26,7 @@ import com.quakearts.appbase.spi.beans.WebAppListener;
 import com.quakearts.appbase.spi.beans.WebAppListener.Priority;
 import com.quakearts.appbase.spi.factory.EmbeddedWebServerSpiFactory;
 
+@Vetoed
 public class WeldContextDependencySpiImpl implements ContextDependencySpi {
 
 	private Weld weld;
