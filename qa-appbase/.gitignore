@@ -11,3 +11,4 @@
 /tomcat.keystore
 /test-*
 /testinternaldb/
+/.DS_Store
