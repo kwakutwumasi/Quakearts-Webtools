@@ -1,0 +1,2 @@
+Name: com/quakearts/appbase/internal/json
+Sealed: true
