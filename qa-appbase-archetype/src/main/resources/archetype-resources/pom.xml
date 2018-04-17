@@ -34,7 +34,7 @@
 							<id>webapp</id>
 							<mainClass>com.quakearts.appbase.Main</mainClass>
 							<commandLineArguments>
-								<commandLineArgument>${groupId}.Main</commandLineArgument>
+								<commandLineArgument>${package}.Main</commandLineArgument>
 							</commandLineArguments>
 						</program>
 						<program>
@@ -44,7 +44,7 @@
 								<extraArgument>-agentlib:jdwp=transport=dt_socket,address=localhost:4000,server=y,suspend=y</extraArgument>
 							</jvmSettings>
 							<commandLineArguments>
-								<commandLineArgument>${groupId}.Main</commandLineArgument>
+								<commandLineArgument>${package}.Main</commandLineArgument>
 							</commandLineArguments>
 						</program>
 					</programs>
@@ -65,6 +65,11 @@
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-appbase</artifactId>
 			<version>1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-jdk14</artifactId>
+			<version>1.7.25</version>
 		</dependency>
 	</dependencies>
 </project>

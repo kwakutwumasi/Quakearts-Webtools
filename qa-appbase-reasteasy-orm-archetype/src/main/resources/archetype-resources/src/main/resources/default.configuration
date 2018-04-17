@@ -1,0 +1,5 @@
+cdi.spi.class=com.quakearts.appbase.spi.impl.WeldContextDependencySpiImpl
+java.tm.spi.class=com.quakearts.appbase.spi.impl.AtomikosJavaTransactionManagerSpiImpl
+embedded.ws.spi.class=com.quakearts.appbase.spi.impl.TomcatEmbeddedServerSpiImpl
+jndi.spi.class=com.quakearts.appbase.spi.impl.JavaNamingDirectorySpiImpl
+datasource.spi.class=com.quakearts.appbase.spi.impl.AtomikosBeanDatasourceProviderSpiImpl

@@ -79,8 +79,7 @@ public class AppBaseReasteasyJaxrsInjectionTarget<T> implements InjectionTarget<
 			ContextResolver<GeneralValidatorCDI> resolver = providerFactory
 					.getContextResolver(GeneralValidatorCDI.class, MediaType.WILDCARD_TYPE);
 			if (resolver != null) {
-				validator = providerFactory.getContextResolver(GeneralValidatorCDI.class, MediaType.WILDCARD_TYPE)
-						.getContext(null);
+				validator = resolver.getContext(null);
 			}
 			if (validator != null && validator.isValidatableFromCDI(clazz)) {
 				validator.validate(request, instance);

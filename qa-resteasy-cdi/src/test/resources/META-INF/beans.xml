@@ -4,6 +4,6 @@
        xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd"
        version="1.2" bean-discovery-mode="all">
 	<decorators>
-		<class>com.quakearts.appbase.test.experiments.TestSubInjectDecorator</class>
+		<class>com.quakearts.webtools.resteasy.cdi.test.experiments.TestSubInjectDecorator</class>
 	</decorators>
 </beans>

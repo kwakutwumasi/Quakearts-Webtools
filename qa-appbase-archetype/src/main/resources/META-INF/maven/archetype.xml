@@ -1,9 +1,0 @@
-<archetype>
-  <id>qa-appbase-archetype</id>
-  <sources>
-    <source>src/main/java/Main.java</source>
-  </sources>
-  <resources>
-    <resource encoding="UTF-8">src/main/resources/META-INF/beans.xml</resource>
-  </resources>
-</archetype>
