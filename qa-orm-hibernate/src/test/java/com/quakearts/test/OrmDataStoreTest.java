@@ -21,7 +21,9 @@ import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.core.Is.*;
+import static org.hamcrest.core.IsNull.*;
 
+import org.hibernate.Session;
 import org.junit.After;
 import org.junit.Test;
 
@@ -53,7 +55,8 @@ public class OrmDataStoreTest {
 			dataStore.save(brand);
 			dataStore.flushBuffers();
 			Brand savedBrand = dataStore.get(Brand.class, 1);
-			assertThat("No brand with ID 1", savedBrand.getName(), is(brand.getName()));
+			assertThat("No brand with ID 1", savedBrand, is(notNullValue()));
+			assertThat("Brand name does not match", savedBrand.getName(), is(brand.getName()));
 
 			dataStore.delete(savedBrand);
 			dataStore.flushBuffers();
@@ -73,7 +76,8 @@ public class OrmDataStoreTest {
 			dataStore.saveOrUpdate(brand);
 			dataStore.flushBuffers();
 			savedBrand = dataStore.get(Brand.class, 2);
-			assertThat("No brand with ID 2", savedBrand.getName(), is(brand.getName()));
+			assertThat("No brand with ID 2", savedBrand, is(notNullValue()));
+			assertThat("Brand name does not match", savedBrand.getName(), is(brand.getName()));
 
 			savedBrand.setName("Nissan");
 			dataStore.saveOrUpdate(savedBrand);
@@ -241,6 +245,41 @@ public class OrmDataStoreTest {
 				fail("Exception "+e.getClass().getName());
 			}
 		});
+		
+		dataStore.executeFunction((dataStoreConnection)->{
+			dataStoreConnection.getConnection(Session.class);
+		});
+	}
+	
+	@Test
+	public void testClearBuffers() throws Exception {
+		DataStore dataStore = DataStoreFactory.getInstance().getDataStore();
+		Brand brand1 = createBrand(21, "Quakearts");
+		dataStore.save(brand1);
+		Brand brand2 = createBrand(22, "QuakeartsII");
+		dataStore.save(brand2);
+		dataStore.flushBuffers();
+		CurrentSessionContextHelper.closeOpenSessions();
+		
+		dataStore = DataStoreFactory.getInstance().getDataStore();
+		Brand brand3 = createBrand(23, "QuakeartsIII");
+		dataStore.save(brand3);
+		Brand brand1Update = createBrand(21, "QuakeartsI");
+		dataStore.update(brand1Update);
+		dataStore.delete(brand2);
+		dataStore.clearBuffers();
+		CurrentSessionContextHelper.closeOpenSessions();
+
+		dataStore = DataStoreFactory.getInstance().getDataStore();
+		Brand savedBrand = dataStore.get(Brand.class, 21);
+		assertThat("No brand with ID 21", savedBrand, is(notNullValue()));
+		assertThat("Brand name does not match", savedBrand.getName(), is(brand1.getName()));
+		savedBrand = dataStore.get(Brand.class, 22);
+		assertThat("No brand with ID 22", savedBrand, is(notNullValue()));
+		assertThat("Brand name does not match", savedBrand.getName(), is(brand2.getName()));
+		
+		savedBrand = dataStore.get(Brand.class, 23);
+		assertThat("Brand with ID 22 was created", savedBrand, is(nullValue()));		
 	}
 	
 	private void printInventory(List<Inventory> inventories) {
