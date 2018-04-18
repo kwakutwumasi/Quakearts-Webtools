@@ -136,6 +136,10 @@ public class TestDataStoreList {
 		public String getConfigurationProperty(String propertyName) {
 			return null;
 		}
+
+		@Override
+		public void clearBuffers() throws DataStoreException {
+		}
 		
 	}
 }

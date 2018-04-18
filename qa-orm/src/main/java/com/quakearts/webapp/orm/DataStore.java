@@ -100,4 +100,10 @@ public interface DataStore {
 	 * @return The property, if any.
 	 */
 	String getConfigurationProperty(String propertyName);
+	/**Cancel pending saves/updates. Can be used to prevent previously saved/updated
+	 * items from being permanently persisted. This action should, for example,
+	 * set the transaction as roll-back-only in a JTA environment
+	 * @throws DataStoreException
+	 */
+	void clearBuffers() throws DataStoreException;
 }
