@@ -41,11 +41,6 @@
 		  <version>2.3</version>
 		</dependency>
 		<dependency>
-		  <groupId>com.quakearts.webtools</groupId>
-		  <artifactId>qa-beansupport</artifactId>
-		  <version>2.3</version>
-		</dependency>
-		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
 			<version>7.0</version>
@@ -61,18 +56,6 @@
 					<groupId>javax.transaction</groupId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.derby</groupId>
-			<artifactId>derby</artifactId>
-			<version>10.13.1.1</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
