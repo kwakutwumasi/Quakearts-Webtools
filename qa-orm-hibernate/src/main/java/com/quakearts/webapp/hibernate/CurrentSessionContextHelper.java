@@ -110,14 +110,12 @@ public abstract class CurrentSessionContextHelper implements CurrentSessionConte
 				throw new IllegalStateException("Transaction cannot be found.");
 	
 			try {
-				if(tx.getStatus()==TransactionStatus.ACTIVE){
-					if(tx.getStatus() == TransactionStatus.MARKED_ROLLBACK){
-						tx.rollback();
-					} else {
-						tx.commit();
-					}
+				if(tx.getStatus() == TransactionStatus.ACTIVE){
+					tx.commit();
+				} else if(tx.getStatus() == TransactionStatus.MARKED_ROLLBACK){
+					tx.rollback();
 				} else {
-					throw new IllegalStateException("Transaction is not active");
+					throw new IllegalStateException("Transaction is not in an epected state");
 				}
 			} catch (HibernateException e) {
 				exceptions.add(new Exception("Exception thrown whiles cleaning up domain: "+helper.domain, e));

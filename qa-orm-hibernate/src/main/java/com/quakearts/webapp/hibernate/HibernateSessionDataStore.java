@@ -191,4 +191,9 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 		else
 			return (String) HibernateHelper.getRegistryBuilder().getSettings().get(propertyName);			
 	}
+
+	@Override
+	public void clearBuffers() throws DataStoreException {
+		session.getTransaction().markRollbackOnly();
+	}
 }
