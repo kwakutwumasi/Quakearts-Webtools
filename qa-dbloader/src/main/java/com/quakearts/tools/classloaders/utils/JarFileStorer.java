@@ -73,7 +73,7 @@ public class JarFileStorer {
 					store.save(new JarFileEntry(zipEntry.getName(), jarFile));
 					builder.append("Loaded "+zipEntry.getName()).append("\n");
 					++savecount;
-				}else{
+				} else {
 					builder.append(zipEntry.getName()).append(" already exists in database");
 					JarFile duplicateFile = duplicateJarFileEntry.getJarFile();
 					ZipInputStream duplicateJarStream = new ZipInputStream(new ByteArrayInputStream(duplicateFile.getJarData()));
@@ -95,19 +95,18 @@ public class JarFileStorer {
 					}
 					builder.append("\n");
 				}
-			} catch (Exception e) {
-				try{
-					UtilityMethods.getTransaction().setRollbackOnly();
-				}catch (Exception e2) {
+			} catch (IOException e1) {
+				try {
+					store.clearBuffers();
+				} catch (Exception e2) {
 				}
-				throw new IOException("Exception of type " + e.getClass().getName()
-						+ " was thrown. Message is " + e.getMessage()
+				throw new DataStoreException("IOException whiles reading from jar file. Message is "+e1.getMessage()
 						+ ". Exception occured whiles loading jar entry "+zipEntry.getName());
 			}
 		}
 		if(savecount==0){
 			try {
-				UtilityMethods.getTransaction().setRollbackOnly();
+				store.clearBuffers();
 			} catch (Exception e) {
 			}
 			builder.append("No files were stored.\n");
@@ -142,7 +141,7 @@ public class JarFileStorer {
 	}
 
 	public String getSummary(String newLine) {
-		return summary.replace("\n", newLine);
+		return getSummary().replace("\n", newLine);
 	}
 
 	public String getDomain() {

@@ -5,7 +5,10 @@ import static org.hamcrest.core.Is.*;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -26,7 +29,55 @@ public class TestDBLoader {
 		
 		JarFileStorer jarFileStorer = new JarFileStorer();
 		byte[] jarBytes;
-		try(FileInputStream fis = new FileInputStream("testjar.jar");){
+		jarBytes = readFileBytes("test.jar");
+		
+		jarFileStorer.storeJarFile(jarBytes, "test.jar");
+		DataStoreFactory.getInstance().getDataStore().flushBuffers();
+		CurrentSessionContextHelper.closeOpenSessions();
+		
+		try {
+			Class.forName("test.TestClass", true, classLoader);
+		} catch (Exception e) {
+			fail("Unable to load class: "+e.getMessage());
+		}
+		
+		jarFileStorer.storeJarFile(jarBytes, "testV2.jar");		
+		assertThat(jarFileStorer.getSummary("<br />").contains("No files were stored.<br />"), is(true));
+		DataStoreFactory.getInstance().getDataStore().flushBuffers();
+		CurrentSessionContextHelper.closeOpenSessions();		
+		
+		jarBytes = readFileBytes("testV2.jar");
+		jarFileStorer.storeJarFile(jarBytes, "testV2.jar");
+		DataStoreFactory.getInstance().getDataStore().flushBuffers();
+		CurrentSessionContextHelper.closeOpenSessions();
+		
+		URL url = classLoader
+				.getResource("test/test.properties");
+		assertThat(url != null, is(true));
+		
+		InputStream is = classLoader
+				.getResourceAsStream("test/test.properties");
+		
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		
+		assertThat(reader.readLine(), is("test=property"));
+		
+		jarBytes = readFileBytes("testV3.jar");
+		jarFileStorer.storeJarFile(jarBytes, "testV3.jar");
+		DataStoreFactory.getInstance().getDataStore().flushBuffers();
+		CurrentSessionContextHelper.closeOpenSessions();
+		
+		JarFile[] deleted = jarFileStorer.cleanOrphanJars();
+		
+		assertThat(deleted.length, is(2));
+		assertThat(deleted[0].getJarName(), is("test.jar"));
+		assertThat(deleted[1].getJarName(), is("testV2.jar"));
+		CurrentSessionContextHelper.closeOpenSessions();
+	}
+
+	private byte[] readFileBytes(String fileName) throws IOException, FileNotFoundException {
+		byte[] jarBytes;
+		try(FileInputStream fis = new FileInputStream("testjars"+File.separator+fileName);){
 			ByteArrayOutputStream stream = new ByteArrayOutputStream();
 			int read;
 			while ((read = fis.read())!=-1) {
@@ -34,38 +85,6 @@ public class TestDBLoader {
 			}
 			jarBytes = stream.toByteArray();
 		}
-		
-		jarFileStorer.storeJarFile(jarBytes, "testjar.jar");
-		DataStoreFactory.getInstance().getDataStore().flushBuffers();
-		CurrentSessionContextHelper.closeOpenSessions();
-		
-		Class<?> testClass = Class.forName("com.quakearts.tools.classloaders.test.TestInterfaceImpl", true, classLoader);
-		Object objectClass = testClass.newInstance();
-		assertThat(objectClass instanceof TestInterface, is(true));
-		
-		TestInterface testInterface = (TestInterface) objectClass;
-		assertThat(testInterface.testMethod(), is("Worked"));
-		
-		URL url = classLoader
-				.getResource("META-INF/services/com.quakearts.tools.classloaders.test.TestInterface");
-		assertThat(url != null, is(true));
-		
-		InputStream is = classLoader
-				.getResourceAsStream("META-INF/services/com.quakearts.tools.classloaders.test.TestInterface");
-		
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-		
-		assertThat(reader.readLine(), is("com.quakearts.tools.classloaders.test.TestInterfaceImpl"));
-		
-		jarFileStorer.storeJarFile(jarBytes, "testjarV2.jar");
-		DataStoreFactory.getInstance().getDataStore().flushBuffers();
-		CurrentSessionContextHelper.closeOpenSessions();
-		
-		JarFile[] deleted = jarFileStorer.cleanOrphanJars();
-		
-		assertThat(deleted.length, is(1));
-		assertThat(deleted[0].getJarName(), is("testjar.jar"));
-		
-		CurrentSessionContextHelper.closeOpenSessions();
+		return jarBytes;
 	}
 }
