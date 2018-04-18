@@ -4,6 +4,6 @@
   <groupId>com.quakearts.webtools</groupId>
   <artifactId>qa-appbase-reasteasy-orm-archetype</artifactId>
   <version>1.0.0</version>
-  <name>Archetype - qa-appbase-reasteasy-orm-archetype</name>
+  <name>An Archetype for creating new QA-Appbase JAX-RS ORM applications</name>
   <url>http://maven.apache.org</url>
 </project>
