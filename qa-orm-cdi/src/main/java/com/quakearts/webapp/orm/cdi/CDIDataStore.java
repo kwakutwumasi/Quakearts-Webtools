@@ -77,4 +77,8 @@ public class CDIDataStore implements DataStore {
 		return getWrappedDataStore().getConfigurationProperty(propertyName);
 	}
 
+	@Override
+	public void clearBuffers() throws DataStoreException {
+		getWrappedDataStore().clearBuffers();
+	}
 }
