@@ -7,16 +7,13 @@
  * 
  * SPDX-License-Identifier: EPL-2.0
  ******************************************************************************/
-package com.quakearts.webapp.orm.cdi;
+package com.quakearts.webapp.orm.cdi.annotation;
 
-import javax.enterprise.inject.Produces;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.annotation.Retention;
+import javax.inject.Qualifier;
 
-import com.quakearts.webapp.orm.DataStore;
-import com.quakearts.webapp.orm.cdi.annotation.DataStoreHandle;
-
-public class DataStoreProducer {
-	@Produces
-	public @DataStoreHandle DataStore getDataStoreHandle() {
-		return new CDIDataStore();
-	}
+@Qualifier
+@Retention(RUNTIME)
+public @interface DataStoreFactoryHandle {
 }
