@@ -8,20 +8,25 @@
 <ui:component>
 	<b:formGroup>
 		<label id="tranDt_label">Transaction Date</label>
-		<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs" format="dmyhns"
-			value="#{transactionLog.tranDt}" converter="#{transactionLogPage.webappmain.converter}" 
+		<b:date nullable="true" format="dmyhns"
+			value="#{transactionLog.tranDt}"
+			converter="#{transactionLogPage.webappmain.converter}" 
 			rendered="#{transactionLogPage.inCreateOrEditMode}">
 		</b:date>
 		<h:outputText styleClass="form-control disabled" value="#{transactionLog.tranDt}" rendered="#{transactionLogPage.webappmain.mode eq 'read'}">
 			<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss S"></f:convertDateTime>
 		</h:outputText>
 		<h:panelGroup rendered="#{transactionLogPage.webappmain.mode != 'read' and !transactionLogPage.inCreateOrEditMode}">
-			<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs" 
-				value="#{transactionLogPage.tranDtRange.from}" converter="#{transactionLogPage.webappmain.converter}">
+			<b:date nullable="true"
+				format="dmyhns" min="9" max="1"
+				value="#{transactionLogPage.tranDtRange.from}"
+				converter="#{transactionLogPage.webappmain.converter}">
 			</b:date>
 			<div>to</div>
-			<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs" 
-				value="#{transactionLogPage.tranDtRange.to}" converter="#{transactionLogPage.webappmain.converter}">
+			<b:date nullable="true"
+				format="dmyhns" min="9" max="1" 
+				value="#{transactionLogPage.tranDtRange.to}"
+				converter="#{transactionLogPage.webappmain.converter}">
 			</b:date>
 		</h:panelGroup>
 	</b:formGroup>
@@ -75,7 +80,9 @@
 	</c:unique>
 	<b:formGroup>
 		<label id="username_label">Username</label>
-		<h:inputText styleClass="form-control" value="#{transactionLog.username}" disabled="#{transactionLogPage.webappmain.mode eq 'read'}">
+		<h:inputText styleClass="form-control" 
+			value="#{transactionLog.username}"
+			disabled="#{transactionLogPage.webappmain.mode eq 'read'}">
 		</h:inputText>
 	</b:formGroup>
 </ui:component>

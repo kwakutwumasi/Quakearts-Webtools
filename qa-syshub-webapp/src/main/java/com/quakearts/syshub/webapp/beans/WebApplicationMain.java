@@ -64,7 +64,7 @@ public class WebApplicationMain implements Serializable {
 	public Converter getConverter() {
 		if(converter==null){
 			converter = new TimeStampConverter();
-			((TimeStampConverter)converter).setPattern("dd/MM/yyyy");
+			((TimeStampConverter)converter).setPattern("dd/MM/yyyy HH:mm:ss");
 		}
 		return converter;
 	}

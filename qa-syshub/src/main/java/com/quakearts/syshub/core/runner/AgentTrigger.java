@@ -22,4 +22,14 @@ public interface AgentTrigger {
     		throws ConfigurationException;
 	boolean isShutDown();
 	void registerRunAgentListener(RunAgentListener listener);
+	TriggerState getState();
+	
+	public static enum TriggerState {
+		Dormant,
+		Preparing,
+		Ready,
+		Connected,
+		Disconnected,
+		Error
+	}
 }

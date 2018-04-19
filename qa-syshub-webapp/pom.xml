@@ -29,6 +29,8 @@
 				<version>3.0.0</version>
 				<configuration>
 					<warSourceDirectory>WebContent</warSourceDirectory>
+					<attachClasses>true</attachClasses>
+					<classesClassifier>deploy</classesClassifier>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -48,7 +50,7 @@
 		<dependency>
 			<groupId>com.quakearts.syshub</groupId>
 			<artifactId>qa-syshub</artifactId>
-			<version>1.0</version>
+			<version>1.0.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

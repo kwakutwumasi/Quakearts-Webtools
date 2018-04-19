@@ -94,20 +94,26 @@
 	</c:unique>	
 	<b:formGroup>
 		<label id="exceptionDt_label">Exception Date</label>
-		<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs" rendered="#{resultExceptionLogPage.inCreateOrEditMode}" format="dmyhns"
-			value="#{resultExceptionLog.exceptionDt}" converter="#{resultExceptionLogPage.webappmain.converter}" 
+		<b:date nullable="true" 
+			rendered="#{resultExceptionLogPage.inCreateOrEditMode}" format="dmyhns"
+			value="#{resultExceptionLog.exceptionDt}" 
+			converter="#{resultExceptionLogPage.webappmain.converter}" 
 			disabled="#{resultExceptionLogPage.webappmain.mode eq 'read'}">
 		</b:date>
 		<h:outputText styleClass="form-control disabled" value="#{resultExceptionLog.exceptionDt}" rendered="#{resultExceptionLogPage.webappmain.mode eq 'read'}">
 			<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss S"></f:convertDateTime>
 		</h:outputText>
 		<h:panelGroup rendered="#{resultExceptionLogPage.webappmain.mode != 'read' and !resultExceptionLogPage.inCreateOrEditMode}">
-			<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs" 
-				value="#{resultExceptionLogPage.exceptionDtRange.from}" converter="#{resultExceptionLogPage.webappmain.converter}">
+			<b:date nullable="true" 
+				format="dmyhns" min="9" max="1"				
+				value="#{resultExceptionLogPage.exceptionDtRange.from}"
+				converter="#{resultExceptionLogPage.webappmain.converter}">
 			</b:date>
 			<div>to</div>
-			<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs" 
-				value="#{resultExceptionLogPage.exceptionDtRange.to}" converter="#{resultExceptionLogPage.webappmain.converter}">
+			<b:date nullable="true" 
+				format="dmyhns" min="9" max="1"							
+				value="#{resultExceptionLogPage.exceptionDtRange.to}"
+				converter="#{resultExceptionLogPage.webappmain.converter}">
 			</b:date>
 		</h:panelGroup>
 	</b:formGroup>

@@ -8,20 +8,26 @@
 <ui:component>
 	<b:formGroup>
 		<label id="logDt_label">Log Date</label>
-		<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs" format="dmyhns"
-			value="#{processingLog.logDt}" converter="#{processingLogPage.webappmain.converter}" 
-			rendered="#{processingLogPage.inCreateOrEditMode}">
+		<b:date nullable="true" format="dmyhns"
+			value="#{processingLog.logDt}" 
+			converter="#{processingLogPage.webappmain.converter}" 
+			rendered="#{processingLogPage.inCreateOrEditMode}" 
+			min="9" max="1">
 		</b:date>
 		<h:outputText styleClass="form-control disabled" value="#{processingLog.logDt}" rendered="#{processingLogPage.webappmain.mode eq 'read'}">
 			<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss S"></f:convertDateTime>
 		</h:outputText>
 		<h:panelGroup rendered="#{processingLogPage.webappmain.mode != 'read' and !processingLogPage.inCreateOrEditMode}">
-			<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs" 
-				value="#{processingLogPage.logDtRange.from}" converter="#{processingLogPage.webappmain.converter}">
+			<b:date nullable="true"
+				format="dmyhns" min="9" max="1"
+				value="#{processingLogPage.logDtRange.from}"
+				converter="#{processingLogPage.webappmain.converter}">
 			</b:date>
 			<div>to</div>
-			<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs" 
-				value="#{processingLogPage.logDtRange.to}" converter="#{processingLogPage.webappmain.converter}">
+			<b:date nullable="true"
+				format="dmyhns" min="9" max="1"
+				value="#{processingLogPage.logDtRange.to}"
+				converter="#{processingLogPage.webappmain.converter}">
 			</b:date>
 		</h:panelGroup>
 	</b:formGroup>

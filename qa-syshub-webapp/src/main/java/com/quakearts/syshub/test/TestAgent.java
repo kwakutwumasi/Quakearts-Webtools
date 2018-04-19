@@ -158,4 +158,8 @@ public class TestAgent implements DataSpooler, MessageFormatter, Messenger, Agen
 		this.listener = listener;
 	}
 
+	@Override
+	public TriggerState getState() {
+		return TriggerState.Connected;
+	}
 }
