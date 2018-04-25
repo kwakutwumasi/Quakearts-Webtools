@@ -3735,5 +3735,17 @@ child component if present
 			<description>The HTML mouse wheel event handler. This attribute can hold ValueExpressions</description>
 			<name>onmousewheel</name>
 		</attribute>
-	</tag>	
+	</tag>
+	<tag>
+		<description><![CDATA[
+			A tag for adding Javascript content to the base of the page. This is inline with best practices of 
+			placing Javascript code at the bottom of the page to evaliate after components have loaded.
+		]]></description>
+		<tag-name>script</tag-name>
+		<component>
+			<component-type>javax.faces.Output</component-type>
+			<renderer-type>com.quakearts.bootstrap.basescript.renderer</renderer-type>
+			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
+		</component>
+	</tag>
 </facelet-taglib>

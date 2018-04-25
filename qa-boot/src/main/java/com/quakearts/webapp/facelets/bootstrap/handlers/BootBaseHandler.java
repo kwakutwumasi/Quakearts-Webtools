@@ -25,7 +25,6 @@ import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.MetaRuleset;
 import com.quakearts.webapp.facelets.bootstrap.common.BootHeaderComponent;
 import com.quakearts.webapp.facelets.bootstrap.common.BootOnLoadComponent;
-import com.quakearts.webapp.facelets.bootstrap.common.BootResourceBase;
 
 public class BootBaseHandler extends ComponentHandler {
 	public static final String BOOT_LIBRARY_LOADED = "com.quakearts.facelets.bootstrap.LIBRARY_LOADED";
@@ -109,7 +108,7 @@ public class BootBaseHandler extends ComponentHandler {
 			ctx.getViewRoot().addComponentResource(ctx, headerComponent);
 			ctx.getAttributes().put(BOOT_HEADER, headerComponent);
 			
-			BootResourceBase onLoadComponent = new BootOnLoadComponent();
+			BootOnLoadComponent onLoadComponent = new BootOnLoadComponent();
 			ctx.getViewRoot().addComponentResource(ctx, onLoadComponent, "body");
 			ctx.getAttributes().put(BOOT_ONLOAD, onLoadComponent);
 			
