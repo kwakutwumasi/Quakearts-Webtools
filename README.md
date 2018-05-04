@@ -18,6 +18,7 @@ qa-crypto: Cryptographic Service for use with JPA<br />
 qa-dbloader: Database Classloader for use with any RDBMS. Uses JPA and provides utility classes to quickly load and instantiate classes stored in a database. Useful for dynamic projects<br />
 qa-exception: An Exception handling library, inspired by a Dzone article<br />
 qa-logging: A logging servlet for Servers that use logging frameworks like JBoss Logging, SLF4J, Log4j etc. Reads and parses log files, pumps logs through websockets to a web interface<br />
+qa-message-broker: An implementation of two way messaging Queue for inter-thread async communication
 qa-orm: An abstraction of data access. Abstracted to work with JPA as well as other Object-Relational Mapping, and Object-NoSql Mapping libraries.<br />
 qa-orm-cdi: CDI producers for qa-orm interfaces<br/>
 qa-orm-hibernate: An implementation of qa-orm for Hibernate JPA<br />

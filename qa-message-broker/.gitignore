@@ -1,0 +1,12 @@
+/target/
+/.settings
+/.project
+/.classpath
+/*.lck
+/*.log
+/tomcat.8080/
+/PutObjectStoreDirHere/
+/ObjectStore/
+/testdb/
+/tomcat.keystore
+SESSIONS.ser
