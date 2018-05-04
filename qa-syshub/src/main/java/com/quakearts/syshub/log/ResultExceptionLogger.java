@@ -19,5 +19,6 @@ import com.quakearts.syshub.model.ResultExceptionLog;
 
 public interface ResultExceptionLogger {
 	List<ResultExceptionLog> getUnpersistedResultExceptionLogs();
-	void logResultException(AgentConfiguration agentConfiguration, AgentModule agentModule, Exception e, Result result);
+	ResultExceptionLog getResultExceptionLogByID(long relID);
+	void logResultException(AgentConfiguration agentConfiguration, AgentModule agentModule, Exception e, Result<?> result);
 }

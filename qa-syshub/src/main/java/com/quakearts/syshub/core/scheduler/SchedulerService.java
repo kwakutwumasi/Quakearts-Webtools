@@ -10,6 +10,9 @@
  ******************************************************************************/
 package com.quakearts.syshub.core.scheduler;
 
+import java.util.List;
+
+import com.quakearts.syshub.core.runner.Statistic;
 import com.quakearts.syshub.exception.ConfigurationException;
 
 public interface SchedulerService {
@@ -17,4 +20,5 @@ public interface SchedulerService {
 	boolean isRunning(Runnable runnable);
 	boolean isShutDown(Runnable runnable);
 	boolean shutdown(Runnable runnable);
+	List<Statistic> getStatistics(Runnable runnable);
 }

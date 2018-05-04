@@ -10,19 +10,22 @@
  ******************************************************************************/
 package com.quakearts.syshub.core.runner.impl;
 
+import javax.enterprise.inject.Vetoed;
+
 import com.quakearts.appbase.Main;
 import com.quakearts.syshub.agent.ProcessingAgent;
 import com.quakearts.syshub.core.runner.AgentRunner;
 import com.quakearts.syshub.exception.ProcessingException;
 import com.quakearts.syshub.model.AgentConfiguration.RunType;
 
+@Vetoed
 public class LoopedAgentRunner implements Runnable, AgentRunner {
 	private ProcessingAgent agent;
-	private boolean running = true, inErrorState = false;
+	private boolean running, inErrorState;
 	
 	public LoopedAgentRunner(ProcessingAgent agent) {
 		this.agent = agent;
-		restart();
+		start();
 	}
 
 	@Override
@@ -50,7 +53,7 @@ public class LoopedAgentRunner implements Runnable, AgentRunner {
 
 	@Override
 	public boolean isShutDown() {
-		return running;
+		return !running || agent.isShutdown();
 	}
 
 	@Override
@@ -74,15 +77,22 @@ public class LoopedAgentRunner implements Runnable, AgentRunner {
 	}
 
 	@Override
-	public boolean restart() {
-		new Thread(this).start();
+	public boolean start() {
+		if(!running) {
+			agent.reset();
+			setRunning(true);
+			new Thread(this).start();
+		}
 		return true;
 	}
 
 	@Override
 	public boolean shutdown() {
-		setRunning(false);
-		return true;
+		if(running) {
+			setRunning(false);
+			agent.shutdown();
+		}
+		return isShutDown();
 	}
 
 	@Override

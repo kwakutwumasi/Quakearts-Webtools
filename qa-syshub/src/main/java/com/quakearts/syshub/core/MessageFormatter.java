@@ -20,11 +20,16 @@ import com.quakearts.syshub.exception.ProcessingException;
  */
 public interface MessageFormatter extends AgentConfigurationModule, AgentModuleValidator {
     /**Method for generate messages from the Result objects passed in.
+     * 
+	 * Implementation note: Though very uncommon and not practicable for pure message formatters, 
+	 * actions must not wait indefinitely, or else 
+	 * thread starvation may occur as a result of the processing thread never terminating.
+	 * Always have a timeout in order to release the thread to process other requests
      * @param rlt {@link ResultImpl} object for generating messages
      * @return An array or Message objects
      * @throws ProcessingException
      */
-    Message<?> formatdata(Result rlt) throws ProcessingException;
+    Message<?> formatdata(Result<?> rlt) throws ProcessingException;
     /**Method to release and resources the formatter may be holding
      * 
      */

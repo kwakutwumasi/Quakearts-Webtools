@@ -10,6 +10,13 @@
  ******************************************************************************/
 package com.quakearts.syshub.exception;
 
+import javax.enterprise.inject.Vetoed;
+
+/**Thrown to break out of any wait loops in the agent runners
+ * @author kwakutwumasi-afriyie
+ *
+ */
+@Vetoed
 public class FatalException extends RuntimeException {
 
 	/**

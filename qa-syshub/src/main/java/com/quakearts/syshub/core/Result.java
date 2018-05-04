@@ -22,14 +22,14 @@ import java.util.Properties;
  * @author kwaku.twumasi@quakearts.com
  *
  */
-public interface Result extends Serializable, Iterable<Map<String, Object>> {
+public interface Result<T> extends Serializable, Iterable<Map<String, T>> {
 
 	/**Add a result specific property
 	 * @param name
 	 * @param property
 	 * @return
 	 */
-	Result addProperty(String name, String property);
+	Result<T> addProperty(String name, String property);
 
 	/**Get result properties
 	 * @return
@@ -40,18 +40,18 @@ public interface Result extends Serializable, Iterable<Map<String, Object>> {
 	 * @param rs
 	 * @return
 	 */
-	Result addRow(Map<String, Object> rs);
+	Result<T> addRow(Map<String, T> rs);
 
 	/**Add Results that describe the main results
 	 * @param rs
 	 * @return
 	 */
-	Result addMetaDataResult(Map<String, Object> rs);
+	Result<T> addMetaDataResult(Map<String, T> rs);
 
 	/**Return a List of Map objects of column/data tuples
 	 * @return 
 	 */
-	List<Map<String, Object>> getDataResults();
+	List<Map<String, T>> getDataResults();
 
 	/**Determines if there are data results
 	 * @return True if there are Results
@@ -72,16 +72,19 @@ public interface Result extends Serializable, Iterable<Map<String, Object>> {
 	 * @param results
 	 * @return
 	 */
-	Result addAll(List<Map<String, Object>> results);
+	Result<T> addAllRows(List<Map<String, T>> results);
 
 	/**Get meta data for this Result object
 	 * @return the metaresults
 	 */
-	List<Map<String, Object>> getMetaDataResults();
+	List<Map<String, T>> getMetaDataResults();
 
 	/**Add all the metadata
 	 * @param metaresults the metaresults to set
 	 */
-	Result addAllMetaData(List<Map<String, Object>> metaresults);
+	Result<T> addAllMetaData(List<Map<String, T>> metaresults);
 
+	default boolean isEditable() {
+		return false;
+	}
 }

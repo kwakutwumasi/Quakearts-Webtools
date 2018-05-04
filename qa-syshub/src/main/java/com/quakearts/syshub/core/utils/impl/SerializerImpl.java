@@ -8,7 +8,7 @@
  * Contributors:
  *     Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com> - initial API and implementation
  ******************************************************************************/
-package com.quakearts.syshub.core.utils;
+package com.quakearts.syshub.core.utils.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -17,21 +17,23 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import javax.inject.Singleton;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SerializationUtil {
-	private SerializationUtil() {
+import com.quakearts.syshub.core.utils.Serializer;
+
+@Singleton
+public class SerializerImpl implements Serializer {
+	public SerializerImpl() {
 	}
 	
-	private static final Logger log = LoggerFactory.getLogger(SerializationUtil.class);
-	
-	private static final SerializationUtil instance = new SerializationUtil();
-	
-	public static SerializationUtil getInstance() {
-		return instance;
-	}
-	
+	private static final Logger log = LoggerFactory.getLogger(SerializerImpl.class);
+	/* (non-Javadoc)
+	 * @see com.quakearts.syshub.core.utils.Serializer#toByteArray(java.io.Serializable)
+	 */
+	@Override
 	public byte[] toByteArray(Serializable object){
 		if(object==null)
 			return null;
@@ -50,6 +52,10 @@ public class SerializationUtil {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.quakearts.syshub.core.utils.Serializer#toObject(byte[])
+	 */
+	@Override
 	public Object toObject(byte[] bytes) throws IOException, ClassNotFoundException{
 		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 		ObjectInputStream ois = new ObjectInputStream(bis);

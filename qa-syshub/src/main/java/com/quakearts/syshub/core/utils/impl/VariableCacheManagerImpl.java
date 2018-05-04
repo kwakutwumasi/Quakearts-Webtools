@@ -8,55 +8,59 @@
  * Contributors:
  *     Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com> - initial API and implementation
  ******************************************************************************/
-package com.quakearts.syshub.core.utils;
+package com.quakearts.syshub.core.utils.impl;
 
 import java.io.Serializable;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.spi.CDI;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import com.quakearts.appbase.cdi.annotation.Transactional;
 import com.quakearts.appbase.cdi.annotation.Transactional.TransactionType;
+import com.quakearts.syshub.core.utils.Serializer;
+import com.quakearts.syshub.core.utils.SystemDataStoreManager;
+import com.quakearts.syshub.core.utils.VariableCacheManager;
 import com.quakearts.syshub.model.VariableCache;
 import com.quakearts.webapp.orm.DataStore;
 
-@ApplicationScoped
-public class VariableCacheUtil {
-	VariableCacheUtil() {
+@Singleton
+public class VariableCacheManagerImpl implements VariableCacheManager {
+	VariableCacheManagerImpl() {
 	}
 	
-	private SerializationUtil serializationUtil = SerializationUtil.getInstance();
-	private SystemDataStoreUtils systemDataStoreUtils = SystemDataStoreUtils.getInstance();
+	@Inject
+	private Serializer serializer;
+	@Inject
+	private SystemDataStoreManager storeManager;
 	
-	private static VariableCacheUtil instance;
-	
-	public static VariableCacheUtil getInstance() {
-		if(instance == null){
-			instance = CDI.current().select(VariableCacheUtil.class).get();
-		}
-		return instance;
-	}
-	
+	/* (non-Javadoc)
+	 * @see com.quakearts.syshub.core.utils.VariableCacheManager#storeVariable(java.lang.String, java.io.Serializable)
+	 */
+	@Override
 	@Transactional(TransactionType.SINGLETON)
 	public void storeVariable(String key, Serializable obj) throws Exception{
 		try{
 			VariableCache cache = new VariableCache();
 			cache.setAppKey(key);
-			cache.setAppData(serializationUtil.toByteArray(obj));
+			cache.setAppData(serializer.toByteArray(obj));
 			
-			systemDataStoreUtils.getSystemDataStore().save(cache);
+			storeManager.getDataStore().save(cache);
 		} catch(Exception e){
 			throw new Exception(e);
 		}		
 	}
 
+	/* (non-Javadoc)
+	 * @see com.quakearts.syshub.core.utils.VariableCacheManager#updateVariable(java.lang.String, java.io.Serializable)
+	 */
+	@Override
 	@Transactional(TransactionType.SINGLETON)
 	public void updateVariable(String key, Serializable obj) throws Exception{
 		try{
-			DataStore systemDataStore = systemDataStoreUtils.getSystemDataStore();
+			DataStore systemDataStore = storeManager.getDataStore();
 			VariableCache cache = (VariableCache) systemDataStore.get(VariableCache.class, key);
 			if(cache !=null){
-				cache.setAppData(serializationUtil.toByteArray(obj));
+				cache.setAppData(serializer.toByteArray(obj));
 				systemDataStore.update(cache);
 			}else{
 				storeVariable(key, obj);
@@ -67,16 +71,20 @@ public class VariableCacheUtil {
 	}
 
 	
+	/* (non-Javadoc)
+	 * @see com.quakearts.syshub.core.utils.VariableCacheManager#getVariable(java.lang.String, boolean)
+	 */
+	@Override
 	@Transactional(TransactionType.SINGLETON)
 	public Object getVariable(String key,boolean remove) throws Exception{
 		Object obj;		
 		try {
-			Object cacheObj = systemDataStoreUtils.getSystemDataStore().get(VariableCache.class, key);
+			Object cacheObj = storeManager.getDataStore().get(VariableCache.class, key);
 			if(cacheObj instanceof VariableCache){
-				obj = serializationUtil
+				obj = serializer
 						.toObject(((VariableCache)cacheObj).getAppData());
 				if(remove)
-					systemDataStoreUtils.getSystemDataStore().delete(cacheObj);
+					storeManager.getDataStore().delete(cacheObj);
 			} else
 				obj=null;
 		} catch(Exception e){

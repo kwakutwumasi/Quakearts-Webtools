@@ -18,7 +18,7 @@ import java.io.Serializable;
  * @author Kwaku Twumasi-Afriyie
  *
  */
-public class MessageStringImpl extends ByteMessageBase implements Serializable, Message<String> {
+public class MessageStringImpl extends ByteMessageBase implements Message<String> {
 
 	private static final long serialVersionUID = 5563271783697520715L;
 	

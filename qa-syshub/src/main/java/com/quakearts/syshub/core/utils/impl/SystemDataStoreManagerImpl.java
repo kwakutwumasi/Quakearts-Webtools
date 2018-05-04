@@ -8,22 +8,21 @@
  * Contributors:
  *     Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com> - initial API and implementation
  ******************************************************************************/
-package com.quakearts.syshub.core.utils;
+package com.quakearts.syshub.core.utils.impl;
 
+import javax.inject.Singleton;
+
+import com.quakearts.syshub.core.utils.SystemDataStoreManager;
 import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.DataStoreFactory;
 
-public class SystemDataStoreUtils {
-	private SystemDataStoreUtils() {
-	}
-
-	private static final SystemDataStoreUtils instance = new SystemDataStoreUtils();
-	
-	public static SystemDataStoreUtils getInstance() {
-		return instance;
-	}
-	
-	public DataStore getSystemDataStore() {
+@Singleton
+public class SystemDataStoreManagerImpl implements SystemDataStoreManager {	
+	/* (non-Javadoc)
+	 * @see com.quakearts.syshub.core.utils.SystemDataStoreManager#getSystemDataStore()
+	 */
+	@Override
+	public DataStore getDataStore() {
 		return DataStoreFactory.getInstance().getDataStore("system");
 	}
 }

@@ -16,6 +16,6 @@ public class MessageLoggerFactory {
 
 	@Produces 
 	public @MessageLogging MessageLogger getMessageLogger(){
-		return ProcessLoggerImpl.getInstance();
+		return LoggerImpl.getInstance();
 	}
 }

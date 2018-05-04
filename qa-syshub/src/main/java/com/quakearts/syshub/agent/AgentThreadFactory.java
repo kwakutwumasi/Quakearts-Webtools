@@ -12,6 +12,9 @@ package com.quakearts.syshub.agent;
 
 import java.util.concurrent.ThreadFactory;
 
+import javax.enterprise.inject.Vetoed;
+
+@Vetoed
 public class AgentThreadFactory implements ThreadFactory {
 	
 	private String agentName;

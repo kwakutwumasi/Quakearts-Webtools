@@ -27,6 +27,10 @@ public interface Messenger extends AgentConfigurationModule, AgentModuleValidato
     /**Method to send messages. Implementations should extract message and transport according to 
      * message transport protocol/specifications. Message may be plain text or a serialized object
      * for transport protocols requiring specialised objects.
+     * 
+	 * Implementation note: Message sending actions must not wait indefinitely, or else 
+	 * thread starvation may occur as a result of the processing thread never terminating.
+	 * Always have a timeout in order to release the thread to process other requests
      * @param mssg The message to be sent
      * @throws ProcessingException
      */

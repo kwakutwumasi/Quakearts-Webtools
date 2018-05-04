@@ -23,7 +23,7 @@ import com.quakearts.syshub.core.Result;
  * @author Kwaku Twumasi-Afriyie
  *
  */
-public class ResultImpl implements Result {
+public class ResultImpl implements Result<Object> {
 
 	private static final long serialVersionUID = 9198455986339975423L;
 	private Properties properties;
@@ -35,14 +35,14 @@ public class ResultImpl implements Result {
     }
     
     public ResultImpl(){
-    	properties = new Properties();
+    		properties = new Properties();
     }
 
     /* (non-Javadoc)
 	 * @see com.quakearts.notification.core.IResult#addProperties(java.lang.String, java.lang.String)
 	 */
     @Override
-	public Result addProperty(String name, String property){
+	public Result<Object> addProperty(String name, String property){
         properties.setProperty(name, property) ;
         return this;
     }
@@ -59,7 +59,7 @@ public class ResultImpl implements Result {
 	 * @see com.quakearts.notification.core.IResult#addQueryResults(java.util.Map)
 	 */
 	@Override
-	public Result addRow(Map<String, Object> rs){
+	public Result<Object> addRow(Map<String, Object> rs){
         if(rs.size()>0){
             dataresults.add(rs);
         }
@@ -70,7 +70,7 @@ public class ResultImpl implements Result {
 	 * @see com.quakearts.notification.core.IResult#addMetaResults(java.util.Map)
 	 */
     @Override
-	public Result addMetaDataResult(Map<String, Object> rs){
+	public Result<Object> addMetaDataResult(Map<String, Object> rs){
         if(rs.size()>0){
             metaresults.add(rs);
         }
@@ -113,7 +113,7 @@ public class ResultImpl implements Result {
 	 * @see com.quakearts.notification.core.IResult#addAllDataResults(java.util.List)
 	 */
     @Override
-	public Result addAll(List<Map<String, Object>> results) {
+	public Result<Object> addAllRows(List<Map<String, Object>> results) {
         dataresults.addAll(results);
         return this;
     }
@@ -130,7 +130,7 @@ public class ResultImpl implements Result {
 	 * @see com.quakearts.notification.core.IResult#addAllMetaDataResults(java.util.List)
 	 */
 	@Override
-	public Result addAllMetaData(List<Map<String, Object>> metaresults) {
+	public Result<Object> addAllMetaData(List<Map<String, Object>> metaresults) {
 		this.metaresults.addAll(metaresults);
         return this;		
 	}
@@ -138,5 +138,48 @@ public class ResultImpl implements Result {
 	@Override
 	public Iterator<Map<String, Object>> iterator() {
 		return dataresults.iterator();
-	}	
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((dataresults == null) ? 0 : dataresults.hashCode());
+		result = prime * result + ((metaresults == null) ? 0 : metaresults.hashCode());
+		result = prime * result + ((properties == null) ? 0 : properties.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ResultImpl other = (ResultImpl) obj;
+		if (dataresults == null) {
+			if (other.dataresults != null)
+				return false;
+		} else if (!dataresults.equals(other.dataresults))
+			return false;
+		if (metaresults == null) {
+			if (other.metaresults != null)
+				return false;
+		} else if (!metaresults.equals(other.metaresults))
+			return false;
+		if (properties == null) {
+			if (other.properties != null)
+				return false;
+		} else if (!properties.equals(other.properties))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "ResultImpl [properties=" + properties + ", dataresults=" + dataresults + ", metaresults=" + metaresults
+				+ "]";
+	}
 }

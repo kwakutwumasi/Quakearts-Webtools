@@ -10,9 +10,15 @@
  ******************************************************************************/
 package com.quakearts.syshub.exception;
 
-@SuppressWarnings("serial")
+import javax.enterprise.inject.Vetoed;
+
+@Vetoed
 public class ProcessingException extends Exception{
-    public ProcessingException(Exception e) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -2618970868113563139L;
+	public ProcessingException(Exception e) {
         super(e);
     }
     public ProcessingException(String msg) {

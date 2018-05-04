@@ -119,4 +119,8 @@ public class ResultExceptionLog implements java.io.Serializable {
 	public String toString() {
 		return Integer.toHexString(this.hashCode()+(int)(id>0?id:0));
 	}
+	
+	public String hashCodeAsString() {
+		return Integer.toHexString(this.hashCode());
+	}
 }

@@ -10,6 +10,11 @@
  ******************************************************************************/
 package com.quakearts.syshub.core.scheduler.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.enterprise.inject.Vetoed;
+
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -20,14 +25,17 @@ import org.quartz.JobListener;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
+import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 
 import com.quakearts.appbase.Main;
+import com.quakearts.syshub.core.runner.Statistic;
 import com.quakearts.syshub.core.scheduler.Schedule;
 import com.quakearts.syshub.core.scheduler.SchedulerService;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.exception.FatalException;
 
+@Vetoed
 public class QuartzSchedulerService implements SchedulerService, JobListener {
 
 	private static final String GROUP = "SysHub Schedule Group";
@@ -104,18 +112,40 @@ public class QuartzSchedulerService implements SchedulerService, JobListener {
 
 	@Override
 	public boolean isShutDown(Runnable runnable) {
-		return isRunning(runnable);
+		return !isRunning(runnable);
 	}
 
 	@Override
 	public boolean shutdown(Runnable runnable) {
 		try {
-			scheduler.deleteJob(new JobKey(runnable.toString(), GROUP));
-			return true;
+			return scheduler.deleteJob(new JobKey(runnable.toString(), GROUP));
 		} catch (SchedulerException e) {
 			Main.log.error("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()
 			+ ". Exception occured whiles shutting down job for " + runnable.toString());
 			return false;
 		}
+	}
+	
+	@Override
+	public List<Statistic> getStatistics(Runnable runnable) {
+		List<Statistic> statistics = new ArrayList<>();
+		try {
+			List<? extends Trigger> triggers = scheduler.getTriggersOfJob(new JobKey(runnable.toString(), GROUP));
+			if(!triggers.isEmpty()) {
+				Trigger trigger = triggers.get(0);
+				statistics.add(new Statistic("Started",trigger.getStartTime()));
+
+				if(trigger.getEndTime()!=null)
+					statistics.add(new Statistic("Ending",trigger.getEndTime()));
+
+				if(trigger.getPreviousFireTime()!=null)
+					statistics.add(new Statistic("Last Run",trigger.getPreviousFireTime()));
+				
+				statistics.add(new Statistic("Next Run",trigger.getNextFireTime()));
+			}
+		} catch (SchedulerException e) {
+			statistics.add(new Statistic("Error","Unable to get statistics"));
+		}
+		return statistics;
 	}
 }

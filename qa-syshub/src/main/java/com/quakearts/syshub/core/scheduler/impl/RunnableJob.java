@@ -10,18 +10,28 @@
  ******************************************************************************/
 package com.quakearts.syshub.core.scheduler.impl;
 
+import javax.enterprise.inject.Vetoed;
+
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
+@Vetoed
 public class RunnableJob implements Job {
 
 	public static final String RUNNABLE = "com.quakearts.syshub.RUNNABLE";
 	
 	@Override
-	public void execute(JobExecutionContext context) throws JobExecutionException {
-		 Runnable runnable = (Runnable) context.get(RUNNABLE);
-		 new Thread(runnable).start();
+	public void execute(JobExecutionContext context) throws JobExecutionException {		
+		Runnable runnable = (Runnable) context
+				 .getJobDetail()
+				 .getJobDataMap()
+				 .get(RUNNABLE);
+		
+		if (runnable != null)
+			runnable.run();
+		else
+			 throw new JobExecutionException("No runnable in context to execute");
 	}
 
 }

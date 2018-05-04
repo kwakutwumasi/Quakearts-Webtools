@@ -10,21 +10,22 @@
  ******************************************************************************/
 package com.quakearts.syshub.core.impl;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
-import com.quakearts.syshub.core.Message;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.exception.ProcessingException;
 
-public abstract class ByteMessageBase {
+public abstract class ByteMessageBase implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1899851507231298284L;
 	private byte[] message=null;
 	private byte[] headerbites=new byte[100];
 	private byte[] bodybites=new byte[400];
@@ -33,33 +34,84 @@ public abstract class ByteMessageBase {
 	private boolean secure;
 	private int messageLength=0,headercount=0,bodycount=0,footercount=0;
 	private String messengerId;
-	private final String id=this.hashCode()+"-"+new Date().getTime();
+	private String id;
 	private List<String> recipients = new ArrayList<String>();
 	private Map<String,Serializable> message_props = new HashMap<String,Serializable>();
 	private transient Object messageStatus;
 
 	/* (non-Javadoc)
-	 * @see com.quakearts.notification.core.IMessage#equals(java.lang.Object)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		if(message == null) {
+			result = prime * result + Arrays.hashCode(bodybites);
+			result = prime * result + Arrays.hashCode(footerbites);
+			result = prime * result + Arrays.hashCode(headerbites);
+		} else {
+			result = prime * result + Arrays.hashCode(message);
+		}
+		
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((message_props == null) ? 0 : message_props.hashCode());
+		result = prime * result + (readonly ? 1231 : 1237);
+		result = prime * result + ((recipients == null) ? 0 : recipients.hashCode());
+		result = prime * result + (secure ? 1231 : 1237);
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if(this == obj)
+		if (this == obj)
 			return true;
-		else if (obj == null)
+		if (obj == null)
 			return false;
-		else if(obj instanceof MessageByteImpl){
-			if(this.id == ((Message<?>)obj).getId())
-				return true;
-			else
-				return false;
-		} else
+		if (getClass() != obj.getClass())
 			return false;
-	}
-	
-	protected void addRecipientToList(String newrecipient) {
-		if(recipients==null)
-			recipients = new ArrayList<String>();
 		
+		ByteMessageBase other = (ByteMessageBase) obj;
+
+		if(message == null) {
+			if (!Arrays.equals(bodybites, other.bodybites))
+				return false;
+			if (!Arrays.equals(footerbites, other.footerbites))
+				return false;
+			if (!Arrays.equals(headerbites, other.headerbites))
+				return false;
+		} else {
+			if (!Arrays.equals(message, other.message))
+				return false;
+		}
+		
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+
+		if (message_props == null) {
+			if (other.message_props != null)
+				return false;
+		} else if (!message_props.equals(other.message_props))
+			return false;
+		if (readonly != other.readonly)
+			return false;
+		if (recipients == null) {
+			if (other.recipients != null)
+				return false;
+		} else if (!recipients.equals(other.recipients))
+			return false;
+		if (secure != other.secure)
+			return false;
+		return true;
+	}
+
+	protected void addRecipientToList(String newrecipient) {		
 		if(newrecipient!=null)
 			this.recipients.add(newrecipient);
 	}
@@ -181,6 +233,9 @@ public abstract class ByteMessageBase {
 	}
 
 	public String getId() {
+		if(id == null)
+			id = UUID.randomUUID().toString();
+		
 		return id;
 	}
 
@@ -218,23 +273,7 @@ public abstract class ByteMessageBase {
 		notifyAll();
 	}
 	
-	public String[] getRecipients(){
-		if(recipients!=null){
-			
-			String[] recipientArray = recipients.toArray(new String[recipients.size()]);
-			return recipientArray;
-		} else {
-			return null;
-		}
+	public String[] getRecipients(){			
+		return recipients.toArray(new String[recipients.size()]);
 	}
-
-	private void readObject(ObjectInputStream aStream) throws IOException, ClassNotFoundException {
-		aStream.defaultReadObject();
-	}
-
-	private void writeObject(ObjectOutputStream aStream) throws IOException {
-		setMessage();
-		aStream.defaultWriteObject();
-	}
-	
 }

@@ -11,37 +11,32 @@
 package com.quakearts.syshub.agent;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.quakearts.syshub.agent.event.ProcessingEvent;
+import com.quakearts.syshub.core.CloseableIterator;
 import com.quakearts.syshub.core.DataSpooler;
 import com.quakearts.syshub.core.Message;
 import com.quakearts.syshub.core.MessageFormatter;
 import com.quakearts.syshub.core.Messenger;
 import com.quakearts.syshub.core.Result;
-import com.quakearts.syshub.core.utils.SerializationUtil;
-import com.quakearts.syshub.core.utils.SystemDataStoreUtils;
+import com.quakearts.syshub.core.utils.Serializer;
 import com.quakearts.syshub.exception.FatalException;
 import com.quakearts.syshub.exception.ProcessingException;
-import com.quakearts.syshub.log.MessageLogger;
-import com.quakearts.syshub.log.MessageLogging;
-import com.quakearts.syshub.log.ResultExceptionLogger;
-import com.quakearts.syshub.log.ResultExceptionLogging;
 import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.ProcessingLog;
 import com.quakearts.syshub.model.ResultExceptionLog;
-import com.quakearts.webapp.orm.exception.DataStoreException;
 
 /**This class is the root class for data processing. Once configured with a number of spoolers and message formatter/messenger pairs,
  * the agent is ready to run. A call to {@link #processData()} will start the process chain.
@@ -68,10 +63,10 @@ import com.quakearts.webapp.orm.exception.DataStoreException;
  */
 public class ProcessingAgent {
 	private static final Logger log = LoggerFactory.getLogger(ProcessingAgent.class);
-	@Inject @MessageLogging
-	private MessageLogger messageLogger;
-	@Inject @ResultExceptionLogging
-	private ResultExceptionLogger resultExceptionLogger;
+    @Inject
+	private Serializer serializer;
+	@Inject
+	private Event<ProcessingEvent> processingEventTrigger;	
 	private AgentConfiguration agentConfiguration;
 	private List<DataSpooler> dataSpoolers;
 	private Map<Messenger, MessageFormatter> mapper;
@@ -86,8 +81,7 @@ public class ProcessingAgent {
 	private BlockingQueue<AgentFormatterMessengerWorker> agentFormatterMessengerWorkers = new ArrayBlockingQueue<>(maxFormatterMessengerWorkers);
 	private int corePoolSize = 5, maximumPoolSize = 5, queueSize = 10;
     private long keepAliveTime = 60;
-	private SerializationUtil serializationUtil = SerializationUtil.getInstance();
-	
+    private boolean resendCapable;
 
 	/** Default constructor. Looks for a file named notificationagent.config at the root of the current directory
 	 */
@@ -97,100 +91,106 @@ public class ProcessingAgent {
 	
 	public void processData() throws ProcessingException {
 		if(agentConfiguration == null 
-				|| name == null)
+				|| name == null || name.trim().isEmpty())
 			throw new ProcessingException("Incomplete setup: "+(agentConfiguration == null?"missing agentConfiguration":"missing name"));
 		
-		if(dataSpoolers == null)
+		if(dataSpoolers == null || dataSpoolers.isEmpty())
 			throw new ProcessingException("Incomplete setup: missing Data Spoolers");			
 		
-		if(mapper == null)
+		if(mapper == null || mapper.isEmpty())
 			throw new ProcessingException("Incomplete setup: missing Message Formatter/Messenger Pairs");			
 		
-		log.trace("Initiating...");
 		lastRunTime = new Date();
+		
+		long executiontime = 0;
+		if(log.isTraceEnabled())
+			executiontime = System.nanoTime();
 		
 		if(dataSpoolers.size() == 1){
 			getAnAgentWorker(dataSpoolers.get(0)).startProcess();
 		} else {
 			for(DataSpooler spooler:dataSpoolers){
 				getExecutor().execute(()->{getAnAgentWorker(spooler).startProcess();});
-				log.trace("Launched dataspooler "+spooler.getClass().getName());
 			}		
+		}
+		if(log.isTraceEnabled()) {
+			log.trace("Processing "+agentConfiguration.getAgentName()+" took "+(System.nanoTime()-executiontime)+"ns");
 		}
 	}
 
 	public void shutdown(){
 		if(executor!=null){
 			executor.shutdown();
-			executor = null;
-		}
-	}
-
-	public void reprocessProcessingLog(ProcessingLog processingLog) throws ClassNotFoundException, IOException, ProcessingException {
-		if(mapper == null || mapper.isEmpty())
-			return;
-		
-		if(processingLog == null)
-			return;
-
-		if(processingLog.getAgentModule() == null)
-			return;
-		
-		for(Messenger messenger:mapper.keySet()){
-			if(messenger.getAgentModule().getId() == processingLog.getAgentModule().getId()){
-				try {
-					processingLog.getMessageData();
-				} catch (DataStoreException e) {
-					processingLog = SystemDataStoreUtils.getInstance().getSystemDataStore().refresh(processingLog);
-				}
-				
-				log.trace("Reprocessing message for ProcessingLog logID "+processingLog.getLogID());
-				Message<?> message = (Message<?>) SerializationUtil.getInstance().toObject(processingLog.getMessageData());
-				
-				messenger.sendMessage(message);
-			}
 		}
 	}
 	
-	public void resendResultExceptionLog(ResultExceptionLog exceptionLog) throws ClassNotFoundException, IOException, ProcessingException {
+	public boolean isShutdown() {
+		return executor.isShutdown();
+	}
+	
+	public void reset() {
+		executor = null;
+	}
+
+	public void reprocessProcessingLog(ProcessingLog processingLog) throws ClassNotFoundException, IOException, ProcessingException {
+		if(!resendCapable)
+			throw new ProcessingException("Processing Agent "+name+" has not been configured for message resending.");
+		
 		if(mapper == null || mapper.isEmpty())
-			return;
+			throw new ProcessingException("Incomplete setup: missing Message Formatter/Messenger Pairs");			
+		
+		if(processingLog == null)
+			throw new ProcessingException("Invalid log passed in. Parameter was null");			
+
+		if(processingLog.getAgentModule() == null)
+			throw new ProcessingException("Invalid log passed in. getAgentModule() was null");			
+		
+		if(processingLog.getMessageData()==null)
+			throw new ProcessingException("Invalid log passed in. getMessageData() was null");			
+		
+		for(Messenger messenger:mapper.keySet()){
+			if(messenger.getAgentModule().getModuleName()
+					.equals(processingLog.getAgentModule().getModuleName())){					
+				Message<?> message = (Message<?>) serializer.toObject(processingLog.getMessageData());
+				
+				messenger.sendMessage(message);
+				return;
+			}
+		}
+		
+		throw new ProcessingException("Processing log with ID "+processingLog.getLogID()+" cannot be resent using any of the messenger modules available.");
+	}
+	
+	public void reprocessResultExceptionLog(ResultExceptionLog exceptionLog) throws ClassNotFoundException, IOException, ProcessingException {
+		if(mapper == null || mapper.isEmpty())
+			throw new ProcessingException("Incomplete setup: missing Message Formatter/Messenger Pairs");			
 		
 		if(exceptionLog == null)
-			return;
+			throw new ProcessingException("Invalid log passed in. Parameter was null");			
 		
-		if(exceptionLog.getExceptionData() == null || exceptionLog.getExceptionData().length <= 0)
-			return;
-		
-		log.trace("Starting resendResultExceptionLog() for ResultExceptionLog id "+exceptionLog.getId()+"...");
-		log.trace("Transaction started...");
-		Result rlt =(Result) serializationUtil.toObject(exceptionLog.getResultData());
-		log.trace("Result loaded...");
-		
+		if(exceptionLog.getExceptionData() == null)
+			throw new ProcessingException("Invalid log passed in. getExceptionData() was null");			
+
+		if(exceptionLog.getResultData() == null)
+			throw new ProcessingException("Invalid log passed in. getResultData() was null");			
+
+		Result<?> rlt =(Result<?>) serializer.toObject(exceptionLog.getResultData());		
 		for(Messenger messenger:mapper.keySet()){
 			MessageFormatter messageFormatter = mapper.get(messenger);
 			Message<?> message = messageFormatter.formatdata(rlt);
 			messenger.sendMessage(message);
 		}
-		SystemDataStoreUtils.getInstance().getSystemDataStore().delete(exceptionLog);
-		log.trace("Sending complete.");
 	}
 	
 	private synchronized AgentWorker getAnAgentWorker(DataSpooler dataSpooler){
 		AgentWorker worker;
 		if(agentWorkersCreated < dataSpoolers.size()){
-			log.trace("No sub worker found in sub worker queue. Creating one...");
-			worker = new AgentWorker(dataSpooler);
-			if(log.isTraceEnabled())
-				log.trace("Added new agent sub worker. Hashcode:"+worker.hashCode());
-			
+			worker = new AgentWorker(dataSpooler);			
 			agentWorkersCreated++;
 		} else {
 			try {
 				worker = agentWorkers.take();
 				worker.dataSpooler = dataSpooler;
-				if(log.isTraceEnabled())
-					log.trace("Using an existing sub worker. Hashcode:"+worker.hashCode());
 			} catch (InterruptedException e) {
 				throw new FatalException(e);
 			}
@@ -206,63 +206,51 @@ public class ProcessingAgent {
 		}
 	
 		public void startProcess() {
-			List<Future<?>> agentDataSpoolerTrackers = new ArrayList<>();
+			long executiontime = 0;
+			if(log.isTraceEnabled()) 
+				executiontime = System.nanoTime();
+			
 			try {
-				log.trace("Preparing dataspooler...");
-				dataSpooler.prepare();				
-
-				log.trace("Fetching data...");
-				while(dataSpooler.hasMoreData()){
-					
-					Result result = dataSpooler.getData();
-
-					log.trace("Dataspooler has data. Initiating sub workers...");
-					agentDataSpoolerTrackers.add(
-						getExecutor()
-							.submit(()->{
-								getAnAgentDataSpoolerWorker(dataSpooler, result).processData();
-							}
-					));
+				try(CloseableIterator dataIterator = dataSpooler.prepare()){
+					while(dataIterator.hasNext()){
+						Result<?> result = dataIterator.next();	
+						final DataSpooler dataSpooler = this.dataSpooler;
+						getExecutor().execute(()->{getAnAgentDataSpoolerWorker(dataSpooler, result).processData();});
+					}
+				} catch (IOException e) {
+					processingEventTrigger.fire(new ProcessingEvent(e, agentConfiguration, dataSpooler.getAgentModule()));
+					log.error( "Exception " + e.getClass().getName()
+							+ " was thrown while closing CloseableIterator. Message is " + e.getMessage());
 				}
 			} catch (ProcessingException e) {
+				processingEventTrigger.fire(new ProcessingEvent(e, agentConfiguration, dataSpooler.getAgentModule()));
 				log.error( "Exception " + e.getClass().getName()
-						+ " was thrown. Message is " + e.getMessage());
+						+ " was thrown whiles fetching data. Message is " + e.getMessage());
 				return;
 			} finally {
-				for(Future<?> tracker: agentDataSpoolerTrackers){
-					try {
-						tracker.get();//Wait for execution to complete
-					} catch (InterruptedException | ExecutionException e) {
-						//won't happen
-					}
+				if(log.isTraceEnabled()) {
+					log.trace("DataSpooler "+dataSpooler.getAgentModule().getModuleName()
+							+" took "+(System.nanoTime()-executiontime)+"ns");
 				}
-				dataSpooler.close();
 				dataSpooler = null;
 				try {
 					agentWorkers.put(this);
-					if(log.isTraceEnabled())
-						log.trace("Added super worker hashcode:"+this.hashCode()+" to super worker queue");
 				} catch (InterruptedException e) {
+					throw new FatalException(e);
 				}
 			}
 		}
 	}
 
-	private synchronized AgentDataSpoolerWorker getAnAgentDataSpoolerWorker(DataSpooler dataSpooler, Result result){
+	private synchronized AgentDataSpoolerWorker getAnAgentDataSpoolerWorker(DataSpooler dataSpooler, Result<?> result){
 		AgentDataSpoolerWorker worker;
 		if(dataSpoolerWorkersCreated < maxDataSpoolerWorkers){
-			log.trace("No sub worker found in sub worker queue. Creating one...");
 			++dataSpoolerWorkersCreated;
 			worker = new AgentDataSpoolerWorker(dataSpooler, result);
-			if(log.isTraceEnabled())
-				log.trace("Added new agent sub worker. Hashcode:"+worker.hashCode());
-			
 		} else {
 			try {
 				worker = agentDataSpoolerWorkers.take();
 				worker.dataSpooler = dataSpooler;
-				if(log.isTraceEnabled())
-					log.trace("Using an existing sub worker. Hashcode:"+worker.hashCode());
 			} catch (InterruptedException e) {
 				throw new FatalException(e);
 			}
@@ -272,41 +260,55 @@ public class ProcessingAgent {
 
 	private class AgentDataSpoolerWorker {
 		private DataSpooler dataSpooler;
-		private Result result;
+		private Result<?> result;
 
 		
-		public AgentDataSpoolerWorker(DataSpooler dataSpooler, Result result) {
+		public AgentDataSpoolerWorker(DataSpooler dataSpooler, Result<?> result) {
 			this.dataSpooler = dataSpooler;
 			this.result = result;
 		}
 	
 		public void processData() {
+			long executiontime = 0;
+			if(log.isTraceEnabled()) {
+				executiontime = System.nanoTime();
+			}
+			
 			try {
-				if(result.getDataResults().size()==0){
+				if(!result.hasResults()){
 					return;
 				}
 				
 				if(mapper.size() == 1){
 					Messenger messenger = mapper.keySet().iterator().next();
-					MessageFormatter formatter = mapper.values().iterator().next();
-					
+					MessageFormatter formatter = mapper.get(messenger);
+					if(log.isTraceEnabled()) {
+						log.trace("MessageFormatter and Messenger preparation for DataSpooler "
+								+dataSpooler.getAgentModule().getModuleName()
+								+" took "+(System.nanoTime()-executiontime)+"ns");
+					}
 					getAnAgentFormatterMessengerWorker(dataSpooler, 
 							formatter, messenger, result).formatDataAndSend();
 				} else {
 					for(Messenger messenger:mapper.keySet()){
+						final DataSpooler dataSpooler = this.dataSpooler;
 						getExecutor().execute(()->{
 							getAnAgentFormatterMessengerWorker(dataSpooler, 
 									mapper.get(messenger), messenger, result).formatDataAndSend();
 						});
+					}
+					if(log.isTraceEnabled()) {
+						log.trace("MessageFormatter and Messenger preparation for DataSpooler "
+								+dataSpooler.getAgentModule().getModuleName()
+								+" took "+(System.nanoTime()-executiontime)+"ns");
 					}					
 				}
-			} finally {	
+			} finally {			
 				dataSpooler = null;
 				try {
 					agentDataSpoolerWorkers.put(this);
-					if(log.isTraceEnabled())
-						log.trace("Added sub worker hashcode:"+this.hashCode()+" to sub worker queue");
 				} catch (InterruptedException e) {
+					throw new FatalException(e);
 				}
 			}
 		}
@@ -314,14 +316,11 @@ public class ProcessingAgent {
 
 	private synchronized AgentFormatterMessengerWorker getAnAgentFormatterMessengerWorker(DataSpooler dataSpooler,
 			MessageFormatter messageFormatter, Messenger messenger,
-			Result result){
+			Result<?> result){
+
 		AgentFormatterMessengerWorker worker;
 		if(formatterMessengerWorkersCreated < maxFormatterMessengerWorkers){
-			log.trace("No base worker found in base worker queue. Creating one...");
 			worker = new AgentFormatterMessengerWorker(dataSpooler, messageFormatter, messenger, result);
-			if(log.isTraceEnabled())
-				log.trace("Added new agent base worker. Hashcode:"+worker.hashCode());
-			
 			formatterMessengerWorkersCreated++;
 		} else {
 			try {
@@ -330,8 +329,6 @@ public class ProcessingAgent {
 				worker.messageFormatter = messageFormatter;
 				worker.messenger = messenger;
 				worker.result = result;
-				if(log.isTraceEnabled())
-					log.trace("Using an existing base worker. Hashcode:"+worker.hashCode());
 			} catch (InterruptedException e) {
 				throw new FatalException(e);
 			}
@@ -343,11 +340,11 @@ public class ProcessingAgent {
 		DataSpooler dataSpooler;
 		MessageFormatter messageFormatter;
 		Messenger messenger;
-		Result result;
+		Result<?> result;
 			
 		public AgentFormatterMessengerWorker(DataSpooler dataSpooler,
 				MessageFormatter messageFormatter, Messenger messenger,
-				Result result) {
+				Result<?> result) {
 			this.dataSpooler = dataSpooler;
 			this.messageFormatter = messageFormatter;
 			this.messenger = messenger;
@@ -355,49 +352,53 @@ public class ProcessingAgent {
 		}
 	
 		public void formatDataAndSend() {
-			Message<?> message;
+			long executiontime = 0;
+			if(log.isTraceEnabled()) {
+				executiontime = System.nanoTime();
+			}
 			try {
-				message = messageFormatter.formatdata(result);
-			} catch (ProcessingException e) {
-				if(resultExceptionLogger != null){
-					resultExceptionLogger.logResultException(agentConfiguration, dataSpooler.getAgentModule(), e, result);
+				Message<?> message;
+				try {
+					message = messageFormatter.formatdata(result);
+				} catch (ProcessingException e) {
+					processingEventTrigger.fire(new ProcessingEvent(e, agentConfiguration, messageFormatter.getAgentModule(), result));
+					return;
+				} 
+				
+				try {
+					messenger.sendMessage(message);
+				} catch (ProcessingException e) {
+					processingEventTrigger.fire(new ProcessingEvent(e, agentConfiguration, messenger.getAgentModule(), message));
+					log.error( "Exception " + e.getClass().getName()
+							+ " was thrown. Message is " + e.getMessage()+". Exception occured whiles attempting to send message", e);
+					return;
+				}			
+				
+				try {
+					dataSpooler.updateData(result, message);
+				} catch (ProcessingException e) {
+					processingEventTrigger.fire(new ProcessingEvent(e, agentConfiguration, dataSpooler.getAgentModule()));
 					log.error( "Exception " + e.getClass().getName()
 							+ " was thrown. Message is " + e.getMessage()
 							+". Exception occured whiles attempting to format data for sending", e);
 				}
-				return;
-			} 
-			
-			try {
-				messenger.sendMessage(message);
-			} catch (ProcessingException e) {
-				log.error( "Exception " + e.getClass().getName()
-						+ " was thrown. Message is " + e.getMessage()+". Exception occured whiles attempting to send message", e);
-				if(messageLogger!=null)
-					messageLogger.logMessage(messenger.getAgentConfiguration(), messenger.getAgentModule(), 
-							message, "Exception " + e.getClass().getName()
-							+ " was thrown. Message is " + e.getMessage()
-							+". Exception occured whiles attempting to send message."
-							+ " Message will be logged as an error", true);
-			}			
-			
-			try {
-				dataSpooler.updateData(result, message);
-			} catch (ProcessingException e) {
-				log.error( "Exception " + e.getClass().getName()
-						+ " was thrown. Message is " + e.getMessage()
-						+". Exception occured whiles attempting to format data for sending", e);
 			} finally {
+				if(log.isTraceEnabled()) {
+					log.trace("Message formatting and sending using MessageFormatter "
+							+messageFormatter.getAgentModule().getModuleName()
+							+" and Messenger "+messenger.getAgentModule().getModuleName()
+							+" for DataSpooler "+dataSpooler.getAgentModule().getModuleName()
+							+" took "+(System.nanoTime()-executiontime)+"ns");
+					
+				}
 				result = null;
 				dataSpooler = null;
 				messageFormatter = null;
 				messenger = null;
-				
 				try {
 					agentFormatterMessengerWorkers.put(this);
-					if(log.isTraceEnabled())
-						log.trace("Added base worker hashcode:"+this.hashCode()+" to base worker queue");
 				} catch (InterruptedException e) {
+					throw new FatalException(e);
 				}
 			}			
 		}
@@ -421,8 +422,10 @@ public class ProcessingAgent {
 	 * @param maxDataSpoolerWorkers the maximum number of AgentDataSpoolerWorkers to create
 	 */
 	public void setMaxDataSpoolerWorkers(int maxDataSpoolerWorkers) {
-		this.maxDataSpoolerWorkers = maxDataSpoolerWorkers;
-		agentDataSpoolerWorkers = new ArrayBlockingQueue<>(maxDataSpoolerWorkers);
+		if(executor==null) {
+			this.maxDataSpoolerWorkers = maxDataSpoolerWorkers;
+			agentDataSpoolerWorkers = new ArrayBlockingQueue<>(maxDataSpoolerWorkers);
+		}
 	}
 
 	/**
@@ -443,8 +446,10 @@ public class ProcessingAgent {
 	 * @param maxFormatterMessengerWorkers the maximum number of AgentFormatterWorkers to create
 	 */
 	public void setMaxFormatterMessengerWorkers(int maxFormatterMessengerWorkers) {
-		this.maxFormatterMessengerWorkers = maxFormatterMessengerWorkers;
-		agentFormatterMessengerWorkers = new ArrayBlockingQueue<>(maxFormatterMessengerWorkers);
+		if(executor==null) {
+			this.maxFormatterMessengerWorkers = maxFormatterMessengerWorkers;
+			agentFormatterMessengerWorkers = new ArrayBlockingQueue<>(maxFormatterMessengerWorkers);
+		}
 	}
 
 	/**
@@ -465,11 +470,14 @@ public class ProcessingAgent {
 	 * @param corePoolSize The core pool size for {@link ThreadPoolExecutor}
 	 */
 	public void setCorePoolSize(int corePoolSize) {
-		if(corePoolSize<=0)
+		if(corePoolSize<=0 
+				|| corePoolSize > maximumPoolSize)
 			return;
 		
-		if(corePoolSize < dataSpoolers.size())
-			corePoolSize += dataSpoolers.size();
+		if(corePoolSize < dataSpoolers.size()) {
+			this.corePoolSize = dataSpoolers.size();
+			return;
+		}
 		
 		this.corePoolSize = corePoolSize;
 	}
@@ -540,7 +548,7 @@ public class ProcessingAgent {
 	}
 
 	/**
-	 * @return A list of configured {@link DataSpooler}
+	 * @return A list of configured {@link DataSpooler}s
 	 */
 	public List<DataSpooler> getDataSpoolers() {
 		return dataSpoolers;
@@ -558,7 +566,7 @@ public class ProcessingAgent {
 	 * @return a {@link Map} of {@link MessageFormatter}/{@link Messenger} pairs
 	 */
 	public Map<Messenger, MessageFormatter> getMessengerFormatterMapper() {
-		return mapper;
+		return Collections.unmodifiableMap(mapper);
 	}
 	
 	public void setMessengerFormatterMapper(Map<Messenger, MessageFormatter> mapper) {
@@ -638,7 +646,7 @@ public class ProcessingAgent {
 	public long getTaskCount(){
 		return getExecutor().getTaskCount();
 	}
-
+	
 	/**
 	 * @return The date/time of the last run
 	 */
@@ -651,5 +659,19 @@ public class ProcessingAgent {
 	 */
 	public Date getStartTime() {
 		return startTime;
+	}
+	
+	/**
+	 * @return true if this processing agent allows it's messages to be resent
+	 */
+	public boolean isResendCapable() {
+		return resendCapable;
+	}
+	
+	/** Allow messages to be resent using this processing agent's messengers
+	 * @param resendCapable
+	 */
+	public void setResendCapable(boolean resendCapable) {
+		this.resendCapable = resendCapable;
 	}
 }

@@ -10,11 +10,17 @@
  ******************************************************************************/
 package com.quakearts.syshub.core.runner.impl;
 
+import java.util.List;
 import java.util.Map;
+
+import javax.enterprise.inject.Vetoed;
 
 import com.quakearts.appbase.Main;
 import com.quakearts.syshub.agent.ProcessingAgent;
 import com.quakearts.syshub.core.runner.AgentRunner;
+import com.quakearts.syshub.core.runner.AgentScheduler;
+import com.quakearts.syshub.core.runner.ScheduledStateReporter;
+import com.quakearts.syshub.core.runner.Statistic;
 import com.quakearts.syshub.core.scheduler.Schedule;
 import com.quakearts.syshub.core.scheduler.SchedulerService;
 import com.quakearts.syshub.core.scheduler.SchedulerServiceFactory;
@@ -23,33 +29,35 @@ import com.quakearts.syshub.exception.ProcessingException;
 import com.quakearts.syshub.model.AgentConfiguration.RunType;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 
-public class ScheduledAgentRunner implements Runnable, AgentRunner {
+@Vetoed
+public class ScheduledAgentRunner implements Runnable, AgentRunner, ScheduledStateReporter, AgentScheduler {
 
 	private ProcessingAgent agent;
 	private boolean inErrorState;
-	private SchedulerService schedulerService = SchedulerServiceFactory.getInstance().getSchedulerService();
+	private SchedulerServiceFactory schedulerServiceFactory = SchedulerServiceFactory.getInstance();
+	private SchedulerService schedulerService = schedulerServiceFactory.getSchedulerService();
 	private Schedule schedule;
+	private SchedulerState state = SchedulerState.None;
 	
 	public ScheduledAgentRunner(ProcessingAgent agent, 
 			Map<String, AgentConfigurationParameter> parameters)
 			throws ConfigurationException {
 		this.agent = agent;
-		schedule = SchedulerServiceFactory.getInstance().createScheduleFromParameter(parameters);
-		instantiate();
+		this.schedule = schedulerServiceFactory.createScheduleFromParameter(parameters);
+		start();
 	}
-	
-	private void instantiate() throws ConfigurationException {
-		schedulerService.scheduleTask(this, schedule);
-	}
-	
+		
 	@Override
 	public void run() {
 		try {
+			state = SchedulerState.Running;
 			agent.processData();
 		} catch (ProcessingException e) {
 			Main.log.error("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()
 			+ ". Exception occured whiles processing data.");
 			inErrorState = true;
+		} finally {
+			state = SchedulerState.Sleeping;
 		}
 	}
 
@@ -60,7 +68,8 @@ public class ScheduledAgentRunner implements Runnable, AgentRunner {
 
 	@Override
 	public boolean isShutDown() {
-		return schedulerService.isShutDown(this);
+		return schedulerService.isShutDown(this) 
+				|| agent.isShutdown();
 	}
 
 	@Override
@@ -84,26 +93,43 @@ public class ScheduledAgentRunner implements Runnable, AgentRunner {
 	}
 
 	@Override
-	public boolean restart() {
-		try {
-			if(!isRunning())
-				instantiate();
-
-			return true;
-		} catch (ConfigurationException e) {
-			Main.log.error("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()
-					+ ". Exception occured whiles restarting scheduled job");
-			return false;
+	public boolean start() {
+		if(!isRunning()) {
+			agent.reset();
+			try {
+				schedulerService.scheduleTask(this, schedule);
+			} catch (ConfigurationException e) {
+				Main.log.error("Exception starting schedule", e);
+				inErrorState = true;
+				return false;
+			}
+			state = SchedulerState.Started;
 		}
+		return true;
 	}
 
 	@Override
 	public boolean shutdown() {
-		return schedulerService.shutdown(this);
+		if(schedulerService.shutdown(this)) {
+			agent.shutdown();
+			state = SchedulerState.Stopped;
+			return true;
+		}
+		return isShutDown();
 	}
 
 	@Override
 	public String toString() {
 		return agent.getName();
+	}
+	
+	@Override
+	public SchedulerState getState() {
+		return state;
+	}
+	
+	@Override
+	public List<Statistic> getStatistics() {
+		return schedulerService.getStatistics(this);
 	}
 }

@@ -10,23 +10,18 @@
  ******************************************************************************/
 package com.quakearts.syshub.agent.builder;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
+
+import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.CDI;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.quakearts.appbase.internal.json.Json;
-import com.quakearts.appbase.internal.json.JsonArray;
-import com.quakearts.appbase.internal.json.JsonValue;
 import com.quakearts.syshub.agent.ProcessingAgent;
 import com.quakearts.syshub.core.DataSpooler;
 import com.quakearts.syshub.core.MessageFormatter;
@@ -36,11 +31,13 @@ import com.quakearts.syshub.core.factory.MessageFormatterFactory;
 import com.quakearts.syshub.core.factory.MessengerFactory;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.model.AgentConfiguration;
+import com.quakearts.syshub.model.AgentConfigurationModuleMapping;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 import com.quakearts.syshub.model.AgentConfigurationParameter.ParameterType;
 import com.quakearts.syshub.model.AgentModule;
 import com.quakearts.syshub.model.AgentModule.ModuleType;
 
+@Vetoed
 public class ProcessingAgentBuilder {
 
 	private static final String QUEUE_SIZE = "queueSize";
@@ -49,6 +46,7 @@ public class ProcessingAgentBuilder {
 	private static final String MAX_FORMATTER_WORKERS = "maxFormatterWorkers";
 	private static final String MAX_DATA_SPOOLER_WORKERS = "maxDataSpoolerWorkers";
 	private static final String MAXIMUM_POOL_SIZE = "maximumPoolSize";
+	private static final String IS_RESEND_CAPABLE = "isResendCapable";
 	private AgentConfiguration configuration;
 	private AgentModule agentModule;
 	private static final Logger log = LoggerFactory.getLogger(ProcessingAgentBuilder.class);
@@ -69,11 +67,21 @@ public class ProcessingAgentBuilder {
 		log.trace("Setting up....");
 		
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
+		
+		if(configuration.getAgentName()==null||configuration.getAgentName().trim().isEmpty())
+			throw new ConfigurationException("Configuration Agent Name is required");
+		
 		agent.setName(configuration.getAgentName());
 		agent.setAgentConfiguration(configuration);
 		
-		TreeSet<AgentModule> agentModules = new TreeSet<>((a1,a2)->a1.getModuleType().compareTo(a2.getModuleType()));
-		agentModules.addAll(configuration.getAgentModules());
+		List<AgentModule> agentModules = new ArrayList<>(configuration.getAgentModules());
+		
+		for(AgentConfigurationModuleMapping configurationModuleMapping:
+				configuration.getAgentConfigurationModuleMappings()) {
+			agentModules.add(configurationModuleMapping.getAgentModule());
+		}
+		
+		Collections.sort(agentModules, (a1,a2)->a1.getModuleType().compareTo(a2.getModuleType()));
 		
 		Map<String, MessageFormatter> messageFormatters = new HashMap<>();
 		Map<Messenger, MessageFormatter> messengerFormatterPairs = new HashMap<>();
@@ -103,8 +111,8 @@ public class ProcessingAgentBuilder {
 				if(agentModule.getMappedModuleName() != null && !agentModule.getMappedModuleName().trim().isEmpty()) {
 					MessageFormatter formatter = messageFormatters.get(agentModule.getMappedModuleName());
 					if(formatter == null)
-						throw new ConfigurationException("No messenger module named "+agentModule.getMappedModuleName()
-							+" to send data for formatter module "+(agentModule.getModuleName()!=null?
+						throw new ConfigurationException("No formatter module named "+agentModule.getMappedModuleName()
+							+" to send data for messenger module "+(agentModule.getModuleName()!=null?
 									agentModule.getModuleName():agentModule.getModuleClassName()));
 					
 					messengerFormatterPairs.put(messenger, formatter);
@@ -112,8 +120,8 @@ public class ProcessingAgentBuilder {
 					for(MessageFormatter formatter: messageFormatters.values()){
 						if(messenger.isCompatibleWith(formatter)){
 							messengerFormatterPairs.put(messenger, formatter);
+							break;
 						}
-						break;
 					}
 				}
 				break;
@@ -179,121 +187,16 @@ public class ProcessingAgentBuilder {
 				throw new ConfigurationException("Invalid property: queueSize.");
 			}
         }
-		
-		log.trace("Setup complete....");
-		if(log.isTraceEnabled()){
-			log.trace("Setup summary:"
-					+ "\nAgent name: "+agent.getName()
-					+ "\nDataspoolers:"+agent.getDataSpoolers().size()
-					+ "\nMessageFormatter\\Messenger pairs:"
-					+agent.getMessengerFormatterMapper().size()
-					+"\nThreadPoolExecutor parameters:" +
-					"core pool size="+agent.getCorePoolSize()+
-					";maximum pool size="+agent.getMaximumPoolSize()+
-					";keep alive time="+agent.getKeepAliveTime()+
-					";queue size="+agent.getQueueSize());
-		}
+        
+        if(configuration.getAgentConfigurationParameter(IS_RESEND_CAPABLE)!=null){
+	        try {
+	        	agent.setResendCapable(configuration.getAgentConfigurationParameter(IS_RESEND_CAPABLE).getBooleanValue());
+			} catch (NullPointerException e) {
+				throw new ConfigurationException("Invalid property: queueSize.");
+			}
+        }
 		
 		return agent;
-	}
-	
-	public ProcessingAgentBuilder fromFile(String fileName) throws ConfigurationException {
-		InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
-		if(in!=null){
-			try (InputStream stream = in) {
-				 fromInputStream(stream);
-			} catch (IOException e) {
-				throw new ConfigurationException("Unable to load file "+fileName, e);
-			}
-		} else {
-			try(InputStream stream = new FileInputStream(fileName);) {
-				 fromInputStream(stream);
-			} catch (IOException e) {
-				throw new ConfigurationException("Unable to load file "+fileName, e);
-			}
-		}
-		
-		return this;		
-	}
-	
-	public ProcessingAgentBuilder fromInputStream(InputStream stream) throws IOException {
-		
-		JsonValue jsonObject = Json.parse(new InputStreamReader(stream));
-		name(jsonObject.asObject().get("name").asString());
-		JsonArray commonParameters = jsonObject.asObject().get("parameters").asArray();
-		commonParameters.forEach((p)->{
-			processParameter(p);
-		});
-		
-		JsonArray array = jsonObject.asObject().get("modules").asArray();
-		array.forEach((o)->{
-			processModule(o);
-		});		
-		return this;
-	}
-	
-	private void processModule(JsonValue processValue) {
-		JsonValue classNameValue = processValue.asObject().get("classname");
-		
-		if(classNameValue==null){
-			throw new UnsupportedOperationException("Parameter classname is required for all agent modules.");
-		}
-
-		String className = classNameValue.asString();
-		JsonValue moduleNameValue = processValue.asObject().get("modulename");
-		JsonValue typeValue = processValue.asObject().get("type");
-		if(typeValue==null){
-			throw new UnsupportedOperationException("Parameter type is required for agent modules. Missing for "+moduleNameValue!=null?moduleNameValue.asString():className);
-		}
-		
-		ModuleType type;
-		try {
-			type = ModuleType.valueOf(typeValue.asString());
-		} catch (IllegalArgumentException e) {
-			throw new UnsupportedOperationException("ModuleType: "+typeValue.asString()+" is not valid");
-		}
-		
-		switch (type) {
-		case DATASPOOLER:
-			dataSpooler(className, moduleNameValue!=null? moduleNameValue.asString():null);
-			break;
-		case FORMATTER:
-			messageFormatter(className, moduleNameValue!=null? moduleNameValue.asString():null);
-			break;
-		case MESSENGER:
-			JsonValue mappedModuleNameValue = processValue.asObject().get("mappedmodulename");
-			messenger(className, moduleNameValue != null ? moduleNameValue.asString() : null,
-					mappedModuleNameValue != null ? mappedModuleNameValue.asString() : null);
-			break;
-		default:
-			break;
-		}
-		
-		JsonArray commonParameters = processValue.asObject().get("parameters").asArray();
-		commonParameters.forEach((p)->{
-			processParameter(p);
-		});
-	}
-
-	private void processParameter(JsonValue parameterValue){
-		String name = parameterValue.asObject().get("name").asString();
-		JsonValue value = parameterValue.asObject().get("value");
-		if(value.isBoolean()){
-			addBooleanParameter(name, value.asBoolean());
-		} else if(value.isNumber()){
-			addNumericParameter(name, value.asDouble());
-		} else {
-			JsonValue typeValue = parameterValue.asObject().get("value");
-			if(typeValue != null){
-				try {
-					addStringParameter(name, value.asString(), ParameterType.valueOf(typeValue.asString()));
-				} catch (IllegalArgumentException e) {
-					throw new UnsupportedOperationException("PrameterType: "+typeValue.asString()+" is not valid");
-				}
-			} else {
-				addStringParameter(name, value.asString());
-			}
-		}
 	}
 	
 	public ProcessingAgentBuilder name(String name){
@@ -301,32 +204,20 @@ public class ProcessingAgentBuilder {
 		return this;
 	}
 	
-	public ProcessingAgentBuilder dataSpooler(String className){
-		return createAgentModule(ModuleType.DATASPOOLER, className, null, null);
+	public ProcessingAgentBuilder dataSpooler(Class<? extends DataSpooler> dataSpoolerClass, String moduleName){
+		return createAgentModule(ModuleType.DATASPOOLER, dataSpoolerClass.getName(), moduleName, null);
 	}
 
-	public ProcessingAgentBuilder dataSpooler(String className, String moduleName){
-		return createAgentModule(ModuleType.DATASPOOLER, className, moduleName, null);
+	public ProcessingAgentBuilder messageFormatter(Class<? extends MessageFormatter> messageFormatterClass, String moduleName){
+		return createAgentModule(ModuleType.FORMATTER, messageFormatterClass.getName(), moduleName, null);
 	}
 
-	public ProcessingAgentBuilder messageFormatter(String className){
-		return createAgentModule(ModuleType.FORMATTER, className, null, null);
+	public ProcessingAgentBuilder messenger(Class<? extends Messenger> messengerClass, String moduleName){
+		return createAgentModule(ModuleType.MESSENGER, messengerClass.getName(), moduleName, null);
 	}
 
-	public ProcessingAgentBuilder messageFormatter(String className, String moduleName){
-		return createAgentModule(ModuleType.FORMATTER, className, moduleName, null);
-	}
-
-	public ProcessingAgentBuilder messenger(String className){
-		return createAgentModule(ModuleType.MESSENGER, className, null, null);
-	}
-
-	public ProcessingAgentBuilder messenger(String className, String moduleName){
-		return createAgentModule(ModuleType.MESSENGER, className, moduleName, null);
-	}
-
-	public ProcessingAgentBuilder messenger(String className, String moduleName, String mappedModuleName){
-		return createAgentModule(ModuleType.MESSENGER, className, moduleName, mappedModuleName);
+	public ProcessingAgentBuilder messenger(Class<? extends Messenger> messengerClass, String moduleName, String mappedModuleName){
+		return createAgentModule(ModuleType.MESSENGER, messengerClass.getName(), moduleName, mappedModuleName);
 	}
 
 	private ProcessingAgentBuilder createAgentModule(ModuleType type, String className, String moduleName, String mappedModuleName) {
@@ -335,18 +226,22 @@ public class ProcessingAgentBuilder {
 		agentModule.setModuleName(moduleName);
 		agentModule.setModuleType(type);
 		agentModule.setAgentConfiguration(configuration);
-		if(type == ModuleType.MESSENGER)
+		if(type == ModuleType.MESSENGER 
+				&& mappedModuleName!=null 
+				&& !mappedModuleName.isEmpty())
 			agentModule.setMappedModuleName(mappedModuleName);
 		configuration.getAgentModules().add(agentModule);
 		return this;
 	}
 
 	public ProcessingAgentBuilder addConfigurationParameter(AgentConfigurationParameter parameter){
-		if(agentModule!=null)
-			parameter.setAgentModule(agentModule);
-
 		parameter.setAgentConfiguration(configuration);		
-		configuration.getParameters().add(parameter);
+		if(agentModule!=null) {
+			parameter.setAgentModule(agentModule);
+			agentModule.getParameters().add(parameter);
+		} else {
+			configuration.getParameters().add(parameter);
+		}
 		return this;
 	}
 	
@@ -368,7 +263,8 @@ public class ProcessingAgentBuilder {
 		AgentConfigurationParameter parameter = new AgentConfigurationParameter();
 		parameter.setName(name);
 		parameter.setBase64String(value);
-		return this;
+
+		return addConfigurationParameter(parameter);
 	}
 	
 	public ProcessingAgentBuilder addStringParameter(String name, String value){		
@@ -393,4 +289,11 @@ public class ProcessingAgentBuilder {
 		return addConfigurationParameter(parameter);
 	}
 
+	public ProcessingAgentBuilder map(AgentModule module) {
+		AgentConfigurationModuleMapping configurationModuleMapping = new AgentConfigurationModuleMapping();
+		configurationModuleMapping.setAgentConfiguration(configuration);
+		configurationModuleMapping.setAgentModule(module);
+		configuration.getAgentConfigurationModuleMappings().add(configurationModuleMapping);
+		return this;
+	}
 }

@@ -54,6 +54,8 @@ public class AgentConfiguration implements Serializable {
 	private Set<AgentConfigurationParameter> parameters = new HashSet<>();
 	@OneToMany(mappedBy="agentConfiguration", fetch=FetchType.LAZY, cascade={CascadeType.REMOVE})
 	private Set<ProcessingLog> processingLogs = new HashSet<>();
+	@OneToMany(mappedBy="agentConfiguration", fetch=FetchType.LAZY, cascade={CascadeType.ALL})
+	private Set<AgentConfigurationModuleMapping> agentConfigurationModuleMappings = new HashSet<>();
 	
 	public static enum RunType{
 		SCHEDULED,
@@ -109,9 +111,18 @@ public class AgentConfiguration implements Serializable {
 		this.active = active;
 	}
 
+	public Set<AgentConfigurationModuleMapping> getAgentConfigurationModuleMappings() {
+		return agentConfigurationModuleMappings;
+	}
+
+	public void setAgentConfigurationModuleMappings(Set<AgentConfigurationModuleMapping> agentConfigurationModuleMappings) {
+		this.agentConfigurationModuleMappings = agentConfigurationModuleMappings;
+	}
+
 	public AgentConfiguration cloneById(){
 		AgentConfiguration agentConfiguration = new AgentConfiguration();
 		agentConfiguration.id = id;
+		agentConfiguration.agentName = agentName;
 		
 		return agentConfiguration;
 	}
@@ -143,12 +154,17 @@ public class AgentConfiguration implements Serializable {
 					agentConfigurationMap.put(agentConfigurationParameter.getName(), agentConfigurationParameter);
 				}
 			}
-			
+						
 			for(Entry<Integer, Map<String, AgentConfigurationParameter>> entry:moduleConfigurationMaps.entrySet()){
 				entry.getValue().putAll(agentConfigurationMap);
 				entry.setValue(Collections.unmodifiableMap(entry.getValue()));
 			}
 			
+			for(AgentConfigurationModuleMapping configurationModuleMapping:getAgentConfigurationModuleMappings()) {
+				moduleConfigurationMaps.put(configurationModuleMapping.getAgentModule().getId()
+						, configurationModuleMapping.getAgentModule().getModuleConfigurationMap());
+			}
+
 			agentConfigurationMap = Collections.unmodifiableMap(agentConfigurationMap);
 			moduleConfigurationMaps = Collections.unmodifiableMap(moduleConfigurationMaps);
 		}

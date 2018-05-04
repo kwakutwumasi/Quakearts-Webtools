@@ -10,6 +10,13 @@
  ******************************************************************************/
 package com.quakearts.syshub.exception;
 
+import javax.enterprise.inject.Vetoed;
+
+/**Exception thrown when an error in the configuration of the system occurs
+ * @author kwakutwumasi-afriyie
+ *
+ */
+@Vetoed
 public class ConfigurationException extends Exception {
     /**
 	 * 

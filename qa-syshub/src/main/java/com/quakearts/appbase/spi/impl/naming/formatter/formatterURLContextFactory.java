@@ -13,11 +13,13 @@ package com.quakearts.appbase.spi.impl.naming.formatter;
 
 import java.util.Hashtable;
 
+import javax.enterprise.inject.Vetoed;
 import javax.naming.NamingException;
 import org.apache.naming.NamingContext;
 
 import com.quakearts.appbase.spi.impl.naming.URLContextFactoryBase;
 
+@Vetoed
 public class formatterURLContextFactory extends URLContextFactoryBase {
 
 	private static NamingContext context;

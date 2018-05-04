@@ -21,8 +21,9 @@ import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.spi.CDI;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,46 +32,54 @@ import com.quakearts.appbase.cdi.annotation.Transactional;
 import com.quakearts.appbase.cdi.annotation.Transactional.TransactionType;
 import com.quakearts.syshub.core.Message;
 import com.quakearts.syshub.core.Result;
-import com.quakearts.syshub.core.utils.CacheManagerUtil;
-import com.quakearts.syshub.core.utils.SerializationUtil;
-import com.quakearts.syshub.core.utils.SystemDataStoreUtils;
+import com.quakearts.syshub.core.utils.CacheManager;
+import com.quakearts.syshub.core.utils.Serializer;
+import com.quakearts.syshub.core.utils.SystemDataStoreManager;
 import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentModule;
 import com.quakearts.syshub.model.ProcessingLog;
 import com.quakearts.syshub.model.ResultExceptionLog;
-import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
 import com.quakearts.webapp.orm.stringconcat.OrmStringConcatUtil;
 import com.quakearts.syshub.model.ProcessingLog.LogType;
 
 import org.infinispan.Cache;
 
-@ApplicationScoped
-public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
+@Singleton
+public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
+	@Inject
+	private CacheManager cacheManager;
+	@Inject
+	private Serializer serializer;
+	@Inject
+	private SystemDataStoreManager storeManager;
+
 	private Cache<String, ProcessingLog> save_log_cache;
 	private Cache<String, ProcessingLog> update_log_cache;
 	private Comparator<ProcessingLog> logComparator = (n1,n2)-> n1.getLogDt().compareTo(n2.getLogDt());
-	private final Logger log = LoggerFactory.getLogger(ProcessLoggerImpl.class);
+	private final Logger log = LoggerFactory.getLogger(LoggerImpl.class);
 	private final Timer log_timer = new Timer(true);
 	private Cache<String, ResultExceptionLog> result_exception_log_cache;
-	private SystemDataStoreUtils systemDataStoreUtils = SystemDataStoreUtils.getInstance();
+	private boolean shutdown;
 		
-	ProcessLoggerImpl() {
+	LoggerImpl() {
 		log_timer.schedule(new TimerTask() {	
 			@Override
 			public void run() {
 				try {
-					pushLogsToDB();
-				} catch (Exception e) {
+					if(shutdown)
+						return;
+					
+					getInstance().pushLogsToDB();
+				} catch (Throwable e) {
 					log.error("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()
 							+ ". Exception occured whiles pushing logs to database.");
 				}
 			}
-		}, 0, 5000);
+		}, 0, 500);
 		
-		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-			@Override
-			public void run() {
+		Runtime.getRuntime().addShutdownHook(new Thread(()-> {
+				shutdown = true;
 				log_timer.cancel();
 				for(String key:getSaveLogCache().keySet()){
 					getSaveLogCache().evict(key);
@@ -83,30 +92,32 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 				for(String key:getResultExceptionLog().keySet()){
 					getResultExceptionLog().evict(key);
 				}
-			}
-		}));
+			}));
     }
     
-	private static ProcessLoggerImpl instance;
+	private static LoggerImpl instance;
 	
-	public static ProcessLoggerImpl getInstance() {
+	public static LoggerImpl getInstance() {
 		if(instance == null){
-			instance = CDI.current().select(ProcessLoggerImpl.class).get();
+			instance = CDI.current().select(LoggerImpl.class).get();
 		}
 		return instance;
 	}
 
 	@Transactional(TransactionType.SINGLETON)
-	public synchronized void pushLogsToDB() throws Exception {		
+	public synchronized void pushLogsToDB() throws Exception {
+		if(shutdown)
+			return;
+		
 		List<ProcessingLog> sortList = new ArrayList<>(getSaveLogCache().values());
 		sortList.sort(logComparator);
 		
 		Queue<ProcessingLog> logQueue = new LinkedList<>(sortList);
 		
-		while ( !logQueue.isEmpty() ) {
+		while (!logQueue.isEmpty() ) {
 			ProcessingLog notificationLog = logQueue.poll();
 			try {
-				systemDataStoreUtils.getSystemDataStore().save(notificationLog);
+				storeManager.getDataStore().save(notificationLog);
 			} catch (Exception e) {
 				log.error("Unable to persist notification log.");
 				log.error("Message dump: ["+notificationLog.toString()+"]");
@@ -115,6 +126,9 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 			}
 		}
 	
+		if(shutdown)
+			return;
+		
 		sortList = new ArrayList<>(getUpdateLogCache().values());
 		sortList.sort(logComparator);
 		
@@ -123,7 +137,7 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 		while(!logQueue.isEmpty()){
 			ProcessingLog notificationLog = logQueue.poll();
 			try {
-				systemDataStoreUtils.getSystemDataStore().update(notificationLog);
+				storeManager.getDataStore().update(notificationLog);
 			} catch (Exception e) {
 				log.error("Unable to persist notification log.");
 				log.error("Message dump: ["+notificationLog.toString()+"]");
@@ -132,6 +146,9 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 			}
 		}
 		
+		if(shutdown)
+			return;
+		
 		List<ResultExceptionLog> sortExceptionLogList = new ArrayList<>(getResultExceptionLog().values());
 		sortExceptionLogList.sort((r1,r2)-> r1.getExceptionDt().compareTo(r2.getExceptionDt()));
 		
@@ -139,43 +156,48 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 		while (!exceptionQueue.isEmpty()) {
 			ResultExceptionLog exceptionLog = exceptionQueue.poll();
 			try {
-				systemDataStoreUtils.getSystemDataStore().save(exceptionLog);
+				storeManager.getDataStore().save(exceptionLog);
 			} catch (Exception e) {
 				log.error("Unable to persist result exception log.");
 				log.error("Message dump: ["+exceptionLog.toString()+"]");
 			} finally {
-				getResultExceptionLog().remove(exceptionLog.toString());
+				getResultExceptionLog().remove(exceptionLog.hashCodeAsString());
 			}
 		}
 	}
 
 	@Override
 	public void logResultException(AgentConfiguration agentConfiguration, AgentModule agentModule,
-			Exception e, Result result) {
-		ResultExceptionLog log = new ResultExceptionLog();
-		log.setAgentConfiguration(agentConfiguration);
-		log.setAgentModule(agentModule);
-		log.setExceptionType(e.getClass().getName());
-		log.setExceptionData(SerializationUtil.getInstance().toByteArray(e));
-		log.setResultData(SerializationUtil.getInstance().toByteArray(result));
-		getResultExceptionLog().put(log.toString(), log);
-	}
-	
-	/* (non-Javadoc)
-	 * @see com.quakearts.notification.log.MessageLogger#getUnpersistedLogs()
-	 */
-	@Override
-	public List<ProcessingLog> getUnpersistedLogs(){
-		ArrayList<ProcessingLog> unpersistedLogs = 
-				new ArrayList<ProcessingLog>(getSaveLogCache().values());
-		unpersistedLogs.addAll(getUpdateLogCache().values());
-		return Collections.unmodifiableList(unpersistedLogs);
+			Exception e, Result<?> result) {
+		ResultExceptionLog exceptionLog = new ResultExceptionLog();
+		exceptionLog.setAgentConfiguration(agentConfiguration);
+		exceptionLog.setAgentModule(agentModule);
+		exceptionLog.setExceptionType(e.getClass().getName());
+		exceptionLog.setExceptionData(serializer.toByteArray(e));
+		exceptionLog.setResultData(serializer.toByteArray(result));
+		getResultExceptionLog().put(exceptionLog.hashCodeAsString(), exceptionLog);
 	}
 	
 	@Override
 	public List<ResultExceptionLog> getUnpersistedResultExceptionLogs() {
 		ArrayList<ResultExceptionLog> unpersistedLogs = 
 				new ArrayList<ResultExceptionLog>(getResultExceptionLog().values());
+		return Collections.unmodifiableList(unpersistedLogs);
+	}
+	
+	@Override
+	public ResultExceptionLog getResultExceptionLogByID(long relID) {
+		return storeManager.getDataStore().get(ResultExceptionLog.class, relID);
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.quakearts.notification.log.MessageLogger#getUnpersistedLogs()
+	 */
+	@Override
+	public List<ProcessingLog> getUnpersistedProcessingLogs(){
+		ArrayList<ProcessingLog> unpersistedLogs = 
+				new ArrayList<ProcessingLog>(getSaveLogCache().values());
+		unpersistedLogs.addAll(getUpdateLogCache().values());
 		return Collections.unmodifiableList(unpersistedLogs);
 	}
 	
@@ -186,21 +208,13 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	public void logMessage(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg, String response, boolean isError){
 		saveLog(agentConfiguration, agentModule, mssg, LogType.INFO, response,isError);
 	}
-	
-	/* (non-Javadoc)
-	 * @see com.quakearts.notification.log.MessageLogger#store(com.quakearts.notification.core.Message, boolean)
-	 */
-	@Override
-	public void storeMessage(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg, boolean isError){
-		saveLog(agentConfiguration, agentModule, mssg, LogType.STORED, "",isError);
-	}
 
 	/* (non-Javadoc)
 	 * @see com.quakearts.notification.log.MessageLogger#store(com.quakearts.notification.core.Message, java.lang.String, boolean)
 	 */
 	@Override
-	public void storeMessage(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg, String details, boolean isError){
-		saveLog(agentConfiguration, agentModule, mssg, LogType.STORED, details,isError);
+	public void storeMessage(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg, String details){
+		saveLog(agentConfiguration, agentModule, mssg, LogType.STORED, details, false);
 	}
 	
 	/* (non-Javadoc)
@@ -210,41 +224,14 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	public void queueMessage(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg,String reason){
 		saveLog(agentConfiguration, agentModule, mssg, LogType.QUEUED, reason, false);
 	}
-	
-	/* (non-Javadoc)
-	 * @see com.quakearts.notification.log.MessageLogger#findMessagesByDetails(java.lang.String, java.lang.Byte, java.lang.String, java.lang.String)
-	 */
-	@Override
-	@Transactional(TransactionType.SINGLETON)
-	public List<ProcessingLog> findMessagesByDetails(String messageDetails, Byte type, 
-			String errorStatus, String source) throws Exception {
-		List<ProcessingLog> list;
-		try {	
-			DataStore systemDataStore = systemDataStoreUtils.getSystemDataStore();
-			ParameterMapBuilder parameters = new ParameterMapBuilder();
-			parameters.addVariableString("message", messageDetails);
-			if(type!=null)
-				parameters.add("type", type);
-			if(errorStatus!=null){
-				parameters.add("error", Boolean.valueOf(errorStatus));
-			}
-			if(source!=null)
-				parameters.add("source", source);
-			
-			list = systemDataStore.list(ProcessingLog.class,parameters.build());
-			return list; 
-		} catch (Exception e) {
-			throw new Exception(e);
-		}
-	}
 
 	/* (non-Javadoc)
 	 * @see com.quakearts.notification.log.MessageLogger#getLogByID(long)
 	 */
 	@Override
 	@Transactional(TransactionType.SINGLETON)
-	public ProcessingLog getLogByID(long logID){
-		return systemDataStoreUtils.getSystemDataStore().get(ProcessingLog.class, Long.valueOf(logID));
+	public ProcessingLog getProcessingLogByID(long logID){
+		return storeManager.getDataStore().get(ProcessingLog.class, Long.valueOf(logID));
 	}
 	
 	/* (non-Javadoc)
@@ -252,14 +239,14 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	 */
 	@Override
 	@Transactional(TransactionType.SINGLETON)
-	public ProcessingLog findMessageLogByMid(String mid){
+	public ProcessingLog getProcessingLogByMid(String mid){
 		
 		ProcessingLog founndlog = getSaveLogCache().get(mid);
 		if(founndlog!=null){
 			return founndlog;
 		}
 
-		List<ProcessingLog> list = systemDataStoreUtils.getSystemDataStore().list(ProcessingLog.class, ParameterMapBuilder
+		List<ProcessingLog> list = storeManager.getDataStore().list(ProcessingLog.class, ParameterMapBuilder
 				.createParameters().add("mid",mid).build());
 		
 		if(list.size()>0){
@@ -291,7 +278,7 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 		String[] receipients = mssg.getRecipients(); 
 		notelog.setRecipient(Arrays.toString(receipients));
 		notelog.setType(type);
-		notelog.setMessageData(SerializationUtil.getInstance().toByteArray(mssg));
+		notelog.setMessageData(serializer.toByteArray(mssg));
 		notelog.setRetries(0);
 		notelog.setError(isError);
 		notelog.setLogDt(new Date());
@@ -306,21 +293,21 @@ public class ProcessLoggerImpl implements MessageLogger, ResultExceptionLogger {
 	 */
 	private Cache<String, ProcessingLog> getSaveLogCache() {
 		if(save_log_cache==null){
-			save_log_cache = CacheManagerUtil.getInstance().getCache(ProcessingLog.class,".NEW");
+			save_log_cache = cacheManager.getCache(ProcessingLog.class,".NEW");
 		}
 		return save_log_cache;
 	}
 
 	private Cache<String, ProcessingLog> getUpdateLogCache() {
 		if(update_log_cache==null){
-			update_log_cache = CacheManagerUtil.getInstance().getCache(ProcessingLog.class,".UPDATE");
+			update_log_cache = cacheManager.getCache(ProcessingLog.class,".UPDATE");
 		}
 		return update_log_cache;
 	}
 	
 	private Cache<String, ResultExceptionLog> getResultExceptionLog(){
 		if(result_exception_log_cache == null){
-			result_exception_log_cache = CacheManagerUtil.getInstance().getCache(ResultExceptionLog.class, null);
+			result_exception_log_cache = cacheManager.getCache(ResultExceptionLog.class, null);
 		}
 		
 		return result_exception_log_cache;

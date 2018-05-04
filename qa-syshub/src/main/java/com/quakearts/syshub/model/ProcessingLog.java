@@ -73,7 +73,6 @@ public class ProcessingLog implements Serializable {
 
 	public static enum LogType {
 		INFO,
-		ERROR,
 		QUEUED,
 		STORED,
 		RESENT
@@ -81,7 +80,6 @@ public class ProcessingLog implements Serializable {
 	
 	public ProcessingLog() {
 	}
-
 
 	public ProcessingLog(String mid, LogType type, AgentConfiguration agentConfiguration, AgentModule agentModule,
 			String statusMessage, byte[] messageData, long retries, boolean error, Date logDt) {

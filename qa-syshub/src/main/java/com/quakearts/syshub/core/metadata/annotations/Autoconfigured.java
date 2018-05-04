@@ -8,12 +8,15 @@
  * Contributors:
  *     Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com> - initial API and implementation
  ******************************************************************************/
-package com.quakearts.syshub.core.metadata;
+package com.quakearts.syshub.core.metadata.annotations;
 
-import java.util.Map;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import com.quakearts.syshub.model.AgentConfigurationParameter;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-public interface NameGenerator {
-	String generateName(Map<String, AgentConfigurationParameter> parameters);
+@Retention(RUNTIME)
+@Target(TYPE)
+public @interface Autoconfigured {
 }

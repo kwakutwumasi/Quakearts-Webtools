@@ -19,7 +19,7 @@ import java.io.Serializable;
  *
  */
 public final class MessageByteImpl extends ByteMessageBase
-	implements Serializable, Message<byte[]> {
+	implements Message<byte[]> {
 
 	private static final long serialVersionUID = 5563271783697520715L;
 
@@ -40,7 +40,7 @@ public final class MessageByteImpl extends ByteMessageBase
 	 */
 	@Override
 	public Message<byte[]> appendHeader(byte[] header) throws ProcessingException {
-		appendHeader(header);
+		appendHeaderBytes(header);
 		return this;
 	}
 
@@ -49,7 +49,7 @@ public final class MessageByteImpl extends ByteMessageBase
 	 */
 	@Override
 	public Message<byte[]> appendBody(byte[] body) throws ProcessingException {
-		appendBody(body);
+		appendBodyBytes(body);
 		return this;
 	}
 
@@ -58,7 +58,7 @@ public final class MessageByteImpl extends ByteMessageBase
 	 */
 	@Override
 	public Message<byte[]> appendFooter(byte[] footer) throws ProcessingException {
-		appendFooter(footer);
+		appendFooterBytes(footer);
 		return this;
 	}
 

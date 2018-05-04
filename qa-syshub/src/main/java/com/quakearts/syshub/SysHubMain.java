@@ -13,10 +13,12 @@ package com.quakearts.syshub;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.quakearts.appbase.Main;
@@ -31,14 +33,16 @@ import com.quakearts.syshub.core.runner.AgentRunner;
 import com.quakearts.syshub.core.runner.impl.LoopedAgentRunner;
 import com.quakearts.syshub.core.runner.impl.ScheduledAgentRunner;
 import com.quakearts.syshub.core.runner.impl.TriggeredAgentRunner;
-import com.quakearts.syshub.core.utils.SystemDataStoreUtils;
+import com.quakearts.syshub.core.utils.SystemDataStoreManager;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentModule;
-import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
 
 @Singleton
 public class SysHubMain implements SysHub {
+	
+	@Inject
+	private SystemDataStoreManager storeManager;
 	
 	private static Map<String, AgentRunner> agentRunners = new ConcurrentHashMap<>();
 		
@@ -53,10 +57,12 @@ public class SysHubMain implements SysHub {
 	@Transactional(TransactionType.SINGLETON)
 	public void init() {
 		if(!hasRun){//Run only once per application
-			List<AgentConfiguration> agentConfigurations = SystemDataStoreUtils
-					.getInstance()
-					.getSystemDataStore()
-					.list(AgentConfiguration.class, new ParameterMapBuilder().add("active", Boolean.TRUE).build());
+			List<AgentConfiguration> agentConfigurations = storeManager
+					.getDataStore()
+					.find(AgentConfiguration.class)
+					.filterBy("active")
+					.withAValueEqualTo(Boolean.TRUE)
+					.thenList();
 			
 			for(AgentConfiguration agentConfiguration : agentConfigurations) {
 				try {
@@ -84,7 +90,7 @@ public class SysHubMain implements SysHub {
 	 */
 	@Override
 	public Collection<AgentRunner> listAgentRunners(){
-		return agentRunners.values();
+		return Collections.unmodifiableCollection(agentRunners.values());
 	}
 	
 	/* (non-Javadoc)
@@ -113,9 +119,6 @@ public class SysHubMain implements SysHub {
 			throw e;
 		}
 		
-		if(agentRunner == null)
-			throw new ConfigurationException("Unable to find type runner for " + agentConfiguration.getType());
-		
 		agentRunners.put(agent.getName(), agentRunner);
 	}
 	
@@ -134,23 +137,18 @@ public class SysHubMain implements SysHub {
 		}
 		
 		for(AgentModule module:agentConfiguration.getAgentModules()){
-			try {				
-				switch (module.getModuleType()) {
-				case DATASPOOLER:
-					DataSpoolerFactory.getFactory().unbindFromJNDI(module);
-					break;
-				case FORMATTER:
-					MessageFormatterFactory.getFactory().unbindFromJNDI(module);
-					break;
-				case MESSENGER:
-					MessengerFactory.getFactory().unbindFromJNDI(module);
-					break;
-				default:
-					break;
-				}
-			} catch (Throwable e) {
-				Main.log.error("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()
-						+ ". Exception occured whiles undeploying "+module.getModuleName()+" for agent "+agentConfiguration.getAgentName());
+			switch (module.getModuleType()) {
+			case DATASPOOLER:
+				DataSpoolerFactory.getFactory().removeInstance(module);
+				break;
+			case FORMATTER:
+				MessageFormatterFactory.getFactory().removeInstance(module);
+				break;
+			case MESSENGER:
+				MessengerFactory.getFactory().removeInstance(module);
+				break;
+			default:
+				break;
 			}
 		}
 	}

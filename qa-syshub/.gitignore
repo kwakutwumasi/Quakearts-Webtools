@@ -23,7 +23,7 @@ local.properties
 /syshubmainDB/
 /derby.log
 /tmlog.lck
-/tmlog5.log
+/tmlog*.log
 /.DS_Store
 /syshub_log_cache/
-/logging.properties
+/SysHubDS/

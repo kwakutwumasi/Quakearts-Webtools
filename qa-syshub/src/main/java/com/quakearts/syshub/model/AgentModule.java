@@ -51,6 +51,8 @@ public class AgentModule implements Serializable {
 	private ModuleType moduleType;
 	@OneToMany(mappedBy="agentModule", fetch=FetchType.LAZY, cascade = {CascadeType.ALL})
 	private Set<AgentConfigurationParameter> parameters = new HashSet<>();
+	@OneToMany(mappedBy="agentModule", fetch=FetchType.LAZY, cascade={CascadeType.ALL})
+	private Set<AgentConfigurationModuleMapping> agentConfigurationModuleMappings = new HashSet<>();
 	
 	public static enum ModuleType {
 		DATASPOOLER,
@@ -114,9 +116,18 @@ public class AgentModule implements Serializable {
 		this.parameters = agentConfigurationParameters;
 	}
 
+	public Set<AgentConfigurationModuleMapping> getAgentConfigurationModuleMappings() {
+		return agentConfigurationModuleMappings;
+	}
+
+	public void setAgentConfigurationModuleMappings(Set<AgentConfigurationModuleMapping> agentConfigurationModuleMappings) {
+		this.agentConfigurationModuleMappings = agentConfigurationModuleMappings;
+	}
+
 	public AgentModule cloneById() {
 		AgentModule clone = new AgentModule();
 		clone.id = id;
+		clone.moduleName = moduleName;
 		return clone;
 	}
 

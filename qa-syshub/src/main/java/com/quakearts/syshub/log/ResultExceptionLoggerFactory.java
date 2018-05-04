@@ -16,6 +16,6 @@ public class ResultExceptionLoggerFactory {
 
 	@Produces 
 	public @ResultExceptionLogging ResultExceptionLogger getResultExceptionLogger(){
-		return ProcessLoggerImpl.getInstance();
+		return LoggerImpl.getInstance();
 	}
 }

@@ -10,24 +10,31 @@
  ******************************************************************************/
 package com.quakearts.syshub.core.runner.impl;
 
+import java.util.List;
 import java.util.Map;
 
+import javax.enterprise.inject.Vetoed;
+
 import com.quakearts.syshub.agent.ProcessingAgent;
+import com.quakearts.syshub.core.runner.TriggeredStateReporter;
+import com.quakearts.syshub.core.runner.AgentTrigger.TriggerState;
 import com.quakearts.syshub.core.runner.AgentRunner;
 import com.quakearts.syshub.core.runner.AgentTrigger;
 import com.quakearts.syshub.core.runner.AgentTriggerFactory;
 import com.quakearts.syshub.core.runner.RunAgentListener;
+import com.quakearts.syshub.core.runner.Statistic;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.exception.ProcessingException;
 import com.quakearts.syshub.model.AgentConfiguration.RunType;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 
-public class TriggeredAgentRunner implements Runnable, AgentRunner, RunAgentListener {
+@Vetoed
+public class TriggeredAgentRunner implements Runnable, AgentRunner, RunAgentListener, TriggeredStateReporter {
 
 	private ProcessingAgent agent;
 	private AgentTrigger trigger;
 	private String triggerClassName;
-	private boolean isRunning,
+	private boolean enteredRunTrigger,
 	isInErrorState;
 	
 	public TriggeredAgentRunner(ProcessingAgent agent, Map<String, AgentConfigurationParameter> parameters) 
@@ -44,15 +51,19 @@ public class TriggeredAgentRunner implements Runnable, AgentRunner, RunAgentList
 			throw new ConfigurationException("Missing parameter. trigger.class not found");
 		
 		trigger = AgentTriggerFactory.getInstance().createAgentTrigger(triggerClassName, this, parameters);
-		restart();
+		start();
 	}
 
 	@Override
 	public void run() {
-		if(trigger != null && !isRunning){
-			isRunning = true;
-			trigger.runTrigger();
-			isRunning = false;
+		if(trigger != null){
+			enteredRunTrigger = true;
+			try {
+				trigger.runTrigger();
+			} catch (ProcessingException e) {
+				isInErrorState = true;
+			}
+			enteredRunTrigger = false;
 		}
 	}
 	
@@ -63,13 +74,18 @@ public class TriggeredAgentRunner implements Runnable, AgentRunner, RunAgentList
 	
 	@Override
 	public boolean isRunning() {
-		return isRunning;
+		return enteredRunTrigger && !isShutDown();
 	}
 
+	public boolean hasEnteredRunTrigger() {
+		return enteredRunTrigger;
+	}
+	
 	@Override
 	public boolean isShutDown() {
 		return trigger == null 
-				|| trigger.isShutDown();
+				|| trigger.isShutDown() 
+				|| agent.isShutdown();
 	}
 
 	@Override
@@ -95,20 +111,37 @@ public class TriggeredAgentRunner implements Runnable, AgentRunner, RunAgentList
 	}
 
 	@Override
-	public boolean restart() {
-		if(!isRunning)
+	public boolean start() {
+		if(!enteredRunTrigger) {
+			agent.reset();
 			new Thread(this).start();
+		}
 		return true;
 	}
 
 	@Override
 	public boolean shutdown() {
-		return trigger != null 
-				&& trigger.shutdown();
+		if(trigger != null 
+				&& trigger.shutdown()) {
+			agent.shutdown();
+			return true;
+		}
+		
+		return isShutDown();
 	}
 
 	@Override
 	public String toString() {
 		return agent.getName();
+	}
+	
+	@Override
+	public TriggerState getState() {
+		return trigger.getState();
+	}
+	
+	@Override
+	public List<Statistic> getStatistics() {
+		return trigger.getStatistics();
 	}
 }

@@ -16,7 +16,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import com.quakearts.syshub.core.metadata.NameGenerator;
 import com.quakearts.syshub.model.AgentConfigurationParameter.ParameterType;
 
 @Retention(RUNTIME)
@@ -25,7 +24,7 @@ public @interface ConfigurationProperty {
 	String value();
 	boolean required() default false;
 	ParameterType type() default ParameterType.STRING;
-	Class<? extends NameGenerator> generatorClass() default NameGenerator.class;
+	String[] optionList() default {};
 	String pattern() default "";
 	String description() default "";
 	String friendlyName() default "";

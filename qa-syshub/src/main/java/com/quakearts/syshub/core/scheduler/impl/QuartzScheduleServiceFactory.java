@@ -12,6 +12,8 @@ package com.quakearts.syshub.core.scheduler.impl;
 
 import java.util.Map;
 
+import javax.enterprise.inject.Vetoed;
+
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.TriggerBuilder;
@@ -22,6 +24,7 @@ import com.quakearts.syshub.core.scheduler.SchedulerServiceFactory;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 
+@Vetoed
 public class QuartzScheduleServiceFactory extends SchedulerServiceFactory {
 
 	private static final QuartzSchedulerService instance = new QuartzSchedulerService();

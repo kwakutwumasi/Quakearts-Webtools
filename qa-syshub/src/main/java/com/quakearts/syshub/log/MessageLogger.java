@@ -19,23 +19,12 @@ import com.quakearts.syshub.model.ProcessingLog;
 
 public interface MessageLogger {
 
-	List<ProcessingLog> getUnpersistedLogs();
-
-	void logMessage(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg, String details, boolean isError);
-
-	void storeMessage(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg, boolean isError);
-
-	void storeMessage(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg, String details, boolean isError);
-
-	void queueMessage(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg, String reason);
-
-	List<ProcessingLog> findMessagesByDetails(String messageDetails, Byte type, String errorStatus, String source)
-			throws Exception;
-
-	ProcessingLog getLogByID(long logID);
-
-	ProcessingLog findMessageLogByMid(String mid);
-
+	List<ProcessingLog> getUnpersistedProcessingLogs();
+	ProcessingLog getProcessingLogByID(long logID);
+	ProcessingLog getProcessingLogByMid(String mid);
 	void updateLog(ProcessingLog notificationLog) throws Exception;
+	void logMessage(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg, String details, boolean isError);
+	void storeMessage(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg, String details);
+	void queueMessage(AgentConfiguration agentConfiguration, AgentModule agentModule, Message<?> mssg, String reason);
 
 }

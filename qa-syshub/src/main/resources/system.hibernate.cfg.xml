@@ -20,5 +20,6 @@
   <mapping class="com.quakearts.syshub.model.ResultExceptionLog"/>
   <mapping class="com.quakearts.syshub.model.TransactionLog"/>
   <mapping class="com.quakearts.syshub.model.VariableCache"/>
+  <mapping class="com.quakearts.syshub.model.AgentConfigurationModuleMapping"/>
  </session-factory>
 </hibernate-configuration>
