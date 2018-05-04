@@ -22,6 +22,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.tomcat.websocket.pojo.PojoEndpointServer;
 import org.apache.tomcat.websocket.server.WsContextListener;
 import org.apache.tomcat.websocket.server.WsSessionListener;
 import org.jboss.weld.servlet.WeldInitialListener;
@@ -41,6 +42,7 @@ import com.quakearts.appbase.spi.impl.AtomikosJavaTransactionManagerSpiImpl;
 import com.quakearts.appbase.spi.impl.JavaNamingDirectorySpiImpl;
 import com.quakearts.appbase.spi.impl.TomcatEmbeddedServerSpiImpl;
 import com.quakearts.appbase.spi.impl.WeldContextDependencySpiImpl;
+import com.quakearts.appbase.spi.impl.tomcat.AppBaseCDIInstanceManager;
 import com.quakearts.appbase.test.experiments.TestInjectImpl;
 import com.quakearts.appbase.test.experiments.TestSubInjectDecorator;
 import com.quakearts.appbase.test.experiments.TestSubInjectImpl;
@@ -200,6 +202,21 @@ public class TestTomcatEmbeddedServerSpiImpl {
 			} catch (IOException e) {
 				fail("Unable to connect:" +e.getMessage());
 			}
+			
+			AppBaseCDIInstanceManager manager = new AppBaseCDIInstanceManager(
+					ContextDependencySpiFactory.getInstance().getContextDependencySpi().getBeanManager());
+			
+			TestInjectImpl.reset();
+			
+			TestInjectImpl impl = new TestInjectImpl();
+			manager.newInstance(impl);
+			impl.sayHello();
+
+			assertThat(TestInjectImpl.saidHello(), is(true));
+			assertThat(TestInjectImpl.testSubInjectLoaded(), is(true));		
+			
+			PojoEndpointServer endpointServer = new PojoEndpointServer();
+			manager.newInstance(endpointServer);
 			
 			serverSpi.shutdownEmbeddedWebServer();
 			serverSpi.shutdownEmbeddedWebServer();

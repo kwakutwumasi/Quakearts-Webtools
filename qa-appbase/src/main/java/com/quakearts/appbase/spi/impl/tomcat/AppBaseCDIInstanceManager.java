@@ -12,9 +12,12 @@ package com.quakearts.appbase.spi.impl.tomcat;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.inject.spi.InjectionTargetFactory;
@@ -76,12 +79,15 @@ public class AppBaseCDIInstanceManager implements InstanceManager {
 		inject(o);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void inject(Object o) {
 		AnnotatedType<?> type = manager.createAnnotatedType(o.getClass());
+		Set<Bean<?>> beans = manager.getBeans(o.getClass());
+		Bean bean = manager.resolve(beans);
 		InjectionTargetFactory<?> factory = manager.getInjectionTargetFactory(type);
-		@SuppressWarnings("unchecked")
-		InjectionTarget<Object> target = (InjectionTarget<Object>) factory.createInjectionTarget(null);
-		target.inject(o, null);		
+		InjectionTarget<Object> target = (InjectionTarget<Object>) factory.createInjectionTarget(bean);
+		CreationalContext context = manager.createCreationalContext(bean);
+		target.inject(o, context);
 	}
 	
 	@Override
