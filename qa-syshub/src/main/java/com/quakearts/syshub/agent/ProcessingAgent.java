@@ -125,7 +125,10 @@ public class ProcessingAgent {
 	}
 	
 	public boolean isShutdown() {
-		return executor.isShutdown();
+		if(executor!=null){
+			return executor.isShutdown();
+		}
+		return true;
 	}
 	
 	public void reset() {
