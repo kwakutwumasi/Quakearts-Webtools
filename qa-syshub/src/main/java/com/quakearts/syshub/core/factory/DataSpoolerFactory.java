@@ -72,7 +72,7 @@ public class DataSpoolerFactory {
 		dataSpooler = getInstance(module.getModuleClassName());
 		if (parameters != null)
 			dataSpooler.setupWithConfigurationParameters(parameters);
-		dataSpooler.setAgentConfiguration(module.getAgentConfiguration().cloneById());
+		dataSpooler.setAgentConfiguration(module.getAgentConfiguration());
 		dataSpooler.setAgentModule(module);
 		dataSpooler.validate();
 

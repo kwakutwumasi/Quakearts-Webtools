@@ -118,14 +118,6 @@ public class AgentConfiguration implements Serializable {
 	public void setAgentConfigurationModuleMappings(Set<AgentConfigurationModuleMapping> agentConfigurationModuleMappings) {
 		this.agentConfigurationModuleMappings = agentConfigurationModuleMappings;
 	}
-
-	public AgentConfiguration cloneById(){
-		AgentConfiguration agentConfiguration = new AgentConfiguration();
-		agentConfiguration.id = id;
-		agentConfiguration.agentName = agentName;
-		
-		return agentConfiguration;
-	}
 	
 	@Transient
 	private Map<Integer, Map<String, AgentConfigurationParameter>> moduleConfigurationMaps;

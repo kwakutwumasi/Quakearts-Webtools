@@ -124,13 +124,6 @@ public class AgentModule implements Serializable {
 		this.agentConfigurationModuleMappings = agentConfigurationModuleMappings;
 	}
 
-	public AgentModule cloneById() {
-		AgentModule clone = new AgentModule();
-		clone.id = id;
-		clone.moduleName = moduleName;
-		return clone;
-	}
-
 	@Transient
 	private Map<String, AgentConfigurationParameter> moduleConfigurationMap;
 	
