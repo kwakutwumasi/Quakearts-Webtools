@@ -35,7 +35,6 @@ import com.quakearts.syshub.webapp.helpers.parameter.AgentModuleDatabase;
 import com.quakearts.syshub.core.DataSpooler;
 import com.quakearts.syshub.core.MessageFormatter;
 import com.quakearts.syshub.core.Messenger;
-import com.quakearts.syshub.core.utils.SystemDataStoreUtils;
 import com.quakearts.syshub.model.AgentConfiguration;
 
 @ManagedBean(name = "agentModulePage")
@@ -116,7 +115,7 @@ public class AgentModulePage extends BaseBean {
 	public void moduleNameChanged(AjaxBehaviorEvent event) {
 		if(agentModule != null && agentModule.getId() != 0 
 				&& agentModule.getModuleType() == ModuleType.FORMATTER){
-			DataStore store = SystemDataStoreUtils.getInstance().getSystemDataStore();
+			DataStore store = finder.getDataStore();
 			AgentModule oldAgentModule = finder.getById(agentModule.getId());//Reload
 			
 			List<AgentModule> mappedModules = finder.findObjects(new ParameterMapBuilder().add("agentConfiguration", agentModule.getAgentConfiguration())
@@ -126,6 +125,7 @@ public class AgentModulePage extends BaseBean {
 				oldAgentModule.setModuleName(agentModule.getModuleName());
 				agentModule = oldAgentModule;
 				store.save(agentModule);
+				store.clearBuffers();
 				
 				for(AgentModule agentModule : mappedModules){
 					agentModule.setMappedModuleName(agentModule.getModuleName());
@@ -202,7 +202,7 @@ public class AgentModulePage extends BaseBean {
 		try {
 			agentModule.getParameters().size();
 		} catch (Exception e) {
-			agentModule = SystemDataStoreUtils.getInstance().getSystemDataStore().refresh(agentModule);
+			agentModule = finder.getDataStore().refresh(agentModule);
 			getAgentConfigurationDropdownHelper().addToFoundItemsList(agentModule.getAgentConfiguration());
 		}
 				

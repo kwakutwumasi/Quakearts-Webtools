@@ -10,8 +10,6 @@
  ******************************************************************************/
 package com.quakearts.syshub.webapp.beans;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -31,8 +29,6 @@ import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.syshub.SysHub;
 import com.quakearts.syshub.SysHubMain;
-import com.quakearts.syshub.agent.builder.ProcessingAgentBuilder;
-import com.quakearts.syshub.core.utils.SystemDataStoreUtils;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentConfiguration.RunType;
@@ -64,7 +60,8 @@ public class AgentConfigurationPage extends BaseBean {
 			maxDataSpoolerWorkers, 
 			maximumPoolSize,
 			schedulerCron,
-			triggerClass;
+			triggerClass,
+			isResendCapable;
 	
 	public AgentConfigurationPage(){
 		webappmain = new WebApplicationMain();
@@ -78,6 +75,7 @@ public class AgentConfigurationPage extends BaseBean {
 		maxFormatterWorkers = new AgentConfigurationParameterWrapper("maxFormatterWorkers", ParameterType.NUMERIC); 
 		maxDataSpoolerWorkers = new AgentConfigurationParameterWrapper("maxDataSpoolerWorkers", ParameterType.NUMERIC); 
 		maximumPoolSize = new AgentConfigurationParameterWrapper("maximumPoolSize", ParameterType.NUMERIC);
+		isResendCapable = new AgentConfigurationParameterWrapper("isResendCapable", ParameterType.NUMERIC);
 		schedulerCron = new AgentConfigurationParameterWrapper("scheduler.cron", ParameterType.CRONCONFIGURATION);
 		triggerClass = new AgentConfigurationParameterWrapper("trigger.class", ParameterType.CLASS); 
 	}
@@ -107,13 +105,13 @@ public class AgentConfigurationPage extends BaseBean {
 			}
 			
 			if(configurationParameter.getId() != 0){
-				SystemDataStoreUtils.getInstance().getSystemDataStore().update(configurationParameter);
+				finder.getDataStore().update(configurationParameter);
 			}
 		}
 		
 		public void removeParameter(AjaxBehaviorEvent event){
 			if(configurationParameter.getId() != 0){
-				SystemDataStoreUtils.getInstance().getSystemDataStore().delete(configurationParameter);
+				finder.getDataStore().delete(configurationParameter);
 				configurationParameter = new AgentConfigurationParameter(name, type);
 			}
 		}
@@ -144,7 +142,7 @@ public class AgentConfigurationPage extends BaseBean {
 			try {
 				agentConfiguration.getAgentConfigurationMap();
 			} catch (Exception e) {
-				agentConfiguration = SystemDataStoreUtils.getInstance().getSystemDataStore()
+				agentConfiguration = finder.getDataStore()
 						.refresh(agentConfiguration);
 				this.agentConfiguration = agentConfiguration;
 			}
@@ -179,6 +177,11 @@ public class AgentConfigurationPage extends BaseBean {
 			parameter = agentConfiguration.getAgentConfigurationParameter("maximumPoolSize");
 			if (parameter != null) {
 				maximumPoolSize.configurationParameter = parameter;
+			}
+			
+			parameter = agentConfiguration.getAgentConfigurationParameter("isResendCapable");
+			if (parameter != null) {
+				isResendCapable.configurationParameter = parameter;
 			}
 			
 			parameter = agentConfiguration.getAgentConfigurationParameter("scheduler.cron");
@@ -266,8 +269,8 @@ public class AgentConfigurationPage extends BaseBean {
 		try {
 			agentConfiguration.getAgentConfigurationMap(); //Test for lazy loaded parameter access
 			agentConfiguration.getAgentModules().size();
-		} catch (Exception e) {
-			setAgentConfiguration(SystemDataStoreUtils.getInstance().getSystemDataStore().refresh(agentConfiguration));
+		} catch (Throwable e) {
+			setAgentConfiguration(finder.getDataStore().refresh(agentConfiguration));
 		}
 		
 		if(sysHub.isDeployed(agentConfiguration)){
@@ -298,7 +301,7 @@ public class AgentConfigurationPage extends BaseBean {
 		try {
 			agentConfiguration.getAgentModules().size();
 		} catch (Exception e) {
-			setAgentConfiguration(SystemDataStoreUtils.getInstance().getSystemDataStore().refresh(agentConfiguration));
+			setAgentConfiguration(finder.getDataStore().refresh(agentConfiguration));
 		}
 		
 		if(!sysHub.isDeployed(agentConfiguration)){
@@ -338,6 +341,10 @@ public class AgentConfigurationPage extends BaseBean {
 		return maximumPoolSize;
 	}
 	
+	public AgentConfigurationParameterWrapper getIsResendCapable() {
+		return isResendCapable;
+	}
+	
 	public AgentConfigurationParameterWrapper getTriggerClass() {
 		return triggerClass;
 	}
@@ -368,21 +375,21 @@ public class AgentConfigurationPage extends BaseBean {
 		try {
 			agentConfiguration.getAgentConfigurationMap();
 		} catch (Exception e) {
-			agentConfiguration = SystemDataStoreUtils.getInstance().getSystemDataStore().refresh(agentConfiguration);
+			agentConfiguration = finder.getDataStore().refresh(agentConfiguration);
 		}
 
 		try {
 			Class<?> clazz = Class.forName(triggerClass.configurationParameter.getStringValue());
 			configurationHelper = new AgentConfigurationParameterHelper(clazz, null, agentConfiguration);
 		} catch (ClassNotFoundException e) {
-			addError("Invalid Data", "Trigger Class not found:" + triggerClass.configurationParameter.getStringValue(),
+			addError("Invalid Data", "Trigger1 Class not found:" + triggerClass.configurationParameter.getStringValue(),
 					FacesContext.getCurrentInstance());
 		}
 	}
 
 	public void clearTriggeredAgentRunnerParameters(AjaxBehaviorEvent event) {
 		if (triggerClass.configurationParameter.getId() !=0 ) {
-			SystemDataStoreUtils.getInstance().getSystemDataStore().delete(triggerClass.configurationParameter);
+			finder.getDataStore().delete(triggerClass.configurationParameter);
 			triggerClass = new AgentConfigurationParameterWrapper("trigger.class", ParameterType.CLASS);
 			configurationHelper = null;
 		}
@@ -406,20 +413,6 @@ public class AgentConfigurationPage extends BaseBean {
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
-	}
-	
-	public void completeUpload(ActionEvent event) {
-		if(fileName == null || fileName.trim().isEmpty())
-			return;
-		
-		if(data == null)
-			return;
-		
-		try {
-			setAgentConfiguration(new ProcessingAgentBuilder().fromInputStream(new ByteArrayInputStream(data)).getConfiguration());
-		} catch (IOException e) {
-			addError("Invalid Data", "Unable to load "+fileName, FacesContext.getCurrentInstance());
-		}
 	}
 	
 	private String classNameFilter;

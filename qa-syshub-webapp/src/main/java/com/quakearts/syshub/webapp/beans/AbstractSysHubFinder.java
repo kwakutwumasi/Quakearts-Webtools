@@ -10,11 +10,11 @@
  ******************************************************************************/
 package com.quakearts.syshub.webapp.beans;
 
-import com.quakearts.syshub.core.utils.SystemDataStoreUtils;
 import com.quakearts.webapp.orm.DataStore;
+import com.quakearts.webapp.orm.DataStoreFactory;
 
 public abstract class AbstractSysHubFinder implements SysHubDataStoreUser {
-	protected DataStore getDataStore(){
-		return SystemDataStoreUtils.getInstance().getSystemDataStore();
+	public DataStore getDataStore(){
+		return DataStoreFactory.getInstance().getDataStore("system");
 	}
 }

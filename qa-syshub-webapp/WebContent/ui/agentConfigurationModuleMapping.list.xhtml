@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:composition template="/base/template.xhtml">
+    <ui:define name="content">
+		<h:form>
+ 			<b:messages showDetail="true" dismissible="true"></b:messages>
+    			<span class="h4">#{(agentConfigurationModuleMappingPage.agentConfigurationModuleMapping ne null) and agentConfigurationModuleMappingPage.webappmain.mode eq 'edit'?'Edit ':(agentConfigurationModuleMappingPage.webappmain.mode eq 'read'?'View ':'Search ')} Agent Configuration Module Mapping</span>
+    			<br />
+            <h:commandLink styleClass="btn btn-primary" rendered="#{agentConfigurationModuleMappingPage.webappmain.mode eq 'edit' and (param.agentConfigurationModuleMapping eq null)}">
+				<b:glyph value="backward"></b:glyph>Back to search...
+				<c:set as="#{null}" var="#{agentConfigurationModuleMappingPage.webappmain.mode}" />
+    				<c:set as="#{null}" var="#{agentConfigurationModuleMappingPage.agentConfigurationModuleMapping}"></c:set>
+				<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+			</h:commandLink>
+			<b:row rendered="#{empty agentConfigurationModuleMappingPage.webappmain.mode}">	
+				<b:pagination for="#{table}" pageSize="10"></b:pagination>
+				<b:dataTable value="#{agentConfigurationModuleMappingPage.agentConfigurationModuleMappingList}" var="agentConfigurationModuleMapping" binding="#{table}">
+    				<h:column>
+    					<f:facet name="header">
+    						Agent Configuration
+    					</f:facet>
+					#{agentConfigurationModuleMapping.agentConfiguration}
+					<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/agentConfiguration.list.jsf" rendered="#{agentConfigurationModuleMapping.agentConfiguration != null}">View
+						<f:param name="agentConfiguration" value="#{agentConfigurationModuleMapping.agentConfiguration.id}"></f:param>
+					</h:outputLink>
+    				</h:column>
+    				<h:column>
+    					<f:facet name="header">
+    						Agent Module
+    					</f:facet>
+					#{agentConfigurationModuleMapping.agentModule}
+					<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/agentModule.list.jsf" rendered="#{agentConfigurationModuleMapping.agentModule != null}">View
+						<f:param name="agentModule" value="#{agentConfigurationModuleMapping.agentModule.id}"></f:param>
+					</h:outputLink>
+    				</h:column>
+    				<h:column>
+    					<f:facet name="header">
+    						Action
+    					</f:facet>
+    					<h:commandLink value="Edit">
+    						<c:set as="#{agentConfigurationModuleMapping}" var="#{agentConfigurationModuleMappingPage.agentConfigurationModuleMapping}"></c:set>
+    						<c:set as="edit" var="#{agentConfigurationModuleMappingPage.webappmain.mode}" />
+						<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+    					</h:commandLink>
+    					<h:commandLink value="View">
+    						<c:set as="#{agentConfigurationModuleMapping}" var="#{agentConfigurationModuleMappingPage.agentConfigurationModuleMapping}"></c:set>
+    						<c:set as="read" var="#{agentConfigurationModuleMappingPage.webappmain.mode}" />
+						<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+    					</h:commandLink>
+    				</h:column>
+    			</b:dataTable>
+			</b:row>
+			<b:row>
+				<ui:include src="../cp/agentConfigurationModuleMapping.crud.xhtml">
+					<ui:param name="agentConfigurationModuleMapping" value="#{agentConfigurationModuleMappingPage.agentConfigurationModuleMapping}"></ui:param>
+				</ui:include>
+				<b:buttonGroup rendered="#{agentConfigurationModuleMappingPage.webappmain.mode eq 'edit'}">
+					<b:button>
+						Save
+						<c:saveUpdate object="#{agentConfigurationModuleMappingPage.agentConfigurationModuleMapping}" action="update"></c:saveUpdate>
+						<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+					</b:button>
+					<b:button>
+						Delete
+						<c:delete object="#{agentConfigurationModuleMappingPage.agentConfigurationModuleMapping}"></c:delete>
+						<c:executeAction listener="#{agentConfigurationModuleMappingPage.removeAgentConfigurationModuleMapping}"></c:executeAction>
+						<c:set as="#{null}" var="#{agentConfigurationModuleMappingPage.agentConfigurationModuleMapping}"></c:set>
+						<c:set as="#{null}" var="#{agentConfigurationModuleMappingPage.webappmain.mode}"></c:set>
+						<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+					</b:button>
+				</b:buttonGroup>
+				<b:button rendered="#{agentConfigurationModuleMappingPage.webappmain.mode eq 'read'}">
+					Edit
+					<c:set as="edit" var="#{agentConfigurationModuleMappingPage.webappmain.mode}" />
+					<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+				</b:button>
+				<b:button rendered="#{empty agentConfigurationModuleMappingPage.webappmain.mode}">
+					Search
+					<c:executeAction listener="#{agentConfigurationModuleMappingPage.findAgentConfigurationModuleMapping}"></c:executeAction>
+					<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+				</b:button>
+			</b:row>
+		</h:form>
+    </ui:define>
+</ui:composition>
+</html>

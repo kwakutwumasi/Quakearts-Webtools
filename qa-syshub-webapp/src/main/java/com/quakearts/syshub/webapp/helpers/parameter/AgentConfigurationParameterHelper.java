@@ -22,15 +22,14 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.validator.ValidatorException;
 import javax.naming.NamingException;
 
-import com.quakearts.syshub.core.metadata.NameGenerator;
 import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperties;
 import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperty;
 import com.quakearts.syshub.core.utils.SysHubUtils;
-import com.quakearts.syshub.core.utils.SystemDataStoreUtils;
 import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 import com.quakearts.syshub.model.AgentConfigurationParameter.ParameterType;
 import com.quakearts.syshub.model.AgentModule;
+import com.quakearts.syshub.webapp.beans.AgentConfigurationFinder;
 import com.quakearts.syshub.webapp.beans.SysHubDataStoreUser;
 
 public class AgentConfigurationParameterHelper implements SysHubDataStoreUser {
@@ -89,9 +88,10 @@ public class AgentConfigurationParameterHelper implements SysHubDataStoreUser {
 		if(classProperty == null){
 			ConfigurationProperties properties = configurableClass.getAnnotation(ConfigurationProperties.class);
 			
-			for(ConfigurationProperty property:properties.value()){
-				parameterMetaDataList.add(new ParameterMetaData(property, module, agentConfiguration));
-			}
+			if(properties!=null)
+				for(ConfigurationProperty property:properties.value()){
+					parameterMetaDataList.add(new ParameterMetaData(property, module, agentConfiguration));
+				}
 		}
 	}
 	
@@ -100,6 +100,7 @@ public class AgentConfigurationParameterHelper implements SysHubDataStoreUser {
 		AgentConfigurationParameter agentConfigurationParameter;
 		AgentModule module;
 		AgentConfiguration agentConfiguration;
+		AgentConfigurationFinder finder = new AgentConfigurationFinder();
 		
 		public ParameterMetaData(ConfigurationProperty property, AgentModule module,
 				AgentConfiguration agentConfiguration) {
@@ -134,9 +135,9 @@ public class AgentConfigurationParameterHelper implements SysHubDataStoreUser {
 		public ParameterType getType() {
 			return property.type();
 		}
-
-		public Class<? extends NameGenerator> getGeneratorClass() {
-			return property.generatorClass();
+		
+		public String[] getOptionList() {
+			return property.optionList();
 		}
 
 		public String getPattern() {
@@ -176,13 +177,13 @@ public class AgentConfigurationParameterHelper implements SysHubDataStoreUser {
 			}
 			
 			if(agentConfigurationParameter.getId() != 0){
-				SystemDataStoreUtils.getInstance().getSystemDataStore().update(agentConfigurationParameter);
+				finder.getDataStore().update(agentConfigurationParameter);
 			}
 		}
 		
 		public void removeParameter(AjaxBehaviorEvent event){
 			if(agentConfigurationParameter.getId() != 0){
-				SystemDataStoreUtils.getInstance().getSystemDataStore().delete(agentConfigurationParameter);
+				finder.getDataStore().delete(agentConfigurationParameter);
 				if(module != null)
 					module.getParameters().remove(agentConfigurationParameter);
 				else

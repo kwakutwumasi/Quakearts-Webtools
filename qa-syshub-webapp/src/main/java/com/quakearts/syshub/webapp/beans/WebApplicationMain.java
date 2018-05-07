@@ -19,10 +19,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.logging.Logger;
 
+import javax.enterprise.inject.spi.CDI;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
@@ -31,7 +33,9 @@ import javax.faces.convert.DateTimeConverter;
 import com.quakearts.syshub.SysHub;
 import com.quakearts.syshub.SysHubMain;
 import com.quakearts.syshub.core.runner.AgentRunner;
-import com.quakearts.syshub.core.utils.SerializationUtil;
+import com.quakearts.syshub.core.runner.ScheduledStateReporter;
+import com.quakearts.syshub.core.runner.TriggeredStateReporter;
+import com.quakearts.syshub.core.utils.Serializer;
 import com.quakearts.syshub.model.AgentConfiguration.RunType;
 import com.quakearts.syshub.model.AgentConfigurationParameter.ParameterType;
 import com.quakearts.syshub.model.AgentModule.ModuleType;
@@ -151,6 +155,8 @@ public class WebApplicationMain implements Serializable {
 
 	public static class SerializedObjectConverter implements Converter {
 
+		private Serializer serializer = CDI.current().select(Serializer.class).get();
+		
 		@Override
 		public Object getAsObject(FacesContext context, UIComponent component, String value) {
 			// Do nothing. This is a one way conversion
@@ -161,7 +167,7 @@ public class WebApplicationMain implements Serializable {
 		public String getAsString(FacesContext context, UIComponent component, Object value) {
 			if(value instanceof byte[]){
 				try {
-					Object object = SerializationUtil.getInstance().toObject((byte[])value);
+					Object object = serializer.toObject((byte[])value);
 					String otherData = "";
 					if(object instanceof Exception){
 						StringWriter otherString = new StringWriter();
@@ -201,11 +207,27 @@ public class WebApplicationMain implements Serializable {
 	public void setAgentRunner(AgentRunner agentRunner) {
 		this.agentRunner = agentRunner;
 	}
+	
+	public ScheduledStateReporter getScheduledStateReporter() {
+		return agentRunner instanceof ScheduledStateReporter?(ScheduledStateReporter) agentRunner:null;
+	}
+	
+	public TriggeredStateReporter getTriggeredStateReporter() {
+		return agentRunner instanceof TriggeredStateReporter?(TriggeredStateReporter) agentRunner:null;
+	}
 
 	public Collection<AgentRunner> getAgentRunners(){
 		if(sysHub != null)
 			return sysHub.listAgentRunners();
 		
 		return Collections.emptyList();
+	}
+	
+	public String getWebSocketBase() {
+		ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+		return new StringBuilder(context.getRequestServerName())
+				.append(":").append(context.getRequestServerPort())
+				.append(context.getRequestContextPath())
+				.toString();
 	}
 }

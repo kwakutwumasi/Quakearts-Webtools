@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:composition template="/base/template.xhtml">
+    <ui:define name="content">
+		<h:form>
+ 			<b:messages showDetail="true" dismissible="true"></b:messages>
+    		<span class="h4">#{!(maxIDPage.maxID eq null) and maxIDPage.webappmain.mode eq 'edit'?'Edit ':(maxIDPage.webappmain.mode eq 'read'?'View ':'Search ')} Max I D</span>
+    		<br />
+            <h:commandLink styleClass="btn btn-primary" rendered="#{! empty maxIDPage.webappmain.mode and (param.maxID eq null)}">
+				<b:glyph value="backward"></b:glyph>Back to search...
+				<c:set as="#{null}" var="#{maxIDPage.webappmain.mode}" />
+    			<c:set as="#{null}" var="#{maxIDPage.maxID}"></c:set>
+				<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+			</h:commandLink>
+			<b:row rendered="#{empty maxIDPage.webappmain.mode}">	
+				<b:pagination for="#{table}" pageSize="10"></b:pagination>
+				<b:dataTable value="#{maxIDPage.maxIDList}" var="maxID" binding="#{table}">
+    				<h:column>
+    					<f:facet name="header">
+    						ID
+    					</f:facet>
+						#{maxID.id}
+    				</h:column>
+    				<h:column>
+    					<f:facet name="header">
+    						Max ID Name
+    					</f:facet>
+						#{maxID.maxIDName}
+    				</h:column>
+    				<h:column>
+    					<f:facet name="header">
+    						Max ID Value
+    					</f:facet>
+						#{maxID.maxIDValue}
+    				</h:column>
+    				<h:column>
+    					<f:facet name="header">
+    						Action
+    					</f:facet>
+    					<h:commandLink value="Edit">
+    						<c:set as="#{maxID}" var="#{maxIDPage.maxID}"></c:set>
+    						<c:set as="edit" var="#{maxIDPage.webappmain.mode}" />
+							<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+    					</h:commandLink><br />
+    					<h:commandLink value="View">
+    						<c:set as="#{maxID}" var="#{maxIDPage.maxID}"></c:set>
+    						<c:set as="read" var="#{maxIDPage.webappmain.mode}" />
+							<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+    					</h:commandLink>
+    				</h:column>
+    			</b:dataTable>
+			</b:row>
+			<b:row>
+				<ui:include src="/cp/maxID.crud.xhtml">
+					<ui:param name="maxID" value="#{maxIDPage.maxID}"></ui:param>
+				</ui:include>
+				<b:buttonGroup rendered="#{maxIDPage.webappmain.mode eq 'edit'}">
+					<b:button>
+						Save
+						<c:saveUpdate domain="system" object="#{maxIDPage.maxID}" action="update"></c:saveUpdate>
+						<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+					</b:button>
+					<b:button>
+						Delete
+						<c:delete domain="system" object="#{maxIDPage.maxID}"></c:delete>
+						<c:executeAction listener="#{maxIDPage.removeMaxID}"></c:executeAction>
+						<c:set as="#{null}" var="#{maxIDPage.maxID}"></c:set>
+						<c:set as="#{null}" var="#{maxIDPage.webappmain.mode}"></c:set>
+						<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+					</b:button>
+				</b:buttonGroup>
+				<b:button rendered="#{maxIDPage.webappmain.mode eq 'read'}">
+					Edit
+					<c:set as="edit" var="#{maxIDPage.webappmain.mode}" />
+					<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+				</b:button>
+				<b:button rendered="#{empty maxIDPage.webappmain.mode}">
+					Search
+					<c:executeAction listener="#{maxIDPage.findMaxID}"></c:executeAction>
+					<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+				</b:button>
+			</b:row>
+		</h:form>
+    </ui:define>
+</ui:composition>
+</html>

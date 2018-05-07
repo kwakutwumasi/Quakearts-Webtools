@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:component>
+	<c:unique>
+    	<h:panelGroup id="agentConfigurationModuleMappingAgentConfigurationInset" layout="block" styleClass="#{loader.overlayClass}">
+    		<b:formGroup>
+    			<label id="agentConfiguration_label">Agent Configuration
+    				<h:commandLink value="New" styleClass="#{!agentConfigurationModuleMappingPage.agentConfigurationDropdownHelper.inCreateMode?'':'collapse'}"
+						rendered="#{agentConfigurationModuleMappingPage.inCreateOrEditMode}">
+    					<f:ajax onevent="#{loader.overlayAjaxLoader}" execute="@this" render="agentConfigurationModuleMappingAgentConfigurationInset"></f:ajax>
+    					<f:setPropertyActionListener value="#{true}" target="#{agentConfigurationModuleMappingPage.agentConfigurationDropdownHelper.inCreateMode}"></f:setPropertyActionListener>
+    				</h:commandLink>
+    			</label>
+    			<b:selectOneInput mainClass="#{loader.overlayClass}" disabled="#{agentConfigurationModuleMappingPage.webappmain.mode eq 'read' || agentConfigurationModuleMappingPage.agentConfigurationDropdownHelper.inCreateMode}"
+    				value="#{agentConfigurationModuleMapping.agentConfiguration}" autocomplete="true"
+    				suggestion="#{agentConfigurationModuleMappingPage.agentConfigurationDropdownHelper.searchText}" delay="1"
+    				listener="#{agentConfigurationModuleMappingPage.agentConfigurationDropdownHelper.filterItems}"
+    				onevent="#{loader.overlayAjaxLoader}">
+    				<f:selectItems value="#{agentConfigurationModuleMappingPage.agentConfigurationDropdownHelper.foundItems}" 
+    					var="agentConfiguration" itemValue="#{agentConfiguration}" itemLabel= "#{agentConfiguration.agentName} ">
+    				</f:selectItems>
+    				<c:pojoConverter></c:pojoConverter>
+    			</b:selectOneInput>
+    		</b:formGroup>
+    		<h:panelGroup rendered="#{agentConfigurationModuleMappingPage.agentConfigurationDropdownHelper.inCreateMode}">
+    			<span class="h4">Create Agent Configuration</span>
+    			<ui:include src="agentConfiguration.crud.xhtml">
+    				<ui:param name="agentConfiguration" value="#{agentConfigurationModuleMappingPage.agentConfigurationDropdownHelper.agentConfiguration}"></ui:param>
+    			</ui:include>
+    			<b:buttonGroup>
+        			<b:button value="Save Agent Configuration">
+						<c:saveUpdate object="#{agentConfigurationModuleMappingPage.agentConfigurationDropdownHelper.agentConfiguration}" action="save" />
+        				<f:setPropertyActionListener value="#{agentConfigurationModuleMappingPage.agentConfigurationDropdownHelper.agentConfiguration}" target="#{agentConfigurationModuleMapping.agentConfiguration}"></f:setPropertyActionListener>
+    					<f:setPropertyActionListener value="#{false}" target="#{agentConfigurationModuleMappingPage.agentConfigurationDropdownHelper.inCreateMode}"></f:setPropertyActionListener>
+        				<f:ajax execute="agentConfigurationModuleMappingAgentConfigurationInset" render="agentConfigurationModuleMappingAgentConfigurationInset" onevent="#{loader.overlayAjaxLoader}"></f:ajax>
+        			</b:button>
+        			<b:button value="Cancel">
+    					<f:ajax onevent="#{loader.overlayAjaxLoader}" execute="@this" render="agentConfigurationModuleMappingAgentConfigurationInset"></f:ajax>
+    					<f:setPropertyActionListener value="#{false}" target="#{agentConfigurationModuleMappingPage.agentConfigurationDropdownHelper.inCreateMode}"></f:setPropertyActionListener>
+        			</b:button>
+    			</b:buttonGroup>
+    			<br />
+    			<br />
+    		</h:panelGroup>		
+    	</h:panelGroup>	
+	</c:unique>
+	<c:unique>
+    	<h:panelGroup id="agentConfigurationModuleMappingAgentModuleInset" layout="block" styleClass="#{loader.overlayClass}">
+    		<b:formGroup>
+    			<label id="agentModule_label">Agent Module
+    				<h:commandLink value="New" styleClass="#{!agentConfigurationModuleMappingPage.agentModuleDropdownHelper.inCreateMode?'':'collapse'}"
+						rendered="#{agentConfigurationModuleMappingPage.inCreateOrEditMode}">
+    					<f:ajax onevent="#{loader.overlayAjaxLoader}" execute="@this" render="agentConfigurationModuleMappingAgentModuleInset"></f:ajax>
+    					<f:setPropertyActionListener value="#{true}" target="#{agentConfigurationModuleMappingPage.agentModuleDropdownHelper.inCreateMode}"></f:setPropertyActionListener>
+    				</h:commandLink>
+    			</label>
+    			<b:selectOneInput mainClass="#{loader.overlayClass}" disabled="#{agentConfigurationModuleMappingPage.webappmain.mode eq 'read' || agentConfigurationModuleMappingPage.agentModuleDropdownHelper.inCreateMode}"
+    				value="#{agentConfigurationModuleMapping.agentModule}" autocomplete="true"
+    				suggestion="#{agentConfigurationModuleMappingPage.agentModuleDropdownHelper.searchText}" delay="1"
+    				listener="#{agentConfigurationModuleMappingPage.agentModuleDropdownHelper.filterItems}"
+    				onevent="#{loader.overlayAjaxLoader}">
+    				<f:selectItems value="#{agentConfigurationModuleMappingPage.agentModuleDropdownHelper.foundItems}" 
+    					var="agentModule" itemValue="#{agentModule}" itemLabel= "#{agentModule.mappedModuleName} #{agentModule.moduleClassName} #{agentModule.moduleName} ">
+    				</f:selectItems>
+    				<c:pojoConverter></c:pojoConverter>
+    			</b:selectOneInput>
+    		</b:formGroup>
+    		<h:panelGroup rendered="#{agentConfigurationModuleMappingPage.agentModuleDropdownHelper.inCreateMode}">
+    			<span class="h4">Create Agent Module</span>
+    			<ui:include src="agentModule.crud.xhtml">
+    				<ui:param name="agentModule" value="#{agentConfigurationModuleMappingPage.agentModuleDropdownHelper.agentModule}"></ui:param>
+    			</ui:include>
+    			<b:buttonGroup>
+        			<b:button value="Save Agent Module">
+						<c:saveUpdate object="#{agentConfigurationModuleMappingPage.agentModuleDropdownHelper.agentModule}" action="save" />
+        				<f:setPropertyActionListener value="#{agentConfigurationModuleMappingPage.agentModuleDropdownHelper.agentModule}" target="#{agentConfigurationModuleMapping.agentModule}"></f:setPropertyActionListener>
+    					<f:setPropertyActionListener value="#{false}" target="#{agentConfigurationModuleMappingPage.agentModuleDropdownHelper.inCreateMode}"></f:setPropertyActionListener>
+        				<f:ajax execute="agentConfigurationModuleMappingAgentModuleInset" render="agentConfigurationModuleMappingAgentModuleInset" onevent="#{loader.overlayAjaxLoader}"></f:ajax>
+        			</b:button>
+        			<b:button value="Cancel">
+    					<f:ajax onevent="#{loader.overlayAjaxLoader}" execute="@this" render="agentConfigurationModuleMappingAgentModuleInset"></f:ajax>
+    					<f:setPropertyActionListener value="#{false}" target="#{agentConfigurationModuleMappingPage.agentModuleDropdownHelper.inCreateMode}"></f:setPropertyActionListener>
+        			</b:button>
+    			</b:buttonGroup>
+    			<br />
+    			<br />
+    		</h:panelGroup>		
+    	</h:panelGroup>	
+	</c:unique>
+</ui:component>
+</html>

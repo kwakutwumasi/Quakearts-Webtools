@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:component>
+	<c:unique>
+    	<h:panelGroup id="agentModuleAgentConfigurationInset" layout="block" styleClass="#{loader.overlayClass}">
+    		<b:formGroup>
+    			<label id="agentConfiguration_label">Agent Configuration
+    				<h:commandLink value="New" styleClass="#{!agentModulePage.agentConfigurationDropdownHelper.inCreateMode?'':'collapse'}"
+						rendered="#{agentModulePage.inCreateOrEditMode}">
+    					<f:ajax onevent="#{loader.overlayAjaxLoader}" execute="@this" render="agentModuleAgentConfigurationInset"></f:ajax>
+    					<f:setPropertyActionListener value="#{true}" target="#{agentModulePage.agentConfigurationDropdownHelper.inCreateMode}"></f:setPropertyActionListener>
+    				</h:commandLink>
+    			</label>
+    			<b:selectOneInput mainClass="#{loader.overlayClass}" disabled="#{agentModulePage.webappmain.mode eq 'read' or agentModulePage.agentConfigurationDropdownHelper.inCreateMode}"
+    				value="#{agentModule.agentConfiguration}" autocomplete="true"
+    				suggestion="#{agentModulePage.agentConfigurationDropdownHelper.searchText}" delay="15"
+    				listener="#{agentModulePage.agentConfigurationDropdownHelper.filterItems}"
+    				onevent="#{loader.overlayAjaxLoader}">
+    				<f:selectItems value="#{agentModulePage.agentConfigurationDropdownHelper.foundItems}" 
+    					var="agentConfiguration" itemValue="#{agentConfiguration}" itemLabel= "#{agentConfiguration.agentName} ">
+    				</f:selectItems>
+    				<f:ajax></f:ajax>
+    				<c:pojoConverter></c:pojoConverter>
+    			</b:selectOneInput>
+    		</b:formGroup>
+    		<h:panelGroup rendered="#{agentModulePage.agentConfigurationDropdownHelper.inCreateMode}">
+    			<span class="h4">Create Agent Configuration</span>
+    			<ui:include src="agentConfiguration.crud.xhtml">
+    				<ui:param name="agentConfiguration" value="#{agentModulePage.agentConfigurationDropdownHelper.agentConfiguration}"></ui:param>
+    			</ui:include>
+    			<b:buttonGroup>
+        			<b:button value="Save Agent Configuration">
+						<c:saveUpdate domain="system" object="#{agentModulePage.agentConfigurationDropdownHelper.agentConfiguration}" action="save" />
+        				<f:setPropertyActionListener value="#{agentModulePage.agentConfigurationDropdownHelper.agentConfiguration}" target="#{agentModule.agentConfiguration}"></f:setPropertyActionListener>
+    					<f:setPropertyActionListener value="#{false}" target="#{agentModulePage.agentConfigurationDropdownHelper.inCreateMode}"></f:setPropertyActionListener>
+        				<f:ajax execute="agentModuleAgentConfigurationInset" render="agentModuleAgentConfigurationInset" onevent="#{loader.overlayAjaxLoader}"></f:ajax>
+        			</b:button>
+        			<b:button value="Cancel">
+    					<f:ajax onevent="#{loader.overlayAjaxLoader}" execute="@this" render="agentModuleAgentConfigurationInset"></f:ajax>
+    					<f:setPropertyActionListener value="#{false}" target="#{agentModulePage.agentConfigurationDropdownHelper.inCreateMode}"></f:setPropertyActionListener>
+        			</b:button>
+    			</b:buttonGroup>
+    			<br />
+    			<br />
+    		</h:panelGroup>		
+    	</h:panelGroup>	
+	</c:unique>
+	<b:formGroup>
+		<label id="moduleName_label">Module Name</label>
+		<h:inputText styleClass="form-control" value="#{agentModule.moduleName}" 
+			rendered="#{!agentModulePage.webappmain.inSearchMode and agentModulePage.webappmain.mode != 'read'}">
+		</h:inputText>
+		<h:inputText styleClass="form-control" value="#{agentModule.moduleName}" 
+			disabled="#{agentModulePage.webappmain.mode eq 'read'}"
+			rendered="#{agentModulePage.webappmain.inSearchMode or agentModulePage.webappmain.mode eq 'read'}"
+			validator="#{agentModulePage.validateAgentName}">
+			<f:ajax listener="#{agentModulePage.moduleNameChanged}"></f:ajax>
+		</h:inputText>
+	</b:formGroup>
+ 	<b:formGroup>
+ 		<label id="moduleType_label">Module Type</label>
+ 		<b:selectOneInput id="moduleTypeInput" disabled="#{agentModulePage.webappmain.mode eq 'read'}"
+    		value="#{agentModule.moduleType}">
+     		<f:selectItem noSelectionOption="true" itemLabel="Select one..."></f:selectItem>
+    		<f:selectItems value="#{agentModulePage.webappmain.moduleTypes}"></f:selectItems>
+    		<f:ajax render="mappedModuleNameComp"></f:ajax>
+    	</b:selectOneInput>
+	</b:formGroup>
+	<b:formGroup>
+		<label id="moduleClassName_label">Module Class Name</label>
+		<b:selectOneInputGroup value="#{agentModule.moduleClassName}" 
+			validator="#{agentModulePage.validateAgentClass}"
+			autocomplete="true"
+			delay="10"
+			execute="@this moduleTypeInput"
+			data-overlay-target="#{configurationParamtersComp.clientId}"
+			listener="#{agentModulePage.filterAgentClasses}"
+			suggestion="#{agentModulePage.classNameFilter}"
+			rendered="#{!agentModulePage.webappmain.inSearchMode and !(agentModulePage.webappmain.mode eq 'read')}">
+			<f:facet name="label">
+				<b:fa value="file-code-o"></b:fa>
+			</f:facet>
+			<f:selectItems value="#{agentModulePage.foundClassNames}"></f:selectItems>
+			<f:ajax onevent="#{loader.overlayAjaxLoader}" 
+				render="configurationParamters"
+				listener="#{agentModulePage.populateModuleParameters}">
+			</f:ajax>
+		</b:selectOneInputGroup>
+		<h:inputText value="#{agentModule.moduleClassName}" styleClass="form-control"
+			disabled="#{agentModulePage.webappmain.mode eq 'read'}" 
+			rendered="#{agentModulePage.webappmain.inSearchMode or agentModulePage.webappmain.mode eq 'read'}">
+		</h:inputText>
+	</b:formGroup>
+	<h:panelGroup id="configurationParamters">
+		<h:panelGroup id="configurationParameterOverlay" 
+			rendered="#{!agentModulePage.webappmain.inSearchMode and (facesContext.viewRoot.viewId eq '/ui/agentModule.create.xhtml' or facesContext.viewRoot.viewId eq '/ui/agentModule.list.xhtml')}" 
+			binding="#{configurationParameterOverlayComp}">
+			<ui:repeat var="parameter" value="#{agentModulePage.configurationHelper.parameterMetaDataList}">
+				<ui:include src="agentConfigurationParameter.comp.xhtml">
+					<ui:param name="parameter" value="#{parameter}"></ui:param>
+					<ui:param name="disabled" value="#{agentModulePage.webappmain.mode eq 'read'}"></ui:param>
+				</ui:include>
+			</ui:repeat>
+		</h:panelGroup>
+	</h:panelGroup>
+	<h:panelGroup id="mappedModuleNameComp">
+		<b:formGroup rendered="#{agentModule.moduleType == 'MESSENGER'}">
+			<label id="mappedModuleName_label">Mapped Module Name</label>
+			<b:selectOneInput mainClass="#{loader.overlayClass}" disabled="#{agentConfigurationParameterPage.webappmain.mode eq 'read' or agentConfigurationParameterPage.agentModuleDropdownHelper.inCreateMode}"
+   				value="#{agentModule.mappedModuleName}" autocomplete="true"
+   				suggestion="#{agentConfigurationParameterPage.agentModuleDropdownHelper.searchText}" delay="1"
+   				listener="#{agentConfigurationParameterPage.agentModuleDropdownHelper.filterMessageFormatterItems}"
+   				onevent="#{loader.overlayAjaxLoader}">
+   				<f:selectItems value="#{agentConfigurationParameterPage.agentModuleDropdownHelper.foundItems}" 
+   					var="agentModule" itemValue="#{agentModule.moduleName}" 
+   					itemLabel= "#{agentModule.moduleName} ">
+   				</f:selectItems>
+   				<c:pojoConverter></c:pojoConverter>
+   			</b:selectOneInput>
+		</b:formGroup>
+	</h:panelGroup>
+</ui:component>
+</html>

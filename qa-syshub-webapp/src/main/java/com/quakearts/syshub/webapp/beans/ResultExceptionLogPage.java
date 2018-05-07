@@ -149,7 +149,7 @@ public class ResultExceptionLogPage extends BaseBean {
 				AgentRunner agentRunner = sysHub.fetchAgentRunner(getResultExceptionLog().getAgentConfiguration());
 				if(agentRunner != null){
 					try {
-						agentRunner.getProcessingAgent().resendResultExceptionLog(getResultExceptionLog());
+						agentRunner.getProcessingAgent().reprocessResultExceptionLog(getResultExceptionLog());
 					} catch (ClassNotFoundException | IOException | ProcessingException e) {
 						addError("System Error", "Unable to reprocess result: "+e.getMessage(), FacesContext.getCurrentInstance());
 					}

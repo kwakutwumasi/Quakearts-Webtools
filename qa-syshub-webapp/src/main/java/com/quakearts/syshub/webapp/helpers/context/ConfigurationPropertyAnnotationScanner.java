@@ -14,6 +14,7 @@ import com.quakearts.classannotationscanner.listener.ClassAnnotationScanningList
 import com.quakearts.syshub.core.DataSpooler;
 import com.quakearts.syshub.core.MessageFormatter;
 import com.quakearts.syshub.core.Messenger;
+import com.quakearts.syshub.core.metadata.annotations.Autoconfigured;
 import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperties;
 import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperty;
 import com.quakearts.syshub.core.runner.AgentTrigger;
@@ -23,7 +24,9 @@ public class ConfigurationPropertyAnnotationScanner implements ClassAnnotationSc
 
 	@Override
 	public String[] getAnnotationsToListenFor() {
-		return new String[]{ConfigurationProperty.class.getName(), ConfigurationProperties.class.getName()};
+		return new String[]{ConfigurationProperty.class.getName(), 
+				ConfigurationProperties.class.getName(), 
+				Autoconfigured.class.getName()};
 	}
 
 	@Override

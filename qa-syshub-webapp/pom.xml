@@ -33,6 +33,44 @@
 					<classesClassifier>deploy</classesClassifier>
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<id>copy-server</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target name="Copy web files">
+								<copy todir="webservers/default/webapps/webapp">
+									<fileset dir="WebContent" />
+									<fileset dir="test-configuration" />
+								</copy>
+								<mkdir dir="target/webapp" />						
+								<copy todir="target/webapp">
+									<fileset dir="WebContent" />
+									<fileset dir="live-configuration" />
+								</copy>
+							</target>
+						</configuration>
+					</execution>
+					<execution>
+						<id>clean-server</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target name="Delete web files">
+								<delete dir="webservers/default/webapps/webapp" />
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
@@ -40,41 +78,21 @@
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-orm-hibernate-web</artifactId>
 			<version>1.0.0</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.quakearts.webtools</groupId>
-					<artifactId>qa-orm-hibernate</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.quakearts.syshub</groupId>
 			<artifactId>qa-syshub</artifactId>
 			<version>1.0.1</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-boot</artifactId>
 			<version>2.2</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.quakearts.webtools</groupId>
-					<artifactId>qa-auth</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.quakearts.webtools</groupId>
-					<artifactId>qa-orm-hibernate</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.hibernate</groupId>
-					<artifactId>hibernate-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.quakearts.webtools</groupId>
-					<artifactId>qa-orm</artifactId>
-				</exclusion>
-			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.quakearts.webtools</groupId>
+			<artifactId>qa-weldjsf-cdi</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.security.jacc</groupId>
@@ -91,12 +109,6 @@
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-classpathscanner</artifactId>
 			<version>1.0</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.javassist</groupId>
-					<artifactId>javassist</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.faces</groupId>
@@ -109,49 +121,15 @@
 			<version>2.2.14</version>
 		</dependency>
 		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-api</artifactId>
-			<version>7.0</version>
-			<scope>provided</scope>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.4</version>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.weld.servlet</groupId>
-			<artifactId>weld-servlet-core</artifactId>
-			<version>2.4.2.Final</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.jboss.spec.javax.el</groupId>
-					<artifactId>jboss-el-api_3.0_spec</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.logging</groupId>
-					<artifactId>jboss-logging</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.weld</groupId>
-					<artifactId>weld-spi</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.weld.environment</groupId>
-					<artifactId>weld-environment-common</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.weld.probe</groupId>
-					<artifactId>weld-probe-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.weld</groupId>
-					<artifactId>weld-core-impl</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.enterprise</groupId>
-					<artifactId>cdi-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.weld</groupId>
-					<artifactId>weld-api</artifactId>
-				</exclusion>
-			</exclusions>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project> 
