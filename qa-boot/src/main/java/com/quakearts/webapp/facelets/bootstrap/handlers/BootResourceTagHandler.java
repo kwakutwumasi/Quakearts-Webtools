@@ -40,10 +40,7 @@ public class BootResourceTagHandler extends TagHandler {
 			throws IOException {
 		if(ctx.getFacesContext().getPartialViewContext().isPartialRequest())
 			return;
-			
-		if(!parent.getRendererType().equals("javax.faces.Head"))
-			throw new IOException("Component must be nested within a javax.faces.Head buffer component");
-		
+					
         addBootComponent(ctx.getFacesContext());
 		String position = POSITION_BOTTOM;
 		if(positionAttribute!=null){
