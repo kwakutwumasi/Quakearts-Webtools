@@ -1,5 +1,7 @@
 package com.quakearts.syshub.webapp.test;
 
+import java.util.Base64;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.UserTransaction;
@@ -38,12 +40,6 @@ public class TestSysHubMain {
 		agentConfiguration.setActive(true);
 		agentConfiguration.setAgentName("Test Agent 1");
 		agentConfiguration.setType(RunType.LOOPED);
-		
-		AgentConfigurationParameter parameter = new AgentConfigurationParameter("testParameter1");
-		parameter.setAgentConfiguration(agentConfiguration);
-		parameter.setBase64String("Test Bytes".getBytes());
-		agentConfiguration.getParameters().add(parameter);
-
 		dataStore.save(agentConfiguration);
 		dataStore.flushBuffers();
 		
@@ -53,12 +49,31 @@ public class TestSysHubMain {
 		agentModule.setModuleClassName(TestDataSpooler.class.getName());
 		agentModule.setModuleName("Test Module 1.1");
 		agentModule.setModuleType(ModuleType.DATASPOOLER);
-		parameter = new AgentConfigurationParameter("testParameter1", ParameterType.BOOLEAN);
-		parameter.setBooleanValue(true);
+		
+		AgentConfigurationParameter	parameter = new AgentConfigurationParameter("test.class", ParameterType.CLASS);
+		parameter.setStringValue(TestDataSpooler.class.getName());
 		parameter.setAgentConfiguration(agentConfiguration);
 		parameter.setAgentModule(agentModule);
 		agentModule.getParameters().add(parameter);
 		
+		parameter = new AgentConfigurationParameter("test.cronconfiguration", ParameterType.CRONCONFIGURATION);
+		parameter.setStringValue("0 0/1 * * * ? *");
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setAgentModule(agentModule);
+		agentModule.getParameters().add(parameter);
+		
+		parameter = new AgentConfigurationParameter("test.email", ParameterType.EMAIL);
+		parameter.setStringValue("name@server.com");
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setAgentModule(agentModule);
+		agentModule.getParameters().add(parameter);
+
+		parameter = new AgentConfigurationParameter("test.endpointaddress", ParameterType.ENDPOINTADDRESS);
+		parameter.setStringValue("name@server.com");
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setAgentModule(agentModule);
+		agentModule.getParameters().add(parameter);
+
 		dataStore.save(agentModule);
 		
 		agentModule = new AgentModule();
@@ -67,8 +82,15 @@ public class TestSysHubMain {
 		agentModule.setModuleClassName(TestFormatter1.class.getName());
 		agentModule.setModuleName("Test Module 1.2");
 		agentModule.setModuleType(ModuleType.FORMATTER);
-		parameter = new AgentConfigurationParameter("testParameter1", ParameterType.NUMERIC);
-		parameter.setNumericValue(20.0d);
+		
+		parameter = new AgentConfigurationParameter("test.file", ParameterType.FILE);
+		parameter.setStringValue("/test/file");
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setAgentModule(agentModule);
+		agentModule.getParameters().add(parameter);
+		
+		parameter = new AgentConfigurationParameter("test.jndiname", ParameterType.JNDINAME);
+		parameter.setStringValue("java:/test/name");
 		parameter.setAgentConfiguration(agentConfiguration);
 		parameter.setAgentModule(agentModule);
 		agentModule.getParameters().add(parameter);
@@ -81,8 +103,15 @@ public class TestSysHubMain {
 		agentModule.setModuleClassName(TestMessenger1.class.getName());
 		agentModule.setModuleName("Test Module 1.3");
 		agentModule.setModuleType(ModuleType.MESSENGER);
-		parameter = new AgentConfigurationParameter("testParameter1", ParameterType.EMAIL);
-		parameter.setStringValue("test@server.com");
+
+		parameter = new AgentConfigurationParameter("test.password", ParameterType.PASSWORD);
+		parameter.setStringValue("Password1");
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setAgentModule(agentModule);
+		agentModule.getParameters().add(parameter);
+
+		parameter = new AgentConfigurationParameter("test.string", ParameterType.STRING);
+		parameter.setStringValue("3DEF");
 		parameter.setAgentConfiguration(agentConfiguration);
 		parameter.setAgentModule(agentModule);
 		agentModule.getParameters().add(parameter);
@@ -100,7 +129,7 @@ public class TestSysHubMain {
 		parameter.setGlobal(true);
 		parameter.setName("schedule.cron");
 		parameter.setParameterType(ParameterType.CRONCONFIGURATION);
-		parameter.setStringValue("* * * ? * *");
+		parameter.setStringValue("0 0/1 * * * ? *");
 		agentConfiguration.getParameters().add(parameter);
 		
 		parameter = new AgentConfigurationParameter();
@@ -136,8 +165,27 @@ public class TestSysHubMain {
 		agentModule.setModuleClassName(TestDataSpooler.class.getName());
 		agentModule.setModuleName("Test Module 2.1");
 		agentModule.setModuleType(ModuleType.DATASPOOLER);
-		parameter = new AgentConfigurationParameter("testParameter1", ParameterType.ENDPOINTADDRESS);
-		parameter.setStringValue("127.0.0.1");
+		
+		parameter = new AgentConfigurationParameter("test.class", ParameterType.CLASS);
+		parameter.setStringValue(TestDataSpooler.class.getName());
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setAgentModule(agentModule);
+		agentModule.getParameters().add(parameter);
+		
+		parameter = new AgentConfigurationParameter("test.cronconfiguration", ParameterType.CRONCONFIGURATION);
+		parameter.setStringValue("0 * * * * ? *");
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setAgentModule(agentModule);
+		agentModule.getParameters().add(parameter);
+		
+		parameter = new AgentConfigurationParameter("test.email", ParameterType.EMAIL);
+		parameter.setStringValue("name@server.com");
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setAgentModule(agentModule);
+		agentModule.getParameters().add(parameter);
+
+		parameter = new AgentConfigurationParameter("test.endpointaddress", ParameterType.ENDPOINTADDRESS);
+		parameter.setStringValue("name@server.com");
 		parameter.setAgentConfiguration(agentConfiguration);
 		parameter.setAgentModule(agentModule);
 		agentModule.getParameters().add(parameter);
@@ -150,8 +198,27 @@ public class TestSysHubMain {
 		agentModule.setModuleClassName(TestDataSpooler.class.getName());
 		agentModule.setModuleName("Test Module 2.2");
 		agentModule.setModuleType(ModuleType.DATASPOOLER);
-		parameter = new AgentConfigurationParameter("testParameter1", ParameterType.ENDPOINTADDRESS);
-		parameter.setStringValue("127.0.0.1");
+		
+		parameter = new AgentConfigurationParameter("test.class", ParameterType.CLASS);
+		parameter.setStringValue(TestDataSpooler.class.getName());
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setAgentModule(agentModule);
+		agentModule.getParameters().add(parameter);
+		
+		parameter = new AgentConfigurationParameter("test.cronconfiguration", ParameterType.CRONCONFIGURATION);
+		parameter.setStringValue("0 * * * * ? *");
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setAgentModule(agentModule);
+		agentModule.getParameters().add(parameter);
+		
+		parameter = new AgentConfigurationParameter("test.email", ParameterType.EMAIL);
+		parameter.setStringValue("name@server.com");
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setAgentModule(agentModule);
+		agentModule.getParameters().add(parameter);
+
+		parameter = new AgentConfigurationParameter("test.endpointaddress", ParameterType.ENDPOINTADDRESS);
+		parameter.setStringValue("name@server.com");
 		parameter.setAgentConfiguration(agentConfiguration);
 		parameter.setAgentModule(agentModule);
 		agentModule.getParameters().add(parameter);
@@ -164,8 +231,15 @@ public class TestSysHubMain {
 		agentModule.setModuleClassName(TestFormatter1.class.getName());
 		agentModule.setModuleName("Test Module 2.3");
 		agentModule.setModuleType(ModuleType.FORMATTER);
-		parameter = new AgentConfigurationParameter("testParameter1", ParameterType.FILE);
-		parameter.setStringValue("test/file.ext");
+		
+		parameter = new AgentConfigurationParameter("test.file", ParameterType.FILE);
+		parameter.setStringValue("/test/file");
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setAgentModule(agentModule);
+		agentModule.getParameters().add(parameter);
+		
+		parameter = new AgentConfigurationParameter("test.jndiname", ParameterType.JNDINAME);
+		parameter.setStringValue("java:/test/name");
 		parameter.setAgentConfiguration(agentConfiguration);
 		parameter.setAgentModule(agentModule);
 		agentModule.getParameters().add(parameter);
@@ -178,8 +252,15 @@ public class TestSysHubMain {
 		agentModule.setModuleClassName(TestFormatter2.class.getName());
 		agentModule.setModuleName("Test Module 2.4");
 		agentModule.setModuleType(ModuleType.FORMATTER);
-		parameter = new AgentConfigurationParameter("testParameter1", ParameterType.JNDINAME);
-		parameter.setStringValue("java:/comp/Address");
+		
+		parameter = new AgentConfigurationParameter("test.list", ParameterType.LIST);
+		parameter.setStringValue("value3");
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setAgentModule(agentModule);
+		agentModule.getParameters().add(parameter);
+
+		parameter = new AgentConfigurationParameter("test.numeric", ParameterType.NUMERIC);
+		parameter.setNumericValue(20.0d);
 		parameter.setAgentConfiguration(agentConfiguration);
 		parameter.setAgentModule(agentModule);
 		agentModule.getParameters().add(parameter);
@@ -193,9 +274,15 @@ public class TestSysHubMain {
 		agentModule.setModuleName("Test Module 2.5");
 		agentModule.setModuleType(ModuleType.MESSENGER);
 		agentModule.setMappedModuleName("Test Module 2.3");
-		parameter = new AgentConfigurationParameter("testParameter1", ParameterType.LIST);
-		parameter.setGlobal(true);
-		parameter.setStringValue("Option1");
+		
+		parameter = new AgentConfigurationParameter("test.password", ParameterType.PASSWORD);
+		parameter.setStringValue("Password1");
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setAgentModule(agentModule);
+		agentModule.getParameters().add(parameter);
+
+		parameter = new AgentConfigurationParameter("test.string", ParameterType.STRING);
+		parameter.setStringValue("3DEF");
 		parameter.setAgentConfiguration(agentConfiguration);
 		parameter.setAgentModule(agentModule);
 		agentModule.getParameters().add(parameter);
@@ -208,12 +295,6 @@ public class TestSysHubMain {
 		agentModule.setModuleClassName(TestMessenger2.class.getName());
 		agentModule.setModuleName("Test Module 2.6");
 		agentModule.setModuleType(ModuleType.MESSENGER);
-		parameter = new AgentConfigurationParameter("testParameter1", ParameterType.PASSWORD);
-		parameter.setGlobal(true);
-		parameter.setStringValue("password1");
-		parameter.setAgentConfiguration(agentConfiguration);
-		parameter.setAgentModule(agentModule);
-		agentModule.getParameters().add(parameter);
 
 		dataStore.save(agentModule);
 
@@ -230,6 +311,20 @@ public class TestSysHubMain {
 		parameter.setStringValue(TestAgentTrigger1.class.getName());
 		agentConfiguration.getParameters().add(parameter);
 		
+		parameter = new AgentConfigurationParameter();
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setName("test.binary");
+		parameter.setParameterType(ParameterType.BINARY);
+		parameter.setStringValue(Base64.getEncoder().encodeToString("Test".getBytes()));
+		agentConfiguration.getParameters().add(parameter);
+
+		parameter = new AgentConfigurationParameter();
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setName("test.boolean");
+		parameter.setParameterType(ParameterType.BOOLEAN);
+		parameter.setBooleanValue(false);
+		agentConfiguration.getParameters().add(parameter);
+		
 		dataStore.save(agentConfiguration);
 		dataStore.flushBuffers();
 
@@ -239,8 +334,27 @@ public class TestSysHubMain {
 		agentModule.setModuleClassName(TestDataSpooler.class.getName());
 		agentModule.setModuleName("Test Module 3.1");
 		agentModule.setModuleType(ModuleType.DATASPOOLER);
-		parameter = new AgentConfigurationParameter("testParameter1", ParameterType.ENDPOINTADDRESS);
-		parameter.setStringValue("127.0.0.1");
+		
+		parameter = new AgentConfigurationParameter("test.class", ParameterType.CLASS);
+		parameter.setStringValue(TestDataSpooler.class.getName());
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setAgentModule(agentModule);
+		agentModule.getParameters().add(parameter);
+		
+		parameter = new AgentConfigurationParameter("test.cronconfiguration", ParameterType.CRONCONFIGURATION);
+		parameter.setStringValue("0 * * * * ? *");
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setAgentModule(agentModule);
+		agentModule.getParameters().add(parameter);
+		
+		parameter = new AgentConfigurationParameter("test.email", ParameterType.EMAIL);
+		parameter.setStringValue("name@server.com");
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setAgentModule(agentModule);
+		agentModule.getParameters().add(parameter);
+
+		parameter = new AgentConfigurationParameter("test.endpointaddress", ParameterType.ENDPOINTADDRESS);
+		parameter.setStringValue("name@server.com");
 		parameter.setAgentConfiguration(agentConfiguration);
 		parameter.setAgentModule(agentModule);
 		agentModule.getParameters().add(parameter);
@@ -267,8 +381,15 @@ public class TestSysHubMain {
 		agentModule.setModuleClassName(TestFormatter2.class.getName());
 		agentModule.setModuleName("Test Module 3.3");
 		agentModule.setModuleType(ModuleType.FORMATTER);
-		parameter = new AgentConfigurationParameter("testParameter1", ParameterType.JNDINAME);
-		parameter.setStringValue("java:/comp/Address");
+		
+		parameter = new AgentConfigurationParameter("test.list", ParameterType.LIST);
+		parameter.setStringValue("value3");
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setAgentModule(agentModule);
+		agentModule.getParameters().add(parameter);
+
+		parameter = new AgentConfigurationParameter("test.numeric", ParameterType.NUMERIC);
+		parameter.setNumericValue(20.0d);
 		parameter.setAgentConfiguration(agentConfiguration);
 		parameter.setAgentModule(agentModule);
 		agentModule.getParameters().add(parameter);
@@ -282,11 +403,6 @@ public class TestSysHubMain {
 		agentModule.setModuleName("Test Module 3.4");
 		agentModule.setModuleType(ModuleType.MESSENGER);
 		agentModule.setMappedModuleName("Test Module 3.3");
-		parameter = new AgentConfigurationParameter("testParameter1", ParameterType.LIST);
-		parameter.setStringValue("Option1");
-		parameter.setAgentConfiguration(agentConfiguration);
-		parameter.setAgentModule(agentModule);
-		agentModule.getParameters().add(parameter);
 
 		dataStore.save(agentModule);
 									
@@ -303,6 +419,20 @@ public class TestSysHubMain {
 		parameter.setStringValue(TestAgentTrigger1.class.getName());
 		agentConfiguration.getParameters().add(parameter);
 		
+		parameter = new AgentConfigurationParameter();
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setName("test.binary");
+		parameter.setParameterType(ParameterType.BINARY);
+		parameter.setStringValue(Base64.getEncoder().encodeToString("Test".getBytes()));
+		agentConfiguration.getParameters().add(parameter);
+
+		parameter = new AgentConfigurationParameter();
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setName("test.boolean");
+		parameter.setParameterType(ParameterType.BOOLEAN);
+		parameter.setBooleanValue(false);
+		agentConfiguration.getParameters().add(parameter);
+
 		dataStore.save(agentConfiguration);
 		dataStore.flushBuffers();
 
@@ -312,8 +442,27 @@ public class TestSysHubMain {
 		agentModule.setModuleClassName(TestDataSpooler.class.getName());
 		agentModule.setModuleName("Test Error Throwing 1");
 		agentModule.setModuleType(ModuleType.DATASPOOLER);
-		parameter = new AgentConfigurationParameter("throw.error", ParameterType.STRING);
-		parameter.setStringValue("Error");
+		
+		parameter = new AgentConfigurationParameter("test.class", ParameterType.CLASS);
+		parameter.setStringValue(TestDataSpooler.class.getName());
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setAgentModule(agentModule);
+		agentModule.getParameters().add(parameter);
+		
+		parameter = new AgentConfigurationParameter("test.cronconfiguration", ParameterType.CRONCONFIGURATION);
+		parameter.setStringValue("0 * * * * ? *");
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setAgentModule(agentModule);
+		agentModule.getParameters().add(parameter);
+		
+		parameter = new AgentConfigurationParameter("test.email", ParameterType.EMAIL);
+		parameter.setStringValue("name@server.com");
+		parameter.setAgentConfiguration(agentConfiguration);
+		parameter.setAgentModule(agentModule);
+		agentModule.getParameters().add(parameter);
+
+		parameter = new AgentConfigurationParameter("test.endpointaddress", ParameterType.ENDPOINTADDRESS);
+		parameter.setStringValue("name@server.com");
 		parameter.setAgentConfiguration(agentConfiguration);
 		parameter.setAgentModule(agentModule);
 		agentModule.getParameters().add(parameter);

@@ -14,6 +14,7 @@ import com.quakearts.syshub.core.Message;
 import com.quakearts.syshub.core.MessageFormatter;
 import com.quakearts.syshub.core.Messenger;
 import com.quakearts.syshub.core.impl.MessageByteImpl;
+import com.quakearts.syshub.core.metadata.annotations.Autoconfigured;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.exception.ProcessingException;
 import com.quakearts.syshub.model.AgentConfiguration;
@@ -22,6 +23,7 @@ import com.quakearts.syshub.model.AgentModule;
 import com.quakearts.syshub.model.ProcessingLog;
 import com.quakearts.syshub.webapp.helpers.viewupdate.UpdateViewEvent;
 
+@Autoconfigured
 public class TestMessenger2 extends RandomErrorThrower implements Messenger {
 
 	@Inject

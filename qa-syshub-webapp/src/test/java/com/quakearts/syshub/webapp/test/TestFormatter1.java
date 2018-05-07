@@ -6,12 +6,19 @@ import com.quakearts.syshub.core.Message;
 import com.quakearts.syshub.core.MessageFormatter;
 import com.quakearts.syshub.core.Result;
 import com.quakearts.syshub.core.impl.MessageStringImpl;
+import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperties;
+import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperty;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.exception.ProcessingException;
 import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 import com.quakearts.syshub.model.AgentModule;
+import com.quakearts.syshub.model.AgentConfigurationParameter.ParameterType;
 
+@ConfigurationProperties({
+	@ConfigurationProperty(type=ParameterType.FILE, value="test.file"),
+	@ConfigurationProperty(type=ParameterType.JNDINAME, value="test.jndiname")
+})
 public class TestFormatter1 extends RandomErrorThrower implements MessageFormatter {
 	
 	private Map<String, AgentConfigurationParameter> parameters;

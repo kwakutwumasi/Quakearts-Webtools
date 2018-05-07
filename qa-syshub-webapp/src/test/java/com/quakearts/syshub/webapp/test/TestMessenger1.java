@@ -14,14 +14,21 @@ import com.quakearts.syshub.core.Message;
 import com.quakearts.syshub.core.MessageFormatter;
 import com.quakearts.syshub.core.Messenger;
 import com.quakearts.syshub.core.impl.MessageStringImpl;
+import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperties;
+import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperty;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.exception.ProcessingException;
 import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 import com.quakearts.syshub.model.AgentModule;
 import com.quakearts.syshub.model.ProcessingLog;
+import com.quakearts.syshub.model.AgentConfigurationParameter.ParameterType;
 import com.quakearts.syshub.webapp.helpers.viewupdate.UpdateViewEvent;
 
+@ConfigurationProperties({
+	@ConfigurationProperty(type=ParameterType.PASSWORD, value="test.password"),
+	@ConfigurationProperty(value="test.string",pattern="\\d+(DEF)")
+})
 public class TestMessenger1 extends RandomErrorThrower implements Messenger {
 
 	@Inject

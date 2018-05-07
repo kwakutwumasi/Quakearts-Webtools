@@ -7,14 +7,21 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperties;
+import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperty;
 import com.quakearts.syshub.core.runner.AgentTrigger;
 import com.quakearts.syshub.core.runner.RunAgentListener;
 import com.quakearts.syshub.core.runner.Statistic;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.exception.ProcessingException;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
+import com.quakearts.syshub.model.AgentConfigurationParameter.ParameterType;
 
 @Singleton
+@ConfigurationProperties({
+	@ConfigurationProperty(type=ParameterType.BINARY, value="test.binary"),
+	@ConfigurationProperty(type=ParameterType.BOOLEAN, value="test.boolean")
+})
 public class TestAgentTrigger1 implements AgentTrigger {
 
 	private int runcount;

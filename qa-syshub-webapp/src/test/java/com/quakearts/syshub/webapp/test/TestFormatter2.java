@@ -6,12 +6,19 @@ import com.quakearts.syshub.core.Message;
 import com.quakearts.syshub.core.MessageFormatter;
 import com.quakearts.syshub.core.Result;
 import com.quakearts.syshub.core.impl.MessageByteImpl;
+import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperties;
+import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperty;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.exception.ProcessingException;
 import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 import com.quakearts.syshub.model.AgentModule;
+import com.quakearts.syshub.model.AgentConfigurationParameter.ParameterType;
 
+@ConfigurationProperties({
+	@ConfigurationProperty(type=ParameterType.LIST, value="test.list", optionList={"value1","value2","value3"}),
+	@ConfigurationProperty(type=ParameterType.NUMERIC, value="test.numeric")
+})
 public class TestFormatter2 extends RandomErrorThrower implements MessageFormatter {
 
 	private Map<String, AgentConfigurationParameter> parameters;

@@ -10,14 +10,23 @@ import com.quakearts.syshub.core.DataSpooler;
 import com.quakearts.syshub.core.Message;
 import com.quakearts.syshub.core.Result;
 import com.quakearts.syshub.core.impl.ResultImpl;
+import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperties;
+import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperty;
 import com.quakearts.syshub.core.utils.MapRowBuilder;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.exception.ProcessingException;
 import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentConfiguration.RunType;
+import com.quakearts.syshub.model.AgentConfigurationParameter.ParameterType;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 import com.quakearts.syshub.model.AgentModule;
 
+@ConfigurationProperties({
+	@ConfigurationProperty(type=ParameterType.CLASS, value="test.class", friendlyName="Test Class", assignableType=DataSpooler.class),
+	@ConfigurationProperty(type=ParameterType.CRONCONFIGURATION, value="test.cronconfiguration",description="Test Description"),
+	@ConfigurationProperty(type=ParameterType.EMAIL, value="test.email", global=true),
+	@ConfigurationProperty(type=ParameterType.ENDPOINTADDRESS, value="test.endpointaddress", required=true)
+})
 public class TestDataSpooler extends RandomErrorThrower implements DataSpooler {
 
 	private AgentConfiguration agentConfiguration;
@@ -97,7 +106,7 @@ public class TestDataSpooler extends RandomErrorThrower implements DataSpooler {
 			public boolean hasNext() {
 				if(agentConfiguration.getType() == RunType.LOOPED)
 					try {
-						Thread.sleep(1500);
+						Thread.sleep(Math.abs((getRandom().nextInt()%10)) * 1000);
 					} catch (InterruptedException e) {
 					}; //Prevent loop from generating too much test data too quickly
 					

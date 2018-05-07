@@ -8,8 +8,12 @@ public class RandomErrorThrower {
 	private Random random = new Random();
 	
 	protected void throwErrorOrNot() throws ProcessingException {
-		if(random.nextInt()%10 == 1) {
+		if(Math.abs(random.nextInt()%10) == 1) {
 			throw new ProcessingException("Random Exception");
 		}
+	}
+	
+	protected Random getRandom() {
+		return random;
 	}
 }

@@ -7,6 +7,7 @@
 			"jsf-impl-2.2.14.jar",
 			"tomcat-embed-websocket-8.5.9.jar",
 			"tomcat-embed-el-8.5.9.jar",
+			"qa-orm-hibernate-web-1.0.0.jar",
 			"qa-weldjsf-cdi-1.0.0.jar"
 		]
 	},

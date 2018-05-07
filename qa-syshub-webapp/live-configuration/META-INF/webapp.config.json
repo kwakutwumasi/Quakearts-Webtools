@@ -8,6 +8,7 @@
 			"tomcat-embed-websocket-8.5.9.jar",
 			"tomcat-embed-el-8.5.9.jar",
 			"qa-weldjsf-cdi-1.0.0.jar",
+			"qa-orm-hibernate-web-1.0.0.jar",
 			"qa-syshub-webapp-1.0-deploy.jar"
 		]
 	},

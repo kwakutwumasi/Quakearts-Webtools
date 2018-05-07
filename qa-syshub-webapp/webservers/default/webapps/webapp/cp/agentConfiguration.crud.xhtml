@@ -164,8 +164,8 @@
 				</f:facet>
 				<f:converter converterId="javax.faces.Boolean"></f:converter>
 				<f:ajax listener="#{agentConfigurationPage.maximumPoolSize.parameterChanged}"></f:ajax>
-				<f:selectItem value="true"></f:selectItem>
-				<f:selectItem value="false"></f:selectItem>
+				<f:selectItem itemValue="true"></f:selectItem>
+				<f:selectItem itemValue="false"></f:selectItem>
 			</b:selectOneInputGroup>
 		</b:formGroup>
 		<h:panelGroup id="runnerParameters" styleClass="#{loader.overlayClass}" layout="block">

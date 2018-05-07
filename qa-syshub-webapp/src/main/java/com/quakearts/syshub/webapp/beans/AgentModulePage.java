@@ -198,13 +198,6 @@ public class AgentModulePage extends BaseBean {
 		
 		if(agentModule.getAgentConfiguration() == null || agentModule.getAgentConfiguration().getId()<= 0)
 			return;
-		
-		try {
-			agentModule.getParameters().size();
-		} catch (Exception e) {
-			agentModule = finder.getDataStore().refresh(agentModule);
-			getAgentConfigurationDropdownHelper().addToFoundItemsList(agentModule.getAgentConfiguration());
-		}
 				
 		Class<?> moduleClass;
 		try {
@@ -292,6 +285,10 @@ public class AgentModulePage extends BaseBean {
 
 		try {
 			agentModuleList = finder.findObjects(parameterBuilder.build());
+			
+			agentModuleList.forEach((agentModule)->{
+				agentModule.getModuleConfigurationMap();
+			});
 		} catch (DataStoreException e) {
 			addError("Search error", "An error occured while searching for Agent Module",
 					FacesContext.getCurrentInstance());

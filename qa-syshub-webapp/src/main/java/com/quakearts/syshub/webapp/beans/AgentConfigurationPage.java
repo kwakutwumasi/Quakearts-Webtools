@@ -76,7 +76,7 @@ public class AgentConfigurationPage extends BaseBean {
 		maxDataSpoolerWorkers = new AgentConfigurationParameterWrapper("maxDataSpoolerWorkers", ParameterType.NUMERIC); 
 		maximumPoolSize = new AgentConfigurationParameterWrapper("maximumPoolSize", ParameterType.NUMERIC);
 		isResendCapable = new AgentConfigurationParameterWrapper("isResendCapable", ParameterType.NUMERIC);
-		schedulerCron = new AgentConfigurationParameterWrapper("scheduler.cron", ParameterType.CRONCONFIGURATION);
+		schedulerCron = new AgentConfigurationParameterWrapper("schedule.cron", ParameterType.CRONCONFIGURATION);
 		triggerClass = new AgentConfigurationParameterWrapper("trigger.class", ParameterType.CLASS); 
 	}
 	
@@ -184,7 +184,7 @@ public class AgentConfigurationPage extends BaseBean {
 				isResendCapable.configurationParameter = parameter;
 			}
 			
-			parameter = agentConfiguration.getAgentConfigurationParameter("scheduler.cron");
+			parameter = agentConfiguration.getAgentConfigurationParameter("schedule.cron");
 			if (parameter != null) {
 				schedulerCron.configurationParameter = parameter;
 			}
@@ -221,6 +221,9 @@ public class AgentConfigurationPage extends BaseBean {
     		
 		try {
 			agentConfigurationList = finder.findObjects(parameterBuilder.build());
+			agentConfigurationList.forEach((agentConfiguration)->{
+				agentConfiguration.getAgentConfigurationMap();
+			});
 		} catch (DataStoreException e) {
 			addError("Search error", "An error occured while searching for Agent Configuration", FacesContext.getCurrentInstance());
 			log.severe("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()

@@ -87,7 +87,7 @@
 						<c:set as="edit" var="#{agentConfigurationPage.webappmain.mode}" />
 						<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
 					</b:button>
-					<b:buttonGroup rendered="#{! empty agentConfigurationPage.webappmain.mode or agentConfigurationPage.webappmain.mode eq 'read'}">
+					<b:buttonGroup id="buttons" rendered="#{! empty agentConfigurationPage.webappmain.mode or agentConfigurationPage.webappmain.mode eq 'read'}">
 						<b:button  disabled="#{!agentConfigurationPage.agentConfiguration.active or agentConfigurationPage.deployed or agentConfigurationPage.agentConfiguration.id == 0}" data-overlay-target="buttonsDiv">
 							Deploy
 							<f:ajax render="buttons messages" onevent="#{loader.overlayAjaxLoader}" listener="#{agentConfigurationPage.deployThisAgent}"></f:ajax>
