@@ -36,7 +36,7 @@ if(window.WebSocket){
 	syshub.ws.onclose = function(event){
 		var popup = $('#'+syshub.popup);
 		popup.find(".panel-body")
-			.html("The connection to the server is closed. Please refresh the page when the server restarts to view updates");
+			.html("The connection to the server was closed. Please refresh the page when the server restarts to view updates");
 		
 		if(popup.hasClass('collapse'))
 			popup.removeClass('collapse');
