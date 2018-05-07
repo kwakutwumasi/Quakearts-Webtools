@@ -57,10 +57,6 @@ public class BootOnLoadRenderer extends HtmlBasicRenderer {
 				writer.write((isInJSDebugMode()? JSDEBUG:JS).replaceAll("@root", contextPath));
 			}
 
-			UIComponent bottomComponent = component.getFacet(POSITION_BOTTOM);
-			if(bottomComponent !=null)
-				bottomComponent.encodeAll(context);
-
 			List<String> scriptContentList = (List<String>) context.getAttributes().get(SCRIPTCONTENTLIST);
 			if(scriptContentList!=null){
 				writer.startElement("script", component);				
@@ -71,6 +67,10 @@ public class BootOnLoadRenderer extends HtmlBasicRenderer {
 				writer.endElement("script");
 			}
 		
+			UIComponent bottomComponent = component.getFacet(POSITION_BOTTOM);
+			if(bottomComponent !=null)
+				bottomComponent.encodeAll(context);
+
 			context.getAttributes().put(BOOTSTRAP_ONLOAD, Boolean.TRUE);
 		}
 	}
