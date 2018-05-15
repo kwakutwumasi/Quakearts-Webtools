@@ -1,5 +1,7 @@
-# Quakearts-Webtools
+# Quakearts-Webtools V1.9 LTS Branch
  My Utility Servlet 3.0, JAX-RS, CDI, JTA, JSF Tag Libraries and JCA classes for web application development <br />
+ <br />
+ This branch is for long term support of deployed client applications
  <br />
 qa-appbase: A custom integration of JTA, JCA, CDI, Servlet 3 Integration, and JNDI<br />
 qa-appbase-archetype: A maven archetype for qa-appbase applications<br />
