@@ -25,8 +25,8 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.tomcat.websocket.pojo.PojoEndpointServer;
 import org.apache.tomcat.websocket.server.WsContextListener;
 import org.apache.tomcat.websocket.server.WsSessionListener;
-import org.jboss.weld.servlet.WeldInitialListener;
-import org.jboss.weld.servlet.WeldTerminalListener;
+import org.jboss.weld.module.web.servlet.WeldInitialListener;
+import org.jboss.weld.module.web.servlet.WeldTerminalListener;
 import org.junit.Test;
 
 import com.quakearts.appbase.exception.ConfigurationException;
