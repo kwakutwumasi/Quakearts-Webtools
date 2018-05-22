@@ -18,7 +18,7 @@
     			</label>
     			<b:selectOneInput mainClass="#{loader.overlayClass}" disabled="#{agentModulePage.webappmain.mode eq 'read' or agentModulePage.agentConfigurationDropdownHelper.inCreateMode}"
     				value="#{agentModule.agentConfiguration}" autocomplete="true"
-    				suggestion="#{agentModulePage.agentConfigurationDropdownHelper.searchText}" delay="15"
+    				suggestion="#{agentModulePage.agentConfigurationDropdownHelper.searchText}" delay="1"
     				listener="#{agentModulePage.agentConfigurationDropdownHelper.filterItems}"
     				onevent="#{loader.overlayAjaxLoader}">
     				<f:selectItems value="#{agentModulePage.agentConfigurationDropdownHelper.foundItems}" 

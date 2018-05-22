@@ -282,7 +282,10 @@ public class AgentConfigurationPage extends BaseBean {
 		}
 		
 		try {
+			ClassLoader currentThreadClassLoader = Thread.currentThread().getContextClassLoader();
+			Thread.currentThread().setContextClassLoader(currentThreadClassLoader.getParent());
 			sysHub.deployAgent(agentConfiguration);
+			Thread.currentThread().setContextClassLoader(currentThreadClassLoader);
 			addMessage("Success", "Agent has been deployed", FacesContext.getCurrentInstance());
 		} catch (ConfigurationException e) {
 			addError("Error", "Agent could not be deployed: "+e.getMessage(), 
