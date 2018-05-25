@@ -62,7 +62,7 @@ public class UtilityMethods {
 	
 	public static String base64EncodeWithoutPadding(byte[] toEncode) throws IOException{
 		String encoded = Base64.encodeBytes(toEncode, Base64.URL_SAFE);
-		if(encoded.endsWith("=") || encoded.endsWith("==")){
+		if(encoded.endsWith("=")){
 			return encoded.substring(0, encoded.indexOf("="));
 		}
 		
