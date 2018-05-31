@@ -26,7 +26,7 @@ public class TestMockingProxy {
 					return "test2";
 				}).mock("method(InputStream)").with((arguments)->{
 					return "test3";
-				}).build();
+				}).thenBuild();
 	}
 	
 	@Test

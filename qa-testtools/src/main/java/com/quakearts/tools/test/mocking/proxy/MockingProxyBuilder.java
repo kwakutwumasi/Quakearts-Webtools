@@ -60,7 +60,7 @@ public class MockingProxyBuilder<T> {
 		}
 	}
 
-	public T build() {
+	public T thenBuild() {
 		InvocationHandler handler = new MockingInvocationHandler(mockedClass, contexts);
 		return mockedClass.cast(Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class[]{mockedClass}, handler));
 	}
