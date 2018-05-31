@@ -101,7 +101,7 @@ public class TestHttpClient {
 						.setKeyStorePasswordAs("password1")
 						.thenBuild())
 				.add(MockActionBuilder.createNewMockAction()
-						.addRequest(httpRequest)
+						.setRequestAs(httpRequest)
 								.thenBuild())
 				.addDefaultActions((context)->{
 					for(HttpHeader header:context.getHttpRequest().getHeaders())
@@ -259,8 +259,8 @@ public class TestHttpClient {
 						.setMockingModeAs(MockingMode.MOCK)
 						.thenBuild())
 				.add(MockActionBuilder.createNewMockAction()
-						.addRequest(basicAuthenticationRequest)
-						.addResponseAction((request, response)->{
+						.setRequestAs(basicAuthenticationRequest)
+						.setResponseActionAs((request, response)->{
 							if(("Basic "+Base64.getEncoder().encodeToString("test:password".getBytes()))
 									.equalsIgnoreCase(request.getHeaderValue("authorization")))
 								return null;
@@ -271,8 +271,8 @@ public class TestHttpClient {
 									.thenBuild();
 						}).thenBuild(),
 						MockActionBuilder.createNewMockAction()
-						.addRequest(defaultCookieRequest)
-						.addResponseAction((context, response)->{
+						.setRequestAs(defaultCookieRequest)
+						.setResponseActionAs((context, response)->{
 							if(context.getHeaderValue("cookie").contains("testCookie"))
 								return null;
 							return HttpMessageBuilder.createNewHttpResponse()
@@ -281,8 +281,8 @@ public class TestHttpClient {
 									.thenBuild();
 						}).thenBuild(),
 						MockActionBuilder.createNewMockAction()
-						.addRequest(additionalHeadersRequest)
-						.addResponseAction((request, response)->{
+						.setRequestAs(additionalHeadersRequest)
+						.setResponseActionAs((request, response)->{
 							if(request.getHeaderValue("x-additional-header")!=null)
 								return null;
 							else
@@ -292,10 +292,10 @@ public class TestHttpClient {
 										.thenBuild();
 						}).thenBuild(),
 						MockActionBuilder.createNewMockAction()
-						.addRequest(headRequest).thenBuild(),
+						.setRequestAs(headRequest).thenBuild(),
 						MockActionBuilder.createNewMockAction()
-						.addRequest(requestValueRequest)
-						.addResponseAction((request, response)->{
+						.setRequestAs(requestValueRequest)
+						.setResponseActionAs((request, response)->{
 							if(request.getContentBytes()!=null
 									&& Arrays.equals("test=true&post=true".getBytes(),request.getContentBytes()))
 								return null;
@@ -305,7 +305,7 @@ public class TestHttpClient {
 									.setContentBytes("Bad Message".getBytes()).thenBuild();
 						}).thenBuild(),
 						MockActionBuilder.createNewMockAction()
-						.addRequest(errorReturningRequest)
+						.setRequestAs(errorReturningRequest)
 						.thenBuild());
 		mockServer.start();
 		try {
