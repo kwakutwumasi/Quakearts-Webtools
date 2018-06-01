@@ -4,7 +4,7 @@ import com.quakearts.tools.test.mocking.helper.MockingArguments;
 
 @FunctionalInterface
 public interface EmptyMockedImplementation extends MockedImplementation {
-	Object mockEmpty();
+	Object mockEmpty() throws Throwable;
 	default Object mock(MockingArguments arguments) {
 		throw new UnsupportedOperationException("Implementation does not support mock call");
 	}

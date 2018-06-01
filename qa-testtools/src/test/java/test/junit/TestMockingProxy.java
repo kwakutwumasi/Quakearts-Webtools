@@ -1,6 +1,11 @@
 package test.junit;
 
 import static org.junit.Assert.*;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 import static org.hamcrest.core.Is.*;
 
 import org.junit.BeforeClass;
@@ -25,6 +30,10 @@ public class TestMockingProxy {
 				}).mock("emptyMethod").withEmptyMethod(()->{
 					return "test2";
 				}).mock("method(InputStream)").with((arguments)->{
+					InputStream stream = arguments.get(0);
+					if(stream == null)
+						throw new IOException();
+					
 					return "test3";
 				}).thenBuild();
 	}
@@ -34,7 +43,12 @@ public class TestMockingProxy {
 		proxy.voidEmptyMethod();
 		proxy.voidMethod(1, "test1", new byte[] {0x01b, 0x02b}, new Double[] {1d, 2d});
 		assertThat(proxy.emptyMethod(), is("test2"));
-		assertThat(proxy.method(null), is("test3"));
+		assertThat(proxy.method(new ByteArrayInputStream("".getBytes())), is("test3"));
+	}
+	
+	@Test(expected=IOException.class)
+	public void testProxyException() throws Exception {
+		proxy.method(null);
 	}
 
 	@Test(expected=UnsupportedOperationException.class)
