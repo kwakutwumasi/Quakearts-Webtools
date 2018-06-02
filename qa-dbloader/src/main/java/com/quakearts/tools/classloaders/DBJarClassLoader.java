@@ -25,7 +25,7 @@ import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.DataStoreFactory;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 
-public class DBJarClassLoader extends ClassLoader {//TODO Implement with URL class loader
+public class DBJarClassLoader extends ClassLoader {
 
 	private static final ConcurrentHashMap<Long, byte[]> CACHED_JARS = new ConcurrentHashMap<Long, byte[]>();
 	private String domain;
@@ -68,7 +68,7 @@ public class DBJarClassLoader extends ClassLoader {//TODO Implement with URL cla
 			store = DataStoreFactory.getInstance().getDataStore();
 		else
 			store = DataStoreFactory.getInstance().getDataStore(domain);
-		return (JarFileEntry)store.get(JarFileEntry.class,entryName);
+		return store.get(JarFileEntry.class, entryName);
 	}
 
 	private byte[] getBytes(JarFileEntry jarFileEntry) throws IOException{
