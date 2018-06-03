@@ -181,14 +181,12 @@ public class MockServerServlet extends HttpServlet {
 		InputStream in = con.getErrorStream();
 		if(in==null)
 			in = con.getInputStream();
+		
 		if(in!=null) {
-			byte[] buffer = new byte[1024];
 			int read;
-			while ((read = in.read(buffer))>=buffer.length) {
-				bos.write(buffer);
+			while ((read = in.read())!=-1) {
+				bos.write(read);
 			}
-			if(read>0)
-				bos.write(buffer, 0, read);
 		}
 		responseContent = bos.toByteArray();
 		return responseContent;
