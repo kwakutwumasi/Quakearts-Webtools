@@ -14,5 +14,5 @@ import com.quakearts.tools.test.mockserver.model.HttpRequest;
 
 @FunctionalInterface
 public interface HttpRequestMatcher {
-	boolean canMatch(HttpRequest request, HttpRequest requestToMatch);
+	boolean canMatch(HttpRequest request, HttpRequest incomingRequest);
 }
