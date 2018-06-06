@@ -49,7 +49,7 @@
 			<f:selectItems value="#{parameter.optionList}"></f:selectItems>
 			<f:ajax listener="#{parameter.parameterChanged}" onevent="#{loader.overlayAjaxLoader}"></f:ajax>
 		</b:selectOneInputGroup>
-		<h:panelGroup rendered="#{parameter.type == 'STRING'}"
+		<h:panelGroup rendered="#{parameter.type == 'LONGSTRING'}"
 			styleClass="input-group">
 			<span class="input-group-addon">
 				<b:fa value="i-cursor"></b:fa>
@@ -60,7 +60,7 @@
 			</h:inputTextarea>
 		</h:panelGroup>
 		<b:inputText disabled="#{disabled}" data-overlay-target="buttonsDiv"
-			rendered="#{parameter.type != 'STRING' and parameter.type != 'NUMERIC' and parameter.type != 'BOOLEAN' and parameter.type != 'LIST'}"
+			rendered="#{parameter.type != 'LONGSTRING' and parameter.type != 'NUMERIC' and parameter.type != 'BOOLEAN' and parameter.type != 'LIST'}"
 			value="#{parameter.agentConfigurationParameter.stringValue}"
 			validator="#{parameter.validateParameter}" 
 			type="#{parameter.type == 'PASSWORD'?'password':'text'}">
@@ -73,6 +73,7 @@
 				<b:fa rendered="#{parameter.type == 'FILE'}" value="sticky-note-o"></b:fa>
 				<b:fa rendered="#{parameter.type == 'JNDINAME'}" value="crosshairs"></b:fa>
 				<b:fa rendered="#{parameter.type == 'PASSWORD'}" value="lock"></b:fa>
+				<b:fa rendered="#{parameter.type == 'STRING'}" value="i-cursor"></b:fa>
 			</f:facet>
 			<f:ajax listener="#{parameter.parameterChanged}" onevent="#{loader.overlayAjaxLoader}"></f:ajax>
 		</b:inputText>
