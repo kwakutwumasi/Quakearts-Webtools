@@ -27,7 +27,8 @@ import com.quakearts.syshub.webapp.helpers.viewupdate.UpdateViewEvent;
 
 @ConfigurationProperties({
 	@ConfigurationProperty(type=ParameterType.PASSWORD, value="test.password"),
-	@ConfigurationProperty(value="test.string",pattern="\\d+(DEF)")
+	@ConfigurationProperty(value="test.longstring", type=ParameterType.LONGSTRING),
+	@ConfigurationProperty(value="test.string", pattern="\\d+(DEF)")
 })
 public class TestMessenger1 extends RandomErrorThrower implements Messenger {
 
