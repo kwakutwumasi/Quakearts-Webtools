@@ -178,9 +178,11 @@ public class MockServerServlet extends HttpServlet {
 	private byte[] getResponseContent(HttpURLConnection con) throws IOException {
 		byte[] responseContent;
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		InputStream in = con.getErrorStream();
-		if(in==null)
+		InputStream in;
+		if(con.getResponseCode() == 200)
 			in = con.getInputStream();
+		else
+			in = con.getErrorStream();
 		
 		if(in!=null) {
 			int read;
