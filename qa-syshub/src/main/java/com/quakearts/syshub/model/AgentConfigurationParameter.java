@@ -63,7 +63,8 @@ public class AgentConfigurationParameter implements Serializable {
 		ENDPOINTADDRESS,
 		CRONCONFIGURATION,
 		PASSWORD,
-		LIST
+		LIST,
+		LONGSTRING
 	}
 
 	public AgentConfigurationParameter() {

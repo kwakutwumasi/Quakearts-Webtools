@@ -29,21 +29,21 @@ public class MockActionBuilder {
 		return new MockActionBuilder();
 	}
 	
-	public MockActionBuilder addRequest(HttpRequest httpRequest) {
+	public MockActionBuilder setRequestAs(HttpRequest httpRequest) {
 		mockAction.request = httpRequest;
 		return this;
 	}
-	
-	public MockActionBuilder addMatcher(HttpRequestMatcher matcher) {
+
+	public MockActionBuilder setMatcherAs(HttpRequestMatcher matcher) {
 		mockAction.matcher = matcher;
 		return this;
 	}
-	
-	public MockActionBuilder addResponseAction(HttpResponseAction responseAction) {
+
+	public MockActionBuilder setResponseActionAs(HttpResponseAction responseAction) {
 		mockAction.responseAction = responseAction;
 		return this;
 	}
-	
+
 	public MockAction thenBuild() {
 		if(mockAction.request == null)
 			throw new BuilderException("HttpRequest is required");

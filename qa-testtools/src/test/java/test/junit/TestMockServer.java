@@ -105,13 +105,13 @@ public class TestMockServer {
 						.setPortAs(4082)
 						.thenBuild())
 				.add(MockActionBuilder.createNewMockAction()
-						.addMatcher((httpRequest, httpRequestToMatch)->{
+						.setMatcherAs((httpRequest, httpRequestToMatch)->{
 							return httpRequest.getResource().equals(httpRequestToMatch.getResource());
 						})
-						.addResponseAction((context, response)->{
+						.setResponseActionAs((context, response)->{
 							System.out.println("Responding...");
 							return response;
-						}).addRequest(HttpMessageBuilder
+						}).setRequestAs(HttpMessageBuilder
 								.createNewHttpRequest()
 								.setId("testId")
 								.setMethodAs("GET")
@@ -126,9 +126,9 @@ public class TestMockServer {
 								.thenBuild())
 						.thenBuild())
 				.add(MockActionBuilder.createNewMockAction()
-						.addMatcher((httpRequest, httpRequestToMatch)->{
+						.setMatcherAs((httpRequest, httpRequestToMatch)->{
 							return httpRequest.getResource().equals(httpRequestToMatch.getResource());
-						}).addRequest(HttpMessageBuilder
+						}).setRequestAs(HttpMessageBuilder
 								.createNewHttpRequest()
 								.setId("testId")
 								.setMethodAs("POST")
@@ -203,12 +203,12 @@ public class TestMockServer {
 						.setPortAs(4081)
 						.thenBuild())
 				.add(MockActionBuilder.createNewMockAction()
-						.addMatcher((httpRequest, httpRequestToMatch)->{
+						.setMatcherAs((httpRequest, httpRequestToMatch)->{
 							return httpRequest.getResource().equals(httpRequestToMatch.getResource());
-						}).addResponseAction((context, response)->{
+						}).setResponseActionAs((context, response)->{
 							System.out.println("Responding...");
 							return response;
-						}).addRequest(HttpMessageBuilder
+						}).setRequestAs(HttpMessageBuilder
 								.createNewHttpRequest()
 								.setId("testId")
 								.setMethodAs("GET")
@@ -396,7 +396,7 @@ public class TestMockServer {
 				.addDefaultActions((context)->{
 					context.addHeader("Server", "Mock Server V1.0");
 				}).add(MockActionBuilder.createNewMockAction()
-					.addRequest(HttpMessageBuilder
+					.setRequestAs(HttpMessageBuilder
 								.createNewHttpRequest()
 								.setId("testId1")
 								.setMethodAs("GET")
@@ -411,7 +411,7 @@ public class TestMockServer {
 								.thenBuild())
 						.thenBuild())
 				.add(MockActionBuilder.createNewMockAction()
-						.addRequest(HttpMessageBuilder
+						.setRequestAs(HttpMessageBuilder
 								.createNewHttpRequest()
 								.setId("testId2")
 								.setMethodAs("POST")
@@ -428,7 +428,7 @@ public class TestMockServer {
 								.thenBuild())
 						.thenBuild())
 				.add(MockActionBuilder.createNewMockAction()
-						.addRequest(HttpMessageBuilder
+						.setRequestAs(HttpMessageBuilder
 							.createNewHttpRequest()
 							.setId("testId3")
 							.setMethodAs("DELETE")
@@ -443,7 +443,7 @@ public class TestMockServer {
 							.thenBuild())
 				.thenBuild())
 				.add(MockActionBuilder.createNewMockAction()
-						.addRequest(HttpMessageBuilder
+						.setRequestAs(HttpMessageBuilder
 							.createNewHttpRequest()
 							.setId("testId4")
 							.setMethodAs("HEAD")

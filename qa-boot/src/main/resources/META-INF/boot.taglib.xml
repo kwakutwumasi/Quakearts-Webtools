@@ -379,7 +379,7 @@ child component if present
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression that evaluates to a javax.faces.Validator implementation for validating the UIInput component's value</description>
+			<description>A MethodExpression that evaluates to a method with signature validate(FacesContext,UIComponent,Object) for validating the UIInput component's value</description>
 			<name>validator</name>
 		</attribute>
 		<attribute>
@@ -783,7 +783,7 @@ child component if present
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression that evaluates to a javax.faces.Validator implementation for validating the UIInput component's value</description>
+			<description>A MethodExpression that evaluates to a method with signature validate(FacesContext,UIComponent,Object) for validating the UIInput component's value</description>
 			<name>validator</name>
 		</attribute>
 		<attribute>
@@ -1392,7 +1392,7 @@ child component if present
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression that evaluates to a javax.faces.Validator implementation for validating the UIInput component's value</description>
+			<description>A MethodExpression that evaluates to a method with signature validate(FacesContext,UIComponent,Object) for validating the UIInput component's value</description>
 			<name>validator</name>
 		</attribute>
 		<attribute>
@@ -2070,7 +2070,7 @@ child component if present
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression that evaluates to a javax.faces.Validator implementation for validating the UIInput component's value</description>
+			<description>A MethodExpression that evaluates to a method with signature validate(FacesContext,UIComponent,Object) for validating the UIInput component's value</description>
 			<name>validator</name>
 		</attribute>
 		<attribute>
@@ -2250,7 +2250,7 @@ child component if present
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression that evaluates to a javax.faces.Validator implementation for validating the UIInput component's value</description>
+			<description>A MethodExpression that evaluates to a method with signature validate(FacesContext,UIComponent,Object) for validating the UIInput component's value</description>
 			<name>validator</name>
 		</attribute>
 		<attribute>
@@ -2506,7 +2506,7 @@ child component if present
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression that evaluates to a javax.faces.Validator implementation for validating the UIInput component's value</description>
+			<description>A MethodExpression that evaluates to a method with signature validate(FacesContext,UIComponent,Object) for validating the UIInput component's value</description>
 			<name>validator</name>
 		</attribute>
 		<attribute>
@@ -2686,7 +2686,7 @@ child component if present
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression that evaluates to a javax.faces.Validator implementation for validating the UIInput component's value</description>
+			<description>A MethodExpression that evaluates to a method with signature validate(FacesContext,UIComponent,Object) for validating the UIInput component's value</description>
 			<name>validator</name>
 		</attribute>
 		<attribute>
@@ -2938,7 +2938,7 @@ child component if present
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression that evaluates to a javax.faces.Validator implementation for validating the UIInput component's value</description>
+			<description>A MethodExpression that evaluates to a method with signature validate(FacesContext,UIComponent,Object) for validating the UIInput component's value</description>
 			<name>validator</name>
 		</attribute>
 		<attribute>
@@ -3150,7 +3150,7 @@ child component if present
 			<name>converterMessage</name>
 		</attribute>
 		<attribute>
-			<description>A ValueExpression that evaluates to a javax.faces.Validator implementation for validating the UIInput component's value</description>
+			<description>A MethodExpression that evaluates to a method with signature validate(FacesContext,UIComponent,Object) for validating the UIInput component's value</description>
 			<name>validator</name>
 		</attribute>
 		<attribute>

@@ -14,7 +14,7 @@ public class TestMockActionBuilder {
 	@Test
 	public void testGetMockAction() throws Exception {
 		MockActionBuilder.createNewMockAction()
-				.addRequest(HttpMessageBuilder.createNewHttpRequest()
+				.setRequestAs(HttpMessageBuilder.createNewHttpRequest()
 						.setId("testId1")
 						.setMethodAs("POST")
 						.setResourceAs("/test/resource")
@@ -32,7 +32,7 @@ public class TestMockActionBuilder {
 				.thenBuild();
 		
 		MockActionBuilder.createNewMockAction()
-		.addRequest(HttpMessageBuilder.createNewHttpRequest()
+		.setRequestAs(HttpMessageBuilder.createNewHttpRequest()
 				.setId("testId2")
 				.setMethodAs("POST")
 				.setResourceAs("/test/resource")
@@ -47,10 +47,10 @@ public class TestMockActionBuilder {
 						new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"),
 						new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))
 				.thenBuild())
-		.addMatcher((httpRequest1,httpRequest2)->{
+		.setMatcherAs((httpRequest1,httpRequest2)->{
 			return true;
 		})
-		.addResponseAction((context, response)->{return HttpMessageBuilder
+		.setResponseActionAs((context, response)->{return HttpMessageBuilder
 					.createNewHttpResponse()
 					.setResponseCodeAs(201).thenBuild();})
 		.thenBuild();
@@ -64,7 +64,7 @@ public class TestMockActionBuilder {
 	@Test(expected=BuilderException.class)
 	public void testGetMockActionWithoutResponseInRequest() throws Exception {
 		MockActionBuilder.createNewMockAction()
-		.addRequest(HttpMessageBuilder.createNewHttpRequest()
+		.setRequestAs(HttpMessageBuilder.createNewHttpRequest()
 				.setId("testId1")
 				.setMethodAs("POST")
 				.setResourceAs("/test/resource")
