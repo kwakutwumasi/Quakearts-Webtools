@@ -33,7 +33,7 @@ then add the dependency
 
 ```
 
-You can also use one of the three maven archetypes created for quickly bootstraping a qa-appbase project:
+You can also use one of the three maven archetypes created for quickly bootstrapping a qa-appbase project:
 
 * qa-appbase-archetype
 * qa-appbase-jsf-orm-archetype
@@ -142,10 +142,10 @@ The embedded Tomcat Servlet container uses the following folder structure
 
 * _[application root]_ is the root of your application, the folder from which the application is launched. 
 * _[web server name]_ can be replaced with any name you wish to give the server. 
-* The _conf/_ folder contains a JSON file _server.config.json_ which contains server configuration parameters such as port, connectors, encryption, etc. Examples can be found in the webservers/ folder of the project
+* The _conf/_ folder contains a JSON file _server.config.json_ which contains server configuration parameters such as port, connectors, encryption, etc. Examples can be found in the _webservers/_ folder of the project
 * The _webapps/_ folder contains exploded servlet wars. 
-* _[webapp name]_ corresponds to the context root of the application; e.g. _weather-application/_ would mean the applicaton is available at http://localhost/weather-application. 
-* _webapp.config.json_ is a special file that enables you to expose libraries/folders in your main application classpath to scanning by the Tomcat Servlet container. Examples can be found in the webservers/ folder of the project.
+* _[webapp name]_ corresponds to the context root of the application; e.g. _weather-application/_ would mean the application is available at http://localhost/weather-application. 
+* _webapp.config.json_ is a special file that enables you to expose libraries/folders in your main application classpath to scanning by the Tomcat Servlet container. Examples can be found in the _webservers/_ folder of the project.
 
 Multiple servers can be created as specified. The _conf/server.config.json_ must be used to specify different ports for each of the servers. 
 Multiple servers are useful for instances where you would like to add an administrative application that is available only on a specified port. This makes it possible to run micro-services that can be managed at the node level.
