@@ -1,10 +1,15 @@
-#qa-appbase
+# qa-appbase
 
 This library forms the basis of the QuakeArts.com application platform. It is a custom integration of Java Transaction API (JTA), Java Connector Architecture (JCA), Context and Dependency Injection (CDI), a Servlet Container, and Java Naming and Directory Interface (JNDI), all part of the Jakarta Enterprise Edition (JEE) Standard (formally Java Enterprise Edition). It is similar to the Spring Boot Platform.
 
-####Quick Start
+#### Requirements
 
-######Maven
+* Java 8+
+* Maven (for building from source)
+
+#### Quick Start
+
+##### Maven
 Add the QuakeArts.com maven repository
 
 ```
@@ -36,7 +41,7 @@ You can also use one of the three maven archetypes created for quickly bootstrap
 
 They can be viewed in the [repository root](/kwakutwumasi/Quakearts-Webtools)
 
-####Current Implementations
+#### Current Implementations
 
 qa-appbase has been designed in a modular fashion to easily swap out implementations of the JEE standard modules (JTA/JCA/CDI/Servlet/JNDI). Currently the server uses the following implementations:
 
@@ -46,7 +51,7 @@ qa-appbase has been designed in a modular fashion to easily swap out implementat
 * Servlet: Tomcat Embedded 9.0.8
 * JNDI: Apache Naming/Custom Code (integrated with Tomcat Embedded)
 
-####Configuration
+#### Configuration
 
 Configuration is done through a configuration file that can be passed in at the command line. If no command line file is specified, a file named default.configuration is searched for at the root of the classpath.
 
@@ -119,7 +124,7 @@ This does not work if the _-dontwaitinmain_ parameter is passed when starting th
 
 ####Specific implementation notes
 
-######Tomcat
+##### Tomcat
 
 The embedded Tomcat Servlet container uses the following folder structure
 
@@ -151,7 +156,7 @@ For applications that must be served from the root of the application context (e
 
 For more information on the server.config.json and webapp.config.json see the code and documentation for _com.quakearts.appbase.spi.impl.TomcatEmbeddedServerSpiImpl_.
 
-######Atomikos
+##### Atomikos
 
 The Atomikos JCA implmentation uses a custom JSON file to configure SQL Datasources. There are two ways of configuring datasources:
 
