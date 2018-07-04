@@ -32,9 +32,19 @@ import com.quakearts.appbase.internal.json.JsonValue;
 import com.quakearts.appbase.internal.json.ParseException;
 import com.quakearts.appbase.internal.json.JsonObject.Member;
 
+/**A JSON property loader
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Vetoed
 public class AppBasePropertiesLoader {
 	
+	/**Retrieve a list of {@linkplain ConfigurationPropertyMap} objects within the given folder
+	 * @param fileLocation the name of the search folder relative to the application root
+	 * @param fileSuffix the suffix of files to scan and load
+	 * @param appName the name of the module to be displayed when displaying any processing error
+	 * @return a list of {@linkplain ConfigurationPropertyMap} objects
+	 */
 	public List<ConfigurationPropertyMap> getAllConfigurationProperties(String fileLocation, String fileSuffix, String appName){
 		List<ConfigurationPropertyMap> configurationProperties = new ArrayList<>();
 		
@@ -46,6 +56,12 @@ public class AppBasePropertiesLoader {
 		return configurationProperties;
 	}
 	
+	/**Retrieve a list of {@linkplain File} objects within the given folder
+	 * @param fileLocation the name of the search folder relative to the application root
+	 * @param fileSuffix the suffix of files to scan and load
+	 * @param appName the name of the module to be displayed when displaying any processing error
+	 * @return a list of {@linkplain File} objects
+	 */
 	public List<File> listConfigurationFiles(String fileLocation, String fileSuffix, String appName) {
 		List<File> configurationFiles = new ArrayList<>();		
 		File configurationFilesLocation = new File(fileLocation);
@@ -68,6 +84,10 @@ public class AppBasePropertiesLoader {
 		return configurationFiles;
 	}
 	
+	/**Load a {@linkplain ConfigurationPropertyMap} from a file
+	 * @param configurationFile the {@linkplain File} to return
+	 * @return a {@linkplain ConfigurationPropertyMap} object
+	 */
 	public ConfigurationPropertyMap loadParametersFromFile(File configurationFile){
 		try(FileReader reader = new FileReader(configurationFile)) {
 			return loadParametersFromReader(configurationFile.getAbsolutePath(), reader);
@@ -81,6 +101,12 @@ public class AppBasePropertiesLoader {
 		}	
 	}
 
+	/**Load a {@linkplain ConfigurationPropertyMap} from a {@linkplain Reader}
+	 * @param filePath the name of the file to be displayed when displaying any processing error
+	 * @param reader a {@linkplain Reader}
+	 * @return a {@linkplain ConfigurationPropertyMap} object
+	 * @throws IOException
+	 */
 	public ConfigurationPropertyMap loadParametersFromReader(String filePath, Reader reader)
 			throws IOException {
 		ConfigurationPropertyMap map = new ConfigurationPropertyMap();

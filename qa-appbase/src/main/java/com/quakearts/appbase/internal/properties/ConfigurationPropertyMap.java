@@ -24,6 +24,10 @@ import javax.enterprise.inject.Vetoed;
 
 import com.quakearts.appbase.exception.ConfigurationException;
 
+/**An implementation of {@link java.util.Map Map} with special get methods for obtaining primitive property values
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Vetoed
 public class ConfigurationPropertyMap extends HashMap<String, Serializable> {
 
@@ -31,6 +35,11 @@ public class ConfigurationPropertyMap extends HashMap<String, Serializable> {
 	 * 
 	 */
 	private static final long serialVersionUID = 3193170233757422518L;	
+	/**Return a long value with the property name
+	 * @param property the name of the property
+	 * @return a long value
+	 * @throws ConfigurationException if the returned property is not a valid long value
+	 */
 	public long getLong(String property) throws ConfigurationException {
 		Serializable object = get(property);
 		if (object == null) {
@@ -41,6 +50,11 @@ public class ConfigurationPropertyMap extends HashMap<String, Serializable> {
 			throw new ConfigurationException(property+" is not a valid long integer");
 	}
 	
+	/**Return an int value with the property name
+	 * @param property the name of the property
+	 * @return a int value
+	 * @throws ConfigurationException if the returned property is not a valid int value
+	 */
 	public int getInt(String property) throws ConfigurationException {
 		Serializable object = get(property);
 		if (object == null) {
@@ -51,6 +65,11 @@ public class ConfigurationPropertyMap extends HashMap<String, Serializable> {
 			throw new ConfigurationException(property+" is not a valid integer");
 	}
 	
+	/**Return a boolean value with the property name
+	 * @param property the name of the property
+	 * @return a boolean value
+	 * @throws ConfigurationException if the returned property is not a valid boolean value
+	 */
 	public boolean getBoolean(String property) throws ConfigurationException {
 		Serializable object = get(property);
 		if (object == null) {
@@ -61,6 +80,11 @@ public class ConfigurationPropertyMap extends HashMap<String, Serializable> {
 			throw new ConfigurationException(property+" is not a valid boolean");
 	}
 
+	/**Return a double value with the property name
+	 * @param property the name of the property
+	 * @return a double value
+	 * @throws ConfigurationException if the returned property is not a valid double value
+	 */
 	public double getDouble(String property) throws ConfigurationException {
 		Serializable object = get(property);
 		if (object == null) {
@@ -71,6 +95,11 @@ public class ConfigurationPropertyMap extends HashMap<String, Serializable> {
 			throw new ConfigurationException(property+" is not a valid double precision number");
 	}
 	
+	/**Return a float value with the property name
+	 * @param property the name of the property
+	 * @return a double value
+	 * @throws ConfigurationException if the returned property is not a valid double value
+	 */
 	public float getFloat(String property) throws ConfigurationException {
 		Serializable object = get(property);
 		if (object == null) {
@@ -81,7 +110,17 @@ public class ConfigurationPropertyMap extends HashMap<String, Serializable> {
 			throw new ConfigurationException(property+" is not a valid floating point number");
 	}
 	
-	public <T> T get(String property, Class<T> clazz) throws ConfigurationException{
+	/**Return a value cast to the specified class with the property name. This method attempts to cast
+	 * the returned value to the class specified. If the returned object cannot be cast, an attempt is made
+	 * to find a constructor that takes a single parameter of type {@linkplain String} and calls it, passing
+	 * the result of calling the object's {@link Object#toString() toString()} method.
+	 * @param property the name of the property
+	 * @param clazz the class the object should be cast to
+	 * @return a value cast to the class specified
+	 * @throws ConfigurationException if the returned property cannot be cast to the specified class
+	 * @throws IllegalArgumentException if the class is a primitive class (int,long, etc)
+	 */
+	public <T> T get(String property, Class<T> clazz) throws ConfigurationException, IllegalArgumentException{
 		Serializable object = get(property);
 		if(object == null)
 			return null;
@@ -107,12 +146,16 @@ public class ConfigurationPropertyMap extends HashMap<String, Serializable> {
 		}		
 	}
 
-	/**
+	/**Populate the given Java Bean with values from the map. This method uses introspection to view all
+	 * the writable properties of the Java Bean and tries to find the corresponding property in the map.
+	 * If such a value is found, then an attempt to cast the value to the expected type is made using the 
+	 * {@linkplain #get(String, Class)} method of this class.
 	 * @param target the object to populate
 	 * @param prefix the prefix for properties of the target object
-	 * @throws IntrospectionException
+	 * @throws IntrospectionException if the target object cannot be introspected
+	 * @throws ConfigurationException if a property cannot be written to due to other Exceptions
 	 */
-	public void populateBean(Object target, String prefix) throws IntrospectionException{
+	public void populateBean(Object target, String prefix) throws IntrospectionException, ConfigurationException{
 		BeanInfo info = Introspector.getBeanInfo(target.getClass());
 		
 		for(PropertyDescriptor propertyDescriptor: info.getPropertyDescriptors()){
@@ -161,12 +204,17 @@ public class ConfigurationPropertyMap extends HashMap<String, Serializable> {
 					setMethod.invoke(target, argument);
 				}
 			} catch (IllegalAccessException | IllegalArgumentException |InvocationTargetException e) {
-				throw new ConfigurationException(propertyName+" cannot be written to "+target.getClass().getName()+": "+e.getMessage());
+				throw new ConfigurationException(propertyName+" cannot be written to "+target.getClass().getName()+": "+e.getMessage(), e);
 			}
 		}
 	}
 
-	public String getString(String name) {
+	/**Return a {@linkplain String} value with the property name
+	 * @param property the name of the property
+	 * @return a {@linkplain String} value
+	 * @throws ConfigurationException if the returned property is not a valid {@linkplain String} value
+	 */
+	public String getString(String name) throws ConfigurationException {
 		return get(name, String.class);
 	}	
 

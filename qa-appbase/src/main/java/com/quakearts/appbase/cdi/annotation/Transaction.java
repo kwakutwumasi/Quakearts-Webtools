@@ -15,6 +15,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import javax.inject.Qualifier;
 
+/**Annotation to decorate injection targets for {@link javax.transaction.UserTransaction UserTransaction}
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Qualifier
 @Retention(RUNTIME)
 public @interface Transaction {

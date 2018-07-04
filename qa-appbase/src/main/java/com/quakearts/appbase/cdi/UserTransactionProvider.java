@@ -16,6 +16,10 @@ import javax.transaction.UserTransaction;
 import com.quakearts.appbase.cdi.annotation.Transaction;
 import com.quakearts.appbase.spi.factory.JavaTransactionManagerSpiFactory;
 
+/**CDI producer that provides intances of {@linkplain UserTransaction}
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class UserTransactionProvider {
 
 	@Produces

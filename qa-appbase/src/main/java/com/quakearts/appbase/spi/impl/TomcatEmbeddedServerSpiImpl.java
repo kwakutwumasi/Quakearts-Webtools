@@ -54,6 +54,78 @@ import com.quakearts.appbase.spi.impl.tomcat.AppBaseWebAppLoader;
 import com.quakearts.appbase.internal.properties.AppBasePropertiesLoader;
 import com.quakearts.appbase.internal.properties.ConfigurationPropertyMap;
 
+/**An implementation of the {@linkplain EmbeddedWebServerSpi} that starts up Tomcat Embedded.
+ * The <code>webservers/</code> folder at the root of the application is traversed. Each folder within the <code>webservers/</code> folder
+ * represents a single web server instance. Each folder within the <code>webservers/</code> folder should contain a 
+ * folder named <code>conf/</code> that contains a file named <code>server.config.json</code>. The contents of the file must be a valid
+ * JSON object. If the file is empty then empty curly brackets should be used: <code>{}</code>.
+ * <br /><br />
+ * The properties of the JSON object are described below:
+ * <br />
+ * <code>port</code>: a JSON integer value. The IP port to listen on for connections
+ * <br />
+ * <code>useapr</code>: a JSON boolean value. Indicates whether to use the Apache Runtime Library. See Tomcat documentation for more information
+ * <br />
+ * <code>hostname</code>: a JSON string value. The hostname to bind the listener to
+ * <br />
+ * <code>connectorProtocol</code>: a JSON string value. The FQDN of the Tomcat Connector to use. See Tomcat documentation for more information
+ * <br />
+ * <code>connectorProtocol.xxx</code>: property xxx will be passed to the <code>public void setProperty(String,String)</code> 
+ * method of the Tomcat Connector object.
+ *  See the documentation or code of the Connector implementation for possible property values
+ * <br />
+ * <code>connector.xxx</code>: property xxx will be set on the Tomcat Connector object. 
+ * See the documentation or code of the Connector implementation for possible property values
+ * <br />
+ * <code>usessl</code>: a JSON boolean value. Indicates whether TLS/SSL is used
+ * <br />
+ * <code>protocols</code>: a JSON string value. A comma separated list of TLS/SSL protocols to use
+ * <br />
+ * <code>sslHostConfig.xxx</code>: property xxx will be set on the Tomcat SslHostConfig object. 
+ * See the documentation or code of the SslHostConfig implementation for possible property values
+ * <br />
+ * <code>usehttp2</code>: a JSON boolean value. Indicates whether HTTP2 protocol should be used to upgrade the connection
+ * <br />
+ * <code>connector.http2.xxx</code>: property xxx will be set on the Tomcat Http2Protocol object. 
+ * See the documentation or code of the Http2Protocol implementation for possible property values
+ * <br />
+ * <code>addunsecured</code>: a JSON boolean value. Indicates whether to add an unsecured port. This is only meaningful if usessl is true
+ * <br />
+ * <code>unsecuredPort</code>: a JSON integer value. The IP port to listen on for unsecured connections
+ * <br />
+ * <code>unsecuredConnectorProtocol</code>: a JSON string value. The FQDN of the Tomcat Connector to use. See Tomcat documentation for more information
+ * <br />
+ * <code>unsecuredConnectorProtocol.xxx</code>: property xxx will be passed to the <code>public void setProperty(String,String)</code> 
+ * method of the Tomcat Connector object.
+ *  See the documentation or code of the Connector implementation for possible property values
+ * <br />
+ * <code>unsecuredConnectorProtocol</code>:property xxx will be passed to the <code>public void setProperty(String,String)</code> 
+ * method of the Tomcat Connector object.
+ *  See the documentation or code of the Connector implementation for possible property values
+ * <br />
+ * <code>unsecuredConnector.xxx</code>: property xxx will be set on the Tomcat Connector object. 
+ * See the documentation or code of the Connector implementation for possible property values
+ *<br /><br />
+ * Each web server folder in the <code>webservers/</code> folder should contain a folder named <code>webapps/</code>, which contains the exploded directories of
+ * .war applications.
+ *<br /><br />
+ * Each web application can contain a webapp.config.json JSON file in its <code>META-INF/</code> folder that lists the libraries and classpath 
+ * folders that should be exposed to the
+ * {@link com.quakearts.appbase.spi.impl.tomcat.AppBaseWebAppLoader AppBaseWebAppLoader} custom loader. The custom loader is required to prevent
+ * the Tomcat container from scanning and auto configuring web modules not required by a web application.
+ * The file contians a just to JSON properties:
+ * <br /><br />
+ * <code>webapp.libraries</code>: a JSON object with one property named 'set' that points to a JSON array of string values of the names of the libraries to scan. 
+ * ex. <code>{
+		"set": ["tomcat-embed-el-8.5.9.jar","tomcat-embed-websocket-8.5.9.jar"]
+	}</code>
+ * <br />
+ * <code>webapp.directories</code>: a JSON object with one property named 'set' that points to a JSON array of string values of the names of the directories to scan. 
+ * ex. <code>{
+		"set": ["etc","classes"]
+	}</code>
+ * @author kwakutwumasi-afriyie
+ */
 @Vetoed
 public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 	
