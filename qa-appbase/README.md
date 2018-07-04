@@ -4,7 +4,7 @@ This library forms the basis of the QuakeArts.com application platform. It is a 
 
 ####Quick Start
 
-#####Maven
+######Maven
 Add the QuakeArts.com maven repository
 
 ```
@@ -119,7 +119,7 @@ This does not work if the _-dontwaitinmain_ parameter is passed when starting th
 
 ####Specific implementation notes
 
-#####Tomcat
+######Tomcat
 
 The embedded Tomcat Servlet container uses the following folder structure
 
@@ -151,7 +151,7 @@ For applications that must be served from the root of the application context (e
 
 For more information on the server.config.json and webapp.config.json see the code and documentation for _com.quakearts.appbase.spi.impl.TomcatEmbeddedServerSpiImpl_.
 
-#####Atomikos
+######Atomikos
 
 The Atomikos JCA implmentation uses a custom JSON file to configure SQL Datasources. There are two ways of configuring datasources:
 
