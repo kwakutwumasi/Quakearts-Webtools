@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<Context>
-	<Realm className="org.apache.catalina.realm.JAASRealm"
-		appName="Test-Login" userClassNames="com.quakearts.appbase.test.helpers.TestUserPrincipal"
-     	roleClassNames="com.quakearts.appbase.test.helpers.TestPrincipal"
-     	configFile="login.config" />
-</Context>

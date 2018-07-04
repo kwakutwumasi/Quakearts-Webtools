@@ -1,5 +1,0 @@
-{
-	"webapp.directories": {
-		"set" : ["target/classes","target/test-classes"]
-	}
-}

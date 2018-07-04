@@ -1,5 +1,0 @@
-cdi.spi.class=com.quakearts.appbase.test.helpers.MainTestHelper
-java.tm.spi.class=com.quakearts.appbase.test.helpers.MainTestHelper
-embedded.ws.spi.class=com.quakearts.appbase.test.helpers.MainTestHelper
-jndi.spi.class=com.quakearts.appbase.test.helpers.MainTestHelper
-datasource.spi.class=com.quakearts.appbase.test.helpers.MainTestHelper

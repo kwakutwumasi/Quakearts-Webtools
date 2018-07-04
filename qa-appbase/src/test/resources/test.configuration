@@ -1,6 +1,0 @@
-cdi.spi.class=com.quakearts.appbase.test.helpers.MainNonDefaultTestHelper
-java.tm.spi.class=com.quakearts.appbase.test.helpers.MainNonDefaultTestHelper
-embedded.ws.spi.class=com.quakearts.appbase.test.helpers.MainNonDefaultTestHelper
-jndi.spi.class=com.quakearts.appbase.test.helpers.MainNonDefaultTestHelper
-datasource.spi.class=com.quakearts.appbase.test.helpers.MainNonDefaultTestHelper
-shutdown.port=10000
