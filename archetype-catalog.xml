@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archetype-catalog
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-catalog/1.0.0 http://maven.apache.org/xsd/archetype-catalog-1.0.0.xsd"
+	xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-catalog/1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<archetypes>
+		<archetype>
+			<groupId>com.quakearts.webtools</groupId>
+			<artifactId>qa-appbase-archetype</artifactId>
+			<version>1.0.0</version>
+			<repository>https://raw.github.com/kwakutwumasi/Quakearts-Webtools/mvn-repo/</repository>
+		</archetype>
+		<archetype>
+			<groupId>com.quakearts.webtools</groupId>
+			<artifactId>qa-appbase-resteasy-orm-archetype</artifactId>
+			<version>1.0.0</version>
+			<repository>https://raw.github.com/kwakutwumasi/Quakearts-Webtools/mvn-repo/</repository>
+		</archetype>
+		<archetype>
+			<groupId>com.quakearts.webtools</groupId>
+			<artifactId>qa-appbase-jsf-orm-archetype</artifactId>
+			<version>1.0.0</version>
+			<repository>https://raw.github.com/kwakutwumasi/Quakearts-Webtools/mvn-repo/</repository>
+		</archetype>
+	</archetypes>
+</archetype-catalog>
