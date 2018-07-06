@@ -106,13 +106,13 @@ The code within it will be called during bootstrapping after all the standard mo
 
 It is important to note the CDI plays an important role within qa-appbase. As such the main class must be within a valid Bean Archive. See CDI documentation for more details.
 
-The application can be shutdown by terminating the VM. It can also be shutdown by calling 
+More documentation on running the application can be found by running 
 
 ```
 java -cp ... com.quakearts.appbase.Main
 ```
 
-More documentation on running the application can be found by running 
+The application can be shutdown by terminating the VM. It can also be shutdown by calling 
 
 ```
 java -cp ... com.quakearts.appbase.Shutdown
