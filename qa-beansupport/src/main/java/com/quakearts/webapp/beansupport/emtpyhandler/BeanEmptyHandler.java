@@ -10,6 +10,15 @@
  ******************************************************************************/
 package com.quakearts.webapp.beansupport.emtpyhandler;
 
+/**Interface for custom empty handlers.
+ * @author kwakutwumasi-afriyie
+ *
+ * @param <V>
+ */
 public interface BeanEmptyHandler<V> {
+	/**Verify that the value passed to the method represents an empty value
+	 * @param value the property of the bean to verify
+	 * @return true if the value represents an empty value
+	 */
 	boolean isEmpty(V value);
 }

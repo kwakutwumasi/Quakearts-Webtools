@@ -5,7 +5,7 @@ import com.quakearts.utilities.annotation.CommandParameterMetadata;
 import com.quakearts.utilities.exception.CommandParameterException;
 import com.quakearts.utilities.impl.CommandBase;
 
-@CommandMetadata(value="testExecutor2", descritpion="testDescritpion", 
+@CommandMetadata(value="testExecutor2", description="testDescritpion", 
 	additionalInfo = "additionalInfo", examples = "examples",
 	parameters={
 		@CommandParameterMetadata(value="parameter1", alias="alias1", description="description1", format="format1", required=true),

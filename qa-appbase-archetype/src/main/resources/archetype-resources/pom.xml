@@ -72,4 +72,10 @@
 			<version>1.7.25</version>
 		</dependency>
 	</dependencies>
+	<repositories>
+	    <repository>
+	        <id>${artifactId}-mvn-repo</id>
+	        <url>https://raw.github.com/kwakutwumasi/Quakearts-Webtools/mvn-repo/</url>
+	    </repository>
+	</repositories>
 </project>

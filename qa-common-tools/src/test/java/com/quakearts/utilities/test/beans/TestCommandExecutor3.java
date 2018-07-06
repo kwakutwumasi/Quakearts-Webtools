@@ -12,9 +12,9 @@ public class TestCommandExecutor3 extends CommandBase {
 
 	@Override
 	public void execute() throws CommandParameterException {
-		assertThat(getCommandParametersMap().get(CommandParameter.DEFAULT).getValues().size(), is(2));
-		assertThat(getCommandParametersMap().get(CommandParameter.DEFAULT).getValues().get(0), is("test1"));
-		assertThat(getCommandParametersMap().get(CommandParameter.DEFAULT).getValues().get(1), is("test2"));		
+		assertThat(getCommandParametersMap().get(CommandParameter.DEFAULT+1).getValues().size(), is(2));
+		assertThat(getCommandParametersMap().get(CommandParameter.DEFAULT+1).getValues().get(0), is("test1"));
+		assertThat(getCommandParametersMap().get(CommandParameter.DEFAULT+1).getValues().get(1), is("test2"));		
 	}
 
 }

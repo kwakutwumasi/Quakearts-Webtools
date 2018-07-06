@@ -50,14 +50,14 @@ public class TestCommand {
 		System.setErr(replaceOutput);
 		
 		CommandMain.main(new String[]{TestCommandExecutor2.class.getName()});
-		CommandMain.main(new String[]{TestCommandExecutor2.class.getName(),"-parameter1","-parameter3"});
+		CommandMain.main(new String[]{TestCommandExecutor2.class.getName(),"-parameter1","-parameter2"});
 
 		String output = new String(bos.toByteArray());
 		System.setErr(oldError);
 		System.setOut(oldOut);
 		
 		assertThat(output.contains("Invalid parameter 'parameter1'. The parameter is required"), is(true));
-		assertThat(output.contains("Invalid parameter 'parameter2'. The parameter is required"), is(true));
+		assertThat(output.contains("Invalid parameter 'parameter2'. The parameter 'parameter3' is required"), is(true));
 	}
 	
 	@Test

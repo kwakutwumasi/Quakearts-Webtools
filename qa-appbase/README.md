@@ -15,7 +15,7 @@ Add the QuakeArts.com maven repository
 ```
 <repositories>
     <repository>
-        <id>YOUR-PROJECT-NAME-mvn-repo<id>
+        <id>YOUR-PROJECT-NAME-mvn-repo</id>
         <url>https://raw.github.com/kwakutwumasi/Quakearts-Webtools/mvn-repo/</url>
     </repository>
 </repositories>
@@ -28,7 +28,7 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-appbase</artifactId>
-	<version>2.0</version>
+	<version>1.1</version>
 </dependency>
 
 ```
@@ -45,10 +45,10 @@ They can be viewed in the [repository root](/kwakutwumasi/Quakearts-Webtools)
 
 qa-appbase has been designed in a modular fashion to easily swap out implementations of the JEE standard modules (JTA/JCA/CDI/Servlet/JNDI). Currently the server uses the following implementations:
 
-* JTA: Atomikos JTA 4.0.6
+* JTA: Atomikos JTA 4.0.4
 * JCA: Atomikos Datasource Beans/Custom Code
-* CDI: Jboss Weld 3.0.4.Final
-* Servlet: Tomcat Embedded 9.0.8
+* CDI: Jboss Weld 2.4.2.Final
+* Servlet: Tomcat Embedded 8.5.9
 * JNDI: Apache Naming/Custom Code (integrated with Tomcat Embedded)
 
 #### Configuration

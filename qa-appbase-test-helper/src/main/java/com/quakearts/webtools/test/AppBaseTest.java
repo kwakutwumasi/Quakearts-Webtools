@@ -13,6 +13,10 @@ import com.quakearts.appbase.spi.impl.JavaNamingDirectorySpiImpl;
 import com.quakearts.appbase.spi.impl.TomcatEmbeddedServerSpiImpl;
 import com.quakearts.appbase.spi.impl.WeldContextDependencySpiImpl;
 
+/**Base for all tests classes
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public abstract class AppBaseTest {
 	protected static void createServices() {
 		if(JavaNamingDirectorySpiFactory.getInstance().getJavaNamingDirectorySpi()!=null)

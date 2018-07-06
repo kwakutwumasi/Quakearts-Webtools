@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.security.Principal;
 import java.security.acl.Group;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -45,6 +48,7 @@ public class JWTLoginModule implements LoginModule {
 	private String algorithm;
 	private String rolesgrpname = "Roles";
 	private String additionalClaims;
+	private List<String[]> foundRoles;
 	private Map<String, ?> options;
 	private static final Logger log = Logger.getLogger(JWTLoginModule.class.getName());
 	private String issuer = JWTLoginModule.class.getName();
@@ -244,6 +248,26 @@ public class JWTLoginModule implements LoginModule {
 			}
 
 			if (authenticationMode == AuthenticationMode.GENERATE) {
+				if(rolesgrp!=null) {
+					foundRoles = new ArrayList<>();
+					Principal principal;
+					Enumeration<? extends Principal> roles = ((Group)rolesgrp).members();
+					int count = 1;
+					while(roles.hasMoreElements()) {
+						principal = roles.nextElement();
+						
+						if(principal instanceof OtherPrincipal) {
+							OtherPrincipal otherPrincipal = (OtherPrincipal) principal;
+							foundRoles.add(new String[] {otherPrincipal.getAttribute(),otherPrincipal.getName()});
+						} else if(principal instanceof DirectoryPrincipal) {
+							DirectoryPrincipal directoryPrincipal = (DirectoryPrincipal) principal;
+							foundRoles.add(new String[] {directoryPrincipal.getAttribute(),directoryPrincipal.getName()});
+						} else {
+							foundRoles.add(new String[] {"role"+(count++), principal.getName()});							
+						}
+					}
+				}
+				
 				JWTPrincipal principal = new JWTPrincipal(generateJWTToken(username));
 				rolesgrp.addMember(principal);
 				principalset.add(principal);				
@@ -294,6 +318,12 @@ public class JWTLoginModule implements LoginModule {
 						&& !claimParts[1].trim().isEmpty()) {
 					claims.addPrivateClaim(claimParts[0].toLowerCase(), claimParts[1]);
 				}
+			}
+		}
+		
+		if(foundRoles !=null) {
+			for(String[] role:foundRoles) {
+				claims.addPrivateClaim(role[0].toLowerCase(), role[1]);		
 			}
 		}
 		

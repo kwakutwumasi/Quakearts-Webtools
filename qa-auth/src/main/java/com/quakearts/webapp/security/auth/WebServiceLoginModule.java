@@ -40,6 +40,7 @@ import com.quakearts.webapp.security.auth.webserviceclient.Authenticator;
 import com.quakearts.webapp.security.auth.webserviceclient.LoginBean;
 import com.quakearts.webapp.security.auth.webserviceclient.Type;
 
+@Deprecated
 public class WebServiceLoginModule implements LoginModule {
 	public static final String USE_FIRST_PASSPARAMETER = "use_first_pass";
 	public static final String LOCKOUT_TIMEPARAMETER = "lockout_time";

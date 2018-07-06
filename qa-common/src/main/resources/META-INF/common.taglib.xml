@@ -4,458 +4,553 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facelettaglibrary_2_0.xsd ">
 	<namespace>http://quakearts.com/2.0/common</namespace>
 	<tag>
+		<description>Load Java properties from a Java Properties File</description>
 		<tag-name>loadProps</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.LoadPropertiesHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to a java.lang.String. The file URL of the property file to load</description>
 			<name>file</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a bean property that returns a java.io.InputStream instance to read the properties from</description>
 			<name>stream</name>
 		</attribute>
 		<attribute>
-			<name>var</name>
-			<required>true</required>
-		</attribute>
-		<attribute>
-			<name>unless</name>
-		</attribute>
-	</tag>
-	<tag>
-		<tag-name>saveProps</tag-name>
-		<handler-class>com.quakearts.webapp.facelets.tag.handler.SavePropertiesHandler</handler-class>
-		<attribute>
-			<name>file</name>
-			<required>true</required>
-		</attribute>
-		<attribute>
+			<description>A ValueExpression that evaluates to java.util.Properties</description>
 			<name>properties</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
 			<name>unless</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>Save the properties to file</description>
+		<tag-name>saveProps</tag-name>
+		<handler-class>com.quakearts.webapp.facelets.tag.handler.SavePropertiesHandler</handler-class>
+		<attribute>
+			<description>A ValueExpression that evaluates to a java.lang.String. The file URL of the property file to save</description>
+			<name>file</name>
+			<required>true</required>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression that evaluates to a java.util.Properties bean property</description>
+			<name>properties</name>
+			<required>true</required>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
+			<name>unless</name>
+		</attribute>
+	</tag>
+	<tag>
+		<description>Add a property to the properties file</description>
 		<tag-name>addProp</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.AddPropertyTagHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to a java.lang.String. The name of the property</description>
 			<name>name</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.util.Properties</description>
 			<name>properties</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a java.lang.String. The value of the property</description>
 			<name>value</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
 			<name>unless</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>Remove a property from a properties file</description>
 		<tag-name>removeProp</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.RemovePropertyTagHandler</handler-class>
 		<attribute>
+			<description>The name of the property</description>
 			<name>name</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
-			<name>properties</name>
-		</attribute>
-		<attribute>
-			<name>unless</name>
-		</attribute>
-	</tag>
-	<tag>
-		<tag-name>list</tag-name>
-		<handler-class>com.quakearts.webapp.facelets.tag.handler.ListPropertiesTagHandler</handler-class>
-		<attribute>
+			<description>A ValueExpression that evaluates to a java.util.Properties bean property to store the parsed property values</description>
 			<name>properties</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
+			<name>unless</name>
+		</attribute>
+	</tag>
+	<tag>
+		<description>List all properties from a properties file</description>
+		<tag-name>list</tag-name>
+		<handler-class>com.quakearts.webapp.facelets.tag.handler.ListPropertiesTagHandler</handler-class>
+		<attribute>
+			<description>A ValueExpression that evaluates to java.util.Properties</description>
+			<name>properties</name>
+			<required>true</required>
+		</attribute>
+		<attribute>
+			<description>A ValueExpression that evaluates to a java.util.Collection</description>
 			<name>var</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
 			<name>unless</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>Create a file, relative to the /WEB-INF/ folder of the application</description>
 		<tag-name>createFile</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.CreateFileTagHandler</handler-class>
 		<attribute>
+			<description>A ValueExression that evaluates to java.lang.String. The file URL of the file to create</description>
 			<name>file</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
 			<name>unless</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>Delete a file relative to the /WEB-INF/ folder of the application</description>
 		<tag-name>deleteFile</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.DeleteFileTagHandler</handler-class>
 		<attribute>
+			<description>A ValueExression that evaluates to java.lang.String. The file URL of the file to delete</description>
 			<name>file</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
 			<name>unless</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>Create a javax.faces.model.SelectItem list from a semi-colon and colon delimited java.lang.String</description>
 		<tag-name>createSelectItems</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.CreateSelectItemsTagHandler</handler-class>
 		<attribute>
+			<description>A ValueExression that evaluates to java.lang.String. 
+				The list of key value pairs. Key value pairs are separated by semicolons. 
+				Keys and values are separated by colons. ex key1:value1;key2:value2
+			</description>
 			<name>list</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a java.util.List of javax.faces.model.SelectItems</description>
 			<name>var</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
 			<name>unless</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>A tag for adding, updating or deleting an HTTP session variable</description>
 		<tag-name>session</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.SessionTagHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to an object for storage in/retrieval from the HTTP session variable cache</description>
 			<name>var</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. The name of the variable in the session cache</description>
 			<name>key</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. It must be one of 'save','get', or 'remove'</description>
 			<name>action</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
 			<name>unless</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>A tag for merging a stale ORM instance with the current state in the ORM store</description>
 		<tag-name>merge</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.MergeObjectTagHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to the ORM object to be merged</description>
 			<name>object</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. The domain name, if any, to be passed to the com.quakearts.webapp.orm.DataStore</description>
 			<name>domain</name>
 		</attribute>
 		<attribute>
-			<name>delete</name>
-		</attribute>
-		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. The message to display to the client if the action is successful</description>
 			<name>message</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
 			<name>unless</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>A tag for saving or updating an ORM object to persistent storage</description>
 		<tag-name>saveUpdate</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.SaveOrUpdateObjectTagHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. The message to display to the client if the action is successful</description>
 			<name>message</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. The domain name, if any, to be passed to the com.quakearts.webapp.orm.DataStore </description>
 			<name>domain</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the ORM object to be saved</description>
 			<name>object</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. It must be one of 'save', or 'update'</description>
 			<name>action</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will trim strings if the length exceeds the column length</description>
 			<name>trimstrings</name>
 			<type>java.lang.boolean</type>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
 			<name>unless</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>A tag for reading an ORM object from persistent storage</description>
 		<tag-name>read</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.ReadObjectTagHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. The message to display to the client if the action is successful</description>
 			<name>message</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. The domain name, if any, to be passed to the com.quakearts.webapp.orm.DataStore </description>
 			<name>domain</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the ORM object that has been read</description>
 			<name>object</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the ID of the ORM object to be read</description>
 			<name>id</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the java.lang.Class object of the ORM object to be read</description>
 			<name>type</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
 			<name>unless</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>A tag for deleting an ORM object from persistent storage</description>	
 		<tag-name>delete</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.DeleteObjectTagHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. The domain name, if any, to be passed to the com.quakearts.webapp.orm.DataStore </description>
 			<name>domain</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the ORM object that has been read</description>
 			<name>message</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the ORM object to be deleted</description>
 			<name>object</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
 			<name>unless</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>Copy a file relative to the /WEB-INF/ folder of the application</description>
 		<tag-name>copyFile</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.CopyFileTagHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to a java.lang.String. The URL of the property file to copy</description>
 			<name>file</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a java.lang.String. The URL of the copy of the file to save</description>
 			<name>newFile</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
 			<name>unless</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>Add an object to a list</description>
 		<tag-name>addTolist</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.AddToListHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.util.List. The target for appending</description>
 			<name>target</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to an object to be added to the list</description>
 			<name>object</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
 			<name>unless</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>Remove an Object from a list</description>
 		<tag-name>removeFromlist</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.RemoveFromListHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.util.List. The target for appending</description>
 			<name>list</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the index of the object to list</description>
 			<name>index</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the object to be removed, if the removal is successful</description>
 			<name>var</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
 			<name>unless</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>Remove an Object from a map</description>
 		<tag-name>removeFromMap</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.RemoveFromMapHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to a java.util.Map to be amended</description>			
 			<name>map</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String or java.util.List. The list of keys to delete. If String, it must be a semicolon separated list of keys to delete.</description>
 			<name>keys</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
-			<name>var</name>
-		</attribute>
-		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
 			<name>unless</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>Generate an auto-complete list of javax.faces.model.SelectItem instances from a JCA datasource connection</description>
 		<tag-name>autoCompleteSelect</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.AutoCompleteSelectTagHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. The datasource column for the value in javax.faces.model.SelectItem</description>
 			<name>column</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. The JNDI name of the Datasource</description>
 			<name>jndi</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. The column to use as the label in the javax.faces.model.SelectItem</description>
 			<name>label</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. The name of the table to search</description>
 			<name>table</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the com.quakearts.webapp.facelets.util.AutoCompleteSelectItemsBean</description>
 			<name>bean</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true the query will search for values similar to the search variable </description>
 			<name>like</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a java.lang.String. The column name for the key in the javax.faces.model.SelectItem</description>
 			<name>key</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
 			<name>unless</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>Generate an auto-complete list of java.lang.String instances from a JCA datasource connection</description>
 		<tag-name>autoComplete</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.AutoCompleteTagHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. The datasource column for the java.lang.String values to be read</description>
 			<name>column</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. The JNDI name of the Datasource</description>
 			<name>jndi</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. The name of the table to search</description>
 			<name>table</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the com.quakearts.webapp.facelets.util.AutoCompleteBean</description>
 			<name>bean</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true the query will search for values similar to the search variable </description>
 			<name>like</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>A tag for copying a property from one bean to another</description>
 		<tag-name>set</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.SetTagHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to the source property</description>
 			<name>var</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the destination property</description>
 			<name>as</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
 			<name>unless</name>
 		</attribute>
 	</tag>
 	<tag>
-		<tag-name>removeFromList</tag-name>
-		<handler-class>com.quakearts.webapp.facelets.tag.handler.RemoveFromListHandler</handler-class>
-		<attribute>
-			<name>list</name>
-			<required>true</required>
-		</attribute>
-		<attribute>
-			<name>index</name>
-			<required>true</required>
-		</attribute>
-		<attribute>
-			<name>var</name>
-		</attribute>
-		<attribute>
-			<name>unless</name>
-		</attribute>
-	</tag>
-	<tag>
+		<description>A tag for loading the authenticated javax.security.auth.Subject</description>
 		<tag-name>profile</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.ProfileTagHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to javax.security.auth.Subject</description>
 			<name>var</name>
 			<required>true</required>
 		</attribute>
 	</tag>
 	<tag>
+		<description>Get an array of bytes from a java.io.InputStream</description>
 		<tag-name>getBytes</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.GetBytesTagHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.io.InputStream</description>			
 			<name>stream</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to byte[]</description>
 			<name>var</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to the maximum number of bytes to read</description>
 			<name>maxSize</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
 			<name>unless</name>
 		</attribute>
 	</tag>
-	<tag>
+	<tag>	
+		<description>Add the message to the javax.faces.application.FacesMessage instances to be rendered </description>
 		<tag-name>addMessage</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.AddMessageTagHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to a java.lang.String. The content of the message to display </description>
 			<name>message</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a java.lang.String. must be one of 'error', 'warn', 'info'. If not set it defaults to 'info' </description>
 			<name>type</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a java.lang.String. The title of the message to display </description>
 			<name>title</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
 			<name>unless</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>Execute the given action from the given bean</description>
 		<tag-name>executeAction</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.ExecuteActionTagHandler</handler-class>
 		<attribute>
+			<description>A MethodExpression that evaluates to a method with signature void action(javax.faces.event.ActionEvent)</description>
 			<name>listener</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
 			<name>unless</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>Save the java.io.InputStream to a file</description>
 		<tag-name>saveFile</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.SaveFileHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to the java.io.InputStream to save</description>
 			<name>stream</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a java.lang.String. The URL of the file to save</description>
 			<name>fileName</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the file will be overwritten</description>
 			<name>overwrite</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag will not execute</description>
 			<name>unless</name>
-		</attribute>
-		<attribute>
-			<name>root</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>A NamingContainer for ensuring UIComponents with overlapping ID's do not conflict</description>
 		<tag-name>unique</tag-name>
 		<component>
 			<component-type>com.quakearts.webapp.components.unique</component-type>
@@ -475,34 +570,45 @@
 		</attribute>		
 	</tag>
 	<tag>
+		<description>A tag that adds a converter for POJO beans as values in javax.faces.model.SelectItem tag.
+		 This makes it possible to a use any list of objects as SelectItems, without the need for complex orchestration/key-value mapping</description>
 		<tag-name>pojoConverter</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.converters.PojoConverterTagHandler</handler-class>
 		<attribute>
+			<description>The source of javax.faces.model.SelectItem instances, if needed</description>
 			<name>collection</name>
 			<required>false</required>
 		</attribute>
 	</tag>
 	<tag>	
+		<description>A tag that prevents the evaluation of tags if the authenticated user does not have the necessary role</description>
 		<tag-name>secure</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.SecureTagHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to a comma separated list of java.lang.String</description>
 			<name>roles</name>
 			<required>true</required>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to a Boolean. When true, the tag allowed its children to execute.</description>
 			<name>access-value</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. The URL to redirect an unauthorized subject to</description>
 			<name>redirect</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. The message to show the user in the event of a breach. 
+				Will not be shown if redirection is enabled</description>
 			<name>message</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>A tag that logs off of a web session by clearing the HTTP session variables</description>
 		<tag-name>logout</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.handler.LogoutTagHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. The URL to redirect the subject to</description>
 			<name>redirect</name>
 		</attribute>
 	</tag>

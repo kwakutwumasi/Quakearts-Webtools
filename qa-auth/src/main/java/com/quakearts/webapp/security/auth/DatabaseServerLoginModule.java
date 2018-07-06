@@ -255,7 +255,7 @@ public class DatabaseServerLoginModule implements LoginModule {
 							log.fine("Got profile. Loading....");
 							int i = 1;
 							do {
-								userprof.put("" + (i++), rs.getString(rolescolumns));
+								userprof.put("role" + (i++), rs.getString(rolescolumns));
 							} while (rs.next());
 							log.fine("Got roles: " + userprof);
 						}
@@ -318,14 +318,16 @@ public class DatabaseServerLoginModule implements LoginModule {
 					buffer.append("OtherPrincipal Attribute: " + key + " - Name:" + name + "\n\t\t");
 			}
 
-			if (defaultroles != null)
+			if (defaultroles != null) {
+				int count = 1;
 				for (String role : defaultroles) {
-					principal = new OtherPrincipal(role, "default");
+					principal = new OtherPrincipal(role, "default"+(count++));
 					rolesgrp.addMember(principal);
 					if (log.isLoggable(Level.FINE))
 						buffer.append("OtherPrincipal Attribute: default - Name:" + role + "\n\t\t");
 				}
-
+			}
+			
 			Enumeration<? extends Principal> members = rolesgrp.members();
 			while (members.hasMoreElements()) {
 				Principal type = members.nextElement();

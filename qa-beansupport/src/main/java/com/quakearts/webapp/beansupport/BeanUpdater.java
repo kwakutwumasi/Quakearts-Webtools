@@ -32,6 +32,25 @@ import com.quakearts.webapp.beansupport.emtpyhandlerimpl.StringEmptyHandler;
 import com.quakearts.webapp.beansupport.exception.BeanUpdaterException;
 import com.quakearts.webapp.beansupport.exception.BeanUpdaterInitException;
 
+/**A class for updating a Java Bean with another bean (of the same class) 
+ * using the properties of the latter. The updater operates in two modes:
+ * ignore null and empty (the default), or not. In the first case, null or 
+ * empty properties are ignored. In the second case, null or empty values are copied, 
+ * effectively deleting the properties. Additionally another mode, treat zero as empty,
+ * makes primitive number fields treat the value zero as an empty field. When turned off, 
+ * primitive values will always be copied regardless of the value.
+ * <br /><br />
+ * This class works using handlers ({@link com.quakearts.webapp.beansupport.emtpyhandler.BeanEmptyHandler BeanEmptyHandler})
+ * that know how to treat special objects. The updater comes out of the box with 
+ * support for Java primitives, Java Collections and Java Maps support, as well as for
+ * Java java.lang.String.
+ * <br />
+ * Implement {@link com.quakearts.webapp.beansupport.emtpyhandler.BeanEmptyHandler BeanEmptyHandler}
+ * for custom types and call {@link #registerEmptyHandlers(Class, BeanEmptyHandler)} to register it
+ * @author kwakutwumasi-afriyie
+ *
+ * @param <T>
+ */
 public class BeanUpdater<T> {
 	private Map<String, UpdaterHandles> cache;
 	private static final Map<Class<?>, BeanEmptyHandler<?>> emptyHandlers = new ConcurrentHashMap<>();
