@@ -86,7 +86,7 @@ jndi.spi.class=com.quakearts.appbase.spi.impl.JavaNamingDirectorySpiImpl
 datasource.spi.class=com.quakearts.appbase.spi.impl.AtomikosBeanDatasourceProviderSpiImpl
 ```
 
-####Running the application
+#### Running the application
 
 The application is run by using the following command:
 
@@ -122,7 +122,7 @@ _com.quakearts.appbase.Shutdown_ works by sending a kill signal to the process. 
 
 This does not work if the _-dontwaitinmain_ parameter is passed when starting the application
 
-####Specific implementation notes
+#### Specific implementation notes
 
 ##### Tomcat
 
