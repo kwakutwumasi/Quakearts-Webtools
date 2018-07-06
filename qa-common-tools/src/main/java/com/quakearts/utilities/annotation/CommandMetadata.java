@@ -22,7 +22,7 @@ public @interface CommandMetadata {
 	 * @return
 	 */
 	String description() default "";
-	/**A set of parameter metadata to display to print out
+	/**A set of parameter metadata to print out
 	 * @return a String containing the description
 	 */
 	CommandParameterMetadata[] parameters() default {};

@@ -33,7 +33,7 @@ public @interface CommandParameterMetadata {
 	 * @return true if the parameter is required
 	 */
 	boolean required() default false;
-	/**A semicolon separated list of parameters required by this parameter 
+	/**A semicolon separated list of parameters required by the presence of this parameter 
 	 * @return a String of parameters required by this parameter 
 	 */
 	String linkedParameters() default "";
