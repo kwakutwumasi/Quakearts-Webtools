@@ -34,6 +34,6 @@ then add the dependency
 
 ##### Additional Details
 
-In order to get full auto-completion in Eclipse, install the Quake Arts Metadata Plugin from the [Quakearts-Update-Site](https://github.com/kwakutwumasi/Quakearts-Update-Site) project
-<br />
+In order to get full auto-completion in Eclipse, install the Quake Arts Metadata Plugin from the [Quakearts-Update-Site](https://github.com/kwakutwumasi/Quakearts-Update-Site) project.
+<br /> <br />
 All tags and their attributes have been documented and auto-completion values have been added to ease typing.
