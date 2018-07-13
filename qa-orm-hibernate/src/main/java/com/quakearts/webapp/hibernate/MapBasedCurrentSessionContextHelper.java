@@ -15,6 +15,11 @@ import java.util.Map;
 import org.hibernate.Session;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 
+/**Base class for extensions of {@linkplain CurrentSessionContextHelper} that store the {@linkplain Session}
+ * object in a {@linkplain Map}.
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public abstract class MapBasedCurrentSessionContextHelper extends CurrentSessionContextHelper {
 
 	/**

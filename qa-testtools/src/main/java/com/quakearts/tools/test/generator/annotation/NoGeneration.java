@@ -17,6 +17,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**Annotation used to mark methods/fields that should not be generated
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Retention(RUNTIME)
 @Target({ TYPE, METHOD })
 public @interface NoGeneration {

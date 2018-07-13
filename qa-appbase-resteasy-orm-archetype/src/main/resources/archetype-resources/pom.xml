@@ -98,7 +98,7 @@
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-appbase</artifactId>
-			<version>1.1</version>
+			<version>2.0</version>
 		</dependency>
 	<!-- Logging -->
 		<dependency>
@@ -136,18 +136,18 @@
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-resteasy-cdi</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 	<!-- ORM  -->
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-orm-hibernate</artifactId>
-			<version>2.3</version>
+			<version>2.3.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-orm-cdi</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.derby</groupId>
@@ -168,7 +168,7 @@
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-resteasy-validation-11</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 	</dependencies>
 	<repositories>

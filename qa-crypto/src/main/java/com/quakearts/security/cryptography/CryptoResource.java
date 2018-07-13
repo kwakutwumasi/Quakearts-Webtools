@@ -25,6 +25,15 @@ import javax.crypto.spec.IvParameterSpec;
 import com.quakearts.security.cryptography.exception.IllegalCryptoActionException;
 import com.quakearts.security.cryptography.permission.CrytographyOperationPermission;
 
+/**A Cryptographic resource that can be used for symetric encryptions.
+ * If the algorithm requires an initialization vector, the resource automatically
+ * generates one and appends it to the encrypted value. This makes it easy to decrypt the 
+ * value without having to store the initialization vector separately.
+ * 
+ * This class is thread safe
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class CryptoResource {
 	private Key secretKey;
 	private CrytographyOperationPermission decryptPermission, encryptPermission;
@@ -33,11 +42,26 @@ public class CryptoResource {
 	private static final Pattern ivPatterns = Pattern.compile(".+/((CBC)|(CFB)|(OFB)|(CTR))/?(.*)?");
 	private Cipher cipher;
 	
+	/**Simple constructor, taking the key and the algorithm instance
+	 * @param key
+	 * @param instance
+	 * @throws NoSuchAlgorithmException
+	 * @throws NoSuchPaddingException
+	 */
 	public CryptoResource(Key key, String instance) 
 			throws NoSuchAlgorithmException, NoSuchPaddingException {
 		this(key,instance,null);
 	}
 	
+	/**Constructor for use in environments with a security manager. The profile
+	 * is used to load the {@link java.security.Permission Permission} object. It points
+	 * to the profile name in the security properties file to load.
+	 * @param key
+	 * @param instance
+	 * @param securityProfile
+	 * @throws NoSuchAlgorithmException
+	 * @throws NoSuchPaddingException
+	 */
 	public CryptoResource(Key key, String instance, String securityProfile)
 			throws NoSuchAlgorithmException, NoSuchPaddingException {
 		secretKey = key;
@@ -50,6 +74,10 @@ public class CryptoResource {
 		}
 	}
 
+	/**Convert a byte array to hexadecimal string
+	 * @param buf the byte array
+	 * @return a {@linkplain String} of the byte array in hexadecimal form
+	 */
 	public static String byteAsHex(byte[] buf) {
 		if (buf == null)
 			return null;
@@ -67,6 +95,10 @@ public class CryptoResource {
 		return strbuf.toString();
 	}
 
+	/**Convert a hexadecimal string to byte array
+	 * @param hexstring the hexadecimal string
+	 * @return a byte array
+	 */
 	public static byte[] hexAsByte(String hexstring) throws IllegalCryptoActionException {
 		if (hexstring == null)
 			return null;
@@ -86,6 +118,11 @@ public class CryptoResource {
 		return results;
 	}
 
+	/**Decrypt the ciphered text
+	 * @param cipheredtext the text to decrypt
+	 * @return the decrypted cipher text
+	 * @throws IllegalCryptoActionException if decryption failed
+	 */
 	public String doDecrypt(String cipheredtext) throws IllegalCryptoActionException {
 		if (cipheredtext == null)
 			return null;
@@ -101,6 +138,11 @@ public class CryptoResource {
 		return plainString;
 	}
 
+	/**Encrypt the plain text
+	 * @param plaintext the text to encrypt
+	 * @return the encrypted plain text
+	 * @throws IllegalCryptoActionException if encryption failed
+	 */
 	public String doEncrypt(String plaintext) throws IllegalCryptoActionException {
 		if (plaintext == null)
 			return null;
@@ -109,6 +151,11 @@ public class CryptoResource {
 		return cipheredString;
 	}
 
+	/**Decrypt the ciphered text
+	 * @param cipheredtext the text to decrypt
+	 * @return the decrypted cipher text
+	 * @throws IllegalCryptoActionException if decryption failed
+	 */
 	public byte[] doDecrypt(byte[] cipheredtext) throws IllegalCryptoActionException {
 		SecurityManager manager = System.getSecurityManager();
 		if (manager != null) {
@@ -119,16 +166,19 @@ public class CryptoResource {
 			return null;
 
 		try {
+			byte[] ivPart = null, cipheredPart = null;
 			if(generatesIv) {
-				byte[] ivPart = new byte[cipher.getBlockSize()], cipheredPart = new byte[cipheredtext.length - ivPart.length];
+				ivPart = new byte[cipher.getBlockSize()];
+				cipheredPart = new byte[cipheredtext.length - ivPart.length];
 				System.arraycopy(cipheredtext, 0, cipheredPart, 0, cipheredPart.length);
 				System.arraycopy(cipheredtext, cipheredPart.length, ivPart, 0, ivPart.length);
-				synchronized(this) {
+			}
+			
+			synchronized(this) {
+				if(generatesIv) {
 					cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(ivPart));
 					return cipher.doFinal(cipheredPart);
-				}
-			} else {
-				synchronized(this) {
+				} else {
 					cipher.init(Cipher.DECRYPT_MODE, secretKey);
 					return cipher.doFinal(cipheredtext);
 				}
@@ -139,7 +189,12 @@ public class CryptoResource {
 		}
 	}
 
-	public synchronized byte[] doEncrypt(byte[] plaintext) throws IllegalCryptoActionException {
+	/**Encrypt the plain text
+	 * @param plaintext the text to encrypt
+	 * @return the encrypted plain text
+	 * @throws IllegalCryptoActionException if encryption failed
+	 */
+	public byte[] doEncrypt(byte[] plaintext) throws IllegalCryptoActionException {
 		SecurityManager manager = System.getSecurityManager();
 		if (manager != null) {
 			manager.checkPermission(encryptPermission);
@@ -149,9 +204,9 @@ public class CryptoResource {
 			return null;
 
 		try {
-			cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 			byte[] ciphertext, iv = null;
 			synchronized(this) {
+				cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 				ciphertext = cipher.doFinal(plaintext);
 				if(generatesIv)
 					iv = cipher.getIV();

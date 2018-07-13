@@ -52,18 +52,57 @@ public class AgentConfigurationParameter implements Serializable {
 	private boolean global;
 		
 	public static enum ParameterType {
+		/**Numeric parameter, like integer, double or float values
+		 * 
+		 */
 		NUMERIC,
+		/**Boolean true or false
+		 * 
+		 */
 		BOOLEAN,
+		/**Ordinary one line string
+		 * 
+		 */
 		STRING,
+		/**A class or interface
+		 * 
+		 */
 		CLASS,
+		/**An array of bytes
+		 * 
+		 */
 		BINARY,
+		/**A local file
+		 * 
+		 */
 		FILE,
+		/**A JNDI resource
+		 * 
+		 */
 		JNDINAME,
+		/**An email address
+		 * 
+		 */
 		EMAIL,
+		/**An IP or domain name
+		 * 
+		 */
 		ENDPOINTADDRESS,
+		/**A CRON string
+		 * 
+		 */
 		CRONCONFIGURATION,
+		/**A passowrd
+		 * 
+		 */
 		PASSWORD,
+		/**A list of options
+		 * 
+		 */
 		LIST,
+		/**A multi line string
+		 * 
+		 */
 		LONGSTRING
 	}
 

@@ -17,6 +17,10 @@ import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.exception.FatalException;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 
+/**Factory to create {@linkplain SchedulerService}s
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public abstract class SchedulerServiceFactory {
 	private static SchedulerServiceFactory instance;
 	

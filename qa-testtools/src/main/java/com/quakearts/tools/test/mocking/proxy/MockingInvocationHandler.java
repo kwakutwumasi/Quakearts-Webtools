@@ -10,6 +10,10 @@ import com.quakearts.tools.test.mocking.MockedImplementation;
 import com.quakearts.tools.test.mocking.VoidMockedImplementation;
 import com.quakearts.tools.test.mocking.helper.MockingArguments;
 
+/**{@linkplain InvocationHandler} implementation for mocking interfaces
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class MockingInvocationHandler implements InvocationHandler {
 
 	private Map<String, MockedImplementation> contexts;

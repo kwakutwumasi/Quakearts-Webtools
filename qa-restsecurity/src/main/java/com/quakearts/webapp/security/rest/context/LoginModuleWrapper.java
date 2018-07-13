@@ -22,6 +22,10 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
+/**A wrapper around login module that don't implement {@linkplain LoginModule}
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class LoginModuleWrapper implements LoginModule {
 
 	private Object module;

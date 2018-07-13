@@ -308,12 +308,6 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 	private void configureWebServer(File configurationFile, Tomcat tomcat, File webserverLocation) {
 		final ConfigurationPropertyMap serverConfiguration = propertiesLoader.loadParametersFromFile(configurationFile);            
 	    
-	    //The port that we should run on can be set into an environment variable
-	    //Look for that variable and default to 8080 if it isn't there.
-	    if (serverConfiguration.containsKey("port")) {
-			tomcat.setPort(serverConfiguration.getInt("port"));
-		}
-	    
 		if(serverConfiguration.containsKey("useapr") 
 				&& serverConfiguration.getBoolean("useapr")) {
 			tomcat.getServer().addLifecycleListener(new AprLifecycleListener());
@@ -326,10 +320,16 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 			Connector connector = new Connector(serverConfiguration.getString("connectorProtocol"));
 	        
 			if (serverConfiguration.containsKey("port")) {
-	        		connector.setPort(serverConfiguration.getInt("port"));
+	        	connector.setPort(serverConfiguration.getInt("port"));
 	        }
 	        
 			tomcat.setConnector(connector);
+		} else {
+		    //The port that we should run on can be set into an environment variable
+		    //Look for that variable and default to 8080 if it isn't there.
+		    if (serverConfiguration.containsKey("port")) {
+				tomcat.getConnector().setPort(serverConfiguration.getInt("port"));
+			}
 		}
 		
 		try {

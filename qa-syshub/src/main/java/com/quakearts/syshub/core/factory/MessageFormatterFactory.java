@@ -23,6 +23,10 @@ import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.CDI;
 import javax.naming.NamingException;
 
+/**Factory method for {@linkplain MessageFormatter}
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Vetoed
 public class MessageFormatterFactory {
 
@@ -37,6 +41,11 @@ public class MessageFormatterFactory {
 		return factory;
 	}
 
+	/**Create the {@linkplain MessageFormatter} implemented by the named class
+	 * @param instancename the name of the class implementing {@linkplain MessageFormatter}
+	 * @return the created {@linkplain MessageFormatter}
+	 * @throws ConfigurationException if there is an error creating the {@linkplain MessageFormatter}
+	 */
 	@SuppressWarnings("rawtypes")
 	public MessageFormatter getInstance(String instancename) throws ConfigurationException {
 		Class mssgFormatterClass;
@@ -54,6 +63,15 @@ public class MessageFormatterFactory {
 		return messageFormatter;
 	}
 
+	/**Create the {@linkplain MessageFormatter} described by the {@linkplain AgentModule}
+	 * @param parameters the {@linkplain Map} of {@linkplain AgentConfigurationParameter}s 
+	 * to use in configuring the {@linkplain MessageFormatter}. This method also registers the created in module in JNDI,
+	 * if creating the module afresh. Note that if a module with the same name has already been created, 
+	 * it will be returned; no new module will be created
+	 * @param module the {@linkplain AgentModule} describing the {@linkplain MessageFormatter}
+	 * @return the created {@linkplain MessageFormatter}
+	 * @throws ConfigurationException if there is an error creating the {@linkplain MessageFormatter}
+	 */
 	public MessageFormatter getInstance(Map<String, AgentConfigurationParameter> parameters, AgentModule module)
 			throws ConfigurationException {
 		MessageFormatter messageFormatter;
@@ -89,6 +107,9 @@ public class MessageFormatterFactory {
 		return messageFormatter;
 	}
 
+	/**Remove the registered {@linkplain MessageFormatter}
+	 * @param module the {@linkplain AgentModule} describing the {@linkplain MessageFormatter}
+	 */
 	public void removeInstance(AgentModule module) {
 		try {
 			MessageFormatter formatter = (MessageFormatter) SysHubUtils.getInitialContext()

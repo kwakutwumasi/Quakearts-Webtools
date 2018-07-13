@@ -21,6 +21,10 @@ import com.quakearts.tools.test.generator.primitives.DateGenerator;
 import com.quakearts.tools.test.generator.primitives.NumberGenerator;
 import com.quakearts.tools.test.generator.primitives.StringRandomGenerator;
 
+/**Annotation for specifying limits for primitive property generation
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Retention(RUNTIME)
 @Target(METHOD)
 public @interface GenerateWith {

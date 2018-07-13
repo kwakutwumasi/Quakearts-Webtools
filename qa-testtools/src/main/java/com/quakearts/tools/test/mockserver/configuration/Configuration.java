@@ -10,20 +10,66 @@
  ******************************************************************************/
 package com.quakearts.tools.test.mockserver.configuration;
 
+import com.quakearts.tools.test.mockserver.MockServer;
+
+/**Configuration properties for {@linkplain MockServer}
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public interface Configuration {
+	/**The mode to place the server in
+	 * @author kwakutwumasi-afriyie
+	 *
+	 */
 	static enum MockingMode {
+		/**Record mode: record and save HTTP request and response cycles
+		 * The server acts like a proxy, forwarding calls to the live server
+		 */
 		RECORD,
+		/**Mocking mode: replay recorded request and response cycles
+		 * 
+		 */
 		MOCK
 	}
 	
+	/**Get the URL to record
+	 * @return the URL as a string
+	 */
 	String getURLToRecord();
+	/**Get the mocking mode to use
+	 * @return the {@linkplain MockingMode}
+	 */
 	MockingMode getMockingMode();
+	/**Get the server port to use
+	 * @return the port
+	 */
 	int getPort();
+	/**Get the host interface to listen in for connections
+	 * @return the host interface
+	 */
 	String getIPInterface();
+	/**Determine whether to use TLS
+	 * @return true if TLS should be used.
+	 */
 	boolean useTLS();
+	/**Get the location of the key store file to use for the TLS public/private key
+	 * @return the file location
+	 */
 	String getKeyStore();
+	/**Get the password for the key store
+	 * @return the password
+	 */
 	String getKeyStorePassword();
+	/**Get the key store type
+	 * @return the key store type
+	 */
 	String getKeyStoreType();
+	/**Get the read timeout to use when recording from a URL
+	 * @return the read timeout in milliseconds
+	 */
 	int getReadTimeout();
+	/**Get the connection timeout to use when recording from a URL
+	 * @return the connection timeout in milliseconds
+	 */
 	int getConnectTimeout();
 }

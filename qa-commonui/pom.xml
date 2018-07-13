@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-commonui</artifactId>
-	<version>2.2</version>
+	<version>2.2.1</version>
 	<name>Quakearts Common Tools UI elements</name>
 	<build>
 		<plugins>
@@ -39,7 +39,7 @@
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-common</artifactId>
-			<version>2.3</version>		
+			<version>2.3.1</version>		
 		</dependency>
 	</dependencies>
 </project>

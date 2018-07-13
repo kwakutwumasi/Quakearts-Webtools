@@ -23,6 +23,12 @@ import javax.servlet.http.HttpServletResponse;
 import com.quakearts.webapp.security.rest.SecurityContext;
 import com.quakearts.webapp.security.rest.filter.AuthenticationFilter;
 
+/**Wrapper for the {@link javax.servlet.http.HttpServletRequest HttpServletRequest}. Redirects calls
+ * to {@linkplain #getRemoteUser()},{@linkplain #isUserInRole(String)}, {@linkplain #getUserPrincipal()},
+ * and {@linkplain #authenticate(HttpServletResponse)} to the {@linkplain SecurityContext}
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public final class AuthenticationServletRequestWrapper extends HttpServletRequestWrapper {
 
 	private static final String PASSWORD = "j_password";

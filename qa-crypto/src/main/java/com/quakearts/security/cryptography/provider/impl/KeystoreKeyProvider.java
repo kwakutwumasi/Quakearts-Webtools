@@ -72,8 +72,9 @@ public class KeystoreKeyProvider implements KeyProvider {
 		return key;
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public void setProperties(Map<Object, Object> properties) {
+	public void setProperties(Map properties) {
 		Properties keyProperties = new Properties();
 		keyProperties.putAll(properties);
 		

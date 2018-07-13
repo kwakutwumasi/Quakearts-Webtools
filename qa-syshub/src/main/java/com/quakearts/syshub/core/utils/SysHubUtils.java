@@ -23,6 +23,10 @@ import org.slf4j.LoggerFactory;
 
 import com.quakearts.appbase.exception.ConfigurationException;
 
+/**Utility methods for SysHun
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class SysHubUtils {		
 	private SysHubUtils(){
 	}
@@ -31,7 +35,6 @@ public class SysHubUtils {
 	public static Logger getLog() {
 		return log;
 	}
-		
 
 	private static final InitialContext initialContext = createInitialContext();
 	
@@ -43,15 +46,26 @@ public class SysHubUtils {
 		}
 	}
 
+	/**Getter for an {@linkplain InitialContext}
+	 * @return
+	 */
 	public static InitialContext getInitialContext() {
 		return initialContext;
 	}
 	
+	/**Get the resource represented by the name
+	 * @param name the name of the resource
+	 * @return the {@linkplain InputStream} of the resource if it exists
+	 */
 	public static InputStream getResource(String name){
 		log.debug("Getting resource "+name);
 		return Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
 	}
 	
+	/**Get {@linkplain OutputStream} of the resource represented by the name
+	 * @param name the name of the resource
+	 * @return the {@linkplain OutputStream} of the resource if it exists
+	 */
 	public static OutputStream getOutputstream(String name) throws Exception{
 		OutputStream out = null;
 		URL url = Thread.currentThread().getContextClassLoader().getResource(name);

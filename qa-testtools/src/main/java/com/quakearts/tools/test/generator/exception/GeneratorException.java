@@ -10,6 +10,10 @@
  ******************************************************************************/
 package com.quakearts.tools.test.generator.exception;
 
+/**Thrown when there is an error generating a random object
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class GeneratorException extends RuntimeException {
 
 	/**

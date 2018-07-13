@@ -17,22 +17,40 @@ import java.util.Collections;
 import java.util.Random;
 import java.util.Stack;
 
+/**Base class for bean/property generation. It provides the basic fields required by a generator
+ * @author kwakutwumasi-afriyie
+ *
+ * @param <T>
+ */
 public abstract class GeneratorBase<T> implements Generator<T> {
 	protected final static Random random = new SecureRandom();
 	protected String fieldName;
 	protected Stack<GeneratorBase<T>> callStack = new Stack<>();
 	private int maxCallDepth = 2;
 	
+	/**Return the maximum depth of a bean tree the generator will go when generating
+	 * random data for non-primitive and not standard Java types (String, Collections, Maps, etc)
+	 * @return
+	 */
 	protected int getMaxCallDepth() {
 		return maxCallDepth;
 	}
 	
 	@Override
 	public Generator<T> useField(String fieldName) {
-		this.fieldName = fieldName;
+		return useGeneratorProperty(fieldName);
+	}
+	
+	@Override
+	public Generator<T> useGeneratorProperty(String property) {
+		this.fieldName = property;
 		return this;
 	}
 	
+	/**The maximum depth to go down a bean tree when generating random values
+	 * @param maxCallDepth
+	 * @return this object for method chaining
+	 */
 	public GeneratorBase<T> useMaxCallDepth(int maxCallDepth) {
 		this.maxCallDepth = maxCallDepth;
 		return this;

@@ -10,6 +10,11 @@
  ******************************************************************************/
 package com.quakearts.tools.test.mockserver.exception;
 
+/**Exception thrown when an unrecoverable error occurs during mock server
+ * request/response processing
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class MockServerRuntimeException extends RuntimeException {
 
 	/**

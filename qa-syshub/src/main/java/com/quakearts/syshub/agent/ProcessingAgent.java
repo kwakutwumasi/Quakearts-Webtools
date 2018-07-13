@@ -44,20 +44,20 @@ import com.quakearts.syshub.model.ResultExceptionLog;
  * on its own thread. The {@link ThreadPoolExecutor} is configured to run on calling thread if there are no workers to process 
  * the tasks.
  * Data process follows these steps:
- * <br>
- * 1. Call {@link DataSpooler#prepare()} to initialiaze the {@link DataSpooler}
- * <br>
- * 2. Call {@link DataSpooler#hasMoreData()} to check if data is available for processing
- * <br>
- * 3. Call {@link DataSpooler#getData()} to pull a {@link Result} instance with all the information necessary to create a single 
+ * <br />
+ * 1. Call {@link DataSpooler#prepare()} to initialize the {@link DataSpooler} and return a {@linkplain CloseableIterator}
+ * <br />
+ * 2. Call {@link CloseableIterator#hasNext()} to check if data is available for processing
+ * <br />
+ * 3. Call {@link CloseableIterator#next()} to pull a {@link Result} instance with all the information necessary to create a single 
  * {@link Message}
- * <br>
+ * <br />
  * 4. Call {@link MessageFormatter#formatdata(Result)} with the {@link Result} instance to create a {@link Message} for processing
- * <br>
+ * <br />
  * 5. Call {@link Messenger#sendMessage(Message)} to process the message
- * <br>
+ * <br />
  * 6. Call {@link DataSpooler#updateData(Result, Message)} to update the {@link DataSpooler} of the result of processing
- * <br>
+ * <br />
  * @author kwaku.twumasi@quakearts.com
  *
  */

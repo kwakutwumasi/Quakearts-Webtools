@@ -148,7 +148,7 @@ public class CryptoResourceTest {
 			assertThat(testTriplet.getDecryptedPlainText(), is(testTriplet.getPlainText()));
 		}
 	}
-//
+
 	@Test
 	public void testCryptoResourceBlowfishCBCPKCS5Padding() throws Exception {
 		StringRandomGenerator<String> generator = new StringGenerator().useLength(32);

@@ -17,16 +17,28 @@ import com.quakearts.tools.test.mockserver.configuration.Configuration;
 import com.quakearts.tools.test.mockserver.configuration.Configuration.MockingMode;
 import com.quakearts.tools.test.mockserver.exception.ConfigurationException;
 
+/**Builder for {@linkplain Configuration} instances
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class ConfigurationBuilder {
 	
 	private ConfigurationBuilder() {
 		configuration = new DefaultConfiguration();
 	}
 	
+	/**Create a new {@linkplain Configuration}
+	 * @return
+	 */
 	public static ConfigurationBuilder newConfiguration() {
 		return new ConfigurationBuilder();
 	}
 	
+	/**Load a configuration file from an {@linkplain InputStream}
+	 * @param in the {@linkplain InputStream}
+	 * @return the Configuration
+	 * @throws IOException if there is an error reading from the stream
+	 */
 	public Configuration fromStream(InputStream in) throws IOException {
 		
 		Properties props = new Properties();
@@ -95,6 +107,10 @@ public class ConfigurationBuilder {
 	
 	private DefaultConfiguration configuration;
 	
+	/**Set the URL to record
+	 * @param urlToRecord the URL as a string
+	 * @return this object for method chaining
+	 */
 	public ConfigurationBuilder setURLToRecord(String urlToRecord) {
 		if(urlToRecord == null || (!urlToRecord.startsWith("http://")
 				&& !urlToRecord.startsWith("https://")))
@@ -103,51 +119,90 @@ public class ConfigurationBuilder {
 		return this;
 	}
 
+	/**Set the mocking mode to use
+	 * @param mode the mocking mode
+	 * @return this object for method chaining
+	 */
 	public ConfigurationBuilder setMockingModeAs(MockingMode mode) {
 		configuration.mode = mode;
 		return this;
 	}
 
+	/**Set the server port to use
+	 * @param port the server port
+	 * @return this object for method chaining
+	 */
 	public ConfigurationBuilder setPortAs(int port) {
 		configuration.port = port;
 		return this;
 	}
 
+	/**Set the host interface to listen to for connections
+	 * @param ipInterface the host interface
+	 * @return this object for method chaining
+	 */
 	public ConfigurationBuilder setIPInterfaceAs(String ipInterface) {
 		configuration.ipInterface = ipInterface;
 		return this;
 	}
 
+	/**Set whether to use TLS
+	 * @param useTLS true if TLS should be used
+	 * @return this object for method chaining
+	 */
 	public ConfigurationBuilder setUseTLSAs(boolean useTLS) {
 		configuration.useTLS = useTLS;
 		return this;
 	}
 
+	/**Set the location of the key store file to use for the TLS public/private key
+	 * @param keyStore the file location
+	 * @return this object for method chaining
+	 */
 	public ConfigurationBuilder setKeyStoreAs(String keyStore) {
 		configuration.keyStore = keyStore;
 		return this;
 	}
 
+	/**Set the password for the key store
+	 * @param keyPassword the password
+	 * @return this object for method chaining
+	 */
 	public ConfigurationBuilder setKeyStorePasswordAs(String keyPassword) {
 		configuration.keyStorePassword = keyPassword;
 		return this;
 	}
 
+	/**Set the key store type
+	 * @param keyStoreType
+	 * @return this object for method chaining
+	 */
 	public ConfigurationBuilder setKeyStoreTypeAs(String keyStoreType) {
 		configuration.keyStoreType = keyStoreType;
 		return this;
 	}
 	
+	/**Set the connection timeout to use when recording from a URL
+	 * @param timeInMills the connection timeout in milliseconds
+	 * @return this object for method chaining
+	 */
 	public ConfigurationBuilder setConnectTimeoutAs(int timeInMills) {
 		configuration.connectTimeout = timeInMills;
 		return this;
 	}
 	
+	/**Set the read timeout to use when recording from a URL
+	 * @param timeInMills the read timeout in milliseconds
+	 * @return this object for method chaining
+	 */
 	public ConfigurationBuilder setReadTimeoutAs(int timeInMills) {
 		configuration.readTimeout = timeInMills;
 		return this;
 	}
 	
+	/**Return the configuration. This is a terminal method in the fluid API chain
+	 * @return the {@linkplain Configuration}
+	 */
 	public Configuration thenBuild() {
 		if(configuration.mode == null)
 			throw new ConfigurationException("Property mode is required");
@@ -170,7 +225,11 @@ public class ConfigurationBuilder {
 		return configuration;
 	}
 	
-	public class DefaultConfiguration implements Configuration {
+	/**Default configuration class
+	 * @author kwakutwumasi-afriyie
+	 *
+	 */
+	class DefaultConfiguration implements Configuration {
 		String urlToRecord;
 		MockingMode mode;
 		int port;

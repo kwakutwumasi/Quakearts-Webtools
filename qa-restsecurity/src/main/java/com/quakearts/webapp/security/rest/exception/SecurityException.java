@@ -1,5 +1,9 @@
 package com.quakearts.webapp.security.rest.exception;
 
+/**Exception thrown then there is a security error
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class SecurityException extends RuntimeException {
 
 	/**

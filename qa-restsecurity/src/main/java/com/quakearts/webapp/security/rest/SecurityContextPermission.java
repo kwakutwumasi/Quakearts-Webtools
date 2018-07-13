@@ -12,6 +12,12 @@ package com.quakearts.webapp.security.rest;
 
 import java.security.Permission;
 
+/**This class represents the {@linkplain Permission} for code bases permitted to
+ * access sensitive information. These permissions are required when a SecurityManager
+ * is present
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class SecurityContextPermission extends Permission {
 
 	/**

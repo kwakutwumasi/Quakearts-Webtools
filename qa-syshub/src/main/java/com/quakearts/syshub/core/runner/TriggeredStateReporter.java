@@ -14,7 +14,17 @@ import java.util.List;
 
 import com.quakearts.syshub.core.runner.AgentTrigger.TriggerState;
 
+/**
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public interface TriggeredStateReporter{
+	/**
+	 * @return The current state of this agent trigger
+	 */
 	TriggerState getState();
+	/**
+	 * @return Statistics that can be displayed in the application monitor
+	 */
 	List<Statistic> getStatistics();
 }

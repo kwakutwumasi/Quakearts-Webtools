@@ -25,7 +25,7 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-auth</artifactId>
-	<version>2.0.1</version>
+	<version>2.0.2</version>
 </dependency>
 
 ```

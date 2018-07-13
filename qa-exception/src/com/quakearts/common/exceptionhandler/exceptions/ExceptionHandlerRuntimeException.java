@@ -10,6 +10,10 @@
  ******************************************************************************/
 package com.quakearts.common.exceptionhandler.exceptions;
 
+/**Thrown to indicate errors in configuring the exception handlers
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class ExceptionHandlerRuntimeException extends RuntimeException {
 
 	/**

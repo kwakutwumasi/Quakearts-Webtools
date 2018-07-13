@@ -15,6 +15,11 @@ import java.util.Collections;
 
 import com.quakearts.tools.test.generator.Generator;
 
+/**The default generator for types that cannot be auto generated
+ * @author kwakutwumasi-afriyie
+ *
+ * @param <T>
+ */
 public class NoObjectGenerator<T> implements Generator<T> {
 
 	@Override
@@ -32,4 +37,8 @@ public class NoObjectGenerator<T> implements Generator<T> {
 		return this;
 	}
 
+	@Override
+	public Generator<?> useGeneratorProperty(String fieldName) {
+		return null;
+	}
 }

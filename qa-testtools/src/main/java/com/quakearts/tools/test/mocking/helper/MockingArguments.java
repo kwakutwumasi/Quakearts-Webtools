@@ -1,5 +1,9 @@
 package com.quakearts.tools.test.mocking.helper;
 
+/**This class holds the list of arguments passed by the method caller
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class MockingArguments {
 	private Object[] args;
 	private Class<?> mockedClass;

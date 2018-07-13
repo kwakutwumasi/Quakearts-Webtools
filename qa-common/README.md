@@ -5,7 +5,7 @@ A Utility JSF library. It contains various useful tags and abstract classes to s
 ##### Requirements
 * Java 8+
 * Maven
-* JSF 2+
+* A Servlet Container (Tomcat, Jetty, Wildfly, Undertow, etc)
 
 ##### Quick Start
 
@@ -27,7 +27,7 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-common</artifactId>
-	<version>2.3</version>
+	<version>2.3.1</version>
 </dependency>
 
 ```

@@ -19,6 +19,11 @@ import javax.security.auth.Subject;
 import com.quakearts.webapp.security.auth.UserPrincipal;
 import com.quakearts.webapp.security.rest.exception.SecurityContextException;
 
+
+/**This class holds information related to an authenticated user, such as the roles and credentials.
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public final class SecurityContext implements Serializable {
 
 	/**

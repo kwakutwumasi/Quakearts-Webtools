@@ -21,6 +21,11 @@ import javax.security.auth.login.Configuration;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
+/**A copy of {@link javax.security.auth.login.LoginContext LoginContext} that is 50%
+ * faster.
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class LoginContext {
 
 	private static final String LOGIN_METHOD = "login";

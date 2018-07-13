@@ -12,7 +12,15 @@ package com.quakearts.tools.test.mockserver.store.fi;
 
 import com.quakearts.tools.test.mockserver.model.HttpRequest;
 
+/**Functional interface for querying the HTTP message store
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @FunctionalInterface
 public interface HttpMessageStoreQuery {
+	/**Determine if the request matches the required properties
+	 * @param request the {@linkplain HttpRequest} to match
+	 * @return true if the {@linkplain HttpRequest} matches the required properties 
+	 */
 	boolean matches(HttpRequest request);
 }

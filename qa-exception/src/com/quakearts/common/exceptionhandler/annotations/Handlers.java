@@ -15,6 +15,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**Annotation for holding multiple {@link com.quakearts.common.exceptionhandler.annotations.Handler Handler}s
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Handlers {

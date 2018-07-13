@@ -16,6 +16,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**A collection of {@linkplain ConfigurationProperty} instances
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Retention(RUNTIME)
 @Target(TYPE)
 public @interface ConfigurationProperties {

@@ -20,25 +20,40 @@ import com.quakearts.tools.test.mockserver.model.HttpRequest;
 import com.quakearts.tools.test.mockserver.model.HttpResponse;
 import com.quakearts.tools.test.mockserver.util.HttpVerbUtil;
 
+/**Create a {@linkplain HttpMessage}
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class HttpMessageBuilder {
 	HttpMessage message;
 	private HttpMessageBuilder() {}
 	
+	/**Create a new {@linkplain HttpRequest}
+	 * @return a {@linkplain HttpRequestBuilder} object for method chaining
+	 */
 	public static HttpRequestBuilder createNewHttpRequest() {
 		return new HttpRequestBuilder();
 	}
 	
+	/**Create a new {@linkplain HttpRequest} using the HTTP request as the base
+	 * @param request the {@linkplain HttpRequest}
+	 * @return a {@linkplain HttpRequestBuilder} object for method chaining
+	 */
 	public static HttpRequestBuilder use(HttpRequest request) {
 		return new HttpRequestBuilder(request);
 	}
 	
+	/**Builder for {@linkplain HttpRequest} 
+	 * @author kwakutwumasi-afriyie
+	 *
+	 */
 	public static class HttpRequestBuilder extends HttpMessageBuilder {
 		
 		HttpRequestBuilder() {
 			message = new HttpRequestImpl();
 		}
 		
-		public HttpRequestBuilder(HttpRequest request) {
+		HttpRequestBuilder(HttpRequest request) {
 			if(request instanceof HttpRequestImpl) {
 				message = request;
 			} else {
@@ -46,6 +61,10 @@ public class HttpMessageBuilder {
 			}
 		}
 
+		/**Set the HTTP method of the request
+		 * @param method the HTTP method
+		 * @return this object for method chaining
+		 */
 		public HttpRequestBuilder setMethodAs(String method) {
 			if(method==null)
 				throw new BuilderException("method cannot be null");
@@ -57,6 +76,10 @@ public class HttpMessageBuilder {
 			return this;
 		}
 
+		/**Set the HTTP resource of the request
+		 * @param resource the HTTP resource
+		 * @return this object for method chaining
+		 */
 		public HttpRequestBuilder setResourceAs(String resource) {
 			if(resource==null)
 				throw new BuilderException("resource cannot be null");
@@ -65,11 +88,20 @@ public class HttpMessageBuilder {
 			return this;
 		}
 		
+		/**Set the {@linkplain HttpResponse}
+		 * @param httpResponse the {@linkplain HttpResponse}
+		 * @return this object for method chaining
+		 */
 		public HttpRequestBuilder setResponseAs(HttpResponse httpResponse) {
 			asHttpRequestImpl().response = httpResponse;
 			return this;
 		}
 
+		/**The ID to save the {@linkplain HttpMessage} in the 
+		 * {@link com.quakearts.tools.test.mockserver.store.HttpMessageStore HttpMessageStore}
+		 * @param id the ID
+		 * @return this object for method chaining
+		 */
 		public HttpRequestBuilder setId(String id) {
 			asHttpRequestImpl().id = id;
 			return this;
@@ -118,15 +150,26 @@ public class HttpMessageBuilder {
 		}
 	}
 	
+	/**Create a new {@linkplain HttpResponse}
+	 * @return a {@linkplain HttpResponseBuilder} object for method chaining
+	 */
 	public static HttpResponseBuilder createNewHttpResponse() {
 		return new HttpResponseBuilder();
 	}
 	
+	/**Builder for {@linkplain HttpResponse}
+	 * @author kwakutwumasi-afriyie
+	 *
+	 */
 	public static class HttpResponseBuilder extends HttpMessageBuilder {
 		HttpResponseBuilder() {
 			message = new HttpResponseImpl();
 		}
 		
+		/**Set the HTTP response code
+		 * @param responseCode the HTTP response code
+		 * @return this object for method chaining
+		 */
 		public HttpResponseBuilder setResponseCodeAs(int responseCode) {
 			if(responseCode < 200 || responseCode > 599)
 				throw new BuilderException("HttpResponse must have a valid responseCode in the 200-599 range");
@@ -169,6 +212,10 @@ public class HttpMessageBuilder {
 		}
 	}
 	
+	/**Add the list of {@linkplain HttpHeader}s to the message
+	 * @param headers the {@linkplain HttpHeader}s
+	 * @return this object for method chaining
+	 */
 	public HttpMessageBuilder addHeaders(HttpHeader... headers) {
 		for(HttpHeader header:headers) {
 			if(header.getName() == null 
@@ -197,11 +244,19 @@ public class HttpMessageBuilder {
 		return this;
 	}
 	
+	/**Set the contents of this message
+	 * @param body the array of bytes making up the body
+	 * @return this object for method chaining
+	 */
 	public HttpMessageBuilder setContentBytes(byte[] body) {
 		asHttpMessageImpl().contentBytes = body;
 		return this;
 	}
 	
+	/**Set the encoding of the contents of the message
+	 * @param contentEncoding the encoding
+	 * @return this object for method chaining
+	 */
 	public HttpMessageBuilder setContentEncoding(String contentEncoding) {
 		asHttpMessageImpl().contentEncoding = contentEncoding;
 		return this;
@@ -213,6 +268,9 @@ public class HttpMessageBuilder {
 		throw new BuilderException("message has not been initialized");
 	}
 
+	/**Terminal method in the fluid API. Returns the created HttpMessage.
+	 * @return the HttpMessage
+	 */
 	public<T extends HttpMessage> T thenBuild() {
 		throw new UnsupportedOperationException("Unimplemented");
 	}

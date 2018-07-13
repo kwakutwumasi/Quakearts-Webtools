@@ -31,7 +31,7 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-beansupport</artifactId>
-	<version>2.3</version>
+	<version>2.3.1</version>
 </dependency>
 
 ```

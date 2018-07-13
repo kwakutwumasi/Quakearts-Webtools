@@ -17,7 +17,7 @@ import com.quakearts.syshub.model.ProcessingLog;
 
 import java.util.Properties;
 
-/**This the interface implemented by instances that process messages.
+/**This is the interface implemented by instances that process messages.
  * Typically a messenger will send the processed data over a transport channel.
  * This is the terminal operation in the message processing chain.
  * @author kwaku.twumasi@quakearts.com

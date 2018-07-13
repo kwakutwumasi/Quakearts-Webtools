@@ -16,6 +16,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**Annotation for collections to specify the number of random elements to generate
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Retention(RUNTIME)
 @Target(METHOD)
 public @interface Size {

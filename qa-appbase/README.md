@@ -28,16 +28,16 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-appbase</artifactId>
-	<version>1.1</version>
+	<version>2.0</version>
 </dependency>
 
 ```
 
 You can also use one of the three maven archetypes created for quickly bootstrapping a qa-appbase project:
 
-* qa-appbase-archetype
-* qa-appbase-jsf-orm-archetype
-* qa-appbase-resteasy-orm-archetype
+* com.quakearts.webtools:qa-appbase-archetype:1.0.1
+* com.quakearts.webtools:qa-appbase-jsf-orm-archetype:1.0.1
+* com.quakearts.webtools:qa-appbase-resteasy-orm-archetype:1.0.1
 
 They can be viewed in the [repository root](/kwakutwumasi/Quakearts-Webtools)
 
@@ -45,10 +45,10 @@ They can be viewed in the [repository root](/kwakutwumasi/Quakearts-Webtools)
 
 qa-appbase has been designed in a modular fashion to easily swap out implementations of the JEE standard modules (JTA/JCA/CDI/Servlet/JNDI). Currently the server uses the following implementations:
 
-* JTA: Atomikos JTA 4.0.4
+* JTA: Atomikos JTA 4.0.6
 * JCA: Atomikos Datasource Beans/Custom Code
-* CDI: Jboss Weld 2.4.2.Final
-* Servlet: Tomcat Embedded 8.5.9
+* CDI: Jboss Weld 3.0.4.Final
+* Servlet: Tomcat Embedded 9.0.8
 * JNDI: Apache Naming/Custom Code (integrated with Tomcat Embedded)
 
 #### Configuration

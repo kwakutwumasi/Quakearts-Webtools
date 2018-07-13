@@ -16,6 +16,11 @@ import java.io.Serializable;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.exception.ProcessingException;
 
+/**Interface implemented by messages
+ * @author kwakutwumasi-afriyie
+ *
+ * @param <T>
+ */
 public interface Message<T> extends Serializable {
 
 	public Message<T> addRecipient(String newrecipient);

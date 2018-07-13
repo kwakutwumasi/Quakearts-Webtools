@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-/**This class encapsulates the entirety of data required to create a single message. 
+/**This implementations of this class encapsulate the entirety of data required to create a single message. 
  * It is passed to a formatter to transforms
  * into the {@link Message} to be processed
  * 

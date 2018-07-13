@@ -15,10 +15,34 @@ import java.util.List;
 import com.quakearts.syshub.core.runner.Statistic;
 import com.quakearts.syshub.exception.ConfigurationException;
 
+/**This interface is implemented by services that provide scheduling for agent runners
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public interface SchedulerService {
+	/**Schedule the agent runner runnable
+	 * @param runnable The runnable of the agent runner
+	 * @param schedule the schedule to run the agent runner on
+	 * @throws ConfigurationException if there was an error scheduling the agent runner
+	 */
 	void scheduleTask(Runnable runnable, Schedule schedule) throws ConfigurationException;
+	/**Getter for the running state of the scheduler
+	 * @param runnable the {@linkplain Runnable} to check
+	 * @return true if this {@linkplain Runnable} is running
+	 */
 	boolean isRunning(Runnable runnable);
+	/**Getter for the shutdown state of the scheduler
+	 * @param runnable the {@linkplain Runnable} to check
+	 * @return true if this {@linkplain Runnable} has been shutdown
+	 */
 	boolean isShutDown(Runnable runnable);
+	/**Shutdown the scheduler for this {@linkplain Runnable}
+	 * @param runnable the {@linkplain Runnable} to check
+	 * @return true if this {@linkplain Runnable} has been shutdown
+	 */
 	boolean shutdown(Runnable runnable);
+	/**
+	 * @return Statistics that can be displayed in the application monitor
+	 */
 	List<Statistic> getStatistics(Runnable runnable);
 }

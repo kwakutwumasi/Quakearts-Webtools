@@ -10,6 +10,10 @@
  ******************************************************************************/
 package com.quakearts.syshub.core.scheduler;
 
+/**Base class for passing schedule information to the scheduler
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public abstract class Schedule {
 	public abstract <T> T getSchedule();
 }

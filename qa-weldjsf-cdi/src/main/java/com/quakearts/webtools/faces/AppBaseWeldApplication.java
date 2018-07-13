@@ -16,7 +16,7 @@ import javax.enterprise.inject.spi.CDI;
 import javax.faces.application.Application;
 import javax.faces.application.ApplicationWrapper;
 
-import org.jboss.weld.el.WeldELContextListener;
+import org.jboss.weld.module.web.el.WeldELContextListener;
 
 public class AppBaseWeldApplication extends ApplicationWrapper {
 

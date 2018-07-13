@@ -24,9 +24,9 @@ then add the dependency
 
 ```
 <dependency>
-	<groupId>com.quakearts.webtools</groupId>
+	<groupId>com.quakearts.utilities</groupId>
 	<artifactId>qa-common-tools</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 </dependency>
 
 ```

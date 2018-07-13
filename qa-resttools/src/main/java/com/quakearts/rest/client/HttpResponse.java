@@ -14,6 +14,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**Response object containing the results of the HTTP call
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class HttpResponse implements Serializable {
 	/**
 	 * 
@@ -32,26 +36,46 @@ public class HttpResponse implements Serializable {
 			this.headers = headers;
 	}
 
+	/**Getter for the output read from the http call
+	 * @return the output
+	 */
 	public String getOutput() {
 		return output;
 	}
 
+	/**getter for the HTTP message
+	 * @return the HTTP message
+	 */
 	public String getMessage() {
 		return message;
 	}
 
+	/**getter for the HTTP response code
+	 * @return the HTTP response code
+	 */
 	public int getHttpCode() {
 		return httpCode;
 	}
 	
+	/**Getter for the HTTP response headers 
+	 * @return the HTTP response headers
+	 */
 	public Map<String, List<String>> getHeaders() {
 		return headers;
 	}
 	
+	/**Get the list of header values with the given name 
+	 * @param headerName the header name
+	 * @return the list of header values 
+	 */
 	public List<String> getHeaderList(String headerName){
 		return headers.get(headerName);
 	}
 	
+	/**Get the header value with the given name 
+	 * @param headerName the header name
+	 * @return the header value
+	 */
 	public String getHeader(String headerName){
 		List<String> headerFields = headers.get(headerName);
 		return headerFields != null && !headerFields.isEmpty()? headerFields.iterator().next():null;

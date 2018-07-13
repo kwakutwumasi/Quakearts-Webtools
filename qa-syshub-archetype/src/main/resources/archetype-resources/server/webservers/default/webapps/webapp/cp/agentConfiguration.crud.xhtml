@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:component>
+	<b:formGroup>
+		<label id="agentName_label">Agent Name</label>
+		<h:inputText styleClass="form-control" disabled="#{agentConfigurationPage.webappmain.mode eq 'read'}"
+			rendered="#{agentConfigurationPage.webappmain.inSearchMode or agentConfigurationPage.webappmain.mode eq 'read' or agentConfigurationPage.webappmain.mode eq 'edit'}"
+			value="#{agentConfiguration.agentName}">
+		</h:inputText>
+		<h:inputText validator="#{agentConfigurationPage.validateAgentName}" 
+			styleClass="form-control" 
+			rendered="#{!agentConfigurationPage.webappmain.inSearchMode and agentConfigurationPage.webappmain.mode != 'read' and agentConfigurationPage.webappmain.mode != 'edit'}"
+			value="#{agentConfiguration.agentName}" >
+		</h:inputText>
+	</b:formGroup>
+ 	<b:formGroup>
+ 		<label id="type_label">Type</label>
+ 		<b:selectOneInput disabled="#{agentConfigurationPage.webappmain.mode eq 'read'}"
+			rendered="#{agentConfigurationPage.webappmain.inSearchMode or agentConfigurationPage.webappmain.mode eq 'read'}"
+    		value="#{agentConfiguration.type}">
+     		<f:selectItem noSelectionOption="true" itemLabel="Select one..."></f:selectItem>
+    		<f:selectItems value="#{agentConfigurationPage.webappmain.runTypes}"></f:selectItems>
+    	</b:selectOneInput>
+ 		<b:selectOneInput rendered="#{!agentConfigurationPage.webappmain.inSearchMode and agentConfigurationPage.webappmain.mode != 'read'}"
+    		value="#{agentConfiguration.type}">
+     		<f:selectItem noSelectionOption="true" itemLabel="Select one..."></f:selectItem>
+    		<f:selectItems value="#{agentConfigurationPage.webappmain.runTypes}"></f:selectItems>
+    		<f:ajax render="runnerParameters"></f:ajax>
+    	</b:selectOneInput>
+	</b:formGroup>
+	<b:formGroup>
+		<label id="active_label"><h:selectBooleanCheckbox disabled="#{agentConfigurationPage.webappmain.mode eq 'read'}" value="#{agentConfiguration.active}"></h:selectBooleanCheckbox>Active</label>
+	</b:formGroup>
+	<h:panelGroup rendered="#{!agentConfigurationPage.webappmain.inSearchMode and (facesContext.viewRoot.viewId eq '/ui/agentConfiguration.create.xhtml' or facesContext.viewRoot.viewId eq '/ui/agentConfiguration.list.xhtml')}">
+		<hr />
+		<span class="h4">Configuration Parameters</span>
+		<b:formGroup>
+			<label>Queue Size
+				<span>
+					<h:commandLink rendered="#{agentConfigurationPage.queueSize.configurationParameter.id != 0}">
+						<b:glyph value="remove" style="color:red"></b:glyph>
+						<f:ajax onevent="#{loader.miniAjaxLoader}" render="@this"
+							 listener="#{agentConfigurationPage.queueSize.removeParameter}"></f:ajax>
+					</h:commandLink>
+				</span>	
+			</label>
+			<b:inputText value="#{agentConfigurationPage.queueSize.configurationParameter.numericValue}" 
+				disabled="#{agentConfigurationPage.webappmain.mode == 'read'}">
+				<f:facet name="label">
+					<b:glyph value="menu-hamburger"></b:glyph>
+				</f:facet>
+				<f:ajax listener="#{agentConfigurationPage.queueSize.parameterChanged}"></f:ajax>
+			</b:inputText>
+		</b:formGroup>
+		<b:formGroup>
+			<label>Keep Alive Time
+				<span>
+					<h:commandLink rendered="#{agentConfigurationPage.keepAliveTime.configurationParameter.id != 0}">
+						<b:glyph value="remove" style="color:red"></b:glyph>
+						<f:ajax onevent="#{loader.miniAjaxLoader}" render="@this"
+							 listener="#{agentConfigurationPage.keepAliveTime.removeParameter}"></f:ajax>
+					</h:commandLink>
+				</span>	
+			</label>
+			<b:inputText value="#{agentConfigurationPage.keepAliveTime.configurationParameter.numericValue}" 
+				disabled="#{agentConfigurationPage.webappmain.mode == 'read'}">
+				<f:facet name="label">
+					<b:fa value="tachometer"></b:fa>
+				</f:facet>
+				<f:ajax listener="#{agentConfigurationPage.keepAliveTime.parameterChanged}"></f:ajax>
+			</b:inputText>
+		</b:formGroup>
+		<b:formGroup>
+			<label>Core Pool Size
+				<span>
+					<h:commandLink rendered="#{agentConfigurationPage.corePoolSize.configurationParameter.id != 0}">
+						<b:glyph value="remove" style="color:red"></b:glyph>
+						<f:ajax onevent="#{loader.miniAjaxLoader}" render="@this"
+							 listener="#{agentConfigurationPage.corePoolSize.removeParameter}"></f:ajax>
+					</h:commandLink>
+				</span>	
+			</label>
+			<b:inputText value="#{agentConfigurationPage.corePoolSize.configurationParameter.numericValue}"
+				 disabled="#{agentConfigurationPage.webappmain.mode == 'read'}">
+				<f:facet name="label">
+					<b:glyph value="cog"></b:glyph>
+				</f:facet>
+				<f:ajax listener="#{agentConfigurationPage.corePoolSize.parameterChanged}"></f:ajax>				
+			</b:inputText>
+		</b:formGroup>
+		<b:formGroup>
+			<label>Max Formatter Workers
+				<span>
+					<h:commandLink rendered="#{agentConfigurationPage.maxFormatterWorkers.configurationParameter.id != 0}">
+						<b:glyph value="remove" style="color:red"></b:glyph>
+						<f:ajax onevent="#{loader.miniAjaxLoader}" render="@this"
+							 listener="#{agentConfigurationPage.maxFormatterWorkers.removeParameter}"></f:ajax>
+					</h:commandLink>
+				</span>	
+			</label>
+			<b:inputText value="#{agentConfigurationPage.maxFormatterWorkers.configurationParameter.numericValue}"
+				 disabled="#{agentConfigurationPage.webappmain.mode == 'read'}">
+				<f:facet name="label">
+					<b:flaticon value="business-affiliate-network"></b:flaticon>
+				</f:facet>
+				<f:ajax listener="#{agentConfigurationPage.maxFormatterWorkers.parameterChanged}"></f:ajax>
+			</b:inputText>
+		</b:formGroup>
+		<b:formGroup>
+			<label>Max Data Spooler Workers
+				<span>
+					<h:commandLink rendered="#{agentConfigurationPage.maxDataSpoolerWorkers.configurationParameter.id != 0}">
+						<b:glyph value="remove" style="color:red"></b:glyph>
+						<f:ajax onevent="#{loader.miniAjaxLoader}" render="@this"
+							 listener="#{agentConfigurationPage.maxDataSpoolerWorkers.removeParameter}"></f:ajax>
+					</h:commandLink>
+				</span>	
+			</label>
+			<b:inputText value="#{agentConfigurationPage.maxDataSpoolerWorkers.configurationParameter.numericValue}"
+				 disabled="#{agentConfigurationPage.webappmain.mode == 'read'}">
+				<f:facet name="label">
+					<b:flaticon value="business-3"></b:flaticon>
+				</f:facet>
+				<f:ajax listener="#{agentConfigurationPage.maxDataSpoolerWorkers.parameterChanged}"></f:ajax>
+			</b:inputText>
+		</b:formGroup>
+		<b:formGroup>
+			<label>Maximum Pool Size 
+				<span>
+					<h:commandLink rendered="#{agentConfigurationPage.maximumPoolSize.configurationParameter.id != 0}">
+						<b:glyph value="remove" style="color:red"></b:glyph>
+						<f:ajax onevent="#{loader.miniAjaxLoader}" render="@this"
+							 listener="#{agentConfigurationPage.maximumPoolSize.removeParameter}"></f:ajax>
+					</h:commandLink>
+				</span>	
+			</label>
+			<b:inputText value="#{agentConfigurationPage.maximumPoolSize.configurationParameter.numericValue}"
+				 disabled="#{agentConfigurationPage.webappmain.mode == 'read'}">
+				<f:facet name="label">
+					<b:flaticon value="business"></b:flaticon>
+				</f:facet>
+				<f:ajax listener="#{agentConfigurationPage.maximumPoolSize.parameterChanged}"></f:ajax>
+			</b:inputText>
+		</b:formGroup>
+		<b:formGroup>
+			<label>Is Resend Capable
+				<span>
+					<h:commandLink rendered="#{agentConfigurationPage.isResendCapable.configurationParameter.id != 0}">
+						<b:glyph value="remove" style="color:red"></b:glyph>
+						<f:ajax onevent="#{loader.miniAjaxLoader}" render="@this"
+							 listener="#{agentConfigurationPage.isResendCapable.removeParameter}"></f:ajax>
+					</h:commandLink>
+				</span>	
+			</label>
+			<b:selectOneInputGroup value="#{agentConfigurationPage.isResendCapable.configurationParameter.booleanValue}"
+				 disabled="#{agentConfigurationPage.webappmain.mode == 'read'}">
+				<f:facet name="label">
+					<b:fa value="check"></b:fa>
+				</f:facet>
+				<f:converter converterId="javax.faces.Boolean"></f:converter>
+				<f:ajax listener="#{agentConfigurationPage.maximumPoolSize.parameterChanged}"></f:ajax>
+				<f:selectItem itemValue="true"></f:selectItem>
+				<f:selectItem itemValue="false"></f:selectItem>
+			</b:selectOneInputGroup>
+		</b:formGroup>
+		<h:panelGroup id="runnerParameters" styleClass="#{loader.overlayClass}" layout="block">
+			<b:formGroup rendered="#{agentConfigurationPage.agentConfiguration.type == 'SCHEDULED'}">
+				<label>Schedule
+					<span>
+						<h:commandLink rendered="#{agentConfigurationPage.schedulerCron.configurationParameter.id != 0}">
+							<b:glyph value="remove" style="color:red"></b:glyph>
+							<f:ajax onevent="#{loader.miniAjaxLoader}" render="@this"
+								 listener="#{agentConfigurationPage.schedulerCron.removeParameter}"></f:ajax>
+						</h:commandLink>
+					</span>	
+				</label>
+				<b:inputText value="#{agentConfigurationPage.schedulerCron.configurationParameter.stringValue}"
+					 disabled="#{agentConfigurationPage.webappmain.mode == 'read'}">
+					<f:facet name="label">
+						<b:fa value="clock-o"></b:fa>
+					</f:facet>
+					<f:ajax listener="#{agentConfigurationPage.schedulerCron.parameterChanged}"></f:ajax>
+				</b:inputText>
+			</b:formGroup>
+			<h:panelGroup styleClass="#{loader.overlayClass}">
+				<b:formGroup rendered="#{agentConfigurationPage.agentConfiguration.type == 'TRIGGERED'}">
+					<label>Trigger Class
+						<span>
+							<h:commandLink rendered="#{agentConfigurationPage.triggerClass.configurationParameter.id != 0}">
+								<b:glyph value="remove" style="color:red"></b:glyph>
+								<f:ajax onevent="#{loader.overlayAjaxLoader}" render="runnerParameters"
+									 listener="#{agentConfigurationPage.clearTriggeredAgentRunnerParameters}"></f:ajax>
+							</h:commandLink>
+						</span>	
+					</label>
+					<b:inputText value="#{agentConfigurationPage.triggerClass.configurationParameter.stringValue}"
+						rendered="#{agentConfigurationPage.webappmain.inSearchMode or agentConfigurationPage.webappmain.mode == 'read'}"
+						disabled="#{agentConfigurationPage.webappmain.mode == 'read'}">
+						<f:facet name="label">
+							<b:fa value="play"></b:fa>
+						</f:facet>
+					</b:inputText>
+					<b:selectOneInputGroup value="#{agentConfigurationPage.triggerClass.configurationParameter.stringValue}"
+						autocomplete="true"
+						delay="1"
+						onevent="#{loader.miniAjaxLoader}"
+						listener="#{agentConfigurationPage.filterAgentTriggerClasses}"
+						suggestion="#{agentConfigurationPage.classNameFilter}"
+						rendered="#{!agentConfigurationPage.webappmain.inSearchMode and !(agentConfigurationPage.webappmain.mode eq 'read')}">
+						<f:facet name="label">
+							<b:fa value="file-code-o"></b:fa>
+						</f:facet>
+						<f:selectItems value="#{agentConfigurationPage.foundClassNames}"></f:selectItems>
+						<f:ajax listener="#{agentConfigurationPage.populateTriggeredAgentRunnerParameters}" 
+							render="triggerParameters"></f:ajax>
+					</b:selectOneInputGroup>
+				</b:formGroup>
+				<h:panelGroup id="triggerParameters" rendered="#{agentConfigurationPage.agentConfiguration.type == 'TRIGGERED'}">
+					<ui:repeat var="parameter" 
+						value="#{agentConfigurationPage.configurationHelper.parameterMetaDataList}">
+						<ui:include src="agentConfigurationParameter.comp.xhtml">
+							<ui:param name="parameter" value="#{parameter}"></ui:param>
+							<ui:param name="disabled" value="#{agentConfigurationPage.webappmain.mode == 'read'}"></ui:param>
+						</ui:include>
+					</ui:repeat>		
+				</h:panelGroup>
+			</h:panelGroup>
+		</h:panelGroup>
+	</h:panelGroup>
+</ui:component>
+</html>

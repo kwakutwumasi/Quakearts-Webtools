@@ -21,7 +21,7 @@ import com.quakearts.webapp.orm.query.QueryOrder;
 
 /**A lazy initialized {@linkplain DataStore}. This is to enable CDI injection of the resource
  * Note: the DataStore instance is not thread safe, and must be acauired and disposed of 
- * within the contex of a single thread. Re use may result in unwanted errors.
+ * within the context of a single thread. Re use may result in unwanted errors.
  * @author kwakutwumasi-afriyie
  *
  */

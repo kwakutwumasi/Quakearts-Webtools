@@ -18,7 +18,7 @@ import javax.crypto.NoSuchPaddingException;
 import com.quakearts.security.cryptography.CryptoResource;
 import com.quakearts.security.cryptography.exception.CryptoResourceRuntimeException;
 import com.quakearts.security.cryptography.exception.KeyProviderException;
-import com.quakearts.security.cryptography.factory.CrytpoServiceFactory;
+import com.quakearts.security.cryptography.factory.CryptoServiceImpl;
 import com.quakearts.webapp.orm.DataStoreFactory;
 
 public abstract class EncryptedTypeBase {
@@ -32,7 +32,7 @@ public abstract class EncryptedTypeBase {
 				String resourceName = DataStoreFactory.getInstance().getDataStore()
 						.getConfigurationProperty("com.quakearts.cryptoname");
 
-				resource = CrytpoServiceFactory.getInstance().getCryptoResource(resourceName);
+				resource = CryptoServiceImpl.getInstance().getCryptoResource(resourceName);
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchAlgorithmException
 					| NoSuchPaddingException | IOException | KeyProviderException e) {
 				log.severe("Cannot perform cryptography: " + e.getMessage() + ". " + e.getClass().getName());

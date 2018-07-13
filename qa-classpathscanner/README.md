@@ -26,7 +26,7 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-classpathscanner</artifactId>
-	<version>1.0</version>
+	<version>1.0.1</version>
 </dependency>
 
 ```

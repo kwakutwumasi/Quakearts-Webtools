@@ -15,6 +15,11 @@ import java.io.Serializable;
 import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentModule;
 
+/**CDI event for informing observers of events in 
+ * {@link com.quakearts.syshub.agent.ProcessingAgent}'s operations
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class ProcessingEvent implements Serializable {
 
 	/**

@@ -17,6 +17,10 @@ import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 import com.quakearts.syshub.model.AgentModule;
 
+/**Base interface for all modules
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public interface AgentConfigurationModule {
     /** Get the {@link AgentConfiguration} used to configure the formatter
      * @return

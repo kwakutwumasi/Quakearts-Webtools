@@ -26,7 +26,7 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-codegenerator-annotations</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 </dependency>
 
 ```

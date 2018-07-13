@@ -12,8 +12,15 @@ package com.quakearts.syshub.core.utils;
 
 import com.quakearts.webapp.orm.DataStore;
 
+/**Interface for the manager of the system {@linkplain DataStore}
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public interface SystemDataStoreManager {
 
+	/**Getter for the {@linkplain DataStore}
+	 * @return the {@linkplain DataStore}
+	 */
 	DataStore getDataStore();
 
 }

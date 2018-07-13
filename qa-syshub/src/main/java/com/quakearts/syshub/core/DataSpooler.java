@@ -13,6 +13,10 @@ package com.quakearts.syshub.core;
 import com.quakearts.syshub.core.metadata.AgentModuleValidator;
 import com.quakearts.syshub.exception.ProcessingException;
 
+/**This is the interface implemented by instances that pull data from data sources.
+ * @author kwaku.twumasi@quakearts.com
+ *
+ */
 public interface DataSpooler extends AgentConfigurationModule, AgentModuleValidator {
 	/** Main method call for dataspooler. Implementations should 
 	 * return an {@link Iterator} for data retrieval. The data may not have as yet

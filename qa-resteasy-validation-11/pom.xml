@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-resteasy-validation-11</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<name>QA RestEasy Validation Provider</name>
 	<packaging>jar</packaging>
 	<build>
@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-resteasy-cdi</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.hibernate</groupId>
@@ -59,7 +59,7 @@
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-appbase</artifactId>
-			<version>1.1</version>
+			<version>2.0</version>
 			<scope>provided</scope>
 		</dependency>
 		
@@ -102,7 +102,7 @@
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-resttools</artifactId>
-			<version>1.0</version>
+			<version>1.0.1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

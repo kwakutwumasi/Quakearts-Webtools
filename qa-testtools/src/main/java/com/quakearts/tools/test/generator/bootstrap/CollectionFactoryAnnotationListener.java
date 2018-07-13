@@ -16,6 +16,10 @@ import com.quakearts.tools.test.generator.bean.collections.CollectionFactory;
 import com.quakearts.tools.test.generator.bean.collections.CollectionFactoryFinder;
 import com.quakearts.tools.test.generator.exception.GeneratorException;
 
+/**Listener for scanning and registering collection factories
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public final class CollectionFactoryAnnotationListener implements ClassAnnotationScanningListener {
 
 	@Override

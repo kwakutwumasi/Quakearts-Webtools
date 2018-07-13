@@ -49,6 +49,9 @@ public class MockServletHttpMessageStore implements HttpMessageStore {
 
 	private static HttpMessageStore instance = new MockServletHttpMessageStore();
 	
+	/**Get the instance of this class
+	 * @return the instance
+	 */
 	public static HttpMessageStore getInstance() {
 		return instance;
 	}
@@ -178,6 +181,11 @@ public class MockServletHttpMessageStore implements HttpMessageStore {
 			return null;
 		}
 
+		@Override
+		public List<String> getHeaderValues(String name) {
+			return null;
+		}
+		
 		@Override
 		public String getContentEncoding() {
 			return null;

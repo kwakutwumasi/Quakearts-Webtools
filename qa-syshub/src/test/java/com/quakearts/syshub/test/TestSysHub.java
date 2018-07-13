@@ -884,19 +884,20 @@ public class TestSysHub {
 			agentModule2 = dataStore.get(AgentModule.class, 3);
 		
 			AgentConfigurationParameter parameter = new AgentConfigurationParameter();
-			parameter.setName("maxDataSpoolerWorkers");
-			parameter.setNumericValue(10.0);
+			parameter.setName("numericParamter");
+			parameter.setNumericValue(1.0);
 			parameter.setParameterType(ParameterType.NUMERIC);
 			
 			ProcessingAgentBuilder agentBuilder = new ProcessingAgentBuilder();
 			ProcessingAgent processingAgent = agentBuilder.name("Test ProcessingAgentBuilder")
 			.addConfigurationParameter(parameter)
-			.addNumericParameter("maxFormatterWorkers", 15.0)
-			.addNumericParameter("queueSize", 30.0)
-			.addNumericParameter("keepAliveTime", 120.0)
-			.addNumericParameter("corePoolSize", 5.0)
-			.addNumericParameter("maximumPoolSize", 45.0)
-			.addBooleanParameter("isResendCapable", true)
+			.maxDataSpoolerWorkers(10)
+			.maxFormatterWorkers(15.0)
+			.queueSize(30.0)
+			.keepAliveTime(120.0)
+			.corePoolSize( 5.0)
+			.maximumPoolSize(45.0)
+			.resendCapable(true)
 			.dataSpooler(TestDataSpooler.class, "Test ProcessingAgentBuilder Module 1")
 			.addBinaryParameter("test1", "value".getBytes())
 			.messageFormatter(TestFormatter1.class,  "Test ProcessingAgentBuilder Module 2")
@@ -941,9 +942,9 @@ public class TestSysHub {
 			}
 			
 			Set<AgentConfigurationParameter> parameters = processingAgent.getAgentConfiguration().getParameters();
-			assertThat(parameters.size(), is(7));
+			assertThat(parameters.size(), is(8));
 			parameters = agentConfiguration.getParameters();
-			assertThat(parameters.size(), is(7));
+			assertThat(parameters.size(), is(8));
 
 			List<String> lists = new ArrayList<>(Arrays.asList("isResendCapable",
 					"maxFormatterWorkers","maxDataSpoolerWorkers",
@@ -951,9 +952,10 @@ public class TestSysHub {
 					"corePoolSize","maximumPoolSize"));
 			for(AgentConfigurationParameter agentConfigurationParameter:parameters) {
 				switch (agentConfigurationParameter.getName()) {
-				case "test1":
-					assertThat(agentConfigurationParameter.getParameterType(), is(ParameterType.STRING));
-					assertThat(agentConfigurationParameter.getStringValue(), is("value"));
+				
+				case "numericParamter":
+					assertThat(agentConfigurationParameter.getParameterType(), is(ParameterType.NUMERIC));
+					assertThat(agentConfigurationParameter.getNumericValue(), is(1.0d));
 					break;
 				case "maxDataSpoolerWorkers":
 					assertThat(agentConfigurationParameter.getParameterType(), is(ParameterType.NUMERIC));

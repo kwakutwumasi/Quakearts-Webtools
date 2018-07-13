@@ -29,6 +29,13 @@ import com.quakearts.webapp.security.rest.cache.AuthenticationCacheService;
 import com.quakearts.webapp.security.rest.cache.AuthenticationCacheServiceFactory;
 import com.quakearts.webapp.security.rest.context.LoginContext;
 
+/**Base class for JAAS dependent authentication systems. 
+ * It provides a mechanism for loading a JAAS configuration. This class
+ * loads the configuration from a file named login.config loaded from the 
+ * root of the classpath.
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public abstract class JAASAuthenticatorBase {
 	private Configuration jaasConfig;
 	private static final Logger log = Logger.getLogger(JAASAuthenticatorBase.class.getName());

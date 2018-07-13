@@ -1,38 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <facelet-taglib version="2.0" xmlns="http://java.sun.com/xml/ns/javaee"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-xsi:schemaLocation="http://java.sun.com/xml/ns/javaee web-facelettaglibrary_2_0.xsd ">
+xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facelettaglibrary_2_0.xsd ">
 	<namespace>http://quakearts.com/2.0/commonui</namespace>
 	<tag>
-		
+		<description>Convert a java.sql.Timestamp to and from string</description>
 		<tag-name>convertTimeStamp</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.input.converter.TimeStampTagHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. The date-time pattern to use in conversion</description>
 			<name>pattern</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. The type of
+			value to be formatted. One of 'date', 'time' or 'both' </description>
 			<name>type</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. 
+			The style to be used to format or parse dates. Valid values
+     		are 'default', 'short', 'medium', 'long', and 'full'.
+     		</description>
 			<name>datestyle</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. 
+			The style to be used to format or parse times. Valid values
+     		are 'default', 'short', 'medium', 'long', and 'full'.
+     		</description>
 			<name>timestyle</name>
 		</attribute>
 		<attribute>
+			<description> A ValueExpression that evaluates to java.lang.Boolean. 
+			Denotes whether or not the Object implementing this interface 
+			must or must not participate in state saving or restoring.
+			</description>
 			<name>transient</name>
 		</attribute>
 	</tag>
 	<tag>
+		<description>Validate a filename to prevent access to sensitive server files</description>
 		<tag-name>fileNameValidator</tag-name>
 		<handler-class>com.quakearts.webapp.facelets.tag.input.validator.FileNameValidatorTagHandler</handler-class>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. 
+				The list of forbidden file extensions</description>
 			<name>restricted</name>
 		</attribute>
 		<attribute>
+			<description> A ValueExpression that evaluates to java.lang.Boolean. 
+			Denotes whether or not the Object implementing this interface 
+			must or must not participate in state saving or restoring.
+			</description>
 			<name>transient</name>
 		</attribute>
 		<attribute>
+			<description>A ValueExpression that evaluates to java.lang.String. 
+				The pattern of forbidden filenames</description>
 			<name>pattern</name>
 		</attribute>
 	</tag>

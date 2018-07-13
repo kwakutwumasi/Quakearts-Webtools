@@ -21,6 +21,11 @@ import javax.interceptor.InvocationContext;
 import com.quakearts.webapp.security.rest.SecurityContext;
 import com.quakearts.webapp.security.rest.exception.SecurityException;
 
+/**CDI interceptor. Authenticates access to the method by checking the {@linkplain SecurityContext}
+ * for roles specified in the @{@linkplain RequireAuthorization} annotation.
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Interceptor @RequireAuthorization
 @Priority(Interceptor.Priority.APPLICATION)
 public class AuthorizationInterceptor {

@@ -5,7 +5,7 @@ A Twitter Bootstrap JSF library. A demo of the library can be seen [here](https:
 ##### Requirements
 * Java 8+
 * Maven
-* JSF 2+
+* A Servlet Container (Tomcat, Jetty, Wildfly, Undertow, etc)
 
 ##### Quick Start
 
@@ -27,7 +27,7 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-boot</artifactId>
-	<version>2.2</version>
+	<version>2.2.1</version>
 </dependency>
 
 ```

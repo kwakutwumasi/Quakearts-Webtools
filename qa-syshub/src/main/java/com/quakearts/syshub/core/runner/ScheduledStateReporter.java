@@ -14,7 +14,17 @@ import java.util.List;
 
 import com.quakearts.syshub.core.runner.AgentScheduler.SchedulerState;
 
+/**Interface implemented to return scheduler state
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public interface ScheduledStateReporter{
+	/**Getter for scheduler state
+	 * @return the scheduler state
+	 */
 	SchedulerState getState();
+	/**
+	 * @return Statistics that can be displayed in the application monitor
+	 */
 	List<Statistic> getStatistics();
 }

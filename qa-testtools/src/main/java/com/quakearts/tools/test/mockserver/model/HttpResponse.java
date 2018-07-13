@@ -10,6 +10,13 @@
  ******************************************************************************/
 package com.quakearts.tools.test.mockserver.model;
 
+/**Implemented by classed that represent HTTP Responses
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public interface HttpResponse extends HttpMessage {
+	/**Get the HTTP response code
+	 * @return the HTTP response code
+	 */
 	int getResponseCode();
 }

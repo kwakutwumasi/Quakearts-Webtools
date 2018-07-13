@@ -109,7 +109,7 @@ public class TestRestSecurity {
 		response = client.sendRequest("/test-authentication-filter-required",
 				"test=value", HttpVerb.POST);
 		assertThat(response.getHttpCode(), is(401));
-		assertThat(response.getOutput().contains("Missing identity/credential parameters. Authorization is required"), is(true));
+		assertThat(response.getOutput().contains("Missing identity&#47;credential parameters. Authorization is required"), is(true));
 		
 		response = client.sendRequest("/test-authentication-filter-notrequired",
 				null, HttpVerb.GET);

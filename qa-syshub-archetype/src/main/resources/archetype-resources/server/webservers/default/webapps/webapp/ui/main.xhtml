@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:composition template="/base/template.xhtml">
+	<ui:define name="content">
+	<b:row>
+    <div class="h2" style="margin-bottom: 30px">
+	    		Welcome to SysHub Management Interface
+	    	</div>
+    	</b:row>
+    	<h:form>
+		<b:row>
+			<b:column xs="12" sm="4">
+				<b:panel>
+				  	<b:formGroup>
+			    		<label>Agents</label>
+			    		<b:panel rendered="#{empty webappmain.agentRunners}">
+			    			No agents deployed
+			    		</b:panel>
+			    		<b:selectOneListbox value="#{webappmain.agentRunner}" limit="true" size="10" rendered="#{! empty webappmain.agentRunners}">
+			    			<f:selectItems value="#{webappmain.agentRunners}"></f:selectItems>
+			    			<c:pojoConverter></c:pojoConverter>
+			    			<f:ajax render="agentRunnerDisplay"></f:ajax>
+			    		</b:selectOneListbox>
+			    	</b:formGroup>
+				</b:panel>
+				<b:panel>
+					<f:facet name="header">Real-Time Error Monitor</f:facet>
+					<div id="output-window" style="height: 400px;max-height: 400px; overflow-x: scroll;">
+					</div>
+				</b:panel>
+		    </b:column>
+		    <b:column xs="12" sm="8">
+				<b:panel id="agentRunnerDisplay" style="margin-top:25px" binding="#{agentRunnerDisplayComp}">
+					<f:facet name="header">
+						<b:fa value="cogs"></b:fa>
+						<h:outputText value="#{webappmain.agentRunner.processingAgent.name}"></h:outputText>
+						<h:commandLink rendered="#{webappmain.agentRunner != null}">
+							<b:glyph value="refresh" title="Refresh" style="color:green"></b:glyph>
+							<f:ajax render="agentRunnerDisplay"></f:ajax>
+						</h:commandLink>
+						<h:outputLink value="/ui/agentConfiguration.list.jsf" 
+							rendered="#{webappmain.agentRunner != null}">
+							<b:glyph value="cog" title="Manage"></b:glyph>
+							<f:param value="#{webappmain.agentRunner.processingAgent.agentConfiguration.id}" name="agentConfiguration"></f:param>
+						</h:outputLink>
+					</f:facet>
+					<h:panelGroup rendered="#{webappmain.agentRunner != null}">
+						<table class="table">
+							<tbody>
+								<tr>
+									<th>Status</th>
+									<td>
+										<b:glyph value="play" style="color:green" title="Running" rendered="#{webappmain.agentRunner.running}"></b:glyph>
+										<b:glyph value="stop" style="color:red" title="Shutdown" rendered="#{webappmain.agentRunner.shutDown}"></b:glyph>
+										<b:glyph value="remove" style="color:red" title="In Error State" rendered="#{webappmain.agentRunner.inErrorState}"></b:glyph>
+										<b:glyph value="pause" style="color:orange" title="Restart Required" rendered="#{webappmain.agentRunner.inRestartRequiredMode}"></b:glyph>
+									</td>
+									<td colspan="2" />
+								</tr>
+								<tr>
+									<th>Type</th>
+									<td colspan="6"><h:outputText value="#{webappmain.agentRunner.runType}"></h:outputText> </td>
+								</tr>
+								<h:panelGroup rendered="#{webappmain.agentRunner.processingAgent !=null}">
+									<tr>
+										<th>Current Thread Pool Size</th>
+										<th>Execution Pool Size</th>
+										<th>Core Thread Pool Size</th>
+										<th>Largest Thread Pool Size</th>
+									</tr>					
+									<tr>
+										<td><h:outputText value="#{webappmain.agentRunner.processingAgent.poolSize}"></h:outputText></td>
+										<td><h:outputText value="#{webappmain.agentRunner.processingAgent.queueSize}"></h:outputText></td>
+										<td><h:outputText value="#{webappmain.agentRunner.processingAgent.corePoolSize}"></h:outputText></td>
+										<td><h:outputText value="#{webappmain.agentRunner.processingAgent.largestPoolSize}"></h:outputText></td>
+									</tr>					
+									<tr>
+										<th>Thread Pool Keep Alive Time</th>
+										<th>Active Threads</th>
+										<th>Tasks Executed</th>
+										<th>Completed Tasks</th>
+									</tr>					
+									<tr>
+										<td><h:outputText value="#{webappmain.agentRunner.processingAgent.keepAliveTime}"></h:outputText></td>
+										<td><h:outputText value="#{webappmain.agentRunner.processingAgent.activeCount}"></h:outputText></td>
+										<td><h:outputText value="#{webappmain.agentRunner.processingAgent.taskCount}"></h:outputText></td>
+										<td><h:outputText value="#{webappmain.agentRunner.processingAgent.completedTaskCount}"></h:outputText></td>
+									</tr>					
+									<tr>
+										<th>Max Data Spooler Workers</th>
+										<th>Data Spooler Workers</th>
+										<th>Max Messenger/Formatter Workers</th>
+										<th>Messenger/Formatter Workers</th>
+									</tr>					
+									<tr>
+										<td><h:outputText value="#{webappmain.agentRunner.processingAgent.maxDataSpoolerWorkers}"></h:outputText></td>
+										<td><h:outputText value="#{webappmain.agentRunner.processingAgent.dataSpoolerWorkersCreated}"></h:outputText></td>
+										<td><h:outputText value="#{webappmain.agentRunner.processingAgent.maxFormatterMessengerWorkers}"></h:outputText></td>
+										<td><h:outputText value="#{webappmain.agentRunner.processingAgent.formatterMessengerWorkersCreated}"></h:outputText></td>
+									</tr>					
+									<tr>
+										<th>Agent Workers Created</th>
+										<th>Start up Time</th>
+										<th>Last Run Time</th>
+										<th>Current State</th>
+									</tr>
+									<tr>
+										<td><h:outputText value="#{webappmain.agentRunner.processingAgent.agentWorkersCreated}"></h:outputText></td>
+										<td><h:outputText value="#{webappmain.agentRunner.processingAgent.startTime}"></h:outputText></td>
+										<td><h:outputText value="#{webappmain.agentRunner.processingAgent.lastRunTime}"></h:outputText></td>
+										<td>
+											<h:outputText value="#{webappmain.scheduledStateReporter.state}"></h:outputText>
+											<h:outputText value="#{webappmain.triggeredStateReporter.state}"></h:outputText>
+										</td>
+									</tr>
+									<h:panelGroup rendered="#{webappmain.scheduledStateReporter != null}">
+										<tr>
+											<th colspan="4">Scheduler Statistics</th>
+										</tr>
+										<tr>
+											<td colspan="4">
+												<table class="table">
+													<tbody>
+														<ui:repeat var="statistic" value="#{webappmain.scheduledStateReporter.statistics}">
+															<tr>
+																<th>#{statistic.name}</th>
+																<td>
+																	<h:outputText value="#{statistic.value}"></h:outputText>
+																</td>
+															</tr>
+														</ui:repeat>
+													</tbody>
+												</table>
+											</td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{webappmain.triggeredStateReporter != null}">
+										<tr>
+											<th colspan="4">Trigger Statistics</th>
+										</tr>
+										<tr>
+											<td colspan="4">
+												<table class="table">
+													<tbody>
+														<ui:repeat var="statistic" value="#{webappmain.triggeredStateReporter.statistics}">
+															<tr>
+																<th>#{statistic.name}</th>
+																<td>
+																	<h:outputText value="#{statistic.value}"></h:outputText>
+																</td>
+															</tr>
+														</ui:repeat>
+													</tbody>
+												</table>
+											</td>
+										</tr>
+									</h:panelGroup>	
+								</h:panelGroup>				
+							</tbody>
+						</table>
+					</h:panelGroup>
+				</b:panel>	    
+		    </b:column>
+	    </b:row>
+	    <b:panel id="popup" popup="true" styleClass="collapse" binding="#{popupComp}">
+	    </b:panel>
+	</h:form>
+<b:script>
+var syshub = {};
+syshub.wslocation="ws://#{webappmain.webSocketBase}/update";
+syshub.agentRunnerDisplay="#{agentRunnerDisplayComp.clientId}";
+syshub.popup="#{popupComp.clientId}";
+</b:script>
+<b:resource library="js" name="main.js" type="script" position="bottom"></b:resource>
+</ui:define>
+</ui:composition>
+</html>

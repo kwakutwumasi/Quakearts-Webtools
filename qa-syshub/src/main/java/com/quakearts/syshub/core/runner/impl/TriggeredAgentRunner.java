@@ -28,6 +28,10 @@ import com.quakearts.syshub.exception.ProcessingException;
 import com.quakearts.syshub.model.AgentConfiguration.RunType;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 
+/**Agent runner that runs when triggered
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Vetoed
 public class TriggeredAgentRunner implements Runnable, AgentRunner, RunAgentListener, TriggeredStateReporter {
 

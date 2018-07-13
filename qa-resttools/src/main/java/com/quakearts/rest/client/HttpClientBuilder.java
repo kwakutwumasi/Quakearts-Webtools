@@ -11,6 +11,11 @@ package com.quakearts.rest.client;
 
 import java.net.HttpCookie;
 
+/**Base class for creating builders for {@linkplain HttpClient}
+ * @author kwakutwumasi-afriyie
+ *
+ * @param <T>
+ */
 public abstract class HttpClientBuilder<T extends HttpClient> {
 	protected HttpClient httpClient;
 		

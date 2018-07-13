@@ -16,6 +16,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**Annotation used to denote the specific type to be generated for a collection.
+ * Used in instances where an abstract class/interface is the parameterized type of
+ * a collection.
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Retention(RUNTIME)
 @Target(METHOD)
 public @interface CollectionType {

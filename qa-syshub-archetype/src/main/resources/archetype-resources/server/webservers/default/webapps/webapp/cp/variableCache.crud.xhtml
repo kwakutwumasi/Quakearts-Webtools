@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:component>
+	<b:formGroup>
+		<label id="appKey_label">Agent Module Key</label>
+		<h:inputText styleClass="form-control" value="#{variableCache.appKey}" 
+			disabled="#{variableCachePage.webappmain.mode eq 'read' ||(variableCache.appKey != null and variableCachePage.webappmain.mode eq 'edit')}">
+		</h:inputText>
+	</b:formGroup>
+	<b:formGroup rendered="#{!variableCachePage.webappmain.inSearchMode}">
+		<label id="appData_label">Agent Module Data</label>
+		<h:inputTextarea styleClass="form-control" value="#{variableCache.appData}" rows="5" 
+			disabled="#{variableCachePage.webappmain.mode eq 'read'}"
+			converter="#{variableCachePage.webappmain.base64Converter}">
+		</h:inputTextarea>
+	</b:formGroup>
+</ui:component>
+</html>

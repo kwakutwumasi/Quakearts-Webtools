@@ -25,20 +25,38 @@ import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.DataStoreFactory;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 
+/**A classloader that uses JPA to load and store class files. 
+ * Useful for projects that may require dynamic deployment of 
+ * plugin-like operations.
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class DBJarClassLoader extends ClassLoader {
 
 	private static final ConcurrentHashMap<Long, byte[]> CACHED_JARS = new ConcurrentHashMap<Long, byte[]>();
 	private String domain;
 	
+	/**Constructor that uses the current thread context classloader as it's parent
+	 * 
+	 */
 	public DBJarClassLoader() {
 		super(Thread.currentThread().getContextClassLoader());
 	}
 	
+	/**Constructor that uses the current thread context classloader as it's parent
+	 * and passes the domain to the underlying {@linkplain DataStore}
+	 * @param domain the name of the domain to load
+	 */
 	public DBJarClassLoader(String domain) {
 		super(Thread.currentThread().getContextClassLoader());
 		this.domain = domain;
 	}
 	
+	/**Get a class from storage using the passed in name
+	 * @param name the name of the class in persistent storage
+	 * @return The class
+	 * @throws ClassNotFoundException if the class cannot be found in persistent storage
+	 */
 	public Class<?> getDBJarClass(String name) throws ClassNotFoundException{
 		return loadClass(name, true);
 	}
@@ -113,14 +131,24 @@ public class DBJarClassLoader extends ClassLoader {
 		}
 	}
 
+	/**Getter for domain
+	 * @return the configured domain
+	 */
 	public String getDomain() {
 		return domain;
 	}
 
+	/**Setter for domain
+	 * @param domain the new/updated domain to use
+	 */
 	public void setDomain(String domain) {
 		this.domain = domain;
 	}
 
+	/**Inner class for creating a {@linkplain URLStreamHandler} for resource URLs returned by this classloader
+	 * @author kwakutwumasi-afriyie
+	 *
+	 */
 	public static class BytesUrlStreamHandler extends URLStreamHandler {
 		byte[] bytes;
 		public BytesUrlStreamHandler(byte[] bytes) {
@@ -131,6 +159,10 @@ public class DBJarClassLoader extends ClassLoader {
 		}
 	}
 
+	/**Inner class for creating a {@linkplain URLConnection} for resource URLs returned by this classloader
+	 * @author kwakutwumasi-afriyie
+	 *
+	 */
 	public static class BytesUrlConnection extends URLConnection {
 		byte[] bytes = null;
 		public BytesUrlConnection(byte[] bytes, URL u) {

@@ -18,6 +18,11 @@ import java.lang.annotation.Target;
 
 import com.quakearts.tools.test.generator.Generator;
 
+/**Annotation for specifying the Generator class to use in
+ * generating random objects of the annotated type
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Retention(RUNTIME)
 @Target(TYPE)
 public @interface UseGenerator {

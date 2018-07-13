@@ -20,6 +20,11 @@ import org.hibernate.engine.spi.SessionFactoryImplementor;
 
 import com.quakearts.webapp.hibernate.MapBasedCurrentSessionContextHelper;
 
+/**An implementation of {@link org.hibernate.context.spi.CurrentSessionContext CurrentSessionContext} that uses
+ * {@linkplain ThreadLocal} to store the current session.
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class ThreadSessionHelper extends MapBasedCurrentSessionContextHelper {
 	
 	/**

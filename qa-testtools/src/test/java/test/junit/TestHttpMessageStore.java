@@ -107,6 +107,11 @@ public class TestHttpMessageStore {
 			}
 			
 			@Override
+			public List<String> getHeaderValues(String name) {
+				return null;
+			}
+			
+			@Override
 			public String getContentEncoding() {
 				return null;
 			}

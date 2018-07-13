@@ -12,6 +12,10 @@ package com.quakearts.rest.client;
 import java.util.HashSet;
 import java.util.Set;
 
+/**HTTP verbs to use in making the HTTP request
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public enum HttpVerb {
 	PATCH,
 	OPTIONS,

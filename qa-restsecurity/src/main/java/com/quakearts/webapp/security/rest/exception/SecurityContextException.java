@@ -10,6 +10,10 @@
  ******************************************************************************/
 package com.quakearts.webapp.security.rest.exception;
 
+/**Exception thrown when there is an error in the {@link com.quakearts.webapp.security.rest.SecurityContext}
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class SecurityContextException extends RuntimeException {
 
 	/**

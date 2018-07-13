@@ -18,6 +18,10 @@ import com.quakearts.classannotationscanner.Filter;
 import com.quakearts.classannotationscanner.Scanner;
 import com.quakearts.classannotationscanner.listener.ClassAnnotationScanningListener;
 
+/**Bootstrap class for initializing bean generator
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public final class GeneratorBootstrap {
 
 	private GeneratorBootstrap() {

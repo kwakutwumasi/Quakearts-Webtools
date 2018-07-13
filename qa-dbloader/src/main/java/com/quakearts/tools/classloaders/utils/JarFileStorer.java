@@ -23,18 +23,35 @@ import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.DataStoreFactory;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 
+/**A utility class for storing jar files. Unzips the jar file, 
+ * traverses its contents then adds the class files to persistent storage
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class JarFileStorer {
 	
 	private String domain;
 	private String summary;
 	
+	/**Default Constructor
+	 * 
+	 */
 	public JarFileStorer() {
 	}
 
+	/**Constructor passes the domain to the underlying {@link com.quakearts.webapp.orm.DataStore DataStore}
+	 * @param domain the name of the domain to load
+	 */
 	public JarFileStorer(String domain) {
 		this.domain=domain;
 	}
 	
+	/**Store the jar file, represented by the byte array
+	 * @param jarBytes the bytes of the jar file to load
+	 * @param jarName the name used to save the jar file in the database
+	 * @throws DataStoreException if the jar file could not be saved
+	 * @throws IOException if there was a problem unzipping the jar contents
+	 */
 	public void storeJarFile(byte[] jarBytes, String jarName) throws DataStoreException, IOException {
 		DataStore store;
 		if(domain==null)
@@ -45,6 +62,13 @@ public class JarFileStorer {
 		storeJarFile(jarBytes, jarName, store);
 	}
 	
+	/**Store the jar file, represented by the byte array
+	 * @param jarBytes the bytes of the jar file to load
+	 * @param jarName the name used to save the jar file in the database
+	 * @param store the {@linkplain DataStore} to use for storage
+	 * @throws DataStoreException
+	 * @throws IOException
+	 */
 	public void storeJarFile(byte[] jarBytes,String jarName, DataStore store) throws DataStoreException, IOException {
 		JarFile jarFile = new JarFile();
 		jarFile.setJarData(jarBytes);
@@ -114,6 +138,11 @@ public class JarFileStorer {
 		summary = builder.toString();
 	}
 
+	/**Utility method to clean out jar files that have no child classes
+	 * @return the list of jar files that were deleted
+	 * @throws DataStoreException
+	 * @throws IOException
+	 */
 	public JarFile[] cleanOrphanJars() throws DataStoreException, IOException {
 		DataStore store;
 		if(domain==null)
@@ -123,6 +152,10 @@ public class JarFileStorer {
 		return cleanOrphanJars(store);
 	}
 
+	/**Utility method to clean out jar files that have no child classes
+	 * @param store the {@linkplain DataStore} to use for storage
+	 * @return the list of jar files that were deleted
+	 */
 	public JarFile[] cleanOrphanJars(DataStore store) {
 		List<JarFile> files = store.list(JarFile.class, null);
 		ArrayList<JarFile> deleteList = new ArrayList<JarFile>();
@@ -136,18 +169,31 @@ public class JarFileStorer {
 		return (JarFile[]) deleteList.toArray(new JarFile[deleteList.size()]);
 	}
 
+	/**Return the summary of the file storage action
+	 * @return a java.lang.String containing the summary
+	 */
 	public String getSummary() {
 		return summary;
 	}
 
+	/**Return the summary of the file storage action, replacing the newline character with the passed in newLine
+	 * @param newLine the newline character to use as a replacement
+	 * @return a java.lang.String containing the summary
+	 */
 	public String getSummary(String newLine) {
 		return getSummary().replace("\n", newLine);
 	}
 
+	/**Getter for domain
+	 * @return the configured domain
+	 */
 	public String getDomain() {
 		return domain;
 	}
 
+	/**Setter for domain
+	 * @param domain the new/updated domain to use
+	 */
 	public void setDomain(String domain) {
 		this.domain = domain;
 	}

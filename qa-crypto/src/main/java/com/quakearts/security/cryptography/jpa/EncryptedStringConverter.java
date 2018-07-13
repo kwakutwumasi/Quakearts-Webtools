@@ -11,12 +11,14 @@
 package com.quakearts.security.cryptography.jpa;
 
 import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 
 import com.quakearts.security.cryptography.exception.IllegalCryptoActionException;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 
-@Converter
+/**A JPA converter for encrypting and decrypting string fields
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class EncryptedStringConverter extends EncryptedTypeBase implements AttributeConverter<String, String> {
 
 	@Override

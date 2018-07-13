@@ -15,6 +15,10 @@ import javax.persistence.AttributeConverter;
 import com.quakearts.security.cryptography.exception.IllegalCryptoActionException;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 
+/**A JPA converter for encrypting and decrypting byte fields
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class EncryptedBytesConverter extends EncryptedTypeBase implements AttributeConverter<byte[], byte[]> {
 
 	@Override

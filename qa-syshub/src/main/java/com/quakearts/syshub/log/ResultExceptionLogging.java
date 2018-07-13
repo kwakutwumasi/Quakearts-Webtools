@@ -15,6 +15,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import javax.inject.Qualifier;
 
+/**CDI qualifier annotation for injecting {@linkplain com.quakearts.syshub.log.ResultExceptionLogger}
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Qualifier
 @Retention(RUNTIME)
 public @interface ResultExceptionLogging {

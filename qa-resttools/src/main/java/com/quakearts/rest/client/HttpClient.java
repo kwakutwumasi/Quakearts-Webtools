@@ -32,6 +32,10 @@ import javax.net.ssl.HttpsURLConnection;
 
 import com.quakearts.rest.client.exception.HttpClientException;
 
+/**Base class for creating HTTP clients
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public abstract class HttpClient implements Serializable {
 
 	/**
