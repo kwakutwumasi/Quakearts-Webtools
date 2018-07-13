@@ -47,7 +47,7 @@ _Messenger_ provides two methods for maintenance operations: _isCompatibleWith(M
 
 The sequence diagram below shows the sequence of calls for a typical execution cycle:
 
-![sequence_diagram.png](https://raw.github.com/kwakutwumasi/Quakearts-Webtools/master/images/sequence_diagram.png)
+![sequence_diagram.png](https://raw.github.com/kwakutwumasi/Quakearts-Webtools/master/qa-syshub/images/sequence_diagram.png)
 
 <br />
 
@@ -159,7 +159,7 @@ To run the full application, package the application using the 'mvn package' com
 
 The diagram below shows the structure of modules/classes within the application. Adjacent modules have a dependency on one another.
 
-![syshub_diagram.png](https://raw.github.com/kwakutwumasi/Quakearts-Webtools/master/images/syshub_diagram.png)
+![syshub_diagram.png](https://raw.github.com/kwakutwumasi/Quakearts-Webtools/master/qa-syshub/images/syshub_diagram.png)
 
 The system is comprised of:
 <br />
@@ -194,7 +194,7 @@ The system is comprised of:
 <br />
 The thread sequence diagram shows how multiple threads handle the cycle of data retrieval, formatting and transmission:
 
-![thread_sequence_diagram.png](https://raw.github.com/kwakutwumasi/Quakearts-Webtools/master/images/thread_sequence_diagram.png)
+![thread_sequence_diagram.png](https://raw.github.com/kwakutwumasi/Quakearts-Webtools/master/qa-syshub/images/thread_sequence_diagram.png)
 
 <br />
 Explore the code and in line documentation for more information on how it works. The main class passed as the _qa-appbase_ startup class is _com.quakearts.syshub.SysHubMain_. Its a good place to start to understand the application.
