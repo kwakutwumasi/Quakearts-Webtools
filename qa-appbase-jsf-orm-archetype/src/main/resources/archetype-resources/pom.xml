@@ -80,9 +80,7 @@
 							<target name="Copy wars">
 								<echo>Copying Resources</echo>
 								<mkdir dir="target/etc" />
-								<mkdir dir="target/webservers/default/conf" />
-								<copy file="conf/server.config.json" toDir="target/webservers/default/conf/server.config.json" overwrite="true" />
-								<mkdir dir="target/webservers/default/webapps/webapp" />
+								<copy file="conf/server.config.json" toDir="target/webservers/default/conf" overwrite="true" />
 								<copy todir="target/webservers/default/webapps/webapp">
 									<fileset dir="WebContent" />
 								</copy>
