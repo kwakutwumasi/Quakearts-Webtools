@@ -1,5 +1,5 @@
 # qa-appbase-resteasy-orm-archetype
-An archetype for creating a RestEasy RESFule web service with Hibernate ORM
+An archetype for creating a RestEasy RESTful web service with Hibernate ORM
 
 ##### Requirements
 * Java 8+
