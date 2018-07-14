@@ -117,7 +117,7 @@ public class ClasspathResourcesImpl implements ClasspathResources {
 
 	public void loadFromSystemProperty() {
 		String classpathString = System.getProperty("java.class.path");
-		String[] classpathParts = classpathString.split(":");
+		String[] classpathParts = classpathString.split(File.pathSeparator);
 		for(String classpathPart:classpathParts) {
 			File file = new File(classpathPart);
 			if(file.exists() && !file.isDirectory()) {
