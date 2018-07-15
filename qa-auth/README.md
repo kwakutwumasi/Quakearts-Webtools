@@ -84,7 +84,7 @@ All modules can be found under the com.quakearts.webapp.security.auth package. A
 
 This login module connects to a database using JCA and executes a query to authenticate a subject. The query takes the form of a java.sql.PreparedStatement with two parameters: username as parameter 1 and password as parameter 2. If the query returns a result, the subject is verified. An optional role query is executed to load a result set of roles to be added to the subject.
 
-This module uses two call backs : javax.security.auth.callback.NameCallback and javax.security.auth.callback.PasswordCallback.
+This module uses two call backs : _javax.security.auth.callback.NameCallback_ and _javax.security.auth.callback.PasswordCallback_.
 
 Configuration options:
 
@@ -133,7 +133,7 @@ load_profile_only - A string that evaluates to the Boolean value of true or fals
 
 This login module connects to a database using JCA with the supplied username and password. If a connection can be made, the user is viewed as authenticated. An optional role query is executed to load a result set of roles to be added to the subject.
 
-This module uses two call backs : javax.security.auth.callback.NameCallback and javax.security.auth.callback.PasswordCallback.
+This module uses two call backs : _javax.security.auth.callback.NameCallback_ and _javax.security.auth.callback.PasswordCallback_.
 
 Configuration options:
 
@@ -166,7 +166,7 @@ use_first_pass - A string that evaluates to the Boolean value of true or false. 
 
 This login module connects to an LDAP server to authenticate the user. It is capable of loading the user's profile from the LDAP server using attributes bound to the user DN. The profile must consist of 9 attributes relating to the following (in this order): first name, last name, email address, unit, department, branch, position, salary grade/level/staff position, staff number. The module can use two methods to verify the user: for LDAP servers that store the passwords as part of the attributes, the module can compare the password to the stored password; otherwise an attempt to bind to the ldap server using the username and password is made.
 
-This module uses two call backs : javax.security.auth.callback.NameCallback and javax.security.auth.callback.PasswordCallback.
+This module uses two call backs : _javax.security.auth.callback.NameCallback_ and _javax.security.auth.callback.PasswordCallback_.
 
 Configuration options:
 
@@ -234,7 +234,7 @@ properties.file - The filename and location of a properties file containing the 
 
 This login module attempts to validate a JWT token using one of the validation algorithms. If used in conjunction with another login module, and the previous module successfully authenticated the user, it will generate a JWT token and return it as a special java.security.Principal of type com.quakearts.webapp.security.auth.JWTPrincipal. The module supports three algorithm validation/generation algorithms: HMAC, RSA and ESS.
 
-This module uses two call backs : com.quakearts.webapp.security.auth.callback.TokenCallback and javax.security.auth.callback.PasswordCallback. If the TokenCallBack callback fails, it is expected that the JWT token will be 
+This module uses two call backs : _com.quakearts.webapp.security.auth.callback.TokenCallback_ and _javax.security.auth.callback.PasswordCallback_. If the _TokenCallBack_ callback fails, it is expected that the JWT token will be found in the _PasswordCallback_.
 
 Configuration options:
 
