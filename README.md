@@ -6,7 +6,7 @@ A custom integration of JTA, JCA, CDI, Servlet 3 Integration, and JNDI
 A maven archetype for qa-appbase applications
 ##### [qa-appbase-jsf-orm-archetype](https://github.com/kwakutwumasi/Quakearts-Webtools/tree/master/qa-appbase-jsf-orm-archetype/)
 A maven archetype for qa-appbase applications using Hibernate and JSF Reference Implementation
-##### [qa-appbase-reasteasy-orm-archetype](https://github.com/kwakutwumasi/Quakearts-Webtools/tree/master/qa-appbase-reasteasy-orm-archetype/)
+##### [qa-appbase-resteasy-orm-archetype](https://github.com/kwakutwumasi/Quakearts-Webtools/tree/master/qa-appbase-resteasy-orm-archetype/)
 A maven archetype for qa-appbase applications using JBoss RestEasy and Hibernate
 ##### [qa-auth](https://github.com/kwakutwumasi/Quakearts-Webtools/tree/master/qa-auth/)
 JAAS LoginModules for qa-appbase Tomcat, Wildfly and any JEE Server that supports JAAS
@@ -20,8 +20,6 @@ A tool for scanning class path for annotated classes
 Annotations for CRUD Code Generation. Used by the QA Code Generators Eclipse Plugin
 ##### [qa-common](https://github.com/kwakutwumasi/Quakearts-Webtools/tree/master/qa-common/)
 JSF Tag Library with common tools for ORM, Property File Handling, Security, etc
-##### [qa-common-ext](https://github.com/kwakutwumasi/Quakearts-Webtools/tree/master/qa-common-ext/)
-Extensions to the qa-common library that are dependent on the outdated JBoss Gravel Tag Library
 ##### [qa-common-tools](https://github.com/kwakutwumasi/Quakearts-Webtools/tree/master/qa-common-tools/)
 Command line app building utility. Useful for Java based devops utilities
 ##### [qa-commonui](https://github.com/kwakutwumasi/Quakearts-Webtools/tree/master/qa-commonui/)
