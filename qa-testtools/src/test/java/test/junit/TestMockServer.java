@@ -275,6 +275,7 @@ public class TestMockServer {
 	@Test
 	public void testRecordMode() throws Exception {
 		MockServer recordingServer = buildAndStartRecordModeServer();
+		MockServer recordingServerWithWontractsDishonored = buildAndStartRecordModeServerWithContractsDishonored();
 		Tomcat mockingServer = buildAndStartMockingModeServer();
 		try {
 			HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:4084/test").openConnection();
@@ -309,8 +310,8 @@ public class TestMockServer {
 			connection = (HttpURLConnection) new URL("http://localhost:4084/test").openConnection();
 			connection.setRequestMethod("POST");
 			connection.addRequestProperty("Content-Type", "application/json");
-			connection.setDoOutput(true);
 			connection.setDoInput(true);
+			connection.setDoOutput(true);
 			connection.getOutputStream().write("{\"test\":\"value\"}".getBytes());
 			connection.connect();
 			assertThat(connection.getResponseCode(), is(200));
@@ -382,8 +383,23 @@ public class TestMockServer {
 			assertThat(file.exists(), is(false));
 			file.delete();
 			connection.disconnect();
+			
+			connection = (HttpURLConnection) new URL("http://localhost:4085/test-dishonored").openConnection();
+			connection.setRequestMethod("POST");
+			connection.connect();
+			assertThat(connection.getResponseCode(), is(204));
+			connection.disconnect();
+									
+			connection = (HttpURLConnection) new URL("http://localhost:4085/test-dishonored").openConnection();
+			connection.setRequestMethod("DELETE");
+			connection.setDoOutput(true);
+			connection.getOutputStream().write("{\"test\":\"value\"}".getBytes());
+			connection.connect();
+			assertThat(connection.getResponseCode(), is(204));
+			connection.disconnect();
 		} finally {
 			recordingServer.stop();
+			recordingServerWithWontractsDishonored.stop();
 			try {
 				mockingServer.stop();
 			} catch (Exception e) {
@@ -455,7 +471,32 @@ public class TestMockServer {
 								.addHeaders(new HttpHeaderImpl("Content-Type", "application/json"))
 								.thenBuild())
 							.thenBuild())
-				.thenBuild());
+				.thenBuild())
+				//POST without input
+				.add(MockActionBuilder.createNewMockAction()
+						.setRequestAs(HttpMessageBuilder
+								.createNewHttpRequest()
+								.setId("testId5")
+								.setMethodAs("POST")
+								.setResourceAs("/test-dishonored")
+								.setResponseAs(HttpMessageBuilder.createNewHttpResponse()
+										.setResponseCodeAs(204)
+										.thenBuild())
+								.thenBuild())
+						.thenBuild())
+				//DELETE with input
+				.add(MockActionBuilder.createNewMockAction()
+						.setRequestAs(HttpMessageBuilder
+								.createNewHttpRequest()
+								.setId("testId5")
+								.setMethodAs("DELETE")
+								.setResourceAs("/test-dishonored")
+								.setContentBytes("{\"test\":\"value\"}".getBytes())
+								.setResponseAs(HttpMessageBuilder.createNewHttpResponse()
+										.setResponseCodeAs(204)
+										.thenBuild())
+								.thenBuild())
+						.thenBuild());
 		Tomcat tomcat = new Tomcat();
 
 		File file = new File("tomcat-mock-test");
@@ -508,6 +549,19 @@ public class TestMockServer {
 						.newConfiguration().setMockingModeAs(MockingMode.RECORD)
 						.setURLToRecord("https://localhost:4443")
 						.setPortAs(4084)
+						.thenBuild());
+		
+		mockServer.start();
+		return mockServer;
+	}
+	
+	private MockServer buildAndStartRecordModeServerWithContractsDishonored() {
+		MockServer mockServer = MockServerFactory.getInstance().getMockServer()
+				.configure(ConfigurationBuilder
+						.newConfiguration().setMockingModeAs(MockingMode.RECORD)
+						.setURLToRecord("https://localhost:4443")
+						.setDisHonorRESTContractAs(true)
+						.setPortAs(4085)
 						.thenBuild());
 		
 		mockServer.start();

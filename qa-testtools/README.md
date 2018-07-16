@@ -26,7 +26,7 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.webtools.test</groupId>
 	<artifactId>qa-testtools</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 </dependency>
 
 ```
@@ -90,7 +90,7 @@ _com.quakearts.tools.test.mockserver.MockServer_ provides methods for defining a
 <br /><br />
 _com.quakearts.tools.test.mockserver.MockServerFactory_ can be used to create instances of _MockServer_. It provides methods to define a _MockServer_ programmatically or through a Java property file.
 <br /><br />
-_com.quakearts.tools.test.mockserver.configuration.impl.ConfigurationBuilder_ is used to define the _com.quakearts.tools.test.mockserver.configuration.Configuration_ to use in creating the _MockServer_. it provides methods to configure the port, the URL to record and mock, and settings for TLS, if required by the project or a library.
+_com.quakearts.tools.test.mockserver.configuration.impl.ConfigurationBuilder_ is used to define the _com.quakearts.tools.test.mockserver.configuration.Configuration_ to use in creating the _MockServer_. it provides methods to configure the port, the URL to record and mock, and settings for TLS, if required by the project or a library. A special setting _dishonorRESTContracts()_ allows HTTP methods like POST and PUT to be sent without a content body.
 <br /><br />
 HTTP mock request and responses can also be defined using the methods in _MockServer_. The _add()_ method defines the _com.quakearts.tools.test.mockserver.model.MockAction_s to take when a request is processed. _com.quakearts.tools.test.mockserver.model.impl.MockActionBuilder_ is used to create _MockAction_s. It provides methods to define the HTTP request to match, the algorithm to use for matching incoming requests, and the actions to take before sending a response to the client. _com.quakearts.tools.test.mockserver.model.impl.HttpMessageBuilder_ can be used to create the _com.quakearts.tools.test.mockserver.model.HttpRequest_ and _com.quakearts.tools.test.mockserver.model.HttpResponse_ for the _MockAction_. _com.quakearts.tools.test.mockserver.fi.HttpResponseAction_  and _com.quakearts.tools.test.mockserver.fi.HttpRequestMatcher_  are functional interfaces, and can take lambda expressions.
 <br /><br />
