@@ -117,7 +117,7 @@ public class MockServerServlet extends HttpServlet {
 			HttpURLConnection con = prepareConnection(request);
 			con.connect();
 			byte[] responseContent;
-			if(returningInputMethodsInclude(request.getMethod())) {
+			if(returningInputMethodsInclude(request.getMethod()) || configuration.dishonorRESTContract()) {
 				responseContent = getResponseContent(con);
 			} else {
 				responseContent = null;
@@ -156,19 +156,21 @@ public class MockServerServlet extends HttpServlet {
 		if(configuration.getReadTimeout()>0)
 			con.setReadTimeout(configuration.getReadTimeout());
 		
-		if(returningInputMethodsInclude(request.getMethod()))
+		if(configuration.dishonorRESTContract() 
+				|| returningInputMethodsInclude(request.getMethod()))
 			con.setDoInput(true);
 		
-		if(requiringOutputMethodsInclude(request.getMethod()) 
+		if(!configuration.dishonorRESTContract()
+				&& requiringOutputMethodsInclude(request.getMethod()) 
 				&& request.getContentBytes() == null)
 			throw new MockServerProcessingException("Invalid http input");
-		
-		if(!requiringOutputMethodsInclude(request.getMethod())
-				&& !optionalOutputMethodsInlude(request.getMethod())
-				&& request.getContentBytes() != null)
-			throw new MockServerProcessingException("Invalid http input");
-		
+				
 		if(request.getContentBytes()!=null) {
+			if(!configuration.dishonorRESTContract()
+					&& !requiringOutputMethodsInclude(request.getMethod())
+					&& !optionalOutputMethodsInlude(request.getMethod()))
+				throw new MockServerProcessingException("Invalid http input");
+
 			con.setDoOutput(true);
 			con.getOutputStream().write(request.getContentBytes());
 		}

@@ -200,6 +200,18 @@ public class ConfigurationBuilder {
 		return this;
 	}
 	
+	/**Determine whether to honor RESTful HTTP contracts.
+	 * If true, HTTP verbs are not restricted in terms of
+	 * inputs and outputs, i.e. it is possible to send any HTTP
+	 * verb with input, and expect output from any verb
+	 * @param disHonorRESTContract
+	 * @return true if REST contracts are to be ignored
+	 */
+	public ConfigurationBuilder setDisHonorRESTContractAs(boolean disHonorRESTContract) {
+		configuration.disHonorRESTContract = disHonorRESTContract;
+		return this;
+	}
+	
 	/**Return the configuration. This is a terminal method in the fluid API chain
 	 * @return the {@linkplain Configuration}
 	 */
@@ -240,6 +252,7 @@ public class ConfigurationBuilder {
 		String keyStoreType;
 		int connectTimeout;
 		int readTimeout;
+		boolean disHonorRESTContract;
 		
 		@Override
 		public String getURLToRecord() {
@@ -289,6 +302,11 @@ public class ConfigurationBuilder {
 		@Override
 		public int getReadTimeout() {
 			return readTimeout;
+		}
+		
+		@Override
+		public boolean dishonorRESTContract() {
+			return disHonorRESTContract;
 		}
 	}
 }
