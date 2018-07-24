@@ -23,7 +23,6 @@
   	<module>../qa-dbloader</module>
   	<module>../qa-exception</module>
   	<module>../qa-logging</module>
-  	<module>../qa-message-broker</module>
   	<module>../qa-orm</module>
   	<module>../qa-orm-cdi</module>
   	<module>../qa-orm-hibernate</module>
