@@ -16,17 +16,14 @@ import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.UserTransaction;
-
 import org.jboss.weld.transaction.spi.TransactionServices;
-
-import com.atomikos.icatch.jta.UserTransactionImp;
 import com.quakearts.appbase.Main;
 import com.quakearts.appbase.spi.factory.JavaTransactionManagerSpiFactory;
 
-public class WeldAtomikosTransactionServicesSupport implements TransactionServices {
+public class WeldTransactionServicesSupport implements TransactionServices {
 
-	public WeldAtomikosTransactionServicesSupport() {
-		Main.log.info("WeldAtomikosTransactionServicesSupport started");
+	public WeldTransactionServicesSupport() {
+		Main.log.info("WeldTransactionServicesSupport started");
 	}
 	
 	@Override
@@ -63,7 +60,10 @@ public class WeldAtomikosTransactionServicesSupport implements TransactionServic
 
 	@Override
 	public UserTransaction getUserTransaction() {
-		return new UserTransactionImp();
+		return JavaTransactionManagerSpiFactory
+				.getInstance()
+				.getJavaTransactionManagerSpi()
+				.getUserTransaction();
 	}
 
 }
