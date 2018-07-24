@@ -15,9 +15,15 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.util.Collection;
 
+/**Annotation for classes that act as collection factories.
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Retention(RUNTIME)
 @Target(TYPE)
 public @interface CollectionFactoryFor {
-	Class<?>[] value();
+	@SuppressWarnings("rawtypes")
+	Class<? extends Collection>[] value();
 }

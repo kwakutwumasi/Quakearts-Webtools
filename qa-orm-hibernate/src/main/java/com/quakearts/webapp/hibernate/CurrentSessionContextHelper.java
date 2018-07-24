@@ -23,6 +23,12 @@ import org.hibernate.context.spi.CurrentSessionContext;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.resource.transaction.spi.TransactionStatus;
 
+/**Base class for implementations of {@linkplain CurrentSessionContext}. This provides support for
+ * {@link org.hibernate.SessionFactory SessionFactory}'s {@link org.hibernate.SessionFactory#getCurrentSession() getCurrentSession()}
+ * method in non-JTA environments
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public abstract class CurrentSessionContextHelper implements CurrentSessionContext {
 
 	/**

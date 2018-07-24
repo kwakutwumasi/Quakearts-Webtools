@@ -8,6 +8,10 @@ import com.quakearts.utilities.annotation.CommandParameterMetadata;
 import com.quakearts.utilities.exception.CommandParameterException;
 import com.quakearts.utilities.impl.CommandParameterImpl;
 
+/**Main class for executing {@link com.quakearts.utilities.Command}s
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class CommandMain {
 	public CommandMain() {
 	}
@@ -52,6 +56,7 @@ public class CommandMain {
 		Map<String, CommandParameter> commandParametersMap = new HashMap<>();
 		
 		CommandParameter parameter = null;
+		int defaultCount = 1;
 		boolean skipfirst = false;
 		for(String arg:args) {
 			if(!skipfirst) {
@@ -83,7 +88,7 @@ public class CommandMain {
 				}
 			} else {
 				if(parameter == null) {
-					parameter = new CommandParameterImpl(CommandParameter.DEFAULT);
+					parameter = new CommandParameterImpl(CommandParameter.DEFAULT+(defaultCount++));
 					commandParametersMap.put(parameter.getName(), parameter);
 				}
 				parameter.setValue(arg);
@@ -125,12 +130,12 @@ public class CommandMain {
 				if(!commandParametersMap.containsKey(parameterMetadata.value())) {
 					if(parameterMetadata.required() && !parameterMetadata.canOmitName()) {
 						throw new CommandParameterException("The parameter is required", parameterMetadata.value());
-					} else if(!parameterMetadata.linkedParameters().isEmpty()) {
-						String[] linkedParameters = parameterMetadata.linkedParameters().split(";");
-						for(String linkedParameter:linkedParameters) {
-							if(commandParametersMap.containsKey(linkedParameter)) {
-								throw new CommandParameterException("The parameter is required", parameterMetadata.value());
-							}
+					}
+				} else if(!parameterMetadata.linkedParameters().isEmpty()) {
+					String[] linkedParameters = parameterMetadata.linkedParameters().split(";");
+					for(String linkedParameter:linkedParameters) {
+						if(!commandParametersMap.containsKey(linkedParameter)) {
+							throw new CommandParameterException("The parameter '"+linkedParameter+"' is required", parameterMetadata.value());
 						}
 					}
 				}

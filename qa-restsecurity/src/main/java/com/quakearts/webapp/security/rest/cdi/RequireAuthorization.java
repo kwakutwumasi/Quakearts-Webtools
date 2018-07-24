@@ -20,12 +20,22 @@ import java.lang.annotation.Target;
 import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
 
+/**Annotation for methods/classes that require authorization.
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @InterceptorBinding
 @Retention(RUNTIME)
 @Target({METHOD,TYPE})
 public @interface RequireAuthorization {
+	/**List of roles to allow
+	 * @return roles to allow
+	 */
 	@Nonbinding
 	String[] allow() default {};
+	/**List of roles to deny
+	 * @return roles to deny
+	 */
 	@Nonbinding
 	String[] deny() default {};
 }

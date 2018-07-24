@@ -24,7 +24,8 @@ import javax.faces.view.facelets.TagConfig;
 public class LoadPropertiesHandler extends AbstractHandler {
 
 	private final TagAttribute fileTagAttribute=getAttribute("file"),
-			streamAttribute=getAttribute("stream"),varTagAttribute=getRequiredAttribute("var");
+			streamAttribute=getAttribute("stream"),
+			varTagAttribute=getRequiredAttribute("properties");
 	
 	public LoadPropertiesHandler(TagConfig config) {
 		super(config);

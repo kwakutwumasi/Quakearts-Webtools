@@ -14,6 +14,10 @@ import java.util.concurrent.ThreadFactory;
 
 import javax.enterprise.inject.Vetoed;
 
+/**Thread factory for {@link com.quakearts.syshub.agent.ProcessingAgent}'s
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Vetoed
 public class AgentThreadFactory implements ThreadFactory {
 	

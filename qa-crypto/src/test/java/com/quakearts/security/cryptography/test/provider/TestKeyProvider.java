@@ -43,8 +43,9 @@ public class TestKeyProvider implements KeyProvider {
 		return secretKeySpec;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
-	public void setProperties(Map<Object, Object> props) {
+	public void setProperties(Map props) {
 	}
 	
 	public static void main(String[] args) {

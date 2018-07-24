@@ -12,8 +12,17 @@ package com.quakearts.syshub.core.utils;
 
 import org.infinispan.Cache;
 
+/**Interface for cache manager instances
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public interface CacheManager {
 
+	/**Return the cache for classes of the specified type, using the specified suffix
+	 * @param cacheType The class of objects in this cache
+	 * @param suffix a suffix to differentiate caches of the same type
+	 * @return the cache
+	 */
 	<T> Cache<String, T> getCache(Class<T> cacheType, String suffix);
 
 }

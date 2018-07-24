@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.quakearts.webtools</groupId>
   <artifactId>qa-beansupport</artifactId>
-  <version>2.3</version>
+  <version>2.3.1</version>
   <name>Quakearts ORM tools, extracted from Common tools</name>
   <description>ORM tools extracted from Common tools project, to be used in non web applications</description>
   	<build>

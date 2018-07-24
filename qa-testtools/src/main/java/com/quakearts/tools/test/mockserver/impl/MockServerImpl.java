@@ -64,9 +64,10 @@ public class MockServerImpl implements MockServer {
 			} catch (IOException e) {
 				throw new MockServerRuntimeException("Unable to start embedded server", e);
 			}
+			tomcat.getConnector();
 			
 			if(configuration.getPort()>0)
-				tomcat.setPort(configuration.getPort());
+				tomcat.getConnector().setPort(configuration.getPort());
 			
 			if(configuration.getIPInterface()!=null)
 				tomcat.setHostname(configuration.getIPInterface());

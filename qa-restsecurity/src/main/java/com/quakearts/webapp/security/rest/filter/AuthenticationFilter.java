@@ -30,6 +30,12 @@ import com.quakearts.webapp.security.rest.filter.impl.DefaultAuthenticationError
 import com.quakearts.webapp.security.rest.requestwrapper.AuthenticationServletRequestWrapper;
 import com.quakearts.webapp.security.rest.util.Base64;
 
+/**An implementation of {@linkplain Filter} that provides JAAS authentication. Though most Servlet
+ * containers support authentication, many only provide Basic and Form based authentication. 
+ * This filter makes it possible to implement other authentication mechanisms such as token based security.
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class AuthenticationFilter extends JAASAuthenticatorBase implements Filter {
 
 	private static final String BASIC = "Basic";

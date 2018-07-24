@@ -20,6 +20,11 @@ import java.lang.annotation.Target;
 import javax.enterprise.util.Nonbinding;
 import javax.interceptor.InterceptorBinding;
 
+/**Annotation to decorate methods to be wrapped in a {@link javax.transaction.UserTransaction UserTransaction}.
+ * The value must be one of the {@linkplain TransactionType} enums
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @InterceptorBinding
 @Retention(RUNTIME)
 @Target({ TYPE, METHOD })
@@ -27,6 +32,10 @@ public @interface Transactional {
 	@Nonbinding
 	TransactionType value() default TransactionType.JOIN;
 	
+	/**The type of transaction wrapping required
+	 * @author kwakutwumasi-afriyie
+	 *
+	 */
 	public static enum TransactionType{
 		/**Indicates that the method is at the start of a transaction chain.
 		 * If a transaction is already active throw an error.

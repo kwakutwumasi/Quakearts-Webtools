@@ -13,6 +13,10 @@ package com.quakearts.tools.test.mockserver.util;
 import java.util.HashSet;
 import java.util.Set;
 
+/**Helper class for HTTP method operations
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class HttpVerbUtil {
 	private static final String PATCH = "PATCH";
 	private static final String OPTIONS = "OPTIONS";
@@ -51,18 +55,34 @@ public class HttpVerbUtil {
 		CAN_DO_OUTPUT.add(OPTIONS);
 	}
 	
+	/**Checks that the HTTP method string is a valid HTTP method
+	 * @param httpMethod the HTTP method string
+	 * @return true if the HTTP method is valid
+	 */
 	public static boolean isValidVerb(String httpMethod) {
 		return VALID_HTTP_VERBS.contains(httpMethod.toUpperCase().trim());
 	}
 	
+	/**Checks whether the HTTP method allows output
+	 * @param httpMethod the HTTP method string
+	 * @return true if the HTTP method allows output
+	 */
 	public static boolean optionalOutputMethodsInlude(String httpMethod) {
 		return CAN_DO_OUTPUT.contains(httpMethod.toUpperCase().trim());
 	}
 	
+	/**Checks whether the HTTP method requires output
+	 * @param httpMethod the HTTP method string
+	 * @return true if the HTTP method requires output
+	 */
 	public static boolean requiringOutputMethodsInclude(String httpMethod) {
 		return REQUIRES_OUTPUT.contains(httpMethod.toUpperCase().trim());
 	}
 	
+	/**Checks whether the HTTP method allows input
+	 * @param httpMethod the HTTP method string
+	 * @return true if the HTTP method allows input
+	 */
 	public static boolean returningInputMethodsInclude(String httpMethod) {
 		return !HEAD.equalsIgnoreCase(httpMethod.trim());
 	}

@@ -18,6 +18,10 @@ import com.quakearts.syshub.core.runner.AgentRunner;
 import com.quakearts.syshub.exception.ProcessingException;
 import com.quakearts.syshub.model.AgentConfiguration.RunType;
 
+/**Agent runner that runs in a loop
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Vetoed
 public class LoopedAgentRunner implements Runnable, AgentRunner {
 	private ProcessingAgent agent;

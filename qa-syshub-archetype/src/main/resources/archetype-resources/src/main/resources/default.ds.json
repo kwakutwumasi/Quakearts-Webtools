@@ -1,0 +1,8 @@
+{
+	"datasource.class":"org.apache.derby.jdbc.EmbeddedXADataSource",
+	"datasource.name":"SysHubDS",
+	"xa.databaseName":"./syshubdb",
+	"xa.createDatabase":"create",
+	"minPoolSize":3,
+	"maxPoolSize":20
+}

@@ -12,6 +12,10 @@ package com.quakearts.appbase.exception;
 
 import javax.enterprise.inject.Vetoed;
 
+/**A {@linkplain RuntimeException} thrown when there is a problem configuring the application
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Vetoed
 public class ConfigurationException extends RuntimeException {
 

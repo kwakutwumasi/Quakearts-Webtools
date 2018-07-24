@@ -23,6 +23,10 @@ import javax.transaction.UserTransaction;
 
 import com.quakearts.webapp.hibernate.CurrentSessionContextHelper;
 
+/**A {@linkplain PhaseListener} that auto-closes {@linkplain UserTransaction} (JTA environments) or {@linkplain CurrentSessionContextHelper}
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class HibernatePhaseHelper implements PhaseListener {
 
 	/**

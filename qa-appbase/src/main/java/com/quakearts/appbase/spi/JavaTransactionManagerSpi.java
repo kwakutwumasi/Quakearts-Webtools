@@ -13,9 +13,28 @@ package com.quakearts.appbase.spi;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
+import com.quakearts.appbase.exception.ConfigurationException;
+
+/**The SPI for JTA implementations. Implementers should use this method to bootstrap the JTA implementation
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public interface JavaTransactionManagerSpi {
+	/**Start the JTA implementation
+	 * @throws ConfigurationException if there is an error initializing the instance
+	 */
 	void initiateJavaTransactionManager();
+	/**Shutdown the JTA implementation, cleaning up and releasing held resources.
+	 * A successful call to {@link #initiateJavaTransactionManager()} should be possible after this method exits
+	 * @throws ConfigurationException if there is an error shutting down the instance
+	 */
 	void shutdownJavaTransactionManager();
+	/**Return an interface to the {@linkplain TransactionManager}
+	 * @return the {@linkplain TransactionManager}
+	 */
 	TransactionManager getTransactionManager();
+	/**Return an interface to the {@linkplain UserTransaction}
+	 * @return the {@linkplain UserTransaction}
+	 */
 	UserTransaction getUserTransaction();
 }

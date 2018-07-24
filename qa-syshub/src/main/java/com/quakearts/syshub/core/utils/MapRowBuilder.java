@@ -3,6 +3,11 @@ package com.quakearts.syshub.core.utils;
 import java.util.HashMap;
 import java.util.Map;
 
+/**A builder used to create rows in {@link com.quakearts.syshub.core.Result}.
+ * Provides a fluid API for creating rows of {@linkplain Map}s
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class MapRowBuilder {
 
 	private MapRowBuilder() {

@@ -12,6 +12,13 @@ package com.quakearts.syshub.core.metadata;
 
 import com.quakearts.syshub.exception.ConfigurationException;
 
+/**Interface for all modules that require validation after assembly
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public interface AgentModuleValidator {
+	/**Validate that the module has been configured properly
+	 * @throws ConfigurationException if there was an error configuring the module
+	 */
 	void validate() throws ConfigurationException;
 }

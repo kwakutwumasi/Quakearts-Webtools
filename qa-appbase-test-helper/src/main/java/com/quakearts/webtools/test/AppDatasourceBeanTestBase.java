@@ -7,6 +7,10 @@ import com.quakearts.appbase.spi.factory.DataSourceProviderSpiFactory;
 import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
 import com.quakearts.appbase.spi.factory.JavaTransactionManagerSpiFactory;
 
+/**Base class for tests that require Datasource services
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public abstract class AppDatasourceBeanTestBase extends AppBaseTest {
 	@BeforeClass
 	public static void startDatasource() {

@@ -12,11 +12,18 @@ package com.quakearts.tools.test.mockserver;
 
 import com.quakearts.tools.test.mockserver.impl.MockServerImpl;
 
+/**Factory for creating {@linkplain MockServer} instances
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class MockServerFactory {
 	protected static MockServerFactory instance;	
 	private MockServerFactory() {
 	}
 	
+	/**Get the static factory instance
+	 * @return
+	 */
 	public static MockServerFactory getInstance() {
 		if(instance == null)
 			instance = new MockServerFactory();
@@ -24,6 +31,9 @@ public class MockServerFactory {
 		return instance;
 	}
 	
+	/**Create a mocking server
+	 * @return
+	 */
 	public MockServer getMockServer() {
 		return new MockServerImpl();
 	}

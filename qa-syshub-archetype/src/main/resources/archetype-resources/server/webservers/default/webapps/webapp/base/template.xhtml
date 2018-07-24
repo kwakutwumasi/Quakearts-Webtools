@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:ut="http://quakearts.com/utils">
+<h:head>
+<title><ui:insert name="title">SysHub Management Interface</ui:insert></title>
+<style>
+.app-menu {
+	display: inline-block;
+	width: 250px;
+	margin-right: 5px;
+}
+
+.alert{
+	position: fixed;
+	width: 50%;
+	left: 50%;
+	top: 20%;
+	margin-left: -25%;
+	z-index: 1002;
+}
+</style>
+</h:head>
+<h:body>
+<b:ajaxLoader mainloaderimage="../resources/images/loading.gif" 
+	overlayloaderimage="../resources/images/loading-small.gif" 
+	miniloaderimage="../resources/images/loading-small.gif" 
+	startTimeout="10" endTimeout="1000" />
+<b:container fluid="true">
+<b:navbar fluid="true" position="fixed-top" responsive="true" type="default">
+	<f:facet name="header">
+		<span class="navbar-brand"><b:fa value="cogs" style="color:blue"></b:fa> <h:outputLink value="#{facesContext.externalContext.requestContextPath}/">SysHub Management Interface</h:outputLink></span>
+	</f:facet>
+	<h:form>
+		<b:nav>
+			<b:menu value="Create">
+				<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/agentConfiguration.create.jsf"><span class="app-menu"> Create Agent Configuration</span><b:flaticon value="settings"></b:flaticon> </h:outputLink>
+				<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/agentModule.create.jsf"><span class="app-menu"> Create Agent Module</span><b:fa value="cubes"></b:fa> </h:outputLink>
+				<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/agentConfigurationParameter.create.jsf"><span class="app-menu"> Create Agent Configuration Parameter</span><b:glyph value="list"></b:glyph></h:outputLink>
+				<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/agentConfigurationModuleMapping.create.xhtml"><span class="app-menu"> Create Configuration/Module Mapping</span><b:flaticon value="business-1"></b:flaticon></h:outputLink>
+				<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/maxID.create.jsf"><span class="app-menu"> Create Max ID</span><b:glyph value="info-sign"></b:glyph></h:outputLink>
+				<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/processingLog.create.jsf"><span class="app-menu"> Create Processing Log</span><b:glyph value="th-list"></b:glyph></h:outputLink>
+				<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/resultExceptionLog.create.jsf"><span class="app-menu"> Create Result Exception Log</span><b:glyph value="th-list"></b:glyph></h:outputLink>
+				<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/transactionLog.create.jsf"><span class="app-menu"> Create Transaction Log</span><b:glyph value="th-list"></b:glyph></h:outputLink>
+				<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/variableCache.create.jsf"><span class="app-menu"> Create Variable Cache</span><b:fa value="server"></b:fa> </h:outputLink>
+			</b:menu>
+			<b:menu value="View">
+				<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/agentConfiguration.list.jsf"><span class="app-menu">Agent Configuration Search</span><b:glyph value="search"></b:glyph> </h:outputLink>
+				<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/agentModule.list.jsf"><span class="app-menu">Agent Module Search</span><b:glyph value="search"></b:glyph> </h:outputLink>
+				<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/agentConfigurationParameter.list.jsf"><span class="app-menu">Agent Configuration Parameter Search</span><b:glyph value="search"></b:glyph> </h:outputLink>
+				<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/agentConfigurationModuleMapping.list.xhtml"><span class="app-menu">Configuration/Module Mapping Search</span><b:glyph value="search"></b:glyph> </h:outputLink>
+				<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/maxID.list.jsf"><span class="app-menu">Max ID Search</span><b:glyph value="search"></b:glyph> </h:outputLink>
+				<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/processingLog.list.jsf"><span class="app-menu">Processing Log Search</span><b:glyph value="search"></b:glyph> </h:outputLink>
+				<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/resultExceptionLog.list.jsf"><span class="app-menu">Result Exception Log Search</span><b:glyph value="search"></b:glyph> </h:outputLink>
+				<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/transactionLog.list.jsf"><span class="app-menu">Transaction Log Search</span><b:glyph value="search"></b:glyph> </h:outputLink>
+				<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/variableCache.list.jsf"><span class="app-menu">Variable Cache Search</span><b:glyph value="search"></b:glyph> </h:outputLink>
+			</b:menu>
+		</b:nav>
+	</h:form>
+</b:navbar>
+<b:row style="margin-top:60px">
+	<b:column sm="10" offsetsm="1" md="8" offsetmd="2">
+		<ui:insert name="content"></ui:insert>
+	</b:column>
+</b:row>
+</b:container>
+<footer>
+	<div style="text-align: center; font-family: Arial; font-size: 10px">
+		(c)Copyright Quake Arts Inc.
+		<h:outputText value="#{ut:now()}">
+			<f:convertDateTime pattern="yyyy"></f:convertDateTime>
+		</h:outputText>
+	</div>
+</footer>
+<b:script>
+b = {};
+b.tgl = function(obj){
+	var swtc = $(obj);
+	var tggl = $("#"+swtc.data("target"));
+	if(tggl.is(":hidden")){
+		swtc.addClass("open")
+		tggl.slideDown("slow");
+	} else {
+		swtc.removeClass("open");
+		tggl.slideUp("fast");
+	}
+}
+</b:script>
+</h:body>
+</html>

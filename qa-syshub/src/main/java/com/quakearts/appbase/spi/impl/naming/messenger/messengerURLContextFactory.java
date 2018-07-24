@@ -19,6 +19,10 @@ import org.apache.naming.NamingContext;
 
 import com.quakearts.appbase.spi.impl.naming.URLContextFactoryBase;
 
+/**JNDI context factory for {@link com.quakearts.syshub.core.Messenger}
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Vetoed
 public class messengerURLContextFactory extends URLContextFactoryBase {
 

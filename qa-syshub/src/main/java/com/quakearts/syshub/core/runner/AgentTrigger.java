@@ -17,6 +17,11 @@ import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.exception.ProcessingException;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 
+/**This interface is implemented by classes that are used to trigger 
+ * the {@link com.quakearts.syshub.agent.ProcessingAgent ProcessingAgent}
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public interface AgentTrigger {
 	/**This method is called by the trigger agent runner to initiate the trigger.
 	 * Implementation note: this method should not return whiles the trigger is in 
@@ -52,13 +57,31 @@ public interface AgentTrigger {
 	 */
 	public List<Statistic> getStatistics();
 	
+	/**Enumeration for the agent trigger states
+	 * @author kwakutwumasi-afriyie
+	 *
+	 */
 	public static enum TriggerState {
+		/**The trigger has no state
+		 */
 		None,
+		/**The trigger is dormant
+		 */
 		Dormant,
+		/**The trigger is preparing
+		 */
 		Preparing,
+		/**The trigger is ready
+		 */
 		Ready,
+		/**The trigger is connected
+		 */
 		Connected,
+		/**The trigger is disconnected
+		 */
 		Disconnected,
+		/**The trigger is in an error state
+		 */
 		Error
 	}
 }

@@ -5,6 +5,11 @@ import java.util.ServiceLoader;
 
 import com.quakearts.webapp.security.rest.exception.AuthenticationCacheServiceException;
 
+/**Factory for creating an {@linkplain AuthenticationCacheService}. This class uses
+ * {@linkplain ServiceLoader} to load an implementation of {@linkplain AuthenticationCacheService}.
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class AuthenticationCacheServiceFactory {
 
 	private AuthenticationCacheServiceFactory() {

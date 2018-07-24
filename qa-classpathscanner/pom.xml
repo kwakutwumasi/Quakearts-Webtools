@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-classpathscanner</artifactId>
-	<version>1.0</version>
+	<version>1.0.1</version>
 	<name>A classpath annotation scanner</name>
 	<description>A classpath annotation scanner for bootstrapping annotated classes</description>
 	<packaging>jar</packaging>

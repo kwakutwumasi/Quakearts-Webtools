@@ -10,6 +10,10 @@
  ******************************************************************************/
 package com.quakearts.syshub.core.runner;
 
+/**The statistic to display in the agent monitor
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class Statistic {
 	private String name;
 	private Object value;
@@ -19,18 +23,30 @@ public class Statistic {
 		this.value = value;
 	}
 
+	/**Getter for name
+	 * @return the name
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**Setter for name
+	 * @param name the name to set
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	/**Getter for the statistic value
+	 * @return
+	 */
 	public Object getValue() {
 		return value;
 	}
 
+	/**Setter for the statistic value
+	 * @param value the value to set
+	 */
 	public void setValue(Object value) {
 		this.value = value;
 	}

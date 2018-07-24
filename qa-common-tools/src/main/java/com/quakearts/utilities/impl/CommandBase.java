@@ -4,12 +4,13 @@ import java.util.Map;
 
 import com.quakearts.utilities.Command;
 import com.quakearts.utilities.CommandParameter;
-import com.quakearts.utilities.annotation.CommandMetadata;
-import com.quakearts.utilities.annotation.CommandParameterMetadata;
 
+/**A base class for commands. It stores the command parameter map for retrieval when executing.
+ * The parameters can be obtained by calling the protected {@link #getCommandParametersMap()} method.
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public abstract class CommandBase implements Command {
-	private static final String SPECIALINSTRUCTIONS = "Parameters can be prefixed with - or \\. Single letter parameters with no value can be grouped together in curly brackets {}\n";
-	private static final String HELPTEXT = "\nTo show this help message use the -help parameter.\n";
 	private Map<String, CommandParameter> commandParametersMap;
 	
 	@Override
@@ -17,70 +18,10 @@ public abstract class CommandBase implements Command {
 		this.commandParametersMap = commandParametersMap;
 	}
 	
+	/**Internal getter for classes extending this abstract method
+	 * @return a {@linkplain Map} of {@linkplain CommandParameter}s
+	 */
 	protected Map<String, CommandParameter> getCommandParametersMap() {
 		return commandParametersMap;
-	}
-	
-	@Override
-	public String printUsage() {
-		CommandMetadata metadata = this.getClass().getAnnotation(CommandMetadata.class);
-		StringBuilder builder = new StringBuilder("Usage: ");
-		if(metadata!=null) {			
-			builder.append(metadata.value());
-			for(CommandParameterMetadata parameterMetadata:metadata.parameters()) {
-				builder.append(!parameterMetadata.required() || parameterMetadata.canOmitName()?" (":" ").append("-")
-				.append(parameterMetadata.value());
-				if(!parameterMetadata.format().isEmpty())
-					builder.append(parameterMetadata.canOmitName() && parameterMetadata.required()?")":"")
-					.append(" [").append(parameterMetadata.format()).append("]");
-				
-				builder.append(!parameterMetadata.required()?")":"");
-			}
-			builder.append("\n");
-			
-			if(!metadata.descritpion().isEmpty())
-				builder.append("\n").append(metadata.descritpion()).append("\n");
-			
-			if(metadata.parameters().length>0)
-				builder.append("\n").append(SPECIALINSTRUCTIONS).append("\n");
-			
-			for(CommandParameterMetadata parameterMetadata:metadata.parameters()) {
-				if(!parameterMetadata.description().isEmpty()
-						|| parameterMetadata.required()
-						|| !parameterMetadata.format().isEmpty()
-						|| !parameterMetadata.alias().isEmpty()) {
-					builder.append(parameterMetadata.value());
-					if(!parameterMetadata.alias().isEmpty())
-						builder.append("|(").append(parameterMetadata.alias()).append(")");
-					
-					if(parameterMetadata.required() 
-							|| !parameterMetadata.format().isEmpty() 
-							|| !parameterMetadata.description().isEmpty())
-						builder.append(":\t");
-					
-					if(parameterMetadata.required())
-						builder.append("{required} ");
-					
-					if(!parameterMetadata.format().isEmpty())
-						builder.append("[").append(parameterMetadata.format()).append("] ");
-					
-					if(!parameterMetadata.description().isEmpty())
-						builder.append(parameterMetadata.description());
-
-					builder.append("\n");
-				}
-			}
-			
-			if(!metadata.additionalInfo().isEmpty())
-				builder.append("\n").append(metadata.additionalInfo()).append("\n");
-			
-			if(!metadata.examples().isEmpty())
-				builder.append("\nExamples:\n").append(metadata.examples()).append("\n");
-			
-			builder.append(HELPTEXT);
-		} else {
-			builder.append("No usage specified");
-		}
-		return builder.toString();
 	}
 }

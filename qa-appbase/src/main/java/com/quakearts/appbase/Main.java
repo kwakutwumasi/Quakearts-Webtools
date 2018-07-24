@@ -36,10 +36,30 @@ import com.quakearts.appbase.spi.factory.EmbeddedWebServerSpiFactory;
 import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
 import com.quakearts.appbase.spi.factory.JavaTransactionManagerSpiFactory;
 
+/**This is the applications startup class. It reads in the name of the main class to be called after initializing all the 
+ * JEE modules (JNDI, JTA, CDI, JCA, Servlet Container, in that order) and executes its <code> public void init() { }</code> method.
+ * The main class is not required to be annotated with {@linkplain javax.inject.Singleton}, however this helps ensure that
+ * any bean that contains a dependency on the Main class will get the instance started by this class.
+ * This class prints out usage documentation if it's not called with any parameters, or if the parameters are invalid
+ * below is the printout: <br /> <br />
+ * <code> Usage: appbase mainclass [filename] [-dontwaitinmain] </code><br />
+ * <br />
+ * <code>mainclass: the CDI managed bean that serves as the application starting point</code> <br />
+ * <code>filename (optional): the file name of the properties file of the app configuration</code> <br />
+ * <code>-dontwaitinmain (optional): flag to indicate that the main application thread should shutdown upon completion. 
+ * This setting enables an external shutdown hook which can be called to shutdown the service</code> <br />
+ * <code> </code> <br /><br />
+ * 
+ * webapp signifies the name of the application as called from the command line of the operating system.
+ * It may be different, and may even be the full call to the java command line executable
+ * 
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Vetoed
 public class Main {
 
-	private static final String USAGE = "Usage: appbase mainclass [filename] [-dontwaitinmain]\n"
+	private static final String USAGE = "Usage: webapp mainclass [filename] [-dontwaitinmain]\n"
 			+ "\n"
 			+ "mainclass: the CDI managed bean that serves as the application starting point\n"
 			+ "filename (optional): the file name of the properties file of the app configuration\n"

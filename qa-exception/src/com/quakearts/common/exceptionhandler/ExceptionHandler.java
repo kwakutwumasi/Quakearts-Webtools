@@ -14,6 +14,7 @@ package com.quakearts.common.exceptionhandler;
  * @author Kwaku Twumasi
  *
  */
+@FunctionalInterface
 public interface ExceptionHandler {
 	/**Handle the exception. The optional params can hold additional objects required to handle the exception
 	 * @param e The exception to handle

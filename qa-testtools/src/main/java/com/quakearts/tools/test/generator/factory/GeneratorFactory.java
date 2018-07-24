@@ -20,6 +20,10 @@ import com.quakearts.tools.test.generator.bean.NoObjectGenerator;
 import com.quakearts.tools.test.generator.exception.GeneratorException;
 import com.quakearts.tools.test.generator.primitives.EnumRandomGenerator;
 
+/**Factory class for creating and finding generators for a class
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public final class GeneratorFactory {
 
 	private GeneratorFactory() {
@@ -33,6 +37,11 @@ public final class GeneratorFactory {
 		return instance;
 	}
 		
+	/**Register a generator
+	 * @param generator the generator to register
+	 * @param clazzes the list of classes this generator can handle
+	 * @return this object for method chaining
+	 */
 	public GeneratorFactory addGenerator(Generator<?> generator,
 			Class<?>...clazzes){
 		for(Class<?> clazz:clazzes){
@@ -44,6 +53,10 @@ public final class GeneratorFactory {
 		return this;
 	}
 
+	/**Method for obtaining a generator for the specified class
+	 * @param clazz the class to use for lookup
+	 * @return a generator for the class
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <T> Generator<T> getGenerator(Class<T> clazz){
 		Generator<T> generator;
@@ -73,6 +86,10 @@ public final class GeneratorFactory {
 				|| clazz.isEnum();
 	}
 	
+	/**Shortcut method for quickly generating a random object of a specified class
+	 * @param clazz the class to generate.
+	 * @return an instance of the class, if possible. Null if no generator for the class is found
+	 */
 	public <T> T generate(Class<T> clazz){
 		return getGenerator(clazz).generateRandom();
 	}

@@ -12,6 +12,11 @@ package com.quakearts.syshub.core.runner;
 
 import com.quakearts.syshub.exception.ProcessingException;
 
+/**Interface implemented by classes that run 
+ * {@link com.quakearts.syshub.agent.ProcessingAgent ProcessingAgent}s
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public interface RunAgentListener {
 	void runAgent() throws ProcessingException;
 }

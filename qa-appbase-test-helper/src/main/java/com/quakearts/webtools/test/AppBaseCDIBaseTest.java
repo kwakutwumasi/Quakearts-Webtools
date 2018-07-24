@@ -7,6 +7,10 @@ import com.quakearts.appbase.spi.factory.ContextDependencySpiFactory;
 import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
 import com.quakearts.appbase.spi.factory.JavaTransactionManagerSpiFactory;
 
+/**Base class for tests that require CDI services in qa-appbase
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public abstract class AppBaseCDIBaseTest extends AppBaseTest {
 	@BeforeClass
 	public static void startCDI() {

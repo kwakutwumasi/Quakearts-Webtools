@@ -10,6 +10,10 @@
  ******************************************************************************/
 package com.quakearts.tools.test.mockserver.store.exception;
 
+/**Exception thrown when there is an error with the HTTP message store
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class HttpMessageStoreException extends Exception {
 
 	/**

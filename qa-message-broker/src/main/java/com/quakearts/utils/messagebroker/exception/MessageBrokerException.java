@@ -10,6 +10,10 @@
  ******************************************************************************/
 package com.quakearts.utils.messagebroker.exception;
 
+/**Thrown when there is a problem exchanging the messages
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class MessageBrokerException extends Exception {
 
 	/**

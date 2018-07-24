@@ -12,8 +12,21 @@ package com.quakearts.tools.test.mockserver.model;
 
 import java.util.List;
 
+/**Implemented by classes that hold HTTP header values
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public interface HttpHeader {
+	/**Get the header name
+	 * @return the header name
+	 */
 	String getName();
+	/**Get the first header value. Used for header values that have just one value
+	 * @return the first header value
+	 */
 	String getValue();
+	/**Get the list of header values
+	 * @return the list of header values
+	 */
 	List<String> getValues();
 }

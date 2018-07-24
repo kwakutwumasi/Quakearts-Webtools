@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-syshub-webapp</artifactId>
-	<version>1.0</version>
+	<version>1.0.1</version>
 	<name>Quake Arts SysHub Web Interface</name>
 	<description>Web Interface for managing SysHub</description>
 	<packaging>war</packaging>
@@ -77,22 +77,22 @@
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-orm-hibernate-web</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.quakearts.syshub</groupId>
 			<artifactId>qa-syshub</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-boot</artifactId>
-			<version>2.2</version>
+			<version>2.2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-weldjsf-cdi</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.security.jacc</groupId>
@@ -108,7 +108,7 @@
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-classpathscanner</artifactId>
-			<version>1.0</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.faces</groupId>

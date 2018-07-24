@@ -10,6 +10,10 @@
  ******************************************************************************/
 package com.quakearts.tools.test.mockserver.exception;
 
+/**Exception thrown when there is a configuration exception whiles building a mock server
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class ConfigurationException extends RuntimeException {
 
 	/**

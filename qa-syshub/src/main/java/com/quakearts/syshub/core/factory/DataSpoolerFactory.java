@@ -23,6 +23,10 @@ import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.CDI;
 import javax.naming.NamingException;
 
+/**Factory method for {@linkplain DataSpooler}
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Vetoed
 public class DataSpoolerFactory {
 
@@ -37,6 +41,11 @@ public class DataSpoolerFactory {
 		return factory;
 	}
 
+	/**Create the {@linkplain DataSpooler} implemented by the named class
+	 * @param instancename the name of the class implementing {@linkplain DataSpooler}
+	 * @return the created {@linkplain DataSpooler}
+	 * @throws ConfigurationException if there is an error creating the {@linkplain DataSpooler}
+	 */
 	@SuppressWarnings("rawtypes")
 	public DataSpooler getInstance(String instancename) throws ConfigurationException {
 		Class dataSpoolerClass;
@@ -54,6 +63,15 @@ public class DataSpoolerFactory {
 		return dataSpooler;
 	}
 
+	/**Create the {@linkplain DataSpooler} described by the {@linkplain AgentModule}
+	 * @param parameters the {@linkplain Map} of {@linkplain AgentConfigurationParameter}s 
+	 * to use in configuring the {@linkplain DataSpooler}. This method also registers the created in module in JNDI,
+	 * if creating the module afresh. Note that if a module with the same name has already been created, 
+	 * it will be returned; no new module will be created
+	 * @param module the {@linkplain AgentModule} describing the {@linkplain DataSpooler}
+	 * @return the created {@linkplain DataSpooler}
+	 * @throws ConfigurationException if there is an error creating the {@linkplain DataSpooler}
+	 */
 	public DataSpooler getInstance(Map<String, AgentConfigurationParameter> parameters, AgentModule module)
 			throws ConfigurationException {
 		DataSpooler dataSpooler;
@@ -87,6 +105,9 @@ public class DataSpoolerFactory {
 		return dataSpooler;
 	}
 
+	/**Remove the registered {@linkplain DataSpooler}
+	 * @param module the {@linkplain AgentModule} describing the {@linkplain DataSpooler}
+	 */
 	public void removeInstance(AgentModule module) {
 		try {
 			DataSpooler dataSpooler = (DataSpooler) SysHubUtils.getInitialContext()

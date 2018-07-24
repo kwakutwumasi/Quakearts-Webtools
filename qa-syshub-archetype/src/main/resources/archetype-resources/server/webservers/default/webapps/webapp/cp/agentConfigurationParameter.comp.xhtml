@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot">
+<ui:component>
+	<b:formGroup id="parameterGroup">
+		<label title="#{parameter.description}">
+			#{parameter.friendlyName}
+			<b:glyph value="globe" rendered="#{parameter.global}"></b:glyph>
+			<span>
+				<h:commandLink rendered="#{parameter.agentConfigurationParameter.id != 0}">
+					<b:glyph value="remove" style="color:red"></b:glyph>
+					<f:ajax onevent="#{loader.overlayAjaxLoader}" render="parameterGroup"
+						 listener="#{parameter.removeParameter}"></f:ajax>
+				</h:commandLink>
+			</span>
+		</label>
+		<b:selectOneInputGroup disabled="#{disabled}" data-overlay-target="buttonsDiv"
+			rendered="#{parameter.type == 'BOOLEAN'}"
+			value="#{parameter.agentConfigurationParameter.booleanValue}">
+			<f:facet name="label">
+				<strong><b:glyph value="ok"></b:glyph></strong>
+			</f:facet>
+			<f:selectItem noSelectionOption="true"></f:selectItem>
+			<f:selectItem itemValue="#{true}" itemLabel="True/On"></f:selectItem>
+			<f:selectItem itemValue="#{false}" itemLabel="False/Off"></f:selectItem>
+			<f:ajax listener="#{parameter.parameterChanged}" onevent="#{loader.overlayAjaxLoader}"></f:ajax>
+		</b:selectOneInputGroup>
+		<b:inputText disabled="#{disabled}" data-overlay-target="buttonsDiv"
+			rendered="#{parameter.type == 'NUMERIC'}"
+			value="#{parameter.agentConfigurationParameter.numericValue}">
+			<f:facet name="label">
+				<strong>#</strong>
+			</f:facet>
+			<f:convertNumber></f:convertNumber>
+			<f:ajax listener="#{parameter.parameterChanged}" onevent="#{loader.overlayAjaxLoader}"></f:ajax>
+		</b:inputText>
+		<b:selectOneInputGroup disabled="#{disabled}" 
+			data-overlay-target="buttonsDiv"
+			rendered="#{parameter.type == 'LIST'}"
+			value="#{parameter.agentConfigurationParameter.stringValue}">
+			<f:facet name="label">
+				<b:glyph value="list"></b:glyph>
+			</f:facet>
+			<f:selectItems value="#{parameter.optionList}"></f:selectItems>
+			<f:ajax listener="#{parameter.parameterChanged}" onevent="#{loader.overlayAjaxLoader}"></f:ajax>
+		</b:selectOneInputGroup>
+		<h:panelGroup rendered="#{parameter.type == 'LONGSTRING'}"
+			styleClass="input-group">
+			<span class="input-group-addon">
+				<b:fa value="i-cursor"></b:fa>
+			</span> 
+			<h:inputTextarea styleClass="form-control" rows="1"
+				value="#{parameter.agentConfigurationParameter.stringValue}"
+				validator="#{parameter.validateParameter}">
+			</h:inputTextarea>
+		</h:panelGroup>
+		<b:inputText disabled="#{disabled}" data-overlay-target="buttonsDiv"
+			rendered="#{parameter.type != 'LONGSTRING' and parameter.type != 'NUMERIC' and parameter.type != 'BOOLEAN' and parameter.type != 'LIST'}"
+			value="#{parameter.agentConfigurationParameter.stringValue}"
+			validator="#{parameter.validateParameter}" 
+			type="#{parameter.type == 'PASSWORD'?'password':'text'}">
+			<f:facet name="label">
+				<b:fa rendered="#{parameter.type == 'BINARY'}" value="hdd-o"></b:fa>
+				<b:fa rendered="#{parameter.type == 'CLASS'}" value="file-code-o"></b:fa>
+				<b:fa rendered="#{parameter.type == 'CRONCONFIGURATION'}" value="clock-o"></b:fa>
+				<b:fa rendered="#{parameter.type == 'EMAIL'}" value="at"></b:fa>
+				<b:flaticon rendered="#{parameter.type == 'ENDPOINTADDRESS'}" value="business-2"></b:flaticon>
+				<b:fa rendered="#{parameter.type == 'FILE'}" value="sticky-note-o"></b:fa>
+				<b:fa rendered="#{parameter.type == 'JNDINAME'}" value="crosshairs"></b:fa>
+				<b:fa rendered="#{parameter.type == 'PASSWORD'}" value="lock"></b:fa>
+				<b:fa rendered="#{parameter.type == 'STRING'}" value="i-cursor"></b:fa>
+			</f:facet>
+			<f:ajax listener="#{parameter.parameterChanged}" onevent="#{loader.overlayAjaxLoader}"></f:ajax>
+		</b:inputText>
+	</b:formGroup>
+</ui:component>
+</html>

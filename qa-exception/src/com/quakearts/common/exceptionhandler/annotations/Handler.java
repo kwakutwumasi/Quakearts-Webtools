@@ -15,9 +15,20 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**Annotation to mark an {@link com.quakearts.common.exceptionhandler.ExceptionHandler ExceptionHandler}
+ * implementation as auto-discoverable
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Handler {
+	/**The Parent of exception classes to handle.
+	 * @return
+	 */
 	Class<? extends Exception> exceptionClass();
+	/**Calling class that the handler is registered for, if any
+	 * @return
+	 */
 	Class<?> relatedClass() default Object.class;
 }

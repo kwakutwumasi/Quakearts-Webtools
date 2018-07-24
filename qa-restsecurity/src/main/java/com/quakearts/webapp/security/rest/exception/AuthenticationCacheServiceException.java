@@ -10,6 +10,10 @@
  ******************************************************************************/
 package com.quakearts.webapp.security.rest.exception;
 
+/**Exception thrown when the authentication cache experiences an error
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class AuthenticationCacheServiceException extends RuntimeException {
 
 	/**

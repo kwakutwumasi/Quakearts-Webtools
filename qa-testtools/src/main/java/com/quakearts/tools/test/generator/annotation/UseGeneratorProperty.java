@@ -16,6 +16,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**Annotation for specifying the property in the generator properties
+ * file to be used in generating random objects
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Retention(RUNTIME)
 @Target(METHOD)
 public @interface UseGeneratorProperty {

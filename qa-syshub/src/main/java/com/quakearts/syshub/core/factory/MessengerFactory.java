@@ -23,6 +23,10 @@ import javax.enterprise.inject.Vetoed;
 import javax.enterprise.inject.spi.CDI;
 import javax.naming.NamingException;
 
+/**Factory method for {@linkplain Messenger}
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Vetoed
 public class MessengerFactory {
 
@@ -37,6 +41,11 @@ public class MessengerFactory {
 		return factory;
 	}
 
+	/**Create the {@linkplain Messenger} implemented by the named class
+	 * @param instancename the name of the class implementing {@linkplain Messenger}
+	 * @return the created {@linkplain Messenger}
+	 * @throws ConfigurationException if there is an error creating the {@linkplain Messenger}
+	 */
 	@SuppressWarnings("rawtypes")
 	public Messenger getInstance(String instancename) throws ConfigurationException {
 		Class messengerClass;
@@ -54,6 +63,15 @@ public class MessengerFactory {
 		return messenger;
 	}
 
+	/**Create the {@linkplain Messenger} described by the {@linkplain AgentModule}
+	 * @param parameters the {@linkplain Map} of {@linkplain AgentConfigurationParameter}s 
+	 * to use in configuring the {@linkplain Messenger}. This method also registers the created in module in JNDI,
+	 * if creating the module afresh. Note that if a module with the same name has already been created, 
+	 * it will be returned; no new module will be created
+	 * @param module the {@linkplain AgentModule} describing the {@linkplain Messenger}
+	 * @return the created {@linkplain Messenger}
+	 * @throws ConfigurationException if there is an error creating the {@linkplain Messenger}
+	 */
 	public Messenger getInstance(Map<String, AgentConfigurationParameter> parameters, AgentModule module)
 			throws ConfigurationException {
 		Messenger messenger;
@@ -87,6 +105,9 @@ public class MessengerFactory {
 		return messenger;
 	}
 
+	/**Remove the registered {@linkplain Messenger}
+	 * @param module the {@linkplain AgentModule} describing the {@linkplain Messenger}
+	 */
 	public void removeInstance(AgentModule module) {
 		try {
 			Messenger messenger = (Messenger) SysHubUtils.getInitialContext()

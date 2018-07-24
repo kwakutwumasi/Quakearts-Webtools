@@ -23,6 +23,10 @@ import com.quakearts.appbase.cdi.annotation.Transaction;
 import com.quakearts.appbase.cdi.annotation.Transactional;
 import com.quakearts.appbase.cdi.annotation.Transactional.TransactionType;
 
+/**A CDI interceptor that starts/continues/ends a transaction
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Interceptor @Transactional
 @Priority(Interceptor.Priority.APPLICATION)
 public class TransactionalInterceptor {	

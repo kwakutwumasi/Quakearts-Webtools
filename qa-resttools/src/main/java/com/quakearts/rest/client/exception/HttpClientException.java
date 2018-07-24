@@ -9,6 +9,10 @@
  ******************************************************************************/
 package com.quakearts.rest.client.exception;
 
+/**Exception thrown when there is a problem processing the http request
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class HttpClientException extends Exception {
 
 	/**

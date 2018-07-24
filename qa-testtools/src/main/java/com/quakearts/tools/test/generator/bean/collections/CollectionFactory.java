@@ -12,6 +12,10 @@ package com.quakearts.tools.test.generator.bean.collections;
 
 import java.util.Collection;
 
+/**Interface for classes that create concrete collection types
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public interface CollectionFactory {
 	Collection<?> createNewCollection();
 }

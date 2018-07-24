@@ -35,6 +35,54 @@ import com.quakearts.appbase.internal.properties.ConfigurationPropertyMap;
 import com.quakearts.appbase.spi.DataSourceProviderSpi;
 import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
 
+/**An implementation of the {@linkplain DataSourceProviderSpi} that starts up {@linkplain AtomikosDataSourceBean}
+ * instances with that wrap the underlying implementation of {@linkplain DataSource}.
+ * The implementation looks for files with the extension <code>ds.json</code> in the <code>atomikos/datasources</code> folder
+ * that contain a JSON object with the following properties:
+ * <br /><br />
+ * <code>datasource.class</code>: a JSON string value. The FQDN of the {@linkplain DataSource} implementation to use
+ * <br />
+ * <code>datasource.name</code>: a JSON string value. The JNDI name of the DataSource object. It should not be fully qualified.
+ * <br />
+ * <code>xa.xxx</code>: property xxx will be set on the DataSource object.
+ * <br />
+ * <code>borrowConnectionTimeout</code>: a JSON integer value. Sets the maximum amount of time in seconds 
+ * the pool will block waiting for a connection to become available in the pool when it is empty.
+ *  Zero or negative means no waiting at all. Defaults to 30 seconds. Optional.
+ * <br />
+ * <code>loginTimeout</code>: a JSON integer value. Sets the maximum time in seconds that this data source will wait while attempting 
+ * to connect to a database. A value of zero specifies that the timeout is the 
+ * default system timeout if there is one; otherwise, it specifies that there 
+ * is no timeout. When a DataSource object is created, the login timeout is initially zero.
+ * <br />
+ * <code>maintenanceInterval</code>: a JSON integer value. Sets the maintenance interval for the pool maintenance thread. The interval is in seconds. 
+ * If not set or not positive then the pool's default (60 secs) will be used. Optional.
+ * <br />
+ * <code>maxIdleTime</code>: a JSON integer value. Sets the maximum amount of seconds that unused excess connections should stay in the pool. Optional. 
+ * Note: excess connections are connections that are created above the minPoolSize limit.
+ * The value is the preferred idle time for unused excess connections. Note that this value is only an indication; 
+ * the pool will check regularly as indicated by the maintenanceInteval property. The default is 60 seconds.
+ * <br />
+ * <code>maxLifetime</code>: a JSON integer value. Sets the maximum amount of seconds that a connection is kept in the pool 
+ * before it is destroyed automatically. Optional, defaults to 0 (no limit).
+ * <br />
+ * <code>maxPoolSize</code>: a JSON integer value. Sets the maximum pool size. The amount of pooled connections won't go above this value. Optional, defaults to 1.
+ * <br />
+ * <code>minPoolSize</code>: a JSON integer value. Sets the minimum pool size. The amount of pooled connections won't go below that value. 
+ * The pool will open this amount of connections during initialization. Optional, defaults to 1.
+ * <br />
+ * <code>reapTimeout</code>: a JSON integer value. Sets the amount of time (in seconds) that the connection pool will allow a connection to be in use, before claiming it back.
+ * Zero means unlimited. Note that this value is only an indication; the pool will check regularly as indicated by the maintenanceInteval property. 
+ * Default is 0 (no timeout).
+ * <br />
+ * <code>testQuery</code>: a JSON string value. Sets the SQL query or statement used to validate a connection before returning it. Optional.
+ * <br />
+ * <code>poolSize</code>: a JSON integer value. Sets both the minimal and maximal pool size. Required if the maxPoolSize is not set. 
+ * Overrides any minPoolSize or maxPoolSize settings you might have configured before.
+ * <br />
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Vetoed
 public class AtomikosBeanDatasourceProviderSpiImpl implements DataSourceProviderSpi {
 

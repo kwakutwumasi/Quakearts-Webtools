@@ -18,6 +18,10 @@ import com.quakearts.tools.test.generator.annotation.UseGenerator;
 import com.quakearts.tools.test.generator.exception.GeneratorException;
 import com.quakearts.tools.test.generator.factory.GeneratorFactory;
 
+/**Class for scanning and registering generators for annotated types
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public final class UseGeneratorClassAnnotationScanningListener implements ClassAnnotationScanningListener {
 
 	@Override

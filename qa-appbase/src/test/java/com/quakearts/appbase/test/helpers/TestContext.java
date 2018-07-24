@@ -870,18 +870,6 @@ public class TestContext implements Context {
 	}
 
 	@Override
-	public void addServletMapping(String pattern, String name) {
-		
-
-	}
-
-	@Override
-	public void addServletMapping(String pattern, String name, boolean jspWildcard) {
-		
-
-	}
-
-	@Override
 	public void addServletMappingDecoded(String pattern, String name) {
 		
 
@@ -1479,9 +1467,40 @@ public class TestContext implements Context {
 	}
 
 	@Override
-	public boolean getDispatchersUseEncodedPaths() {
-		
+	public boolean getDispatchersUseEncodedPaths() {		
 		return false;
+	}
+
+	@Override
+	public ErrorPage findErrorPage(Throwable throwable) {
+		return null;
+	}
+
+	@Override
+	public void setRequestCharacterEncoding(String encoding) {
+	}
+
+	@Override
+	public String getRequestCharacterEncoding() {
+		return null;
+	}
+
+	@Override
+	public void setResponseCharacterEncoding(String encoding) {
+	}
+
+	@Override
+	public String getResponseCharacterEncoding() {
+		return null;
+	}
+
+	@Override
+	public void setAllowMultipleLeadingForwardSlashInPath(boolean allowMultipleLeadingForwardSlashInPath) {
+	}
+
+	@Override
+	public boolean getAllowMultipleLeadingForwardSlashInPath() {
+		return true;
 	}
 
 }

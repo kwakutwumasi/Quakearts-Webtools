@@ -13,6 +13,7 @@ package test.junit;
 import static org.junit.Assert.*;
 
 import static org.hamcrest.core.Is.*;
+import static org.hamcrest.core.IsNull.*;
 import org.junit.Test;
 
 import com.quakearts.tools.test.generator.BeanGenerator;
@@ -142,7 +143,8 @@ public class BeanGeneratorTest {
 	public void testNonAnnotatedClass() throws Exception {
 		try {
 			BeanGenerator<NonAnnotatedClass> generator = new BeanGenerator<>(NonAnnotatedClass.class).init();
-			generator.generateRandom();
+			NonAnnotatedClass annotatedClass = generator.generateRandom();
+			assertThat(annotatedClass.getCustomers(), is(notNullValue())); ;
 		} catch (Throwable e) {
 			fail("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()
 					+ ". Exception occured whiles generating nested beans");

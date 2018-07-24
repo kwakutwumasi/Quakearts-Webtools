@@ -13,7 +13,16 @@ package com.quakearts.tools.test.mockserver.fi;
 import com.quakearts.tools.test.mockserver.context.ProcessingContext;
 import com.quakearts.tools.test.mockserver.exception.MockServerProcessingException;
 
+/**Functional Interface for defining actions to peform during 
+ * each mock server request response cycle
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @FunctionalInterface
 public interface DefaultAction {
+	/**The action to perform
+	 * @param context the {@linkplain ProcessingContext}
+	 * @throws MockServerProcessingException if there is an error during processing
+	 */
 	void performAction(ProcessingContext context) throws MockServerProcessingException;
 }

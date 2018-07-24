@@ -50,7 +50,6 @@ public class DirectoryLoginModule implements LoginModule{
 	public static final String LDAP_KEYSTOREPARAMETER = "ldap.keystore";
 	public static final String LDAP_PORTPARAMETER = "ldap.port";
 	public static final String LDAP_SERVERPARAMETER = "ldap.server";
-	public static final String DEFAULT_AUTH_GRPPARAMETER = "com.quakearts.webapp.security.auth";
     private Subject subject;
     private Group rolesgrp;
     private CallbackHandler callbackHandler;
@@ -66,7 +65,7 @@ public class DirectoryLoginModule implements LoginModule{
     /* attribute variable must be a list of exactly 9 directory attributes corresponding to the following (in strict order)
      * (firstname), (surname), (email address), (unit), (department), (branch), (position), (grade), (staff number)
      * ex "givenname","sn","mail","costcenter","ou","sitelocation","title","employeetype","employeenumber"
-    */
+     */
     private String[] attributes;
     private LDAPEntry userprof;
     private String rolesgrpname;
@@ -85,9 +84,9 @@ public class DirectoryLoginModule implements LoginModule{
         this.callbackHandler = callbackHandler;
         this.sharedState = sharedState;
         this.options = options;
-        String ldapPort_str = null;
+        String ldapPortString = null;
         ldapHost = (String) options.get(LDAP_SERVERPARAMETER);        	        	
-        ldapPort_str = (String) options.get(LDAP_PORTPARAMETER);
+        ldapPortString = (String) options.get(LDAP_PORTPARAMETER);
         keyStorePath = (String) options.get(LDAP_KEYSTOREPARAMETER);
         usessl = Boolean.parseBoolean((String)options.get(LDAP_SSL_USEPARAMETER));
         
@@ -98,24 +97,24 @@ public class DirectoryLoginModule implements LoginModule{
         allowEmptyPassword = Boolean.parseBoolean((String) options.get(LDAP_ALLOW_ANONYMOUSBINDPARAMETER));
         passwordParam = (String) options.get(LDAP_PASSWORD_PARAMETER);
         
-        String defaultroles_str = (String) options.get(DIRECTORY_DEFAULTROLESPARAMETER);
-        String attributes_str = (String) options.get(DIRECTORY_ATTRIBUTESPARAMETER);
+        String defaultrolesString = (String) options.get(DIRECTORY_DEFAULTROLESPARAMETER);
+        String attributesString = (String) options.get(DIRECTORY_ATTRIBUTESPARAMETER);
         
-        String maxAttempts_str = (String) options.get(MAX_TRY_ATTEMPTSPARAMETER);
-        String lockoutTime_str = (String) options.get(LOCKOUT_TIMEPARAMETER);
+        String maxAttemptsString = (String) options.get(MAX_TRY_ATTEMPTSPARAMETER);
+        String lockoutTimeString = (String) options.get(LOCKOUT_TIMEPARAMETER);
         
-        if(maxAttempts_str == null && lockoutTime_str == null){
+        if(maxAttemptsString == null && lockoutTimeString == null){
         	checker = AttemptChecker.getChecker(ldapHost);
         }else{
 	        int maxAttempts, lockoutTime;
 	        try {
-				maxAttempts = Integer.parseInt(maxAttempts_str);
+				maxAttempts = Integer.parseInt(maxAttemptsString);
 			} catch (Exception e) {
 				maxAttempts = 4;
 			}
 			
 			try {
-				lockoutTime = Integer.parseInt(lockoutTime_str);
+				lockoutTime = Integer.parseInt(lockoutTimeString);
 			} catch (Exception e) {
 				lockoutTime = 3600000;
 			}
@@ -123,16 +122,16 @@ public class DirectoryLoginModule implements LoginModule{
         	checker = AttemptChecker.getChecker(ldapHost);
         }
                 
-        if(attributes_str!=null)
-        	attributes = attributes_str.split(";");
+        if(attributesString!=null)
+        	attributes = attributesString.split(";");
         else
         	attributes = new String[0];
         
         if (rolesgrpname == null)
         	rolesgrpname = new String("Roles");
         
-        if(defaultroles_str != null){
-        	defaultroles = defaultroles_str.split(";");
+        if(defaultrolesString != null){
+        	defaultroles = defaultrolesString.split(";");
         	for(int i=0;i<defaultroles.length;i++)
         		defaultroles[i] = defaultroles[i].trim();
         }
@@ -153,20 +152,20 @@ public class DirectoryLoginModule implements LoginModule{
             LDAPConnection.setSocketFactory(ssf);
         }
 
-        ldapPort = ldapPort_str == null? (usessl?LDAPConnection.DEFAULT_SSL_PORT:LDAPConnection.DEFAULT_PORT):Integer.parseInt(ldapPort_str);
+        ldapPort = ldapPortString == null? (usessl?LDAPConnection.DEFAULT_SSL_PORT:LDAPConnection.DEFAULT_PORT):Integer.parseInt(ldapPortString);
         
         useFirstPass = Boolean.parseBoolean((String)options.get(USE_FIRST_PASSPARAMETER));
         
         log.fine("Initialization complete.\n"+
                   "\t\tZeDirectoryLoginModule options:\n"+
                   "\t\tldap.server: "+ldapHost+"\n"+
-                  "\t\tldap.port: "+ldapPort_str+"\n"+
+                  "\t\tldap.port: "+ldapPortString+"\n"+
                   "\t\tldap.keystore: "+keyStorePath+"\n"+
                   "\t\tldap.compare.use: "+usecompare+"\n"+
                   "\t\tldap.ssl.use: "+usessl+"\n"+
                   "\t\tldap.search.baseDN: "+searchbasedn+"\n"+
                   "\t\tedirectory.rolename: "+rolesgrpname+"\n"+
-                  "\t\tedirectory.defaultroles: "+defaultroles_str+"\n"+
+                  "\t\tedirectory.defaultroles: "+defaultrolesString+"\n"+
                   "\t\tldap.search.dn: "+searchuser+"\n"
         );
     }
@@ -255,7 +254,7 @@ public class DirectoryLoginModule implements LoginModule{
 
             if(usecompare){
                 log.fine("Comparing credentials.");
-                LDAPAttribute pword = new LDAPAttribute("userPassword");
+                LDAPAttribute pword = new LDAPAttribute(passwordParam);
                 pword.addValue(password);
                 
                 if(!conn.compare(loginDN,pword))
@@ -304,38 +303,8 @@ public class DirectoryLoginModule implements LoginModule{
 
             LDAPAttribute attribute;
             StringBuffer buf = new StringBuffer();
-            attribute = userprof.getAttribute(attributes[0]);
-            if(attribute!=null){
-                buf.append(attribute.getStringValue());
-                buf.append(" ");
-            }
-            attribute = userprof.getAttribute(attributes[1]);
-            if(attribute!=null)
-                buf.append(attribute.getStringValue());
-            NamePrincipal name = buf.length()==0?new NamePrincipal("NO NAME"): new NamePrincipal(buf.toString());
             
-            attribute = userprof.getAttribute(attributes[2]);
-            EmailPrincipal email = (attribute == null)? new EmailPrincipal("NONE"): new EmailPrincipal(attribute.getStringValue());
-
-            attribute = userprof.getAttribute(attributes[3]);
-            UnitPrincipal unit = (attribute == null)? new UnitPrincipal("NONE"):new UnitPrincipal(attribute.getStringValue());
-
-            attribute = userprof.getAttribute(attributes[4]);
-            DeptPrincipal dept = (attribute == null)?new DeptPrincipal("NONE") :new DeptPrincipal(attribute.getStringValue());
-
-            attribute = userprof.getAttribute(attributes[5]);
-            BranchPrincipal branch =  (attribute == null)? new BranchPrincipal("NONE") :new BranchPrincipal(attribute.getStringValue());
-
-            attribute = userprof.getAttribute(attributes[6]);
-            PositionPrincipal position = (attribute == null)? new PositionPrincipal("NONE"): new PositionPrincipal(attribute.getStringValue());
-
-            attribute = userprof.getAttribute(attributes[7]);
-            GradePrincipal grade = (attribute == null)? new GradePrincipal("NONE"):new GradePrincipal(attribute.getStringValue());
-
-            attribute = userprof.getAttribute(attributes[8]);
-            StaffNumberPrincipal number = (attribute == null)? new StaffNumberPrincipal("NONE"): new StaffNumberPrincipal(attribute.getStringValue());
-
-            Set<Principal> principalset = subject.getPrincipals();            
+            Set<Principal> principalset = subject.getPrincipals();  
             if(useFirstPass){
         		log.fine("Fetching already existing roles group...");
 				for (Iterator i = principalset.iterator(); i.hasNext();) {
@@ -353,25 +322,58 @@ public class DirectoryLoginModule implements LoginModule{
                 principalset.add(rolesgrp);
         	}
         	
-        	rolesgrp.addMember(user);            
-            rolesgrp.addMember(name);
-            rolesgrp.addMember(unit);
-            rolesgrp.addMember(dept);
-            rolesgrp.addMember(branch);
-            rolesgrp.addMember(grade);
-            rolesgrp.addMember(position);
-            rolesgrp.addMember(email);
-            rolesgrp.addMember(number);
-            
-            log.fine("Commiting "+user.getName()+" with profile:\n" +
-                      "Name: " +name.getName()+"\n"+
-                      "Unit: " +unit.getName()+"\n"+
-                      "Department: " +dept.getName()+"\n"+
-                      "Branch: " +branch.getName()+"\n"+
-                      "Grade: " +grade.getName()+"\n"+
-                      "Position: " +position.getName()+"\n"+
-                      "E-mail: " +email.getName()+"\n"+
-                      "Staff Number: " +number.getName()+"\n");
+            if(attributes.length == 9) {
+	            attribute = userprof.getAttribute(attributes[0]);
+	            if(attribute!=null){
+	                buf.append(attribute.getStringValue());
+	                buf.append(" ");
+	            }
+	            attribute = userprof.getAttribute(attributes[1]);
+	            if(attribute!=null)
+	                buf.append(attribute.getStringValue());
+	            NamePrincipal name = buf.length()==0?new NamePrincipal("NO NAME"): new NamePrincipal(buf.toString());
+	            
+	            attribute = userprof.getAttribute(attributes[2]);
+	            EmailPrincipal email = (attribute == null)? new EmailPrincipal("NONE"): new EmailPrincipal(attribute.getStringValue());
+	
+	            attribute = userprof.getAttribute(attributes[3]);
+	            UnitPrincipal unit = (attribute == null)? new UnitPrincipal("NONE"):new UnitPrincipal(attribute.getStringValue());
+	
+	            attribute = userprof.getAttribute(attributes[4]);
+	            DeptPrincipal dept = (attribute == null)?new DeptPrincipal("NONE") :new DeptPrincipal(attribute.getStringValue());
+	
+	            attribute = userprof.getAttribute(attributes[5]);
+	            BranchPrincipal branch =  (attribute == null)? new BranchPrincipal("NONE") :new BranchPrincipal(attribute.getStringValue());
+	
+	            attribute = userprof.getAttribute(attributes[6]);
+	            PositionPrincipal position = (attribute == null)? new PositionPrincipal("NONE"): new PositionPrincipal(attribute.getStringValue());
+	
+	            attribute = userprof.getAttribute(attributes[7]);
+	            GradePrincipal grade = (attribute == null)? new GradePrincipal("NONE"):new GradePrincipal(attribute.getStringValue());
+	
+	            attribute = userprof.getAttribute(attributes[8]);
+	            StaffNumberPrincipal number = (attribute == null)? new StaffNumberPrincipal("NONE"): new StaffNumberPrincipal(attribute.getStringValue());
+	        	
+	        	rolesgrp.addMember(user);            
+	            rolesgrp.addMember(name);
+	            rolesgrp.addMember(unit);
+	            rolesgrp.addMember(dept);
+	            rolesgrp.addMember(branch);
+	            rolesgrp.addMember(grade);
+	            rolesgrp.addMember(position);
+	            rolesgrp.addMember(email);
+	            rolesgrp.addMember(number);
+	            
+	            log.fine("Commiting "+user.getName()+" with profile:\n" +
+	                      "Name: " +name.getName()+"\n"+
+	                      "Unit: " +unit.getName()+"\n"+
+	                      "Department: " +dept.getName()+"\n"+
+	                      "Branch: " +branch.getName()+"\n"+
+	                      "Grade: " +grade.getName()+"\n"+
+	                      "Position: " +position.getName()+"\n"+
+	                      "E-mail: " +email.getName()+"\n"+
+	                      "Staff Number: " +number.getName()+"\n");
+            }
             
             for(int i=0;i<defaultroles.length;i++){
                 rolesgrp.addMember(new OtherPrincipal(defaultroles[i]));

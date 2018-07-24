@@ -466,5 +466,10 @@ public class TestHttpClient {
 			return null;
 		}
 
+		@Override
+		public List<String> getHeaderValues(String name) {
+			return null;
+		}
+
 	}
 }

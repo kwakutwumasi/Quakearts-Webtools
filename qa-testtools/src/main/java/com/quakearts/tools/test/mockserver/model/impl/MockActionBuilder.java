@@ -18,6 +18,10 @@ import com.quakearts.tools.test.mockserver.model.HttpRequest;
 import com.quakearts.tools.test.mockserver.model.HttpResponse;
 import com.quakearts.tools.test.mockserver.model.MockAction;
 
+/**Builder for {@linkplain MockAction}s
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class MockActionBuilder {
 	MockActionImpl mockAction;
 	
@@ -25,25 +29,44 @@ public class MockActionBuilder {
 		mockAction = new MockActionImpl();
 	}
 	
+	/**Create a new {@linkplain MockAction}
+	 * @return this object for method chaining
+	 */
 	public static MockActionBuilder createNewMockAction() {
 		return new MockActionBuilder();
 	}
 	
+	/**Set the HTTP request for the {@linkplain MockAction}
+	 * @param httpRequest the {@linkplain HttpRequest}
+	 * @return this object for method chaining
+	 */
 	public MockActionBuilder setRequestAs(HttpRequest httpRequest) {
 		mockAction.request = httpRequest;
 		return this;
 	}
 
+	/**Set the {@linkplain HttpRequestMatcher} to use in matching incoming
+	 * {@linkplain HttpRequest}s to the stored {@linkplain HttpRequest}
+	 * @param matcher the {@linkplain HttpRequestMatcher}
+	 * @return this object for method chaining
+	 */
 	public MockActionBuilder setMatcherAs(HttpRequestMatcher matcher) {
 		mockAction.matcher = matcher;
 		return this;
 	}
 
+	/**Set the {@linkplain HttpResponseAction} to use when processing the response
+	 * @param responseAction the {@linkplain HttpResponseAction}
+	 * @return this object for method chaining
+	 */
 	public MockActionBuilder setResponseActionAs(HttpResponseAction responseAction) {
 		mockAction.responseAction = responseAction;
 		return this;
 	}
 
+	/**Terminal method in the fluid API. Return the created {@linkplain MockAction}
+	 * @return
+	 */
 	public MockAction thenBuild() {
 		if(mockAction.request == null)
 			throw new BuilderException("HttpRequest is required");

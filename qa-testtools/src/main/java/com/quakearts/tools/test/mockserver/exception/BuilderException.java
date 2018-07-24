@@ -10,6 +10,10 @@
  ******************************************************************************/
 package com.quakearts.tools.test.mockserver.exception;
 
+/**Exception thrown when there is a problem building a mock server
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class BuilderException extends RuntimeException {
 
 	/**

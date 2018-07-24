@@ -17,6 +17,10 @@ import javax.enterprise.inject.spi.CDI;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 
+/**Factory for creating {@linkplain AgentTrigger}
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public class AgentTriggerFactory {
 
 	private AgentTriggerFactory() {

@@ -81,7 +81,7 @@
 								<echo>Copying Resources</echo>
 								<mkdir dir="target/etc" />
 								<copy file="conf/server.config.json" toDir="target/webservers/default/conf" overwrite="true" />
-								<copy todir="target/webservers/default/webapps/webapp">
+								<copy todir="target/webservers/default/webapps/webapp" overwrite="true">
 									<fileset dir="WebContent" />
 								</copy>
 							</target>
@@ -99,7 +99,7 @@
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-appbase</artifactId>
-			<version>1.1</version>
+			<version>2.0</version>
 		</dependency>
 	<!-- Logging -->
 		<dependency>
@@ -111,7 +111,7 @@
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-boot</artifactId>
-			<version>2.2</version>
+			<version>2.2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.faces</groupId>
@@ -131,18 +131,18 @@
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-weldjsf-cdi</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 	<!-- ORM  -->
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-orm-hibernate</artifactId>
-			<version>2.3</version>
+			<version>2.3.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-orm-cdi</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.derby</groupId>
@@ -160,10 +160,11 @@
 		    <artifactId>hibernate-validator-cdi</artifactId>
 		    <version>5.4.2.Final</version>
 		</dependency>
-		<dependency>
-			<groupId>com.quakearts.webtools</groupId>
-			<artifactId>qa-resteasy-validation-11</artifactId>
-			<version>1.0.0</version>
-		</dependency>
 	</dependencies>
+	<repositories>
+	    <repository>
+	        <id>${artifactId}-mvn-repo</id>
+	        <url>https://raw.github.com/kwakutwumasi/Quakearts-Webtools/mvn-repo/</url>
+	    </repository>
+	</repositories>	
 </project>

@@ -22,6 +22,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,6 +46,11 @@ import com.quakearts.tools.test.generator.factory.GeneratorFactory;
 import com.quakearts.tools.test.generator.primitives.configuration.AnnotationPropertyConsumer;
 import com.quakearts.tools.test.generator.primitives.configuration.GenerateWith;
 
+/**Class for populating bean class properties with randomized values
+ * @author kwakutwumasi-afriyie
+ *
+ * @param <T>
+ */
 public final class BeanGenerator<T> extends GeneratorBase<T> {
 
 	private Set<Tuple<PropertyDescriptor, Generator<?>>> generatorSet = new HashSet<>();
@@ -62,11 +69,15 @@ public final class BeanGenerator<T> extends GeneratorBase<T> {
 	}
 
 	@Override
-	public BeanGenerator<T> useField(String fieldName) {
-		super.useField(fieldName);
+	public BeanGenerator<T> useGeneratorProperty(String property) {
+		super.useField(property);
 		return this;
 	}
 	
+	/**Terminal method in the fluid API for configuration. Completes the setup of the 
+	 * BeanGenerator, scans and sets the generators.
+	 * @return this object for method chaining
+	 */
 	public BeanGenerator<T> init() {
 		try {
 			BeanInfo info = Introspector.getBeanInfo(beanClass);
@@ -132,11 +143,15 @@ public final class BeanGenerator<T> extends GeneratorBase<T> {
 	}
 
 	private Class<?> getPropertyType(PropertyDescriptor descriptor) {
-		CollectionType collectionType = descriptor.getReadMethod().getAnnotation(CollectionType.class);
+		CollectionType collectionType = getAnnotation(descriptor, CollectionType.class);
 
 		Class<?> propertyType;
 		if (collectionType == null) {
 			propertyType = descriptor.getPropertyType();
+			
+			if(Collection.class.isAssignableFrom(propertyType)) {
+				propertyType = getActualType(descriptor, propertyType);
+			}
 		} else if (collectionType.value() != null) {// For Collections
 			propertyType = collectionType.value();
 		} else {
@@ -144,6 +159,18 @@ public final class BeanGenerator<T> extends GeneratorBase<T> {
 					+ descriptor.getReadMethod() + " for " + beanClass.getName());
 		}
 
+		return propertyType;
+	}
+
+	private Class<?> getActualType(PropertyDescriptor descriptor, Class<?> propertyType) {
+		Type type = descriptor.getReadMethod().getGenericReturnType();
+		if(type instanceof ParameterizedType) {
+			ParameterizedType parameterizedType = (ParameterizedType) type;
+			Type[] typeArguments = parameterizedType.getActualTypeArguments();
+		    for(Type typeArgument : typeArguments){
+		        propertyType = (Class<?>) typeArgument;
+		    }
+		}
 		return propertyType;
 	}
 
@@ -161,7 +188,7 @@ public final class BeanGenerator<T> extends GeneratorBase<T> {
 	private Generator<?> createNewGeneratorFromSetting(UseGeneratorProperty setting, Generator<?> generator)
 			throws IllegalAccessException {
 		try {
-			return generator.getClass().newInstance().useField(setting.value());
+			return generator.getClass().newInstance().useGeneratorProperty(setting.value());
 		} catch (InstantiationException e) {
 			throw new GeneratorException("Unable to instantiate new generator: " + generator.getClass().getName());
 		}
@@ -177,22 +204,40 @@ public final class BeanGenerator<T> extends GeneratorBase<T> {
 		}
 	}
 	
+	@Deprecated
 	public BeanGenerator<T> forField(String field){
+		return forProperty(field);
+	}
+	
+	/**Use the previously specified {@linkplain Generator}
+	 * to generate values for the specified bean property
+	 * @param property the bean property
+	 * @return this object for method chaining
+	 */
+	public BeanGenerator<T> forProperty(String property){
 		if(replacement == null)
 			throw new GeneratorException("Call to #forField(String) must be preceeded by #use(Generator). Generator must also not be null");
 
-		replaceWith.put(field, replacement);
+		replaceWith.put(property, replacement);
 		replacement = null;
 		return this;
 	}
 	
 	private Generator<?> replacement;
 	
+	/**Use the specified {@linkplain Generator} for the proceeding property
+	 * @param generator the {@linkplain Generator}
+	 * @return this object for method chaining
+	 */
 	public BeanGenerator<T> use(Generator<?> generator){
 		replacement = generator;
 		return this;
 	}
 
+	/**Prevent generation of the specified property
+	 * @param field
+	 * @return
+	 */
 	public BeanGenerator<T> doNotGenerate(String field){
 		skipField.add(field);
 		return this;
@@ -283,7 +328,7 @@ public final class BeanGenerator<T> extends GeneratorBase<T> {
 	}
 
 	private int getSizeToGenerate(Tuple<PropertyDescriptor, Generator<?>> tuple) {
-		Size size = tuple.getFirst().getReadMethod().getAnnotation(Size.class);
+		Size size = getAnnotation(tuple.getFirst(), Size.class);
 		int sizeToGenerate;
 		if (size != null) {
 			if (size.value() != -1)

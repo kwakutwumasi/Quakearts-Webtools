@@ -1,1 +1,1 @@
-com.quakearts.appbase.spi.impl.weld.WeldAtomikosTransactionServicesSupport
+com.quakearts.appbase.spi.impl.weld.WeldTransactionServicesSupport

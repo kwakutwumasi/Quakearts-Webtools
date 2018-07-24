@@ -9,6 +9,11 @@ import com.quakearts.appbase.spi.factory.EmbeddedWebServerSpiFactory;
 import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
 import com.quakearts.appbase.spi.factory.JavaTransactionManagerSpiFactory;
 
+
+/**Base class for tests that require the full qa-appbase services
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public abstract class AppBaseFullBaseTest extends AppBaseTest{
 
 	@BeforeClass

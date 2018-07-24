@@ -25,6 +25,11 @@ import java.util.function.Consumer;
 
 import com.quakearts.utils.messagebroker.exception.MessageBrokerException;
 
+/**A class for exchanging messages between threads.
+ * @author kwakutwumasi-afriyie
+ *
+ * @param <M>
+ */
 public class MessageBroker<M> {
 	private Map<String, BrokerObject<M>> incomingTickets = new ConcurrentHashMap<>(),
 			outgoingTickets = new ConcurrentHashMap<>();
@@ -104,10 +109,19 @@ public class MessageBroker<M> {
 		throw new UnsupportedOperationException("No duration in "+timeUnit);		
 	}
 	
+	/**Send a message for processing
+	 * @param message the message object
+	 * @throws MessageBrokerException if the broker capacity 
+	 * has been reached.
+	 */
 	public void sendForProcessing(M message) throws MessageBrokerException {
 		send(incoming, new BrokerObject<>(message, getIncomingTicketIn()));
 	}
 	
+	/**Retrieve a message sent for processing.
+	 * @return the message the message object
+	 * @throws MessageBrokerException if the retrieval operation times out
+	 */
 	public M retrieveForProcessing() throws MessageBrokerException {
 		BrokerObject<M> object;
 		String brokerID = getIncomingTicketOut();
@@ -137,10 +151,18 @@ public class MessageBroker<M> {
 		return ticketId;
 	}
 	
+	/**Send a response upon process completion
+	 * @param message the response message
+	 * @throws MessageBrokerException if the broker capacity has been reached
+	 */
 	public void sendResponse(M message) throws MessageBrokerException {
 		send(outgoing, new BrokerObject<>(message, getOutgoingTicketIn()));
 	}
 	
+	/**Retrieve a response to the processed message
+	 * @return the response message
+	 * @throws MessageBrokerException
+	 */
 	public M retrieveResponse() throws MessageBrokerException {
 		BrokerObject<M> object;
 		String brokerID = getOutgoingTicketOut();

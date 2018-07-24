@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-exception</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<name>Quake-Arts Exception Handler</name>
 	<description>An exception handler for pluggable, universal Exception handling</description>
 	<packaging>jar</packaging>
@@ -45,7 +45,13 @@
 		<dependency>
 			<artifactId>qa-classpathscanner</artifactId>
 			<groupId>com.quakearts.webtools</groupId>
-			<version>1.0</version>
+			<version>1.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

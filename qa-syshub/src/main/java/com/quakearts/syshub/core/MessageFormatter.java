@@ -14,7 +14,7 @@ import com.quakearts.syshub.core.impl.ResultImpl;
 import com.quakearts.syshub.core.metadata.AgentModuleValidator;
 import com.quakearts.syshub.exception.ProcessingException;
 
-/**
+/**This is the interface implemented by instances that format data into {@linkplain Message}s.
  * @author Kwaku Twumasi-Afriyie
  *
  */

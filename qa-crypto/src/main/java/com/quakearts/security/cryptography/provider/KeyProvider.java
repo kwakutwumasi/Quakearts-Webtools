@@ -15,7 +15,20 @@ import java.util.Map;
 
 import com.quakearts.security.cryptography.exception.KeyProviderException;
 
+/**The interface for key providers. Implementations should retrieve a cryptographic key
+ * for use in the cryptographic resource
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public interface KeyProvider {
+	/**Get the cryptographic key to use in operations
+	 * @return the cryptographic key
+	 * @throws KeyProviderException if there is a problem obtaining the key
+	 */
 	public Key getKey() throws KeyProviderException;
-	public void setProperties(Map<Object, Object> props);
+	/**Set the configuration properties of the key provider
+	 * @param props a map of the configuration properties
+	 */
+	@SuppressWarnings("rawtypes")
+	public void setProperties(Map props);
 }

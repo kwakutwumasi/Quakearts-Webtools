@@ -11,7 +11,21 @@
 package com.quakearts.syshub.core;
 
 import java.io.Closeable;
-import java.util.Iterator;
 
-public interface CloseableIterator extends Closeable, Iterator<Result<?>> {
+import com.quakearts.syshub.exception.ProcessingException;
+
+/**An iterator that can be closed.
+ * @author kwakutwumasi-afriyie
+ *
+ */
+public interface CloseableIterator extends Closeable {
+	/**Tests for more {@linkplain Result}s in this iterator
+	 * @return true if the next call to next will return a {@linkplain Result}
+	 */
+	boolean hasNext();
+	/**Get the next {@linkplain Result} in this iterator
+	 * @return the {@linkplain Result}
+	 * @throws ProcessingException if there is an error while reading the next result
+	 */
+	Result<?> next() throws ProcessingException;
 }

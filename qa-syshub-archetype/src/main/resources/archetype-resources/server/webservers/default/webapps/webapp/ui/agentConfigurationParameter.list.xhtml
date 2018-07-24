@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:composition template="/base/template.xhtml">
+    <ui:define name="content">
+		<h:form>
+ 			<b:messages showDetail="true" dismissible="true"></b:messages>
+    		<span class="h4">#{!(agentConfigurationParameterPage.agentConfigurationParameter eq null) and agentConfigurationParameterPage.webappmain.mode eq 'edit'?'Edit ':(agentConfigurationParameterPage.webappmain.mode eq 'read'?'View ':'Search ')} Agent Configuration Parameter</span>
+    		<br />
+            <h:commandLink styleClass="btn btn-primary" rendered="#{! empty agentConfigurationParameterPage.webappmain.mode and (param.agentConfigurationParameter eq null)}">
+				<b:glyph value="backward"></b:glyph>Back to search...
+				<c:set as="#{null}" var="#{agentConfigurationParameterPage.webappmain.mode}" />
+    			<c:set as="#{null}" var="#{agentConfigurationParameterPage.agentConfigurationParameter}"></c:set>
+				<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+			</h:commandLink>
+			<b:row rendered="#{empty agentConfigurationParameterPage.webappmain.mode}">	
+    			<h:panelGroup rendered="#{agentConfigurationParameterPage.agentConfigurationParameter.agentModule != null or agentConfigurationParameterPage.agentConfigurationParameter.agentConfiguration != null}">
+					<span class="h2">
+						Configuration Parameters for
+						<h:outputText value="#{agentConfigurationParameterPage.agentConfigurationParameter.agentModule.moduleName} in Agent: #{agentConfigurationParameterPage.agentConfigurationParameter.agentModule.agentConfiguration.agentName}"
+							rendered="#{agentConfigurationParameterPage.webappmain.inSearchMode and agentConfigurationParameterPage.agentConfigurationParameter.agentModule != null}">
+						</h:outputText>
+						<h:outputText value="#{agentConfigurationParameterPage.agentConfigurationParameter.agentConfiguration.agentName}"
+							rendered="#{agentConfigurationParameterPage.webappmain.inSearchMode and agentConfigurationParameterPage.agentConfigurationParameter.agentModule == null and agentConfigurationParameterPage.agentConfigurationParameter.agentConfiguration != null}">
+						</h:outputText>
+					</span>
+				</h:panelGroup>
+				<b:pagination for="#{table}" pageSize="10"></b:pagination>
+				<b:dataTable value="#{agentConfigurationParameterPage.agentConfigurationParameterList}" var="agentConfigurationParameter" binding="#{table}">
+    				<h:column rendered="#{agentConfigurationParameterPage.agentConfigurationParameter.agentModule == null and agentConfigurationParameterPage.agentConfigurationParameter.agentConfiguration == null}">
+    					<f:facet name="header">
+    						ID
+    					</f:facet>
+						#{agentConfigurationParameter.id}
+    				</h:column>
+    				<h:column>
+    					<f:facet name="header">
+    						Name
+    					</f:facet>
+						#{agentConfigurationParameter.name}
+ 						<b:glyph value="globe" title="Global Parameter" rendered="#{agentConfigurationParameter.global}"></b:glyph>
+    				</h:column>
+    				<h:column>
+    					<f:facet name="header">
+    						Parameter Type
+    					</f:facet>
+						#{agentConfigurationParameter.parameterType}
+    				</h:column>
+    				<h:column>
+    					<f:facet name="header">
+    						Value
+    					</f:facet>
+    					<b:fa value="check-square-o" rendered="#{agentConfigurationParameter.booleanValue and agentConfigurationParameter.parameterType == 'BOOLEAN'}" style="color:green"></b:fa>
+    					<b:fa value="square-o" rendered="#{!agentConfigurationParameter.booleanValue and agentConfigurationParameter.parameterType == 'BOOLEAN'}" style="color:red"></b:fa>
+						<h:outputText value="#{agentConfigurationParameter.numericValue}" 
+							rendered="#{agentConfigurationParameter.parameterType == 'NUMERIC'}"></h:outputText>
+						<h:outputText value="#{agentConfigurationParameter.stringValue}" 
+							rendered="#{agentConfigurationParameter.parameterType != 'NUMERIC' and agentConfigurationParameter.parameterType != 'BOOLEAN'}"></h:outputText>
+    				</h:column>
+    				<h:column>
+    					<f:facet name="header">
+    						For
+    					</f:facet>
+						<table class="table">
+							<tr>
+								<th>Agent Module</th>
+								<td>
+									#{agentConfigurationParameter.agentModule.moduleName} 
+									<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/agentModule.list.jsf"
+										rendered="#{agentConfigurationParameter.agentModule != null}">View
+										<f:param name="agentModule" value="#{agentConfigurationParameter.agentModule.id}"></f:param>
+									</h:outputLink>
+								</td>
+							</tr>
+							<tr>
+								<th>Agent Configuration</th>
+								<td>
+									#{agentConfigurationParameter.agentConfiguration.agentName} 
+									<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/agentConfiguration.list.jsf"
+										rendered="#{agentConfigurationParameter.agentConfiguration != null}">View
+										<f:param name="agentConfiguration" value="#{agentConfigurationParameter.agentConfiguration.id}"></f:param>
+									</h:outputLink>
+								</td>
+							</tr>
+						</table>
+					</h:column>
+    				<h:column>
+    					<f:facet name="header">
+    						Action
+    					</f:facet>
+    					<h:commandLink value="Edit">
+    						<c:set as="#{agentConfigurationParameter}" var="#{agentConfigurationParameterPage.agentConfigurationParameter}"></c:set>
+    						<c:set as="edit" var="#{agentConfigurationParameterPage.webappmain.mode}" />
+							<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+    					</h:commandLink><br />
+    					<h:commandLink value="View">
+    						<c:set as="#{agentConfigurationParameter}" var="#{agentConfigurationParameterPage.agentConfigurationParameter}"></c:set>
+    						<c:set as="read" var="#{agentConfigurationParameterPage.webappmain.mode}" />
+							<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+    					</h:commandLink>
+    				</h:column>
+    			</b:dataTable>
+			</b:row>
+			<b:row>
+				<ui:include src="/cp/agentConfigurationParameter.crud.xhtml">
+					<ui:param name="agentConfigurationParameter" value="#{agentConfigurationParameterPage.agentConfigurationParameter}"></ui:param>
+				</ui:include>
+				<b:buttonGroup rendered="#{agentConfigurationParameterPage.webappmain.mode eq 'edit'}">
+					<b:button>
+						Save
+						<c:saveUpdate domain="system" object="#{agentConfigurationParameterPage.agentConfigurationParameter}" action="update"></c:saveUpdate>
+						<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+					</b:button>
+					<b:button>
+						Delete
+						<c:delete domain="system" object="#{agentConfigurationParameterPage.agentConfigurationParameter}"></c:delete>
+						<c:executeAction listener="#{agentConfigurationParameterPage.removeAgentConfigurationParameter}"></c:executeAction>
+						<c:set as="#{null}" var="#{agentConfigurationParameterPage.agentConfigurationParameter}"></c:set>
+						<c:set as="#{null}" var="#{agentConfigurationParameterPage.webappmain.mode}"></c:set>
+						<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+					</b:button>
+				</b:buttonGroup>
+				<b:button rendered="#{agentConfigurationParameterPage.webappmain.mode eq 'read'}">
+					Edit
+					<c:set as="edit" var="#{agentConfigurationParameterPage.webappmain.mode}" />
+					<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+				</b:button>
+				<b:button rendered="#{empty agentConfigurationParameterPage.webappmain.mode}">
+					Search
+					<c:executeAction listener="#{agentConfigurationParameterPage.findAgentConfigurationParameter}"></c:executeAction>
+					<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+				</b:button>
+			</b:row>
+		</h:form>
+    </ui:define>
+</ui:composition>
+</html>

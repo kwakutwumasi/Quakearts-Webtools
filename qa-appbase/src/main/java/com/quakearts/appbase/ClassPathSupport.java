@@ -14,12 +14,19 @@ import javax.enterprise.inject.Vetoed;
 
 import com.quakearts.appbase.impl.ClasspathResourcesImpl;
 
+/**Static factory for implementations of {@linkplain ClasspathResources}
+ * @author kwakutwumasi-afriyie
+ *
+ */
 @Vetoed
 public class ClassPathSupport {
 	private static ClasspathResources classpathResources;
 
 	private ClassPathSupport() {}
 	
+	/**Factory method for obtaining {@linkplain ClasspathResources}
+	 * @return the default implementation of {@linkplain ClasspathResources}
+	 */
 	public static ClasspathResources getClasspathResources() {
 		if(classpathResources == null) {
 			classpathResources = new ClasspathResourcesImpl();

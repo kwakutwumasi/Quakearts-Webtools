@@ -6,6 +6,10 @@ import com.quakearts.syshub.core.runner.AgentRunner;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.model.AgentConfiguration;
 
+/**Interface for SysHub's main class
+ * @author kwakutwumasi-afriyie
+ *
+ */
 public interface SysHub {
 
 	/**Lists all {@link AgentRunner}'s deployed on the system
