@@ -8,11 +8,11 @@
  * Contributors:
  *     Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com> - initial API and implementation
  ******************************************************************************/
-package com.quakearts.appbase;
+package com.quakearts.appbase.classpath;
 
 import javax.enterprise.inject.Vetoed;
 
-import com.quakearts.appbase.impl.ClasspathResourcesImpl;
+import com.quakearts.appbase.classpath.impl.ClasspathResourcesImpl;
 
 /**Static factory for implementations of {@linkplain ClasspathResources}
  * @author kwakutwumasi-afriyie

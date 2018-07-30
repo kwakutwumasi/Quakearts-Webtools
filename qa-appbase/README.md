@@ -164,3 +164,11 @@ The Atomikos JCA implementation uses a custom JSON file to configure SQL data so
 Examples of configuration files can be found in _atomikos/datasources_ folder of the project.
 
 For more information on ds.json files see the code and documentation for _com.quakearts.appbase.spi.impl.AtomikosBeanDatasourceProviderSpiImpl_
+
+##### Using Environment Variables
+
+The Tomcat Servlet Container and the Atomikos JCA implementation allow users to set variables using environment variables. This makes deplpoyment to containers such as Docker simpler and easier. A docker file can exist for live and test environments, using the same code base to pull application files. To provide environment variables for the Tomcat Servlet Container, use the configuration properties and add a prefix of '_web._' to each variable. To provide environment variables for the Atomikos JCA implementation, use the configuration properties and add a prefix of '_ds._' to each variable. For OS environments that treat variables as case insensitive values, use the prefix '_WEB&#95;_' for tomcat and '_DS&#95;_' and for CamelCase variables use the '&#95;' separated version of the strings, i.e. camelCase will become camel_case or CAMEL_CASE.. Note that using environment variables is only supported for single webserver and single datasource applications. If there is a need for multiple web servers and or multiple datasources, the use of individual configuration files is required.
+
+##### Using app.cofig.json
+
+Users that want to keep webserver and datasource configuration in the same file, place a file named _app.cofig.json_ at the root of the classpath. Configuration for the Tomcat Servlet Container should be placed under a '_webserver_' property of the root JSON Object; the Atomikos JCA Datasource configuration should be placed under a 'datasource' property of the root JSON Object;

@@ -10,7 +10,7 @@ import javax.servlet.ServletContainerInitializer;
 import org.apache.catalina.WebResourceRoot;
 import org.junit.Test;
 
-import com.quakearts.appbase.impl.ClasspathResourcesImpl;
+import com.quakearts.appbase.classpath.impl.ClasspathResourcesImpl;
 import com.quakearts.appbase.spi.impl.tomcat.AppBaseVirtualDirectoryResourceSet;
 import com.quakearts.appbase.spi.impl.tomcat.AppBaseWebappClassLoader;
 import com.quakearts.appbase.test.helpers.TestContext;

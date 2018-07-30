@@ -32,13 +32,23 @@ import com.quakearts.appbase.Main;
 import com.quakearts.appbase.exception.ConfigurationException;
 import com.quakearts.appbase.internal.properties.AppBasePropertiesLoader;
 import com.quakearts.appbase.internal.properties.ConfigurationPropertyMap;
+import com.quakearts.appbase.internal.properties.impl.AppBasePropertiesLoaderImpl;
 import com.quakearts.appbase.spi.DataSourceProviderSpi;
 import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
 
 /**An implementation of the {@linkplain DataSourceProviderSpi} that starts up {@linkplain AtomikosDataSourceBean}
  * instances with that wrap the underlying implementation of {@linkplain DataSource}.
- * The implementation looks for files with the extension <code>ds.json</code> in the <code>atomikos/datasources</code> folder
- * that contain a JSON object with the following properties:
+ * The implementation looks for files with the extension <code>ds.json</code> in the <code>atomikos/datasources</code> folder.
+ * For users that need only one datasource there are several options:
+ * <br />* A JSON file named defualt.ds.json can be placed at the root of the classpath. 
+ * <br />* Users who prefer environment variables can set variables named after the properties and prefixed by 'ds.'
+ * (case sensitive environments) or 'DS_' (case insensitive environments). For case insensitive environments, 
+ * CamelCase properties should be converted to underscore variants. Ex a property named camelCase should be stored as CAMEL_CASE. (See 
+ * {@linkplain AppBasePropertiesLoaderImpl#loadParametersFromEnvironment(String)}).
+ * <br />* For users who wish to use a single configuration file the properties can be stored in the 'app.config.json' at the root of the classpath under 
+ * the JSON property "datasource".
+ * <br /><br />
+ * AtomikosBeanDatasourceProviderSpi uses the following properties:
  * <br /><br />
  * <code>datasource.class</code>: a JSON string value. The FQDN of the {@linkplain DataSource} implementation to use
  * <br />
@@ -89,6 +99,9 @@ public class AtomikosBeanDatasourceProviderSpiImpl implements DataSourceProvider
 	private Map<String, DataSource> datasources = new ConcurrentHashMap<>();
 	private List<AtomikosDataSourceBean> dataSourceBeans = new ArrayList<>();
 	
+	public AtomikosBeanDatasourceProviderSpiImpl() {
+	}
+	
 	@Override
 	public void initiateDataSourceSpi() {
 		try {
@@ -99,20 +112,29 @@ public class AtomikosBeanDatasourceProviderSpiImpl implements DataSourceProvider
 			new ConfigurationException(e.getMessage(),e);
 		}
 
-		AppBasePropertiesLoader appBasePropertiesLoader = new AppBasePropertiesLoader();
+		AppBasePropertiesLoader appBasePropertiesLoaderImpl = Main.getAppBasePropertiesLoader();
 		
-		List<ConfigurationPropertyMap> loadedConfigurationPropertyFiles = appBasePropertiesLoader
+		List<ConfigurationPropertyMap> loadedConfigurationPropertyFiles = appBasePropertiesLoaderImpl
 				.getAllConfigurationProperties("atomikos"+File.separator+"datasources", ".ds.json", "QA AppBase Atomikos datasource definition");
 		
 		InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("default.ds.json");
 		if(in!=null)
 			try(InputStream readin = in;) {
 				ConfigurationPropertyMap defaultConfigurationPropertyMap
-					= appBasePropertiesLoader.loadParametersFromReader(".classpath", new InputStreamReader(readin));
+					= appBasePropertiesLoaderImpl.loadParametersFromReader(".classpath", new InputStreamReader(readin));
 				loadedConfigurationPropertyFiles.add(defaultConfigurationPropertyMap);
 			} catch (IOException e) {
 				Main.log.error("Unable to load default.ds.json", e);
 			}
+		
+		ConfigurationPropertyMap environmentVariableMap = appBasePropertiesLoaderImpl.loadParametersFromEnvironment("ds");
+		if(!environmentVariableMap.isEmpty())
+			loadedConfigurationPropertyFiles.add(environmentVariableMap);
+		
+		ConfigurationPropertyMap systemWideConfigurationPropertyMap = Main.getInstance().getAppConfiguration().getSubConfigurationPropertyMap("datasource");
+		if(systemWideConfigurationPropertyMap!=null)
+			loadedConfigurationPropertyFiles.add(systemWideConfigurationPropertyMap);
+		
 		for(ConfigurationPropertyMap loadedConfigurationPropertyFile:loadedConfigurationPropertyFiles){
 			getDataSource(loadedConfigurationPropertyFile);
 		}

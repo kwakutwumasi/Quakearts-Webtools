@@ -8,7 +8,7 @@
  * Contributors:
  *     Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com> - initial API and implementation
  ******************************************************************************/
-package com.quakearts.appbase.impl;
+package com.quakearts.appbase.classpath.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,8 +22,8 @@ import java.util.jar.Manifest;
 
 import javax.enterprise.inject.Vetoed;
 
-import com.quakearts.appbase.ClasspathResources;
 import com.quakearts.appbase.Main;
+import com.quakearts.appbase.classpath.ClasspathResources;
 import com.quakearts.appbase.exception.ConfigurationException;
 
 @Vetoed

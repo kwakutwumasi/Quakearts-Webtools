@@ -2,6 +2,7 @@ package com.quakearts.appbase.test;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.*;
+import static org.hamcrest.core.IsNull.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,11 +11,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import com.quakearts.appbase.exception.ConfigurationException;
 import com.quakearts.appbase.internal.properties.AppBasePropertiesLoader;
 import com.quakearts.appbase.internal.properties.ConfigurationPropertyMap;
+import com.quakearts.appbase.internal.properties.impl.AppBasePropertiesLoaderImpl;
+import com.quakearts.appbase.test.helpers.SystemEnvironmentRule;
 import com.quakearts.appbase.test.helpers.TestBean;
 import com.quakearts.appbase.test.helpers.TestBeanReadOnly;
 
@@ -23,40 +28,35 @@ public class TestAppBasePropertiesLoader {
 	String fileLocation = "src"+File.separator+"test"+File.separator+"resources";
 	
 	@Test
-	public void testGetAllConfigurationProperties() {
-		AppBasePropertiesLoader loader = new AppBasePropertiesLoader();
-		
+	public void testGetAllConfigurationProperties() {		
+		AppBasePropertiesLoader loader = new AppBasePropertiesLoaderImpl();
 		List<ConfigurationPropertyMap> propertiesMaps = loader.getAllConfigurationProperties(fileLocation, ".test.json", "Test");
-		
 		assertThat(propertiesMaps.size(), is(2));
 	}
 
+	@Rule
+	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	
 	@Test
-	public void testListConfigurationFiles() {
-		AppBasePropertiesLoader loader = new AppBasePropertiesLoader();
+	public void testListConfigurationFiles() throws Exception {
+		AppBasePropertiesLoader loader = new AppBasePropertiesLoaderImpl();
 		
 		List<File> files = loader.listConfigurationFiles(fileLocation, ".test.json", "Test");		
 		assertThat(files.size(), is(2));
 		
 		File file = files.get(0);
 		
-		assertThat(file.getName().equals("test1.test.json") || file.getName().equals("test2.test.json"), is(true));
+		assertThat(file.getName().equals("test1.test.json") || file.getName().equals("test2.test.json"), is(true));		
+		loader.listConfigurationFiles(temporaryFolder.getRoot().getPath()+"target"+File.separator+"new_conf", ".test.json", "Test");
 		
-		File testLocation = new File("target/new_conf");
-		if(testLocation.exists())
-			testLocation.delete();
-		
-		loader.listConfigurationFiles("target/new_conf", ".test.json", "Test");
-		
-		testLocation = new File("target/new_conf");
+		File testLocation = new File(temporaryFolder.getRoot().getPath()+"target"+File.separator+"new_conf");
 		assertThat(testLocation.exists(), is(true));
 		assertThat(testLocation.isDirectory(), is(true));
-		testLocation.delete();
 	}
 	
 	@Test
 	public void testLoadParametersFromFile() {
-		AppBasePropertiesLoader loader = new AppBasePropertiesLoader();
+		AppBasePropertiesLoader loader = new AppBasePropertiesLoaderImpl();
 		
 		ConfigurationPropertyMap propertiesMap = loader.loadParametersFromFile(new File(fileLocation+File.separator+"test1.test.json"));
 		assertThat(propertiesMap.size(), is(10));
@@ -80,28 +80,103 @@ public class TestAppBasePropertiesLoader {
 		assertThat(Set.class.isAssignableFrom(propertiesMap.get("specialproperty.set").getClass()), is(true));
 	}
 
+	@Rule
+	public SystemEnvironmentRule systemEnv = new SystemEnvironmentRule();
+	
+	@Test
+	public void testLoadParametersFromEnvironment() throws Exception {
+		systemEnv.set("test.variable").as("variable")
+				.set("test.variableTwo").as(":123")
+				.set("test.variable3").as("{\"test\":\"value\"}")
+				.set("test_variable4").as("variable4")
+				.set("test_variable_five").as("variableFive")
+				.set("TEST_VARIABLE_SIX").as("variableSix")
+				.set("TEST_VARIABLESEVEN").as("variableseven");
+		
+		AppBasePropertiesLoader loader = new AppBasePropertiesLoaderImpl();
+		
+		ConfigurationPropertyMap map1 = loader.loadParametersFromEnvironment("TEST");
+		ConfigurationPropertyMap map2 = loader.loadParametersFromEnvironment("TEST");
+		
+		assertThat(map1, is(map2));
+		
+		assertThat(map1.size(), is(7));
+		assertThat(map1.containsKey("variable"), is(true));
+		assertThat(map1.getString("variable"), is("variable"));
+		assertThat(map1.containsKey("variableTwo"), is(true));
+		assertThat(map1.getInt("variableTwo"), is(123));
+		assertThat(map1.containsKey("variable3"), is(true));
+		assertThat(map1.getSubConfigurationPropertyMap("variable3"), is(notNullValue()));
+		assertThat(map1.getSubConfigurationPropertyMap("variable3").containsKey("test"), is(true));
+		assertThat(map1.getSubConfigurationPropertyMap("variable3").getString("test"), is("value"));
+		assertThat(map1.containsKey("variable4"), is(true));
+		assertThat(map1.getString("variable4"), is("variable4"));
+		assertThat(map1.containsKey("variableFive"), is(true));
+		assertThat(map1.getString("variableFive"), is("variableFive"));
+		assertThat(map1.containsKey("variableSix"), is(true));
+		assertThat(map1.getString("variableSix"), is("variableSix"));
+		assertThat(map1.containsKey("variableseven"), is(true));
+		assertThat(map1.getString("variableseven"), is("variableseven"));
+	}
+	
+	@Test
+	public void testLoadParametersFromEnvironmentWithNoVariables() throws Exception {
+		try {
+			systemEnv.clearAll();
+			AppBasePropertiesLoader loader = new AppBasePropertiesLoaderImpl();
+			ConfigurationPropertyMap map1 = loader.loadParametersFromEnvironment("TEST");
+			assertThat(map1.isEmpty(), is(true));
+		} finally {
+			systemEnv.reset();
+		}
+	}
+	
+	@Test(expected=ConfigurationException.class)
+	public void testLoadParametersFromEnvironmentWithVariableEqualPrefix() throws Exception {
+		try {
+			systemEnv.set("test").as("variable");
+			
+			new AppBasePropertiesLoaderImpl().loadParametersFromEnvironment("TEST");
+		} finally {
+			systemEnv.reset();
+		}
+	}
+	
+	@Test
+	public void testLoadParametersFromEnvironmentWithVariableEqualNull() throws Exception {
+		try {
+			systemEnv.set("test.variable1").as("");
+			
+			ConfigurationPropertyMap map1 = new AppBasePropertiesLoaderImpl().loadParametersFromEnvironment("TEST");
+			assertThat(map1.containsKey("variable1"), is(true));
+			assertThat(map1.getString("variable1"), is(""));
+		} finally {
+			systemEnv.reset();
+		}
+	}
+	
 	@Test(expected = ConfigurationException.class)
 	public void testDirectoryAsAfile() throws Exception {
-		AppBasePropertiesLoader loader = new AppBasePropertiesLoader();
+		AppBasePropertiesLoader loader = new AppBasePropertiesLoaderImpl();
 		
 		loader.listConfigurationFiles(fileLocation+File.separator+"test1.test.json", ".test.json", "Test");		
 	}
 	
 	@Test(expected = ConfigurationException.class)
 	public void testLoadInvalidFile() throws Exception {
-		AppBasePropertiesLoader loader = new AppBasePropertiesLoader();		
+		AppBasePropertiesLoader loader = new AppBasePropertiesLoaderImpl();		
 		loader.loadParametersFromFile(new File(fileLocation+File.separator+"test.configuration"));
 	}
 	
 	@Test(expected = ConfigurationException.class)
 	public void testLoadNonExistentFile() throws Exception {
-		AppBasePropertiesLoader loader = new AppBasePropertiesLoader();
+		AppBasePropertiesLoader loader = new AppBasePropertiesLoaderImpl();
 		loader.loadParametersFromFile(new File(fileLocation+File.separator+"test.json"));
 	}
 
 	@Test
 	public void testPopulateBean() throws Exception {
-		AppBasePropertiesLoader loader = new AppBasePropertiesLoader();		
+		AppBasePropertiesLoader loader = new AppBasePropertiesLoaderImpl();		
 		ConfigurationPropertyMap propertiesMap = loader.loadParametersFromFile(new File(fileLocation+File.separator+"test2.test.json"));
 	
 		TestBean testBean = new TestBean();
@@ -139,7 +214,7 @@ public class TestAppBasePropertiesLoader {
 	
 	@Test
 	public void testPopulateBeanWithReadOnlyMethod() throws Exception {
-		AppBasePropertiesLoader loader = new AppBasePropertiesLoader();		
+		AppBasePropertiesLoader loader = new AppBasePropertiesLoaderImpl();		
 		ConfigurationPropertyMap propertiesMap = loader.loadParametersFromFile(new File(fileLocation+File.separator+"test2.test.json"));
 	
 		TestBeanReadOnly testBean = new TestBeanReadOnly();
@@ -151,7 +226,7 @@ public class TestAppBasePropertiesLoader {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testGetWithPrimitiveClassType() throws Exception {
-		AppBasePropertiesLoader loader = new AppBasePropertiesLoader();		
+		AppBasePropertiesLoader loader = new AppBasePropertiesLoaderImpl();		
 		ConfigurationPropertyMap propertiesMap = loader.loadParametersFromFile(new File(fileLocation+File.separator+"test2.test.json"));
 		
 		propertiesMap.get("testInt", int.class);
@@ -202,9 +277,17 @@ public class TestAppBasePropertiesLoader {
 		loadString("{\"aset\":{\"set\":23}}");
 	}
 
-	@Test(expected = ConfigurationException.class)
+	@Test
 	public void testFileHasInvalidSpecialObject() throws Exception {
-		loadString("{\"amap\":{\"long\":23}}");
+		ConfigurationPropertyMap map = loadString("{\"amap\":{\"long\":23}}");
+		
+		assertThat(map.size(), is(1));
+		assertThat(map.containsKey("amap"), is(true));
+		assertThat(map.getSubConfigurationPropertyMap("amap"), is(notNullValue()));
+		ConfigurationPropertyMap submap = map.getSubConfigurationPropertyMap("amap");
+		assertThat(submap.size(), is(1));
+		assertThat(submap.containsKey("long"), is(true));
+		assertThat(submap.getInt("long"), is(23));
 	}
 
 	@Test(expected = ConfigurationException.class)
@@ -256,6 +339,6 @@ public class TestAppBasePropertiesLoader {
 	}
 	
 	private ConfigurationPropertyMap loadString(String string) throws IOException {
-		return new AppBasePropertiesLoader().loadParametersFromReader("test", new StringReader(string));
+		return new AppBasePropertiesLoaderImpl().loadParametersFromReader("test", new StringReader(string));
 	}
 }

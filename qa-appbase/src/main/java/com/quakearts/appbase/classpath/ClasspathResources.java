@@ -8,7 +8,7 @@
  * Contributors:
  *     Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com> - initial API and implementation
  ******************************************************************************/
-package com.quakearts.appbase;
+package com.quakearts.appbase.classpath;
 
 import java.net.URL;
 

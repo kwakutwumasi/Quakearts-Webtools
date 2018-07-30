@@ -41,9 +41,12 @@ import org.apache.coyote.http2.Http2Protocol;
 import org.apache.tomcat.util.net.SSLHostConfig;
 import org.apache.tomcat.util.scan.StandardJarScanner;
 
-import com.quakearts.appbase.ClassPathSupport;
 import com.quakearts.appbase.Main;
+import com.quakearts.appbase.classpath.ClassPathSupport;
 import com.quakearts.appbase.exception.ConfigurationException;
+import com.quakearts.appbase.internal.properties.AppBasePropertiesLoader;
+import com.quakearts.appbase.internal.properties.ConfigurationPropertyMap;
+import com.quakearts.appbase.internal.properties.impl.AppBasePropertiesLoaderImpl;
 import com.quakearts.appbase.spi.EmbeddedWebServerSpi;
 import com.quakearts.appbase.spi.beans.WebAppListener;
 import com.quakearts.appbase.spi.factory.ContextDependencySpiFactory;
@@ -51,14 +54,21 @@ import com.quakearts.appbase.spi.impl.tomcat.AppBaseCDIInstanceManager;
 import com.quakearts.appbase.spi.impl.tomcat.AppBaseContextConfig;
 import com.quakearts.appbase.spi.impl.tomcat.AppBaseVirtualDirectoryResourceSet;
 import com.quakearts.appbase.spi.impl.tomcat.AppBaseWebAppLoader;
-import com.quakearts.appbase.internal.properties.AppBasePropertiesLoader;
-import com.quakearts.appbase.internal.properties.ConfigurationPropertyMap;
 
 /**An implementation of the {@linkplain EmbeddedWebServerSpi} that starts up Tomcat Embedded.
  * The <code>webservers/</code> folder at the root of the application is traversed. Each folder within the <code>webservers/</code> folder
  * represents a single web server instance. Each folder within the <code>webservers/</code> folder should contain a 
  * folder named <code>conf/</code> that contains a file named <code>server.config.json</code>. The contents of the file must be a valid
  * JSON object. If the file is empty then empty curly brackets should be used: <code>{}</code>.
+ * <br />
+ * For users that need only one web server there are several options:
+ * <br />* A JSON file named main-server.config.json can be placed at the root of the classpath. 
+ * <br />* Users who prefer environment variables can set variables named after the properties and prefixed by 'web.'
+ * (case sensitive environments) or 'WEB_' (case insensitive environments). For case insensitive environments, 
+ * CamelCase properties should be converted to underscore variants. Ex a property named camelCase should be stored as CAMEL_CASE. (See 
+ * {@linkplain AppBasePropertiesLoaderImpl#loadParametersFromEnvironment(String)}).
+ * <br />* For users who wish to use a single configuration file the properties can be stored in the 'app.config.json' at the root of the classpath under 
+ * the JSON property "webserver".
  * <br /><br />
  * The properties of the JSON object are described below:
  * <br />
@@ -110,10 +120,12 @@ import com.quakearts.appbase.internal.properties.ConfigurationPropertyMap;
  * .war applications.
  *<br /><br />
  * Each web application can contain a webapp.config.json JSON file in its <code>META-INF/</code> folder that lists the libraries and classpath 
- * folders that should be exposed to the
- * {@link com.quakearts.appbase.spi.impl.tomcat.AppBaseWebAppLoader AppBaseWebAppLoader} custom loader. The custom loader is required to prevent
+ * folders that should be exposed to the {@linkplain AppBaseWebAppLoader} custom loader. The custom loader is required to prevent
  * the Tomcat container from scanning and auto configuring web modules not required by a web application.
- * The file contians a just to JSON properties:
+ * <br />
+ * Alternatively a JSON file named main-webapp.config.json can be stored at the root of the classpath
+ * <br />
+ * The file contains the following JSON properties:
  * <br /><br />
  * <code>webapp.libraries</code>: a JSON object with one property named 'set' that points to a JSON array of string values of the names of the libraries to scan. 
  * ex. <code>{
@@ -130,10 +142,18 @@ import com.quakearts.appbase.internal.properties.ConfigurationPropertyMap;
 public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 	
 	private List<Tomcat> tomcatInstances = new ArrayList<>();
-	private AppBasePropertiesLoader propertiesLoader = new AppBasePropertiesLoader();
+	private AppBasePropertiesLoader propertiesLoader = Main.getAppBasePropertiesLoader();
 	private Set<WebAppListener> webAppListeners = new HashSet<>();
 	private WebAppListener firstListener, lastListener;
+	private String rootLocation = "webservers";
 	
+	public TomcatEmbeddedServerSpiImpl() {
+	}
+	
+	public TomcatEmbeddedServerSpiImpl(String rootLocation) {
+		this.rootLocation = rootLocation;
+	}
+
 	public WebAppListener getFirstWebAppListener() {
 		return firstListener;
 	}
@@ -184,22 +204,21 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 
 	@Override
 	public void initiateEmbeddedWebServer() {
-		
-        File webserversDirLocation = new File("webservers");
+        File webserversDirLocation = new File(rootLocation);
         
         if(!webserversDirLocation.exists()){
-        		if(!createWebserverFromClasspath(webserversDirLocation))
-        			return;
+        	if(!createWebserverFromClasspath(webserversDirLocation))
+        		return;
         		
         } else if(!webserversDirLocation.isDirectory()){
-        		throw new ConfigurationException(webserversDirLocation.getAbsolutePath()+ " is not a directory");
+        	throw new ConfigurationException(webserversDirLocation.getAbsolutePath()+ " is not a directory");
         }
         
-        	for(File webserverLocation : webserversDirLocation.listFiles()){
-        		if(webserverLocation.isDirectory()){
-        			launchInstance(webserverLocation);
-        		}
-        	}
+    	for(File webserverLocation : webserversDirLocation.listFiles()){
+    		if(webserverLocation.isDirectory()){
+    			launchInstance(webserverLocation);
+    		}
+    	}
 	}
 	
 	private boolean createWebserverFromClasspath(File webserversDirLocation) {
@@ -280,13 +299,21 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 	        tomcat.setBaseDir(webserverLocation.getPath());
 	        tomcat.getHost().setConfigClass(AppBaseContextConfig.class.getName());        
 	        File configurationFile = new File(webserverLocation, "conf"+File.separator+"server.config.json");
-	        if(configurationFile.exists() && configurationFile.isFile()){		        
-		        configureWebServer(configurationFile, tomcat, webserverLocation);
+	        ConfigurationPropertyMap webAppConfigurationMap;
+	        if(configurationFile.exists() && configurationFile.isFile()){
+	        	webAppConfigurationMap = propertiesLoader.loadParametersFromFile(configurationFile);
 		    } else if(configurationFile.exists() && !configurationFile.isFile()) {
-		    		throw new ConfigurationException("Invalid file in /"+webserverLocation+". conf/server.config.json is not a file.");
+		    	throw new ConfigurationException("Invalid file in /"+webserverLocation+". conf/server.config.json is not a file.");
+	        } else {
+	        	webAppConfigurationMap = Main.getInstance().getAppConfiguration().getSubConfigurationPropertyMap("web");
+	        	if(webAppConfigurationMap == null)
+	        		webAppConfigurationMap = propertiesLoader.loadParametersFromEnvironment("web");
 	        }
+
+			configureWebServer(webAppConfigurationMap, tomcat, webserverLocation);
+
 	        for(File webappFolder : webappDirLocation.listFiles()) {
-	        		configureWepapp(webappFolder, tomcat);
+	        	configureWepapp(webappFolder, tomcat);
 	        }
 	        
 	        try {
@@ -305,9 +332,7 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 		}
 	}
 	
-	private void configureWebServer(File configurationFile, Tomcat tomcat, File webserverLocation) {
-		final ConfigurationPropertyMap serverConfiguration = propertiesLoader.loadParametersFromFile(configurationFile);            
-	    
+	private void configureWebServer(ConfigurationPropertyMap serverConfiguration, Tomcat tomcat, File webserverLocation) {
 		if(serverConfiguration.containsKey("useapr") 
 				&& serverConfiguration.getBoolean("useapr")) {
 			tomcat.getServer().addLifecycleListener(new AprLifecycleListener());
@@ -335,7 +360,7 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 		try {
 			serverConfiguration.populateBean(tomcat.getConnector(), "connector");				
 		} catch (ConfigurationException e) {
-			throw new ConfigurationException("Invalid connector property in /"+configurationFile.getPath()+":"+e.getMessage(), e);
+			throw new ConfigurationException("Invalid connector property in configuration for "+webserverLocation.getPath()+":"+e.getMessage(), e);
 		} catch (IntrospectionException e) {
 			throw new ConfigurationException("Unable to instrospect "+Connector.class+": "+e.getMessage(), e);
 		}
@@ -358,7 +383,7 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 			try {
 				serverConfiguration.populateBean(sslHostConfig, "sslHostConfig");
 			} catch (ConfigurationException e) {
-				throw new ConfigurationException("Invalid ssl property in /"+configurationFile.getPath()+":"+e.getMessage());
+				throw new ConfigurationException("Invalid ssl property in configuration for "+webserverLocation.getPath()+":"+e.getMessage());
 			} catch (IntrospectionException e) {
 				throw new ConfigurationException("Unable to instrospect "+SSLHostConfig.class+": "+e.getMessage());
 			}
@@ -376,7 +401,7 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 				try {
 					serverConfiguration.populateBean(http2Protocol, "connector.http2");
 				} catch (ConfigurationException e) {
-					throw new ConfigurationException("Invalid ssl property in /"+configurationFile.getPath()+":"+e.getMessage());
+					throw new ConfigurationException("Invalid ssl property in configuration for "+webserverLocation.getPath()+":"+e.getMessage());
 				} catch (IntrospectionException e) {
 					throw new ConfigurationException("Unable to instrospect "+SSLHostConfig.class+": "+e.getMessage());
 				}
@@ -396,7 +421,7 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 				if (serverConfiguration.containsKey("unsecuredPort")) {
 					connector.setPort(serverConfiguration.getInt("unsecuredPort"));
 				} else {
-					throw new ConfigurationException("Missing property in /"+configurationFile.getPath()+": unsecuredPort is required");
+					throw new ConfigurationException("Missing property inconfiguration for "+webserverLocation.getPath()+": unsecuredPort is required");
 				}
 				
 				try {

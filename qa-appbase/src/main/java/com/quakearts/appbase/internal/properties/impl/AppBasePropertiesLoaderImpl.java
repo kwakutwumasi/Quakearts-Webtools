@@ -8,7 +8,7 @@
  * Contributors:
  *     Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com> - initial API and implementation
  ******************************************************************************/
-package com.quakearts.appbase.internal.properties;
+package com.quakearts.appbase.internal.properties.impl;
 
 import java.io.File;
 import java.io.FileReader;
@@ -22,8 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.enterprise.inject.Vetoed;
-
 import com.quakearts.appbase.Main;
 import com.quakearts.appbase.exception.ConfigurationException;
 import com.quakearts.appbase.internal.json.Json;
@@ -31,13 +29,17 @@ import com.quakearts.appbase.internal.json.JsonObject;
 import com.quakearts.appbase.internal.json.JsonValue;
 import com.quakearts.appbase.internal.json.ParseException;
 import com.quakearts.appbase.internal.json.JsonObject.Member;
+import com.quakearts.appbase.internal.properties.AppBasePropertiesLoader;
+import com.quakearts.appbase.internal.properties.ConfigurationPropertyMap;
 
 /**A JSON property loader
  * @author kwakutwumasi-afriyie
  *
  */
-@Vetoed
-public class AppBasePropertiesLoader {
+public class AppBasePropertiesLoaderImpl implements AppBasePropertiesLoader {
+	
+	public AppBasePropertiesLoaderImpl() {
+	}
 	
 	/**Retrieve a list of {@linkplain ConfigurationPropertyMap} objects within the given folder
 	 * @param fileLocation the name of the search folder relative to the application root
@@ -45,6 +47,7 @@ public class AppBasePropertiesLoader {
 	 * @param appName the name of the module to be displayed when displaying any processing error
 	 * @return a list of {@linkplain ConfigurationPropertyMap} objects
 	 */
+	@Override
 	public List<ConfigurationPropertyMap> getAllConfigurationProperties(String fileLocation, String fileSuffix, String appName){
 		List<ConfigurationPropertyMap> configurationProperties = new ArrayList<>();
 		
@@ -62,6 +65,7 @@ public class AppBasePropertiesLoader {
 	 * @param appName the name of the module to be displayed when displaying any processing error
 	 * @return a list of {@linkplain File} objects
 	 */
+	@Override
 	public List<File> listConfigurationFiles(String fileLocation, String fileSuffix, String appName) {
 		List<File> configurationFiles = new ArrayList<>();		
 		File configurationFilesLocation = new File(fileLocation);
@@ -84,10 +88,90 @@ public class AppBasePropertiesLoader {
 		return configurationFiles;
 	}
 	
+	/**Convert environment variables into a {@linkplain ConfigurationPropertyMap}.
+	 * <br /><br />
+	 * <b>Note</b>: Windows OS's and some other environments are not capable of storing variables in 
+	 * a case sensitive manner. Implementations may return the variables in upper case format. This 
+	 * leads to a situation where CamelCase variables cannot be represented. The solution is to split
+	 * CamelCase variables by the '_' character. Ex.: camelCase becomes CAMEL_CASE. Such variables 
+	 * are auto detected and changed to CamelCase.
+	 * @param prefix the variable prefix
+	 * @return a {@linkplain ConfigurationPropertyMap} object
+	 */
+	@Override
+	public ConfigurationPropertyMap loadParametersFromEnvironment(String prefix) {
+		StringBuilder builder = new StringBuilder("{");
+		System.getenv().forEach((key,value)->{
+			if(key.toLowerCase().startsWith(prefix.toLowerCase())) {
+				builder.append(builder.length()==1?"":",").append("\"")
+					.append(convertKey(key, prefix))
+					.append("\"")
+					.append(convertValue(value));
+			}
+		});
+		builder.append("}");
+		
+		JsonValue datasourceValue = Json.parse(builder.toString());
+		ConfigurationPropertyMap map = new ConfigurationPropertyMap();
+		
+		extractProperties("environment variables", map, datasourceValue.asObject(), null);
+		return map;
+	}
+	
+	private String convertKey(String key, String prefix) {
+		if(key.length()==prefix.length())
+			throw new ConfigurationException("Invalid environment variable "
+					+key+". Missing variable after prefix");
+		
+		key = key.substring(prefix.length());
+		char prefixDivider = key.charAt(0);
+		key = key.substring(1);
+		
+		if(prefixDivider == '_') {
+			key = convertWindowsTypeVariable(key);
+		}
+		
+		return key;
+	}
+
+	private String convertWindowsTypeVariable(String key) {
+		boolean lower=false;
+		StringBuilder builder = new StringBuilder();
+		for(char c:key.toCharArray()) {
+			switch (c) {
+			case '_':
+				lower=true;
+				break;
+			default:
+				if(lower && Character.isLowerCase(c)) {
+					c = Character.toUpperCase(c);
+				} else if(!lower && Character.isUpperCase(c)) {
+					c = Character.toLowerCase(c);
+				}
+				lower=false;
+				builder.append(c);
+				break;
+			}
+		}
+		return builder.toString();
+	}
+
+	private String convertValue(String value) {
+		if(value.startsWith(":"))
+			return value;
+
+		if(value.startsWith("{"))
+			return ":"+value;
+
+		return new StringBuilder(":\"")
+				.append(value).append("\"").toString();
+	}
+
 	/**Load a {@linkplain ConfigurationPropertyMap} from a file
 	 * @param configurationFile the {@linkplain File} to return
 	 * @return a {@linkplain ConfigurationPropertyMap} object
 	 */
+	@Override
 	public ConfigurationPropertyMap loadParametersFromFile(File configurationFile){
 		try(FileReader reader = new FileReader(configurationFile)) {
 			return loadParametersFromReader(configurationFile.getAbsolutePath(), reader);
@@ -107,6 +191,7 @@ public class AppBasePropertiesLoader {
 	 * @return a {@linkplain ConfigurationPropertyMap} object
 	 * @throws IOException
 	 */
+	@Override
 	public ConfigurationPropertyMap loadParametersFromReader(String filePath, Reader reader)
 			throws IOException {
 		ConfigurationPropertyMap map = new ConfigurationPropertyMap();
@@ -196,8 +281,9 @@ public class AppBasePropertiesLoader {
 			value = extractSpecialObjectBinary(new ParseContext(ctx.getFilePath(), memberPath), objectValue);
 			break;
 		default:
-			throw new ConfigurationException("Invalid configuration parameter "+ctx.getPath()+" found in "
-					+ctx.getFilePath()+". Conversion not understood: "+objectName);
+			ConfigurationPropertyMap map = new ConfigurationPropertyMap();
+			extractProperties(ctx.getFilePath(), map, object, ctx.getPath());
+			value = map;
 		}
 		
 		return value;

@@ -110,6 +110,14 @@ public class ConfigurationPropertyMap extends HashMap<String, Serializable> {
 			throw new ConfigurationException(property+" is not a valid floating point number");
 	}
 	
+	/**Return a sub ConfigurationPropertyMap
+	 * @param property
+	 * @throws ConfigurationException if the returned property is not a valid ConfigurationPropertyMap
+	 */
+	public ConfigurationPropertyMap getSubConfigurationPropertyMap(String property) {
+		return get(property, ConfigurationPropertyMap.class);
+	}
+	
 	/**Return a value cast to the specified class with the property name. This method attempts to cast
 	 * the returned value to the class specified. If the returned object cannot be cast, an attempt is made
 	 * to find a constructor that takes a single parameter of type {@linkplain String} and calls it, passing

@@ -12,6 +12,7 @@ package com.quakearts.appbase;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
@@ -25,6 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.quakearts.appbase.exception.ConfigurationException;
+import com.quakearts.appbase.internal.properties.AppBasePropertiesLoader;
+import com.quakearts.appbase.internal.properties.ConfigurationPropertyMap;
+import com.quakearts.appbase.internal.properties.impl.AppBasePropertiesLoaderImpl;
 import com.quakearts.appbase.spi.ContextDependencySpi;
 import com.quakearts.appbase.spi.DataSourceProviderSpi;
 import com.quakearts.appbase.spi.EmbeddedWebServerSpi;
@@ -59,6 +63,7 @@ import com.quakearts.appbase.spi.factory.JavaTransactionManagerSpiFactory;
 @Vetoed
 public class Main {
 
+	private static final String APP_CONFIG_JSON = "app.config.json";
 	private static final String USAGE = "Usage: webapp mainclass [filename] [-dontwaitinmain]\n"
 			+ "\n"
 			+ "mainclass: the CDI managed bean that serves as the application starting point\n"
@@ -68,17 +73,46 @@ public class Main {
 	private static final String DONT_WAIT_IN_MAIN = "-dontwaitinmain";
 	public static final Logger log = LoggerFactory.getLogger(Main.class);
 	private static Main instance;
+	private static AppBasePropertiesLoaderImpl defualtAppBasePropertiesLoader;
 	private ContextDependencySpi contextDependencySpi;
 	private EmbeddedWebServerSpi embeddedWebServerSpi;
 	private JavaTransactionManagerSpi javaTransactionManagerSpi;
 	private JavaNamingDirectorySpi javaNamingDirectorySpi;
 	private DataSourceProviderSpi dataSourceProviderSpi;
 	
+	private ConfigurationPropertyMap appConfiguration = new ConfigurationPropertyMap();
+	
 	public static Main getInstance() {
+		if(instance == null)
+			new Main();
+		
 		return instance;
 	}
 	
+	public static AppBasePropertiesLoader getAppBasePropertiesLoader() {
+		if(defualtAppBasePropertiesLoader == null) {
+			defualtAppBasePropertiesLoader = new AppBasePropertiesLoaderImpl();
+		}
+		
+		return defualtAppBasePropertiesLoader;
+	}
+	
+	public static void setAppBasePropertiesLoader(AppBasePropertiesLoaderImpl defualtAppBasePropertiesLoader) {
+		Main.defualtAppBasePropertiesLoader = defualtAppBasePropertiesLoader;
+	}
+	
+	public ConfigurationPropertyMap getAppConfiguration() {
+		return appConfiguration;
+	}
+	
 	private Main() {
+		InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(APP_CONFIG_JSON);
+		if(is != null)
+			try {
+				appConfiguration = getAppBasePropertiesLoader().loadParametersFromReader(APP_CONFIG_JSON, new InputStreamReader(is));
+			} catch (IOException e) {
+				throw new ConfigurationException("Unable to load app.config.json", e);
+			}
 	}
 	
 	void startUp(String mainClassName, Properties props){
@@ -182,7 +216,7 @@ public class Main {
 			return;
 		}
 		
-		instance = new Main();
+		getInstance();
 		instance.startUp(mainClassName, props);
 		Runtime.getRuntime().addShutdownHook(new Thread(()->{
 			try {

@@ -4,9 +4,9 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.quakearts.appbase.ClasspathResources;
+import com.quakearts.appbase.classpath.ClasspathResources;
+import com.quakearts.appbase.classpath.impl.ClasspathResourcesImpl;
 import com.quakearts.appbase.exception.ConfigurationException;
-import com.quakearts.appbase.impl.ClasspathResourcesImpl;
 
 public class TestClasspathResourcesSpiImpl {
 

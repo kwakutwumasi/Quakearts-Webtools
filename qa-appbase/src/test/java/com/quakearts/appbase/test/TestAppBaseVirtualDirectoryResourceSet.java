@@ -16,7 +16,7 @@ import org.apache.catalina.webresources.FileResource;
 import org.apache.catalina.webresources.StandardRoot;
 import org.junit.Test;
 
-import com.quakearts.appbase.impl.ClasspathResourcesImpl;
+import com.quakearts.appbase.classpath.impl.ClasspathResourcesImpl;
 import com.quakearts.appbase.spi.impl.tomcat.AppBaseVirtualDirectoryResourceSet;
 
 public class TestAppBaseVirtualDirectoryResourceSet {
