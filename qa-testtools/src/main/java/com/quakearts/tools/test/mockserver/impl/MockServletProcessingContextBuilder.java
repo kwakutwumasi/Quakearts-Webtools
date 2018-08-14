@@ -75,14 +75,11 @@ class MockServletProcessingContextBuilder {
 				try {
 					InputStream in = req.getInputStream();
 					if(in.available()>0) {
-						byte[] buff = new byte[1024];
 						ByteArrayOutputStream bos = new ByteArrayOutputStream(1024);
 						int read;
-						while ((read=in.read(buff))>=buff.length) {
-							bos.write(buff);
+						while ((read=in.read())!=-1) {
+							bos.write(read);
 						}
-						if(read>0)
-							bos.write(buff, 0, read);
 						
 						requestBuilder.setContentBytes(bos.toByteArray());
 					}
