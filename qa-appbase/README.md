@@ -1,6 +1,6 @@
 # qa-appbase
 
-This library forms the basis of the QuakeArts.com Application Development Platform. It is a custom integration of Java Transaction API (JTA), Java Connector Architecture (JCA), Context and Dependency Injection (CDI), a Servlet Container, and Java Naming and Directory Interface (JNDI), all part of the Jakarta Enterprise Edition (JEE) Standard (formally Java Enterprise Edition). It is similar to the Spring Boot Platform.
+This library forms the basis of the QuakeArts.com Application Development Platform. It is a custom integration of Java Transaction API (JTA), Java Connector Architecture (JCA), Context and Dependency Injection (CDI), a Servlet Container, and Java Naming and Directory Interface (JNDI), all part of the Jakarta Enterprise Edition (JEE) Standard (formally Java Enterprise Edition). It is similar to Spring Boot Platform with Spring Injection and a Tomcat Webserver. The code has 80%+ test coverage and is stable.
 
 #### Requirements
 
@@ -28,7 +28,7 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-appbase</artifactId>
-	<version>2.0</version>
+	<version>2.1</version>
 </dependency>
 
 ```
