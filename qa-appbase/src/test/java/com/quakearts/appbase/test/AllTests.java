@@ -10,6 +10,7 @@ import org.junit.runners.Suite.SuiteClasses;
 		TestWeldContextDependencySpiImpl.class, TestFactoryClasses.class,
 		TestAppBaseVirtualDirectoryResourceSet.class,
 		TestAppBaseWebappClassLoader.class,
-		TestClasspathResourcesSpiImpl.class})
+		TestClasspathResourcesSpiImpl.class,
+		TestInternalJson.class})
 public class AllTests {
 }

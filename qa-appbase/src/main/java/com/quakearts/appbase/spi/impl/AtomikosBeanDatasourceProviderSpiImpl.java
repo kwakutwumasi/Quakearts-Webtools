@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -96,12 +95,16 @@ import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
 @Vetoed
 public class AtomikosBeanDatasourceProviderSpiImpl implements DataSourceProviderSpi {
 
-	private Map<String, DataSource> datasources = new ConcurrentHashMap<>();
-	private List<AtomikosDataSourceBean> dataSourceBeans = new ArrayList<>();
+	private Map<String, AtomikosDataSourceBean> datasources = new ConcurrentHashMap<>();
+	private String resourceLocation = "atomikos";
 	
 	public AtomikosBeanDatasourceProviderSpiImpl() {
 	}
 	
+	public AtomikosBeanDatasourceProviderSpiImpl(String resourceLocation) {
+		this.resourceLocation = resourceLocation;
+	}
+
 	@Override
 	public void initiateDataSourceSpi() {
 		try {
@@ -115,10 +118,10 @@ public class AtomikosBeanDatasourceProviderSpiImpl implements DataSourceProvider
 		AppBasePropertiesLoader appBasePropertiesLoaderImpl = Main.getAppBasePropertiesLoader();
 		
 		List<ConfigurationPropertyMap> loadedConfigurationPropertyFiles = appBasePropertiesLoaderImpl
-				.getAllConfigurationProperties("atomikos"+File.separator+"datasources", ".ds.json", "QA AppBase Atomikos datasource definition");
+				.getAllConfigurationProperties(resourceLocation+File.separator+"datasources", ".ds.json", "QA AppBase Atomikos datasource definition");
 		
 		InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("default.ds.json");
-		if(in!=null)
+		if(in!=null) {
 			try(InputStream readin = in;) {
 				ConfigurationPropertyMap defaultConfigurationPropertyMap
 					= appBasePropertiesLoaderImpl.loadParametersFromReader(".classpath", new InputStreamReader(readin));
@@ -126,14 +129,16 @@ public class AtomikosBeanDatasourceProviderSpiImpl implements DataSourceProvider
 			} catch (IOException e) {
 				Main.log.error("Unable to load default.ds.json", e);
 			}
-		
-		ConfigurationPropertyMap environmentVariableMap = appBasePropertiesLoaderImpl.loadParametersFromEnvironment("ds");
-		if(!environmentVariableMap.isEmpty())
-			loadedConfigurationPropertyFiles.add(environmentVariableMap);
-		
-		ConfigurationPropertyMap systemWideConfigurationPropertyMap = Main.getInstance().getAppConfiguration().getSubConfigurationPropertyMap("datasource");
-		if(systemWideConfigurationPropertyMap!=null)
-			loadedConfigurationPropertyFiles.add(systemWideConfigurationPropertyMap);
+		} else {		
+			ConfigurationPropertyMap environmentVariableMap = appBasePropertiesLoaderImpl.loadParametersFromEnvironment("ds");
+			if(!environmentVariableMap.isEmpty()) {
+				loadedConfigurationPropertyFiles.add(environmentVariableMap);
+			} else {
+				ConfigurationPropertyMap systemWideConfigurationPropertyMap = Main.getInstance().getAppConfiguration().getSubConfigurationPropertyMap("datasource");
+				if(systemWideConfigurationPropertyMap!=null)
+					loadedConfigurationPropertyFiles.add(systemWideConfigurationPropertyMap);
+			}
+		}
 		
 		for(ConfigurationPropertyMap loadedConfigurationPropertyFile:loadedConfigurationPropertyFiles){
 			getDataSource(loadedConfigurationPropertyFile);
@@ -188,8 +193,8 @@ public class AtomikosBeanDatasourceProviderSpiImpl implements DataSourceProvider
 		if (configurationParameters.containsKey("minPoolSize"))
 			atomikosDataSourceBean.setMinPoolSize(configurationParameters.getInt("minPoolSize"));
 		
-		if (configurationParameters.containsKey("poolSize"))
-			atomikosDataSourceBean.setPoolSize(configurationParameters.getInt("poolSize"));
+		if (configurationParameters.containsKey("concurrentConnectionValidation"))
+			atomikosDataSourceBean.setConcurrentConnectionValidation(configurationParameters.getBoolean("concurrentConnectionValidation"));
 		
 		if (configurationParameters.containsKey("reapTimeout"))
 			atomikosDataSourceBean.setReapTimeout(configurationParameters.getInt("reapTimeout"));
@@ -215,9 +220,9 @@ public class AtomikosBeanDatasourceProviderSpiImpl implements DataSourceProvider
 	
 	@Override
 	public void shutDownDataSourceProvider() {
-		if(dataSourceBeans.isEmpty())
+		if(datasources.isEmpty())
 			return;
 		
-		dataSourceBeans.stream().forEach((dataSourceBean)-> dataSourceBean.close());
+		datasources.values().stream().forEach((dataSourceBean)-> dataSourceBean.close());
 	}
 }

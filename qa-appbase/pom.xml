@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-appbase</artifactId>
-	<version>2.0</version>
+	<version>2.1</version>
 	<name>Quakearts App Base</name>
 	<description>A configuration of Context Dependency Injection, Java Transaction Management with a DataSource provider and an embedded webserver. This serves as a base for standalone 'application serverless' systems, such as the Quakearts MXHub system</description>
 	<build>

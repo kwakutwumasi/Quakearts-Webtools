@@ -41,7 +41,7 @@ public class TestFactoryClasses {
 			JavaNamingDirectorySpiFactory.getInstance().createJavaNamingDirectorySpi(MainTestHelper.class.getName());
 			JavaNamingDirectorySpiFactory.getInstance().createJavaNamingDirectorySpi(MainTestHelper.class.getName());
 		} finally {
-			new TestAppBaseMainStartup().clearInstanceVariables();
+			TestAppBaseMainStartup.clearInstanceVariables();
 		}
 	}
 
@@ -72,10 +72,9 @@ public class TestFactoryClasses {
 			JavaTransactionManagerSpiFactory.getInstance()
 					.createJavaTransactionManagerSpi(MainTestHelper.class.getName());
 			JavaTransactionManagerSpiFactory.getInstance()
-					.createJavaTransactionManagerSpi(MainTestHelper.class.getName());
-			new TestAppBaseMainStartup().clearInstanceVariables();
+					.createJavaTransactionManagerSpi(MainTestHelper.class.getName());			
 		} finally {
-			new TestAppBaseMainStartup().clearInstanceVariables();
+			TestAppBaseMainStartup.clearInstanceVariables();
 		}
 	}
 
@@ -104,9 +103,8 @@ public class TestFactoryClasses {
 		try {
 			EmbeddedWebServerSpiFactory.getInstance().createEmbeddedWebServerSpi(MainTestHelper.class.getName());
 			EmbeddedWebServerSpiFactory.getInstance().createEmbeddedWebServerSpi(MainTestHelper.class.getName());
-			new TestAppBaseMainStartup().clearInstanceVariables();
-		} finally {
-			new TestAppBaseMainStartup().clearInstanceVariables();
+		} finally {			
+			TestAppBaseMainStartup.clearInstanceVariables();
 		}
 	}
 
@@ -135,9 +133,8 @@ public class TestFactoryClasses {
 		try {
 			DataSourceProviderSpiFactory.getInstance().createDataSourceProviderSpi(MainTestHelper.class.getName());
 			DataSourceProviderSpiFactory.getInstance().createDataSourceProviderSpi(MainTestHelper.class.getName());
-			new TestAppBaseMainStartup().clearInstanceVariables();
 		} finally {
-			new TestAppBaseMainStartup().clearInstanceVariables();
+			TestAppBaseMainStartup.clearInstanceVariables();
 		}
 	}
 
@@ -167,7 +164,7 @@ public class TestFactoryClasses {
 			ContextDependencySpiFactory.getInstance().createContextDependencySpi(MainTestHelper.class.getName());
 			ContextDependencySpiFactory.getInstance().createContextDependencySpi(MainTestHelper.class.getName());
 		} finally {
-			new TestAppBaseMainStartup().clearInstanceVariables();
+			TestAppBaseMainStartup.clearInstanceVariables();
 		}
 	}
 }

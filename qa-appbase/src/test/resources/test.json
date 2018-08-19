@@ -1,0 +1,13 @@
+{
+	"boolean":true,
+	"double":1.0,
+	"float":1e10,
+	"string":"string",
+	"object":{
+		"hello":"world",
+		"false":false
+	},
+	"array":["hello", 1, true],
+	"null":null,
+	"escape":"\u0A0f\t\b\f\r\n"
+}

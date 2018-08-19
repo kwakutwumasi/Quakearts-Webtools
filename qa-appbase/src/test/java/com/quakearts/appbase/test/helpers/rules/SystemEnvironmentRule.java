@@ -1,4 +1,4 @@
-package com.quakearts.appbase.test.helpers;
+package com.quakearts.appbase.test.helpers.rules;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ public class SystemEnvironmentRule implements TestRule {
 			exposedEnv = (Map<String, String>) mapField.get(System.getenv());
 			copyOfEnv = new HashMap<>(exposedEnv);
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			throw new RuntimeException("Unable to get map field", e);
+			throw new RuntimeException("Unable to get environment variable map field", e);
 		}
 		
 		return base;

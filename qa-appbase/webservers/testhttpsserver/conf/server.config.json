@@ -7,5 +7,7 @@
 	"sslHostConfig.certificateKeystorePassword":"password1",
 	"sslHostConfig.certificateKeystoreFile":"conf/tomcat.keystore",
 	"addunsecured":true,
-	"unsecuredPort":8190
+	"unsecuredPort":8190,
+	"unsecuredConnectorProtocol.server":"Test Server",
+	"usehttp2":true
 }

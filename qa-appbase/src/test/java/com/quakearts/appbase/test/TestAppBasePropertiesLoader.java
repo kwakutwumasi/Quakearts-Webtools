@@ -19,9 +19,9 @@ import com.quakearts.appbase.exception.ConfigurationException;
 import com.quakearts.appbase.internal.properties.AppBasePropertiesLoader;
 import com.quakearts.appbase.internal.properties.ConfigurationPropertyMap;
 import com.quakearts.appbase.internal.properties.impl.AppBasePropertiesLoaderImpl;
-import com.quakearts.appbase.test.helpers.SystemEnvironmentRule;
 import com.quakearts.appbase.test.helpers.TestBean;
 import com.quakearts.appbase.test.helpers.TestBeanReadOnly;
+import com.quakearts.appbase.test.helpers.rules.SystemEnvironmentRule;
 
 public class TestAppBasePropertiesLoader {
 

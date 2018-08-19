@@ -5,7 +5,6 @@ import static org.hamcrest.core.Is.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.KeyManagementException;
@@ -13,10 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.text.SimpleDateFormat;
 import java.util.Base64;
-import java.util.Date;
-
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -27,6 +23,7 @@ import org.apache.tomcat.websocket.server.WsContextListener;
 import org.apache.tomcat.websocket.server.WsSessionListener;
 import org.jboss.weld.module.web.servlet.WeldInitialListener;
 import org.jboss.weld.module.web.servlet.WeldTerminalListener;
+import org.junit.Rule;
 import org.junit.Test;
 
 import com.quakearts.appbase.exception.ConfigurationException;
@@ -46,7 +43,11 @@ import com.quakearts.appbase.spi.impl.tomcat.AppBaseCDIInstanceManager;
 import com.quakearts.appbase.test.experiments.TestInjectImpl;
 import com.quakearts.appbase.test.experiments.TestSubInjectDecorator;
 import com.quakearts.appbase.test.experiments.TestSubInjectImpl;
+import com.quakearts.appbase.test.helpers.HideResourceClassLoader;
+import com.quakearts.appbase.test.helpers.TestListener1;
 import com.quakearts.appbase.test.helpers.TestServlet;
+import com.quakearts.appbase.test.helpers.rules.ClassLoaderRule;
+import com.quakearts.appbase.test.helpers.rules.SystemEnvironmentRule;
 
 public class TestTomcatEmbeddedServerSpiImpl {
 
@@ -77,8 +78,20 @@ public class TestTomcatEmbeddedServerSpiImpl {
 			fail("Did not reject double registration");
 		} catch (ConfigurationException e) {
 		}
+
+		try {
+			serverSpi.addDefaultListener(new WebAppListener(String.class, Priority.ANY));
+			fail("Did not reject invalid listener");
+		} catch (ConfigurationException e) {
+		}
+
+		try {
+			serverSpi.addDefaultListener(null);
+			fail("Did not reject null listener");
+		} catch (ConfigurationException e) {
+		}
 		
-		new TestAppBaseMainStartup().clearInstanceVariables();
+		TestAppBaseMainStartup.clearInstanceVariables();
 	}
 	
 	@Test
@@ -101,6 +114,8 @@ public class TestTomcatEmbeddedServerSpiImpl {
 			EmbeddedWebServerSpiFactory.getInstance().createEmbeddedWebServerSpi(TomcatEmbeddedServerSpiImpl.class.getName());
 			EmbeddedWebServerSpi serverSpi = EmbeddedWebServerSpiFactory.getInstance().getEmbeddedWebServerSpi();
 	
+			serverSpi.addDefaultListener(new WebAppListener(TestListener1.class, Priority.ANY));
+			
 			dependencySpi.initiateContextDependency();
 			serverSpi.initiateEmbeddedWebServer();
 			
@@ -232,57 +247,341 @@ public class TestTomcatEmbeddedServerSpiImpl {
 			JavaNamingDirectorySpiFactory.getInstance()
 			.getJavaNamingDirectorySpi()
 			.shutdownJNDIService();
-			new TestAppBaseMainStartup().clearInstanceVariables();
+			TestAppBaseMainStartup.clearInstanceVariables();
+		}
+	}
+	
+	private HideResourceClassLoader classLoader = new HideResourceClassLoader();
+	
+	@Rule
+	public ClassLoaderRule classLoaderRule = new ClassLoaderRule()
+		.replaceClassLoaderWith(classLoader);
+	
+	@Rule
+	public SystemEnvironmentRule systemEnvironmentRule = new SystemEnvironmentRule(); 
+	
+	@Test
+	public void testTomcatEmbeddedServerSpiImplFromClassPath() throws Exception {
+		classLoader.setResourcePattern(null);
+		JavaNamingDirectorySpiFactory.getInstance()
+		.createJavaNamingDirectorySpi(JavaNamingDirectorySpiImpl.class.getName())
+		.initiateJNDIServices();
+
+		JavaTransactionManagerSpiFactory.getInstance()
+			.createJavaTransactionManagerSpi(AtomikosJavaTransactionManagerSpiImpl.class.getName())
+			.initiateJavaTransactionManager();
+		ContextDependencySpi dependencySpi = ContextDependencySpiFactory.getInstance()
+			.createContextDependencySpi(WeldContextDependencySpiImpl.class.getName());
+		
+		File testWebappLocation = new File("webserverfromclasspath");
+		deleteFile(testWebappLocation);
+		
+		try {
+			EmbeddedWebServerSpiFactory.getInstance().createEmbeddedWebServerSpi(TomcatEmbeddedServerSpiImpl.class.getName());
+			EmbeddedWebServerSpi serverSpi = new TomcatEmbeddedServerSpiImpl("webserverfromclasspath");
+			dependencySpi.initiateContextDependency();
+			serverSpi.initiateEmbeddedWebServer();
+			
+			assertThat(testWebappLocation.isDirectory(), is(true));
+			File testFile = new File(testWebappLocation, "default-server"
+					+File.separator
+					+"webapps"
+					+File.separator
+					+"webapp"
+					+File.separator
+					+"META-INF"
+					+File.separator
+					+"webapp.config.json");
+			assertThat(testFile.isFile(), is(true));
+			
+			testFile = new File(testWebappLocation, "default-server"
+					+File.separator
+					+"webapps"
+					+File.separator
+					+"webapp"
+					+File.separator
+					+"WEB-INF"
+					+File.separator
+					+"web.xml");
+			assertThat(testFile.isFile(), is(true));
+			
+			testFile = new File(testWebappLocation, "default-server"
+					+File.separator
+					+"conf"
+					+File.separator
+					+"server.config.json");
+			assertThat(testFile.isFile(), is(true));
+			
+			HttpURLConnection connection = (HttpURLConnection) new URL("http", "localhost", 8280, "/test/test").openConnection();
+			
+			connection.connect();
+			
+			assertThat(connection.getResponseCode(), is(404));
+			assertThat(connection.getHeaderField("Server"), is("Test Server"));
+			assertThat(connection.getHeaderField("X-Powered-By") != null, is(true));
+			
+			serverSpi.shutdownEmbeddedWebServer();
+		} finally {
+			ContextDependencySpiFactory.getInstance()
+			.getContextDependencySpi()
+			.shutDownContextDependency();
+			
+			JavaTransactionManagerSpiFactory.getInstance()
+			.getJavaTransactionManagerSpi()
+			.shutdownJavaTransactionManager();
+		
+			JavaNamingDirectorySpiFactory.getInstance()
+			.getJavaNamingDirectorySpi()
+			.shutdownJNDIService();
+			
+			TestAppBaseMainStartup.clearInstanceVariables();
+			
+			deleteFile(testWebappLocation);
 		}
 	}
 	
 	@Test
-	public void testCreateDefaults() throws Exception {
-		TomcatEmbeddedServerSpiImpl impl = new TomcatEmbeddedServerSpiImpl();
-		SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
-		File testWebappLocation = new File("test-"+format.format(new Date()));
-		ClassLoader loader = Thread.currentThread()
-				.getContextClassLoader();
-		InputStream webappconfigin = loader
-				.getResourceAsStream("main-webapp.config.json"),
-				webxmlin = loader
-					.getResourceAsStream("main-web.xml"),
-				serverconfigin = loader
-					.getResourceAsStream("main-server.config.json");
+	public void testTomcatEmbeddedServerSpiImplFromAppConfig() throws Exception {
+		classLoader.setResourcePattern("(.*main-server\\.config\\.json)|(.*main-web\\.xml)");
+		JavaNamingDirectorySpiFactory.getInstance()
+		.createJavaNamingDirectorySpi(JavaNamingDirectorySpiImpl.class.getName())
+		.initiateJNDIServices();
+
+		JavaTransactionManagerSpiFactory.getInstance()
+			.createJavaTransactionManagerSpi(AtomikosJavaTransactionManagerSpiImpl.class.getName())
+			.initiateJavaTransactionManager();
+		ContextDependencySpi dependencySpi = ContextDependencySpiFactory.getInstance()
+			.createContextDependencySpi(WeldContextDependencySpiImpl.class.getName());
 		
-		impl.createWebserver(testWebappLocation, webappconfigin, webxmlin, serverconfigin);
-		assertThat(testWebappLocation.isDirectory(), is(true));
-		File testFile = new File(testWebappLocation, "default-server"
-				+File.separator
-				+"webapps"
-				+File.separator
-				+"webapp"
-				+File.separator
-				+"META-INF"
-				+File.separator
-				+"webapp.config.json");
-		assertThat(testFile.isFile(), is(true));
+		File testWebappLocation = new File("webserverfromappconfig");
+		deleteFile(testWebappLocation);
 		
-		testFile = new File(testWebappLocation, "default-server"
-				+File.separator
-				+"webapps"
-				+File.separator
-				+"webapp"
-				+File.separator
-				+"WEB-INF"
-				+File.separator
-				+"web.xml");
-		assertThat(testFile.isFile(), is(true));
+		try {
+			EmbeddedWebServerSpiFactory.getInstance().createEmbeddedWebServerSpi(TomcatEmbeddedServerSpiImpl.class.getName());
+			EmbeddedWebServerSpi serverSpi = new TomcatEmbeddedServerSpiImpl("webserverfromappconfig");
+			dependencySpi.initiateContextDependency();
+			serverSpi.initiateEmbeddedWebServer();
+			
+			File testFile = new File(testWebappLocation, "default-server"
+					+File.separator
+					+"webapps"
+					+File.separator
+					+"webapp"
+					+File.separator
+					+"WEB-INF"
+					+File.separator
+					+"web.xml");
+			assertThat(testFile.isFile(), is(true));
+			
+			HttpURLConnection connection = (HttpURLConnection) new URL("http", "localhost", 8380, "/test/test").openConnection();
+			
+			connection.connect();
+			
+			assertThat(connection.getResponseCode(), is(404));
+			assertThat(connection.getHeaderField("Server"), is("Test Server"));
+			assertThat(connection.getHeaderField("X-Powered-By") != null, is(true));
+			
+			serverSpi.shutdownEmbeddedWebServer();
+		} finally {
+			ContextDependencySpiFactory.getInstance()
+			.getContextDependencySpi()
+			.shutDownContextDependency();
+			
+			JavaTransactionManagerSpiFactory.getInstance()
+			.getJavaTransactionManagerSpi()
+			.shutdownJavaTransactionManager();
 		
-		testFile = new File(testWebappLocation, "default-server"
-				+File.separator
-				+"conf"
-				+File.separator
-				+"server.config.json");
-		assertThat(testFile.isFile(), is(true));
+			JavaNamingDirectorySpiFactory.getInstance()
+			.getJavaNamingDirectorySpi()
+			.shutdownJNDIService();
+			
+			TestAppBaseMainStartup.clearInstanceVariables();
+			
+			deleteFile(testWebappLocation);
+		}
+	}
+	
+	@Test
+	public void testTomcatEmbeddedServerSpiImplFromEnvironmentVariables() throws Exception {
+		classLoader.setResourcePattern("(.*main-server\\.config\\.json)|(.*app\\.config\\.json)");
 		
-		try(InputStream in = impl.getGenericWebXML()){
-			assertThat(in != null, is(true));
+		systemEnvironmentRule.set("web.port").as(":8480")
+							.set("web.connectorProtocol").as("HTTP/1.1")
+							.set("web.connector.xpoweredBy").as(":true")
+							.set("web.connectorProtocol.server").as("Test Server");
+		
+		JavaNamingDirectorySpiFactory.getInstance()
+		.createJavaNamingDirectorySpi(JavaNamingDirectorySpiImpl.class.getName())
+		.initiateJNDIServices();
+	
+		JavaTransactionManagerSpiFactory.getInstance()
+			.createJavaTransactionManagerSpi(AtomikosJavaTransactionManagerSpiImpl.class.getName())
+			.initiateJavaTransactionManager();
+		ContextDependencySpi dependencySpi = ContextDependencySpiFactory.getInstance()
+			.createContextDependencySpi(WeldContextDependencySpiImpl.class.getName());
+		
+		File testWebappLocation = new File("webserverfromenvironment");
+		deleteFile(testWebappLocation);
+		
+		try {
+			EmbeddedWebServerSpiFactory.getInstance().createEmbeddedWebServerSpi(TomcatEmbeddedServerSpiImpl.class.getName());
+			EmbeddedWebServerSpi serverSpi = new TomcatEmbeddedServerSpiImpl("webserverfromenvironment");
+			dependencySpi.initiateContextDependency();
+			serverSpi.initiateEmbeddedWebServer();
+			
+			HttpURLConnection connection = (HttpURLConnection) new URL("http", "localhost", 8480, "/test/test").openConnection();
+			
+			connection.connect();
+			
+			assertThat(connection.getResponseCode(), is(404));
+			assertThat(connection.getHeaderField("Server"), is("Test Server"));
+			assertThat(connection.getHeaderField("X-Powered-By") != null, is(true));
+			
+			serverSpi.shutdownEmbeddedWebServer();
+		} finally {
+			ContextDependencySpiFactory.getInstance()
+			.getContextDependencySpi()
+			.shutDownContextDependency();
+			
+			JavaTransactionManagerSpiFactory.getInstance()
+			.getJavaTransactionManagerSpi()
+			.shutdownJavaTransactionManager();
+		
+			JavaNamingDirectorySpiFactory.getInstance()
+			.getJavaNamingDirectorySpi()
+			.shutdownJNDIService();
+			
+			TestAppBaseMainStartup.clearInstanceVariables();
+			
+			deleteFile(testWebappLocation);
+			systemEnvironmentRule.reset();
+		}
+	}
+
+	@Test
+	public void testTomcatEmbeddedServerSpiImplDefault() throws Exception {
+		classLoader.setResourcePattern("(.*main-server\\.config\\.json)|(.*app\\.config\\.json)");
+		JavaNamingDirectorySpiFactory.getInstance()
+		.createJavaNamingDirectorySpi(JavaNamingDirectorySpiImpl.class.getName())
+		.initiateJNDIServices();
+
+		JavaTransactionManagerSpiFactory.getInstance()
+			.createJavaTransactionManagerSpi(AtomikosJavaTransactionManagerSpiImpl.class.getName())
+			.initiateJavaTransactionManager();
+		ContextDependencySpi dependencySpi = ContextDependencySpiFactory.getInstance()
+			.createContextDependencySpi(WeldContextDependencySpiImpl.class.getName());
+		
+		File testWebappLocation = new File("defaultwebserver");
+		deleteFile(testWebappLocation);
+		
+		try {
+			EmbeddedWebServerSpiFactory.getInstance().createEmbeddedWebServerSpi(TomcatEmbeddedServerSpiImpl.class.getName());
+			EmbeddedWebServerSpi serverSpi = new TomcatEmbeddedServerSpiImpl("defaultwebserver");
+			dependencySpi.initiateContextDependency();
+			serverSpi.initiateEmbeddedWebServer();
+			
+			HttpURLConnection connection = (HttpURLConnection) new URL("http", "localhost", 8080, "/test/test").openConnection();
+			
+			connection.connect();
+			
+			assertThat(connection.getResponseCode(), is(404));			
+			serverSpi.shutdownEmbeddedWebServer();
+		} finally {
+			ContextDependencySpiFactory.getInstance()
+			.getContextDependencySpi()
+			.shutDownContextDependency();
+			
+			JavaTransactionManagerSpiFactory.getInstance()
+			.getJavaTransactionManagerSpi()
+			.shutdownJavaTransactionManager();
+		
+			JavaNamingDirectorySpiFactory.getInstance()
+			.getJavaNamingDirectorySpi()
+			.shutdownJNDIService();
+			
+			TestAppBaseMainStartup.clearInstanceVariables();
+			
+			deleteFile(testWebappLocation);
+		}
+	}
+	
+	@Test
+	public void testInitiateWithoutClassPathFiles() throws Exception {
+		classLoader.setResourcePattern("(.*main-server\\.config\\.json)|(.*main-web\\.xml)|(.*main-webapp\\.config\\.json)");
+		TomcatEmbeddedServerSpiImpl serverSpi = new TomcatEmbeddedServerSpiImpl("nowebservers");
+		serverSpi.initiateEmbeddedWebServer();
+		
+		assertThat(serverSpi.getTomcatInstances().isEmpty(), is(true));
+		serverSpi.shutdownEmbeddedWebServer();
+	}
+	
+	@Test(expected=ConfigurationException.class)
+	public void testTomcatEmbeddedServerSpiImplWithInvalidWebserverFolder() throws Exception {
+		TomcatEmbeddedServerSpiImpl serverSpi = new TomcatEmbeddedServerSpiImpl("pom.xml");
+		serverSpi.initiateEmbeddedWebServer();
+	}
+	
+	@Test(expected=ConfigurationException.class)
+	public void testTomcatEmbeddedServerSpiImplWithInvalidWebserverFolderContents() throws Exception {
+		TomcatEmbeddedServerSpiImpl serverSpi = new TomcatEmbeddedServerSpiImpl("invalidwebserver");
+		serverSpi.initiateEmbeddedWebServer();
+	}
+	
+	@Test(expected=ConfigurationException.class)
+	public void testTomcatEmbeddedServerSpiImplWithInvalidWebappsFolderContents() throws Exception {
+		TomcatEmbeddedServerSpiImpl serverSpi = new TomcatEmbeddedServerSpiImpl("testinvalidwebappsdir");
+		serverSpi.initiateEmbeddedWebServer();
+	}
+
+	@Test(expected=ConfigurationException.class)
+	public void testTomcatEmbeddedServerSpiImplWithInvalidServerConfig() throws Exception {
+		TomcatEmbeddedServerSpiImpl serverSpi = new TomcatEmbeddedServerSpiImpl("testinvalidserverconfig");
+		serverSpi.initiateEmbeddedWebServer();
+	}
+
+	@Test(expected=ConfigurationException.class)
+	public void testTomcatEmbeddedServerSpiImplWithInvalidWebInfs() throws Exception {
+		JavaNamingDirectorySpiFactory.getInstance()
+		.createJavaNamingDirectorySpi(JavaNamingDirectorySpiImpl.class.getName())
+		.initiateJNDIServices();
+
+		JavaTransactionManagerSpiFactory.getInstance()
+			.createJavaTransactionManagerSpi(AtomikosJavaTransactionManagerSpiImpl.class.getName())
+			.initiateJavaTransactionManager();
+		ContextDependencySpi dependencySpi = ContextDependencySpiFactory.getInstance()
+			.createContextDependencySpi(WeldContextDependencySpiImpl.class.getName());
+		
+		try {
+			EmbeddedWebServerSpiFactory.getInstance().createEmbeddedWebServerSpi(TomcatEmbeddedServerSpiImpl.class.getName());
+			TomcatEmbeddedServerSpiImpl serverSpi = new TomcatEmbeddedServerSpiImpl("testinvalidwebinfs");
+			dependencySpi.initiateContextDependency();
+			serverSpi.initiateEmbeddedWebServer();
+		} finally {
+			ContextDependencySpiFactory.getInstance()
+			.getContextDependencySpi()
+			.shutDownContextDependency();
+			
+			JavaTransactionManagerSpiFactory.getInstance()
+			.getJavaTransactionManagerSpi()
+			.shutdownJavaTransactionManager();
+		
+			JavaNamingDirectorySpiFactory.getInstance()
+			.getJavaNamingDirectorySpi()
+			.shutdownJNDIService();
+			
+			TestAppBaseMainStartup.clearInstanceVariables();
+			
+		}
+	}
+	
+	private void deleteFile(File file) {
+		if(file.exists()) {
+			if(file.isDirectory()) {
+				for(File subFile:file.listFiles()) {
+					deleteFile(subFile);
+				}
+			}
+			file.delete();
 		}
 	}
 }

@@ -96,11 +96,7 @@ public class Main {
 		
 		return defualtAppBasePropertiesLoader;
 	}
-	
-	public static void setAppBasePropertiesLoader(AppBasePropertiesLoaderImpl defualtAppBasePropertiesLoader) {
-		Main.defualtAppBasePropertiesLoader = defualtAppBasePropertiesLoader;
-	}
-	
+		
 	public ConfigurationPropertyMap getAppConfiguration() {
 		return appConfiguration;
 	}

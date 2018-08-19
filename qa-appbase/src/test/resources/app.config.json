@@ -1,0 +1,14 @@
+{
+	"web":{
+		"port":8380,
+		"connectorProtocol":"HTTP/1.1",
+		"connector.xpoweredBy":true,
+		"connectorProtocol.server":"Test Server"
+	},
+	"datasource": {
+		"xa.createDatabase":"create",
+		"xa.databaseName":"./testappdb",
+		"datasource.class":"org.apache.derby.jdbc.EmbeddedXADataSource",
+		"datasource.name":"TestAppDB"
+	}
+}

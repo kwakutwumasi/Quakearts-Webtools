@@ -2,5 +2,15 @@
 	"xa.createDatabase":"create",
 	"xa.databaseName":"./testinternaldb",
 	"datasource.class":"org.apache.derby.jdbc.EmbeddedXADataSource",
-	"datasource.name":"TestInternalDB"
+	"datasource.name":"TestInternalDB",
+	"borrowConnectionTimeout":2,
+	"loginTimeout":3,
+	"maintenanceInterval":120,
+	"maxIdleTime":130,
+	"maxLifetime":140,
+	"maxPoolSize":20,
+	"minPoolSize":2,
+	"concurrentConnectionValidation":false,
+	"reapTimeout":120,
+	"testQuery":"SELECT 1"
 }

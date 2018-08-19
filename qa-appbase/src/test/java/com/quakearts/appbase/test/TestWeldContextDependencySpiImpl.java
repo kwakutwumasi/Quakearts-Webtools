@@ -112,7 +112,7 @@ public class TestWeldContextDependencySpiImpl {
 			JavaNamingDirectorySpiFactory.getInstance()
 				.getJavaNamingDirectorySpi()
 				.shutdownJNDIService();
-			new TestAppBaseMainStartup().clearInstanceVariables();
+			TestAppBaseMainStartup.clearInstanceVariables();
 		}
 	}
 

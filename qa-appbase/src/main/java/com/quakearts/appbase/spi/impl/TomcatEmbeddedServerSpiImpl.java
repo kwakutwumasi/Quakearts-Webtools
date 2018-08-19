@@ -238,7 +238,7 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 		return false;
 	}
 
-	public void createWebserver(File webserversDirLocation, InputStream webappconfigin,
+	private void createWebserver(File webserversDirLocation, InputStream webappconfigin,
 			InputStream webxmlin, InputStream serverconfigin) {
 		webserversDirLocation.mkdir();
 		File webappDirLocation = new File(webserversDirLocation, "default-server"
@@ -264,7 +264,7 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 		}
 	}
 	
-	public InputStream getGenericWebXML() {
+	private InputStream getGenericWebXML() {
 		return getClass().getResourceAsStream("generic-web.xml.tpl");
 	}
 
@@ -446,7 +446,7 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 
 	private void configureWepapp(File webappFolder, Tomcat tomcat) {
 		if(!webappFolder.isDirectory())
-			return;
+			throw new ConfigurationException("Invalid web application. Must be a folder. If it is a zipped war file, explode it in the webapps directory");
 	
 	    StandardContext ctx;
 		try {
@@ -528,7 +528,7 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 			}
 			
 	        if(webappConfiguration.containsKey("webapp.scifilter")) {
-	        		ctx.setContainerSciFilter(webappConfiguration.getString("webapp.scifilter"));
+	        	ctx.setContainerSciFilter(webappConfiguration.getString("webapp.scifilter"));
 	        }			        
 	    }
 		
@@ -571,6 +571,10 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 		});
 		
 		return filteredMap;
+	}
+	
+	public List<Tomcat> getTomcatInstances() {
+		return tomcatInstances;
 	}
 	
 	@Override

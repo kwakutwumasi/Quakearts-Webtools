@@ -1,5 +1,5 @@
 {
-	"port":8180,
+	"port":8280,
 	"connectorProtocol":"HTTP/1.1",
 	"connector.xpoweredBy":true,
 	"connectorProtocol.server":"Test Server"

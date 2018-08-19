@@ -3,9 +3,14 @@ package com.quakearts.appbase.test;
 import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.core.Is.*;
+
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
+
 import com.quakearts.appbase.Main;
 import com.quakearts.appbase.Shutdown;
 import com.quakearts.appbase.spi.factory.ContextDependencySpiFactory;
@@ -18,6 +23,9 @@ import com.quakearts.appbase.test.helpers.MainTestHelper;
 
 public class TestAppBaseMainStartup {
 
+	@Rule
+	public Timeout timeout = new Timeout(30, TimeUnit.SECONDS);
+	
 	@Test
 	public void testMainInstantiation() throws Exception {
 		clearInstanceVariables();
@@ -47,6 +55,7 @@ public class TestAppBaseMainStartup {
 		MainTestHelper.resetChecks();		
 		MainNonDefaultTestHelper.resetChecks();
 
+		Main.main(new String[] {MainTestHelper.class.getName(),"-dontwaitinmain"});
 		Main.main(new String[] {MainTestHelper.class.getName(),"-dontwaitinmain"});
 		Thread.sleep(100);
 		
@@ -132,7 +141,13 @@ public class TestAppBaseMainStartup {
 		clearInstanceVariables();
 	}
 
-	public void clearInstanceVariables() throws IllegalArgumentException, IllegalAccessException {
+	@Test
+	public void testMainUsage() throws Exception {
+		Main.main(new String[] {MainTestHelper.class.getName(),"test","value"});
+		clearInstanceVariables();
+	}
+	
+	public static void clearInstanceVariables() throws IllegalArgumentException, IllegalAccessException {
 		clearInstanceVariable(ContextDependencySpiFactory.getInstance(), "dependencySpi");
 		clearInstanceVariable(DataSourceProviderSpiFactory.getInstance(), "dataSourceProviderSpi");
 		clearInstanceVariable(EmbeddedWebServerSpiFactory.getInstance(), "webServerSpi");
@@ -141,7 +156,7 @@ public class TestAppBaseMainStartup {
 		clearMainInstance();
 	}
 	
-	private void clearInstanceVariable(Object object, String fieldName) throws IllegalArgumentException, IllegalAccessException {
+	private static void clearInstanceVariable(Object object, String fieldName) throws IllegalArgumentException, IllegalAccessException {
         Field[] declaredFields = object.getClass().getDeclaredFields();
         for(Field field: declaredFields)
         {
@@ -152,7 +167,7 @@ public class TestAppBaseMainStartup {
         }
      }
 	
-	private void clearMainInstance() throws IllegalArgumentException, IllegalAccessException {
+	private static void clearMainInstance() throws IllegalArgumentException, IllegalAccessException {
         Field[] declaredFields = Main.class.getDeclaredFields();
         for(Field field: declaredFields)
         {

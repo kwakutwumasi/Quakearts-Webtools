@@ -2,5 +2,7 @@
 	"port":8180,
 	"connectorProtocol":"HTTP/1.1",
 	"connector.xpoweredBy":true,
-	"connectorProtocol.server":"Test Server"
+	"connectorProtocol.server":"Test Server",
+	"useapr":true,
+	"hostname":"localhost"
 }
