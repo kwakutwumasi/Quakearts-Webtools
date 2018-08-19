@@ -84,7 +84,7 @@ public class Main {
 	
 	public static Main getInstance() {
 		if(instance == null)
-			new Main();
+			instance = new Main();
 		
 		return instance;
 	}
