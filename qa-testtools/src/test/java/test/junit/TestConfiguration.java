@@ -67,8 +67,8 @@ public class TestConfiguration {
 		assertThat(configuration.getURLToRecord(), is("http://localhost:8080"));
 		assertThat(configuration.getMockingMode(), is(Configuration.MockingMode.RECORD));
 		assertThat(configuration.getPort(), is(5080));
-		assertThat(configuration.getConnectTimeout(), is(60000));
-		assertThat(configuration.getReadTimeout(), is(30000));
+		assertThat(configuration.getConnectTimeout(), is(600));
+		assertThat(configuration.getReadTimeout(), is(300));
 		assertThat(configuration.useTLS(), is(true));
 		assertThat(configuration.getKeyStore(), is("conf/tomcat.keystore"));
 		assertThat(configuration.getKeyStorePassword(), is("password1"));

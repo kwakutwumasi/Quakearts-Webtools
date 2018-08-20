@@ -74,15 +74,14 @@ class MockServletProcessingContextBuilder {
 				
 				try {
 					InputStream in = req.getInputStream();
-					if(in.available()>0) {
 						ByteArrayOutputStream bos = new ByteArrayOutputStream(1024);
 						int read;
 						while ((read=in.read())!=-1) {
 							bos.write(read);
 						}
-						
+					
+					if(bos.size()>0)
 						requestBuilder.setContentBytes(bos.toByteArray());
-					}
 				} catch (IOException e) {
 					throw new MockServerProcessingException("Unable to get content", e);
 				}

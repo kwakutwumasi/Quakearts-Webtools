@@ -81,8 +81,8 @@ public abstract class StringRandomGenerator<T> extends GeneratorBase<T> implemen
 		return this;
 	}
 	
-	public StringRandomGenerator<T> useField(String field){
-		super.useField(field);		
+	public StringRandomGenerator<T> useGeneratorProperty(String field){
+		super.useGeneratorProperty(field);		
 		setUp();
 		return this;
 	}

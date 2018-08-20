@@ -70,7 +70,7 @@ public final class BeanGenerator<T> extends GeneratorBase<T> {
 
 	@Override
 	public BeanGenerator<T> useGeneratorProperty(String property) {
-		super.useField(property);
+		super.useGeneratorProperty(property);
 		return this;
 	}
 	

@@ -172,25 +172,25 @@ public class PrimitivesTest {
 			assertThat("Length is not 57: "+string, string.length()==57, is(true));
 			assertThat("Invalid suffix: "+string+" expected 'end'", string.endsWith("end"), is(true));;
 			
-			generator = new StringGenerator().useField("stringtest");
+			generator = new StringGenerator().useGeneratorProperty("stringtest");
 			string = generator.generateRandom();
 			assertThat("Not found in list: "+string, ("lorem;ipsum;dolor;sit;amet;"
 					+ "consectetur;adipiscing;elit;sed;do;eiusmod;"
 					+ "tempor;incididunt;ut;labore;et;dolore;magna;aliqua").contains(string), is(true));;
 			
-			generator = new StringGenerator().useField("stringotherdelim");
+			generator = new StringGenerator().useGeneratorProperty("stringotherdelim");
 			string = generator.generateRandom();
 			assertThat("Not found in list: "+string, ("sed ut perspiciatis unde omnis "
 					+ "iste natus error sit voluptatem")
 					.contains(string) && string.length()<=12, is(true));
 			
-			generator = new StringGenerator().useField("stringproperties");
+			generator = new StringGenerator().useGeneratorProperty("stringproperties");
 			string = generator.generateRandom();
 			assertThat("Unexpected: "+string, string.length()==24 
 					&& string.endsWith("KR")
 					&& string.startsWith("AT"), is(true));
 
-			generator = new StringGenerator().useField("allsymbols");
+			generator = new StringGenerator().useGeneratorProperty("allsymbols");
 			string = generator.generateRandom();
 			assertThat(string, containsOneOf(string,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKL"
 					+ "MNOPQRSTUVWXYZ01234567890!@#$%^&*()_-+={}[]\\|;:'\",.<>/?`~"), is(true));
@@ -200,7 +200,7 @@ public class PrimitivesTest {
 			assertThat(string, containsOneOf(string,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKL"
 					+ "MNOPQRSTUVWXYZ01234567890!@#$%^&*()_-+={}[]\\|;:'\",.<>/?`~"), is(true));
 
-			generator = new StringGenerator().useField("alphaNumeric");
+			generator = new StringGenerator().useGeneratorProperty("alphaNumeric");
 			string = generator.generateRandom();
 			assertThat(string, !containsOneOf(string,"\\!@#$%^&*()_-+={}[]\\|;:'\",.<>/?`~"), is(true));
 
@@ -208,7 +208,7 @@ public class PrimitivesTest {
 			string = generator.generateRandom();
 			assertThat(string, !containsOneOf(string,"!@#$%^&*()_-+={}[]\\|;:'\",.<>/?`~"), is(true));
 
-			generator = new StringGenerator().useField("numeric");
+			generator = new StringGenerator().useGeneratorProperty("numeric");
 			string = generator.generateRandom();
 			assertThat(string, !containsOneOf(string,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKL"
 					+ "MNOPQRSTUVWXYZ!@#$%^&*()_-+={}[]\\|;:'\",.<>/?`~"), is(true));
@@ -218,7 +218,7 @@ public class PrimitivesTest {
 			assertThat(string, !containsOneOf(string,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKL"
 					+ "MNOPQRSTUVWXYZ!@#$%^&*()_-+={}[]\\|;:'\",.<>/?`~"), is(true));
 			
-			generator = new StringGenerator().useField("alphabet");
+			generator = new StringGenerator().useGeneratorProperty("alphabet");
 			string = generator.generateRandom();
 			assertThat(string, !containsOneOf(string,"01234567890!@#$%^&*()_-+={}[]\\|;:'\",.<>/?`~"), is(true));
 

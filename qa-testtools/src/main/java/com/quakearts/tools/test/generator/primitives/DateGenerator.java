@@ -44,8 +44,8 @@ public final class DateGenerator extends GeneratorBase<Date> implements Annotati
 			maxDay = 31, minDay = 1, maxHour = 23, minHour = 0;
 
 	@Override
-	public DateGenerator useField(String fieldName) {
-		super.useField(fieldName);
+	public DateGenerator useGeneratorProperty(String fieldName) {
+		super.useGeneratorProperty(fieldName);
 		setUp();
 		return this;
 	}

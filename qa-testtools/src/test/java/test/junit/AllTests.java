@@ -17,5 +17,5 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({ BeanGeneratorTest.class, CollectionFactoryTest.class, PrimitivesTest.class,
 	TestConfiguration.class, TestHttpMessageBuilder.class, TestHttpMessageStore.class,
-	TestMockActionBuilder.class, TestMockServer.class})
+	TestMockActionBuilder.class, TestMockingProxy.class, TestMockServer.class})
 public class AllTests {}

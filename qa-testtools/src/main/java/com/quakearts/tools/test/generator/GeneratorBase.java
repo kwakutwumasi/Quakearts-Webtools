@@ -37,6 +37,7 @@ public abstract class GeneratorBase<T> implements Generator<T> {
 	}
 	
 	@Override
+	@Deprecated
 	public Generator<T> useField(String fieldName) {
 		return useGeneratorProperty(fieldName);
 	}

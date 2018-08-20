@@ -47,7 +47,7 @@ public class BeanGeneratorTest {
 
 		for(int count=0; count < 1000; count++){
 			BeanGenerator<Person> generator = new BeanGenerator<>(Person.class)
-					.use(new StringGenerator().useField("names")).forField("name").init();
+					.use(new StringGenerator().useGeneratorProperty("names")).forProperty("name").init();
 			person = generator.generateRandom();
 	
 			assertThat("Did not use list:names",("Sophia;Jackson;Emma;Aiden;Olivia;Lucas;Ava;Liam;Mia;Noah;"
