@@ -11,7 +11,7 @@ An archetype for creating a SysHub project.
 To create this archetype, use the command:
 
 ```
-	mvn archetype:create -DgroupId=YOUR.PROJ.GID \
+	mvn archetype:generate -DgroupId=YOUR.PROJ.GID \
 	-DartifactId=YOUR-PROJ-AID \
 	-DarchetypeGroupId=com.quakearts.syshub \
 	-DarchetypeArtifactId=qa-syshub-archetype \
