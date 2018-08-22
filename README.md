@@ -6,6 +6,8 @@ A custom integration of JTA, JCA, CDI, Servlet 3 Integration, and JNDI
 A maven archetype for qa-appbase applications
 ##### [qa-appbase-jsf-orm-archetype](https://github.com/kwakutwumasi/Quakearts-Webtools/tree/master/qa-appbase-jsf-orm-archetype/)
 A maven archetype for qa-appbase applications using Hibernate and JSF Reference Implementation
+##### [qa-appbase-minimal-archetype](https://github.com/kwakutwumasi/Quakearts-Webtools/tree/master/qa-appbase-minimal-archetype/)
+A maven archetype for minimal qa-appbase applications
 ##### [qa-appbase-resteasy-orm-archetype](https://github.com/kwakutwumasi/Quakearts-Webtools/tree/master/qa-appbase-resteasy-orm-archetype/)
 A maven archetype for qa-appbase applications using JBoss RestEasy and Hibernate
 ##### [qa-auth](https://github.com/kwakutwumasi/Quakearts-Webtools/tree/master/qa-auth/)
