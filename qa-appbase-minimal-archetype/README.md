@@ -25,7 +25,9 @@ substituting _YOUR.PROJ.GID_ with your project group ID and _YOUR-PROJ-AID_ with
 
 ##### Notes
 
-The alternate-web-configs contains example webapp.confi.json files for use in common scenarios.
+The alternate-web-configs contains example main-webapp.config.json files for use in common scenarios.
 * **live.main-webapp.config.json** contains example configuration for use in a live environment.
 * **jsf-live.main-webapp.config.json** contains example configuration for JSF. Replace the content of your pom with the content of jsf-pom.xml to add JSF related dependencies
 * **rest-live.main-webapp.config.json** contains example configuration for JAX-RS using Jboss RestEasy. Replace the content of your pom with the content of rest-pom.xml to add JAX-RS related dependencies
+
+To use them, remove the prefix (the content before _main-webapp.config.json_) and replace the _main-webapp.config.json_ in _src/main/resources_ folder.
