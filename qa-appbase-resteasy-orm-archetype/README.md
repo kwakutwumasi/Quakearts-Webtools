@@ -10,7 +10,7 @@ An archetype for creating a RestEasy RESTful web service with Hibernate ORM
 To create this archetype, use the command:
 
 ```
-	mvn archetype:create -DgroupId=YOUR.PROJ.GID \
+	mvn archetype:generate -DgroupId=YOUR.PROJ.GID \
 	-DartifactId=YOUR-PROJ-AID \
 	-DarchetypeGroupId=com.quakearts.webtools \
 	-DarchetypeArtifactId=qa-appbase-resteasy-orm-archetype \
