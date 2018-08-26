@@ -5,7 +5,6 @@ import org.junit.BeforeClass;
 
 import com.quakearts.appbase.spi.factory.ContextDependencySpiFactory;
 import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
-import com.quakearts.appbase.spi.factory.JavaTransactionManagerSpiFactory;
 
 /**Base class for tests that require CDI services in qa-appbase
  * @author kwakutwumasi-afriyie
@@ -17,8 +16,6 @@ public abstract class AppBaseCDIBaseTest extends AppBaseTest {
 		createServices();
 		JavaNamingDirectorySpiFactory.getInstance()
 			.getJavaNamingDirectorySpi().initiateJNDIServices();
-		JavaTransactionManagerSpiFactory.getInstance()
-			.getJavaTransactionManagerSpi().initiateJavaTransactionManager();
 		ContextDependencySpiFactory.getInstance()
 			.getContextDependencySpi().initiateContextDependency();
 	}
@@ -27,8 +24,6 @@ public abstract class AppBaseCDIBaseTest extends AppBaseTest {
 	public static void shutDownCDI() {
 		ContextDependencySpiFactory.getInstance()
 			.getContextDependencySpi().shutDownContextDependency();
-		JavaTransactionManagerSpiFactory.getInstance()
-			.getJavaTransactionManagerSpi().shutdownJavaTransactionManager();
 		JavaNamingDirectorySpiFactory.getInstance()
 			.getJavaNamingDirectorySpi().shutdownJNDIService();
 	}

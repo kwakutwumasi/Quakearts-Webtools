@@ -25,7 +25,7 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.webtools.test</groupId>
 	<artifactId>qa-appbase-test-helper</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 </dependency>
 
 ```
