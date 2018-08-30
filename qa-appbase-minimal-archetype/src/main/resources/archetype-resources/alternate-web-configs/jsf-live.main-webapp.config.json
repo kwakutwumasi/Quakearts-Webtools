@@ -4,7 +4,7 @@
 			"qa-common-2.3.jar",
 			"jsf-api-2.2.14.jar",
 			"jsf-impl-2.2.14.jar",
-			"tomcat-embed-el-8.5.9.jar",
+			"tomcat-embed-el-9.0.8.jar",
 			"qa-weldjsf-cdi-1.0.0.jar",
 			"${artifactId}-${version}.jar"]
 	},
