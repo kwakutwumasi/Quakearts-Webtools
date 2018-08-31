@@ -1,14 +1,21 @@
-package test;
+package com.quakearts.webapps.security.rest.tests;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.*;
+import static org.hamcrest.core.IsNull.*;
+import static org.hamcrest.core.IsInstanceOf.*;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.security.Permission;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
 
@@ -18,8 +25,21 @@ import com.quakearts.rest.client.HttpClientBuilder;
 import com.quakearts.rest.client.HttpResponse;
 import com.quakearts.rest.client.HttpVerb;
 import com.quakearts.rest.client.exception.HttpClientException;
+import com.quakearts.tools.test.mocking.proxy.MockingProxyBuilder;
+import com.quakearts.webapp.security.rest.SecurityContext;
+import com.quakearts.webapp.security.rest.SecurityContextPermission;
+import com.quakearts.webapp.security.rest.exception.RestSecurityException;
+import com.quakearts.webapp.security.rest.requestwrapper.AuthenticationServletRequestWrapper;
+import com.quakearts.webapp.security.rest.util.PluginService;
 
-public class TestRestSecurity {
+import test.TestAuthenticationCacheService;
+import test.TestLoginModule;
+import test.plugin.TestDoubleRegistered;
+import test.plugin.TestPluginInterface;
+import test.plugin.TestPluginInterfaceImpl;
+import test.plugin.TestUnimplemented;
+
+public class RestSecurityTest {
 
 	static class TestHttpClient extends HttpClient {
 
@@ -83,15 +103,21 @@ public class TestRestSecurity {
 				clientWithPartialBasicHeader = TestHttpClientBuilder.createNewTestHttpClient()
 				.thenBuild().addAuthorizationHeader("Basic dGVzdA==");
 		
+		TestLoginModule.tokenFetched = false;
 		HttpResponse response = clientBearer.sendRequest("/test-authentication-filter-required",
 				null, HttpVerb.GET);
 		assertThat(response.getHttpCode(), is(200));
 		assertThat(response.getOutput(), is("Ok"));
+		assertTrue(TestLoginModule.tokenFetched);
 		
+		TestLoginModule.passwordFetched = false;
+		TestLoginModule.usernameFetched = false;
 		response = clientBasic.sendRequest("/test-authentication-filter-notrequired",
 				"test=value", HttpVerb.POST);
 		assertThat(response.getHttpCode(), is(200));
 		assertThat(response.getOutput(), is("Ok"));
+		assertTrue(TestLoginModule.passwordFetched);
+		assertTrue(TestLoginModule.usernameFetched);
 		
 		clientBasic.sendRequest("/test-authentication-filter-notrequired",
 				"test=value", HttpVerb.POST);
@@ -140,4 +166,120 @@ public class TestRestSecurity {
 		assertThat(response.getHttpCode(), is(403));
 	}
 
+	@Test
+	public void testAuthType() {
+		try {
+			assertThat(getWrapper().getAuthType(), is(nullValue()));
+		} finally {
+			SecurityContext.getCurrentSecurityContext().release();
+		}
+	}
+	
+	@Test
+	public void testIsUserInRole(){
+		try {
+			assertFalse(getWrapper().isUserInRole("TestRole"));
+		} finally {
+			SecurityContext.getCurrentSecurityContext().release();
+		}
+	}
+
+	@Test
+	public void testGetRemoteUser() {
+		try {
+			assertThat(getWrapper().getRemoteUser(), is(nullValue()));
+		} finally {
+			SecurityContext.getCurrentSecurityContext().release();
+		}
+	}
+
+	@Test
+	public void testAuthenticateHttpServletResponse() throws Exception {
+		HttpServletResponse response = MockingProxyBuilder
+				.createMockingInvocationHandlerFor(HttpServletResponse.class)
+				.mock("sendError").withVoidMethod((arguments)->{
+					int code = arguments.get(0);
+					assertThat(code, is(401));
+				})
+				.thenBuild();
+		assertThat(getWrapper().authenticate(response), is(false));	
+	}
+
+	@Test(expected=ServletException.class)
+	public void testLogin() throws Exception {
+		getWrapper().login("test", "test");
+	}
+
+	@Test
+	public void testGetParameter() {
+		assertThat(getWrapper().getParameter("j_password"), is(nullValue()));	
+		assertThat(getWrapper().getParameter("test"), is("Test"));	
+	}
+
+	@Test
+	public void testGetParameterValues() {
+		assertThat(getWrapper().getParameterValues("j_password"), is(nullValue()));
+		assertThat(getWrapper().getParameterValues("test"), is(notNullValue()));	
+	}
+
+	AuthenticationServletRequestWrapper wrapper;
+	public AuthenticationServletRequestWrapper getWrapper() {
+		if(wrapper == null) {
+			HttpServletRequest request = MockingProxyBuilder
+					.createMockingInvocationHandlerFor(HttpServletRequest.class)
+					.mock("getParameter").withEmptyMethod(()->{ return "Test";})
+					.mock("getParameterValues").withEmptyMethod(()->{ String[] ret = {"Test1","Test2"}; return ret;})
+					.thenBuild();
+			wrapper = new AuthenticationServletRequestWrapper(request);
+		}
+		return wrapper;
+	}
+	
+	@SuppressWarnings({ "serial", "unlikely-arg-type" })
+	@Test
+	public void testSecurityPermission() throws Exception {
+		SecurityContextPermission permission = new SecurityContextPermission("name", "actions");
+		assertTrue(permission.equals(permission));
+		assertFalse(permission.equals(null));
+		assertFalse(permission.equals(new SecurityContextPermission("test", "test2")));
+		assertFalse(permission.equals(new SecurityContextPermission("test", "actions")));
+		assertTrue(permission.equals(new SecurityContextPermission("name", "actions")));
+		assertTrue(permission.implies(new SecurityContextPermission("name", "actions")));
+		assertFalse(permission.implies(new SecurityContextPermission("test", "actions")));
+		assertFalse(permission.equals("test actions"));
+		assertFalse(permission.implies(new Permission("") {
+			@Override
+			public boolean implies(Permission permission) {
+				return false;
+			}
+			@Override
+			public int hashCode() {
+				return 0;
+			}
+			@Override
+			public String getActions() {
+				return null;
+			}
+			
+			@Override
+			public boolean equals(Object obj) {
+				return false;
+			}
+		}));
+	}
+	
+	@Test
+	public void testPluginService() throws Exception {
+		TestPluginInterface pluginInterface = PluginService.loadPlugin(TestPluginInterface.class);
+		assertThat(pluginInterface, is(notNullValue()));
+		assertThat(pluginInterface, is(instanceOf(TestPluginInterfaceImpl.class)));
+		
+		TestUnimplemented unimplemented = PluginService.loadPlugin(TestUnimplemented.class);
+		assertThat(unimplemented, is(nullValue()));
+	}
+	
+	@Test(expected=RestSecurityException.class)
+	public void testPluginServiceDoubleRegistration() throws Exception {
+		PluginService.loadPlugin(TestDoubleRegistered.class);
+	}
 }

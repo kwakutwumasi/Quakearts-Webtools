@@ -32,7 +32,7 @@ import com.quakearts.webapp.security.rest.filter.AuthenticationFilter;
 public final class AuthenticationServletRequestWrapper extends HttpServletRequestWrapper {
 
 	private static final String PASSWORD = "j_password";
-	private static final String AUTHORIZATION_HEADER = "Authorization";
+	private static final String AUTHORIZATION_HEADER = "authorization";
 	private static final String QUAKEARTS_AUTHENTICATION = "com.quakearts.security.AUTHENTICATION";
 
 	public AuthenticationServletRequestWrapper(HttpServletRequest request) {
@@ -41,7 +41,7 @@ public final class AuthenticationServletRequestWrapper extends HttpServletReques
 
 	@Override
 	public String getAuthType() {
-		if(SecurityContext.getSecurityContext().isAuthenicated())
+		if(SecurityContext.getCurrentSecurityContext().isAuthenicated())
 			return QUAKEARTS_AUTHENTICATION;
 		else 
 			return null;
@@ -49,7 +49,7 @@ public final class AuthenticationServletRequestWrapper extends HttpServletReques
 
 	@Override
 	public String getHeader(String name) {
-		if(AUTHORIZATION_HEADER.equals(name))
+		if(AUTHORIZATION_HEADER.equals(name.toLowerCase()))
 			return null;
 		
 		return super.getHeader(name);
@@ -57,7 +57,7 @@ public final class AuthenticationServletRequestWrapper extends HttpServletReques
 
 	@Override
 	public Enumeration<String> getHeaders(String name) {
-		if(AUTHORIZATION_HEADER.equals(name))
+		if(AUTHORIZATION_HEADER.equals(name.toLowerCase()))
 			return null;
 
 		return super.getHeaders(name);
@@ -65,7 +65,7 @@ public final class AuthenticationServletRequestWrapper extends HttpServletReques
 
 	@Override
 	public boolean isUserInRole(String role) {
-		Subject subject = SecurityContext.getSecurityContext().getSubject();
+		Subject subject = SecurityContext.getCurrentSecurityContext().getSubject();
 		if(subject==null)
 			return false;
 		
@@ -79,8 +79,8 @@ public final class AuthenticationServletRequestWrapper extends HttpServletReques
 
 	@Override
 	public Principal getUserPrincipal() {
-		SecurityContext context = SecurityContext.getSecurityContext();
-		return context.getUserPrincipal();
+		return SecurityContext.getCurrentSecurityContext()
+				.getUserPrincipal();
 	}
 	
 	@Override
@@ -94,7 +94,7 @@ public final class AuthenticationServletRequestWrapper extends HttpServletReques
 
 	@Override
 	public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
-		if(SecurityContext.getSecurityContext().isAuthenicated())
+		if(SecurityContext.getCurrentSecurityContext().isAuthenicated())
 			return true;
 		
 		response.sendError(401);

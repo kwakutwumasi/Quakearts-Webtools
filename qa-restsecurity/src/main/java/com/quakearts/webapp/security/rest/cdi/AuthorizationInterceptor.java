@@ -19,7 +19,7 @@ import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 import com.quakearts.webapp.security.rest.SecurityContext;
-import com.quakearts.webapp.security.rest.exception.SecurityException;
+import com.quakearts.webapp.security.rest.exception.RestSecurityException;
 
 /**CDI interceptor. Authenticates access to the method by checking the {@linkplain SecurityContext}
  * for roles specified in the @{@linkplain RequireAuthorization} annotation.
@@ -37,11 +37,11 @@ public class AuthorizationInterceptor {
 			authorization = context.getMethod().getDeclaringClass().getAnnotation(RequireAuthorization.class);
 	
 		if(authorization==null)
-			throw new SecurityException("No authorization parameter found to check for roles");
+			throw new RestSecurityException("No authorization parameter found to check for roles");
 
-		SecurityContext securityContext = SecurityContext.getSecurityContext();
+		SecurityContext securityContext = SecurityContext.getCurrentSecurityContext();
 		if(securityContext.getSubject()==null)
-			throw new SecurityException("No Subject loaded for verification");
+			throw new RestSecurityException("No Subject loaded for verification");
 		
 		boolean proceed = true;
 		if(authorization.allow().length>0){
@@ -70,6 +70,6 @@ public class AuthorizationInterceptor {
 		if(proceed)
 			return context.proceed();
 		else
-			throw new SecurityException("Subject does not have the necessary permissions");
+			throw new RestSecurityException("Subject does not have the necessary permissions");
 	}
 }

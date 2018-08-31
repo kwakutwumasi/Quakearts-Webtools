@@ -11,6 +11,7 @@
 package com.quakearts.webapp.security.rest.filter;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,10 +26,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.quakearts.webapp.security.rest.JAASAuthenticatorBase;
 import com.quakearts.webapp.security.rest.SecurityContext;
-import com.quakearts.webapp.security.rest.exception.SecurityException;
+import com.quakearts.webapp.security.rest.exception.RestSecurityException;
 import com.quakearts.webapp.security.rest.filter.impl.DefaultAuthenticationErrorWriter;
 import com.quakearts.webapp.security.rest.requestwrapper.AuthenticationServletRequestWrapper;
-import com.quakearts.webapp.security.rest.util.Base64;
 
 /**An implementation of {@linkplain Filter} that provides JAAS authentication. Though most Servlet
  * containers support authentication, many only provide Basic and Form based authentication. 
@@ -104,8 +104,8 @@ public class AuthenticationFilter extends JAASAuthenticatorBase implements Filte
 				} else {
 					String[] authData; 
 					try {						
-						authData = Base64.decode(authenticationToken).split(":",2);
-					} catch (IOException e) {
+						authData = new String(Base64.getDecoder().decode(authenticationToken)).split(":",2);
+					} catch (IllegalArgumentException e) {
 						sendError(403, "Auth data was not understood. Must be a valid Base64 encoded character string", httpResponse);
 						return;
 					}
@@ -149,10 +149,10 @@ public class AuthenticationFilter extends JAASAuthenticatorBase implements Filte
 				return;
 			}
 			chain.doFilter( new AuthenticationServletRequestWrapper(httpRequest), httpResponse);
-		} catch (SecurityException e) {
+		} catch (RestSecurityException e) {
 			sendError(403, e.getMessage(), httpResponse);
 		} finally {
-			SecurityContext.getSecurityContext().release();				
+			SecurityContext.getCurrentSecurityContext().release();				
 		}
 	}
 	

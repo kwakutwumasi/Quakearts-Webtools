@@ -5,7 +5,6 @@ import static org.hamcrest.core.IsNull.*;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-import java.util.NoSuchElementException;
 
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
@@ -24,12 +23,9 @@ public class TestServiceImpl implements TestService {
 	@Override
 	public void process(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		assertThat(request instanceof AuthenticationServletRequestWrapper, is(true));
-		assertThat(SecurityContext.getSecurityContext(), is(notNullValue()));
-		SecurityContext context = SecurityContext.getSecurityContext();
-		try {
-			assertThat(context.getIdentity(), is("testuser"));			
-		} catch (NoSuchElementException e) {
-		}
+		assertThat(SecurityContext.getCurrentSecurityContext(), is(notNullValue()));
+		SecurityContext context = SecurityContext.getCurrentSecurityContext();
+		assertThat(context.getIdentity(), is("testuser"));			
 		
 		assertThat(context.getApplication(), is("/test-authentication-filter-required"));
 		assertThat(context.getApplicationContext(), is("Test-Authentication-Filter"));
@@ -39,11 +35,8 @@ public class TestServiceImpl implements TestService {
 		assertThat(context.getRemotePort()>0, is(true));
 		assertThat(context.getSubject(), is(notNullValue()));
 
-		try {
-			assertThat(context.getUserPrincipal(), is(notNullValue()));
-			assertThat(context.getUserPrincipal().getName(), is("testuser"));
-		} catch (NoSuchElementException e) {
-		}
+		assertThat(context.getUserPrincipal(), is(notNullValue()));
+		assertThat(context.getUserPrincipal().getName(), is("testuser"));
 		
 		response.setContentType("text/plain");
  		response.getWriter().write("Ok");

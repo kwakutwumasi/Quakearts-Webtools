@@ -8,9 +8,11 @@
  * Contributors:
  *     Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com> - initial API and implementation
  ******************************************************************************/
-package test;
+package com.quakearts.webapps.security.rest.tests;
 
 import static org.junit.Assert.*;
+import static org.hamcrest.core.Is.*;
+import static org.hamcrest.core.IsNull.*;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -32,37 +34,43 @@ import org.junit.Test;
 
 import com.quakearts.webapp.security.rest.context.LoginContext;
 
+import test.TestErrorThrowingModule;
+import test.TestLoginModuleDirect;
+import test.TestWrappedErrorThrowingModule;
+
 public class LoginContextTest {
 
-	@Test
-	public void testLoginContext() {
+	private final Configuration jaasConfig = createConfiguration(); 
+	
+	private Configuration createConfiguration() {
 		try {			
-			final CallbackHandler handler = (c) -> {
-			};
 			URL resource = Thread.currentThread().getContextClassLoader().getResource("login.config");
 			URI uri = resource.toURI();
-			final Configuration jaasConfig = Configuration.getInstance("JavaLoginConfig", new URIParameter(uri));
-
-			LoginContext context = new LoginContext("TestConfigDirect", new Subject(), handler, jaasConfig);
-			context.login();
-			context.logout();
-			
-			context = new LoginContext("TestConfigWrapped", new Subject(), handler, jaasConfig);
-			context.login();
-			context.logout();
+		return Configuration.getInstance("JavaLoginConfig", new URIParameter(uri));
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Unable to instantiate LoginContext");
+			return null;
 		}
+	}
+
+	@Test
+	public void testLoginContext() throws Exception {
+		final CallbackHandler handler = (c) -> {
+		};
+
+		LoginContext context = new LoginContext("TestConfigDirect", new Subject(), handler, jaasConfig);
+		context.login();
+		context.logout();
+		
+		context = new LoginContext("TestConfigWrapped", null, handler, jaasConfig);
+		context.login();
+		context.logout();
 	}
 	
 	@Test
 	public void testLoginConfig() throws Exception {
 		try(InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("authenticationmatrix.csv")){
-			URL resource = Thread.currentThread().getContextClassLoader().getResource("login.config");
-			URI uri = resource.toURI();
-			final Configuration jaasConfig = Configuration.getInstance("JavaLoginConfig", new URIParameter(uri));
-
 			BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 			String line = reader.readLine();
 			do {
@@ -130,6 +138,123 @@ public class LoginContextTest {
 		}
 	}
 	
+	@Test(expected = LoginException.class)
+	public void testLoginAndGetSubjectWithNullSubject() throws Exception {
+		LoginContext context = new LoginContext("TestConfigDirect", null,  (c) -> {
+		}, jaasConfig);		
+		assertThat(context.getSubject(), is(nullValue()));
+		context.logout();
+	}
+	
+	@Test(expected = LoginException.class)
+	public void testConfigNull() throws Exception {
+		new LoginContext("Non-Existent", null, null, null);
+	}
+
+	@Test(expected = LoginException.class)
+	public void testCallBackHandlerNull() throws Exception {
+		new LoginContext("Non-Existent", null, null, jaasConfig);
+	}
+
+	@Test(expected = LoginException.class)
+	public void testInitializeError() throws Exception {
+		TestErrorThrowingModule.throwInInitialize = true;
+		new LoginContext("TestErrorConfigDirect", null, (c) -> {
+		}, jaasConfig).login();
+	}
+
+	@Test(expected = LoginException.class)
+	public void testLoginError() throws Exception {
+		TestErrorThrowingModule.throwInLogin = true;
+		new LoginContext("TestErrorConfigDirect", null, (c) -> {
+		}, jaasConfig).login();
+	}
+
+	@Test(expected = LoginException.class)
+	public void testCommitError() throws Exception {
+		TestErrorThrowingModule.throwInCommit = true;
+		new LoginContext("TestErrorConfigDirect", null, (c) -> {
+		}, jaasConfig).login();
+	}
+
+	@Test(expected = LoginException.class)
+	public void testAbortError() throws Exception {
+		TestErrorThrowingModule.abortRan = false;
+		TestErrorThrowingModule.throwInCommit = true;
+		TestErrorThrowingModule.throwInAbort = true;
+		try {
+			new LoginContext("TestErrorConfigDirect", null, (c) -> {
+			}, jaasConfig).login();
+		} finally {
+			assertTrue(TestErrorThrowingModule.abortRan);
+		}
+	}
+	
+	@Test(expected = LoginException.class)
+	public void testLogoutError() throws Exception {
+		TestErrorThrowingModule.throwInLogout = true;
+		LoginContext context = new LoginContext("TestErrorConfigDirect", null, (c) -> {
+		}, jaasConfig);
+		context.login();
+		context.logout();
+	}
+
+	@Test(expected = LoginException.class)
+	public void testWrappedInitializeError() throws Exception {
+		TestWrappedErrorThrowingModule.throwInInitialize = true;
+		new LoginContext("TestErrorConfigWrapped", null, (c) -> {
+		}, jaasConfig).login();
+	}
+
+	@Test(expected = LoginException.class)
+	public void testWrappedLoginError() throws Exception {
+		TestWrappedErrorThrowingModule.throwInLogin = true;
+		new LoginContext("TestErrorConfigWrapped", null, (c) -> {
+		}, jaasConfig).login();
+	}
+
+	@Test(expected = LoginException.class)
+	public void testWrappedCommitError() throws Exception {
+		TestWrappedErrorThrowingModule.throwInCommit = true;
+		new LoginContext("TestErrorConfigWrapped", null, (c) -> {
+		}, jaasConfig).login();
+	}
+
+	@Test(expected = LoginException.class)
+	public void testWrappedAbortError() throws Exception {
+		TestWrappedErrorThrowingModule.throwInCommit = true;
+		TestWrappedErrorThrowingModule.throwInAbort = true;
+		new LoginContext("TestErrorConfigWrapped", null, (c) -> {
+		}, jaasConfig).login();
+	}
+
+	@Test(expected = LoginException.class)
+	public void testWrappedLogoutError() throws Exception {
+		TestWrappedErrorThrowingModule.throwInLogout = true;
+		LoginContext context = new LoginContext("TestErrorConfigWrapped", null, (c) -> {
+		}, jaasConfig);
+		context.login();
+		context.logout();
+	}
+	
+	@Test(expected = LoginException.class)
+	public void testClassNotFoundException() throws Exception {
+		new LoginContext("TestClassNotFoundException", null, (c) -> {
+		}, jaasConfig).login();
+	}
+
+	@Test(expected = LoginException.class)
+	public void testInstantiationException() throws Exception {
+		new LoginContext("TestInstantiationException", null, (c) -> {
+		}, jaasConfig).login();
+	}
+
+	@Test(expected = LoginException.class)
+	public void testIllegalAccessException() throws Exception {
+		new LoginContext("TestIllegalAccessException", null, (c) -> {
+		}, jaasConfig).login();
+	}
+
 	public static void main(String[] args) {
 		final CallbackHandler handler = (c) -> {
 		};

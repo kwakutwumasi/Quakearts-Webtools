@@ -13,11 +13,12 @@ package com.quakearts.webapp.security.rest;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.Map;
-
+import java.util.NoSuchElementException;
 import javax.security.auth.Subject;
 
 import com.quakearts.webapp.security.auth.UserPrincipal;
 import com.quakearts.webapp.security.rest.exception.SecurityContextException;
+import com.quakearts.webapp.security.rest.util.PluginService;
 
 
 /**This class holds information related to an authenticated user, such as the roles and credentials.
@@ -30,19 +31,45 @@ public final class SecurityContext implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 2439562144323581177L;
-	private static final ThreadLocal<SecurityContext> securityContext = new InheritableThreadLocal<SecurityContext>(){
-		protected SecurityContext initialValue() {
-			return new SecurityContext();
-		};
-	};
 	
-	private static final SecurityContextPermission READCREDENTIALSPERMISSION = new SecurityContextPermission("SecurityContext", "read");
+	private static class DefaultContextStorageService implements SecurityContextStorageService {
+		private static final ThreadLocal<SecurityContext> securityContext = new InheritableThreadLocal<SecurityContext>();
+		@Override
+		public void storeContext(SecurityContext context) {
+			securityContext.set(context);
+		}
+
+		@Override
+		public SecurityContext retrieveContext() {
+			return securityContext.get();
+		}
+		
+		@Override
+		public void removeContext() {
+			securityContext.remove();
+		}
+	}
 	
-	private SecurityContext() {
+	private static final SecurityContextStorageService storageService = createSecurityContextStorageService();
+	private static final SecurityContextPermission readCredentialsPermission = new SecurityContextPermission("SecurityContext", "read");
+	
+	SecurityContext() {
 	}
 
-	public static SecurityContext getSecurityContext() {
-		return securityContext.get();
+	private static SecurityContextStorageService createSecurityContextStorageService() {
+		SecurityContextStorageService service = PluginService.loadPlugin(SecurityContextStorageService.class);
+		if(service!=null)
+			return service;
+		
+		return new DefaultContextStorageService();
+	}
+
+	public static SecurityContext getCurrentSecurityContext() {
+		if(storageService.retrieveContext()==null) {
+			storageService.storeContext(new SecurityContext());
+		}
+		
+		return storageService.retrieveContext();
 	}
 	
 	private String identity;
@@ -77,8 +104,9 @@ public final class SecurityContext implements Serializable {
 	
 	public Principal getUserPrincipal(){
 		try {
-			return subject.getPrincipals(UserPrincipal.class).iterator().next();
-		} catch (NullPointerException e) {
+			return subject==null?null:
+				subject.getPrincipals(UserPrincipal.class).iterator().next();
+		} catch (NoSuchElementException e) {
 			return null;
 		}
 	}
@@ -86,7 +114,7 @@ public final class SecurityContext implements Serializable {
 	String getCredentials() {
 		SecurityManager sm = System.getSecurityManager();
 		if(sm!=null){
-			sm.checkPermission(READCREDENTIALSPERMISSION);
+			sm.checkPermission(readCredentialsPermission);
 		}
 		
 		return credentials;
@@ -152,7 +180,7 @@ public final class SecurityContext implements Serializable {
 	byte[] getCredentialData() {
 		SecurityManager sm = System.getSecurityManager();
 		if(sm!=null){
-			sm.checkPermission(READCREDENTIALSPERMISSION);
+			sm.checkPermission(readCredentialsPermission);
 		}
 
 		return credentialData;
@@ -168,6 +196,6 @@ public final class SecurityContext implements Serializable {
 	}
 	
 	public void release() {
-		securityContext.remove();
+		storageService.removeContext();
 	}
 }

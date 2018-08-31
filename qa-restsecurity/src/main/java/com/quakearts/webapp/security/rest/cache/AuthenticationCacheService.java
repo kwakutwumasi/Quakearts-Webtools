@@ -2,6 +2,8 @@ package com.quakearts.webapp.security.rest.cache;
 
 import javax.security.auth.Subject;
 
+import com.quakearts.webapp.security.rest.exception.AuthenticationCacheServiceException;
+
 /**Interface for providing a caching mechanism for authenticated subject
  * Caching significantly speeds up the time required to authenticate users
  * especially when the underlying mechanism is slow, or in instances where the
@@ -14,16 +16,16 @@ public interface AuthenticationCacheService {
 	 * @param key the key to use in retrieving the subject
 	 * @param subject the authenticated subject
 	 */
-	void saveSubject(String key, Subject subject);
+	void saveSubject(String key, Subject subject) throws AuthenticationCacheServiceException;
 	/**Retrieve the {@linkplain Subject} identified by the key, if any
 	 * @param key the key to use in retrieving the subject
 	 * @return the Subject, if any
 	 */
-	Subject retrieveSubject(String key);
+	Subject retrieveSubject(String key) throws AuthenticationCacheServiceException;
 	/**Invalidate the {@linkplain Subject} identified by this key, if any
 	 * @param key the key to use in retrieving the subject
 	 */
-	void invalidateSubject(String key);
+	void invalidateSubject(String key) throws AuthenticationCacheServiceException;
 	/**Convert authentication data such as a password or authentication signature into
 	 * a key for retrieval
 	 * @param identity the subject identifier, such as a username
@@ -31,5 +33,5 @@ public interface AuthenticationCacheService {
 	 * @param contextName the name if the authentication context.
 	 * @return the generated key
 	 */
-	String getKey(String identity, String authenticationData, String contextName);
+	String getKey(String identity, String authenticationData, String contextName) throws AuthenticationCacheServiceException;
 }

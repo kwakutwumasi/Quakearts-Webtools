@@ -11,8 +11,8 @@
 package com.quakearts.webapp.security.rest.context;
 
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 import java.util.HashMap;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
@@ -33,7 +33,6 @@ public class LoginContext {
 	private static final String ABORT_METHOD = "abort";
 	private static final String LOGOUT_METHOD = "logout";
 	private static final String OTHER = "other";
-	private static final String DEFAULT_HANDLER = "auth.login.defaultCallbackHandler";
 	private Subject subject = null;
 	private boolean subjectProvided = false;
 	private boolean loginSucceeded = false;
@@ -47,8 +46,6 @@ public class LoginContext {
 	private LoginException firstError = null;
 	private LoginException firstRequiredError = null;
 	private boolean success = false;
-
-	private static final Logger log = Logger.getLogger(LoginContext.class.getName());
 
 	private void init(String name) throws LoginException {
 		if (config == null) {
@@ -73,21 +70,6 @@ public class LoginContext {
 		if (contextClassLoader == null) {
 			contextClassLoader = ClassLoader.getSystemClassLoader();
 		}					
-	}
-
-	private void loadDefaultCallbackHandler() throws LoginException {
-		try {
-			final ClassLoader finalLoader = contextClassLoader;
-
-			String defaultHandler = java.security.Security.getProperty(DEFAULT_HANDLER);
-			if (defaultHandler != null && defaultHandler.length() != 0){
-				Class<? extends CallbackHandler> c = Class.forName(defaultHandler, true, finalLoader)
-					.asSubclass(CallbackHandler.class);
-				this.callbackHandler = c.newInstance();
-			}
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException pae) {
-			throw new LoginException(pae.toString());
-		}
 	}
 	
     /**
@@ -117,7 +99,7 @@ public class LoginContext {
      *          and there is no {@code Configuration} entry
      *          for "<i>other</i>".
      *          <p>
-     * @exception SecurityException if a SecurityManager is set,
+     * @exception RestSecurityException if a SecurityManager is set,
      *          <i>config</i> is {@code null},
      *          and either the caller does not have
      *          AuthPermission("createLoginContext.<i>name</i>"),
@@ -135,7 +117,7 @@ public class LoginContext {
             subjectProvided = true;
         }
         if (callbackHandler == null) {
-            loadDefaultCallbackHandler();
+            throw new LoginException("Parameter callbackHandler is required");
         } else {
             this.callbackHandler = callbackHandler;
         }
@@ -310,20 +292,10 @@ public class LoginContext {
 									.getControlFlag() == AppConfigurationEntry.LoginModuleControlFlag.SUFFICIENT
 							&& firstRequiredError == null) {
 						clearState();
-
-						if (log.isLoggable(Level.FINER))
-							log.fine(methodName + " SUFFICIENT success");
 						return;
 					}
-
-					if (log.isLoggable(Level.FINER))
-						log.fine(methodName + " success");
 					success = true;
-				} else {
-					if (log.isLoggable(Level.FINER))
-						log.fine(methodName + " ignored");
 				}
-
 			} catch (InstantiationException ie) {
 				throwException(null, new LoginException("Unable to instantiate LoginModule " + ie.getMessage()));
 			} catch (ClassNotFoundException cnfe) {
@@ -340,11 +312,6 @@ public class LoginContext {
 				} else if (ite.getCause() instanceof SecurityException) {
 					le = new LoginException("Security Exception");
 					le.initCause(new SecurityException());
-					if (log.isLoggable(Level.FINER)) {
-						log.fine("Original security exception with detail msg "
-								+ "replaced by new exception with empty detail msg");
-						log.fine("Original security exception: " + ite.getCause().toString());
-					}
 				} else {
 					if(ite.getCause()!=null){
 						java.io.StringWriter sw = new java.io.StringWriter();
@@ -360,29 +327,17 @@ public class LoginContext {
 				}
 
 				if (moduleHandle.entry.getControlFlag() == AppConfigurationEntry.LoginModuleControlFlag.REQUISITE) {
-
-					if (log.isLoggable(Level.FINER))
-						log.fine(methodName + " REQUISITE failure");
 					if (methodName.equals(ABORT_METHOD) || methodName.equals(LOGOUT_METHOD)) {
 						if (firstRequiredError == null)
 							firstRequiredError = le;
 					} else {
 						throwException(firstRequiredError, le);
 					}
-
 				} else if (moduleHandle.entry
 						.getControlFlag() == AppConfigurationEntry.LoginModuleControlFlag.REQUIRED) {
-
-					if (log.isLoggable(Level.FINER))
-						log.fine(methodName + " REQUIRED failure");
-
 					if (firstRequiredError == null)
 						firstRequiredError = le;
 				} else {
-
-					if (log.isLoggable(Level.FINER))
-						log.fine(methodName + " OPTIONAL failure");
-
 					if (firstError == null)
 						firstError = le;
 				}

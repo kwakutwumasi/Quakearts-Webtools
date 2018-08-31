@@ -26,7 +26,7 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-restsecurity</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 </dependency>
 
 ```
@@ -63,3 +63,10 @@ The _com.quakearts.webapp.security.rest.filter.AuthenticationFilter_ is a _javax
 	errorWriterClass - a class that implements the com.quakearts.webapp.security.rest.filter.AuthenticationErrorWriter. This is used when sending an authentication error
 	
 ```
+###### com.quakearts.webapp.security.rest.cache.AuthenticationCacheService
+
+The library provides a service interface for plugging in an authentication cache. The cache allows temporary storage of an authenticated subject to match against the provided credentials. This makes it possible to improve authentication performance especially when an expensive external call is required (such as to a data store). To activate cache storage implement _com.quakearts.webapp.security.rest.cache.AuthenticationCacheService_, then create a file named _com.quakearts.webapp.security.rest.cache.AuthenticationCacheService_ in the _META-INF/services_ folder of your class folder or jar, with a single line entry of the name of your implementation. For more information on the [Java ServiceLoader](https://docs.oracle.com/javase/9/docs/api/java/util/ServiceLoader.html), see Java Online documentation.
+
+###### com.quakearts.webapp.security.rest.SecurityContextStorageService
+
+The library provides a service interface for changing the storage mechanism for _com.quakearts.webapp.security.rest.SecurityContext_. The default implementation uses a _java.util.concurrent.ThreadLocal_ variable to store the context. This can create problems in asynchronous environments. You may override this behavior by implementing _com.quakearts.webapp.security.rest.SecurityContextStorageService_, then create a file named _com.quakearts.webapp.security.rest.SecurityContextStorageService_ in the _META-INF/services_ folder of your class folder or jar, with a single line entry of the name of your implementation. For more information on the [Java ServiceLoader](https://docs.oracle.com/javase/9/docs/api/java/util/ServiceLoader.html), see Java Online documentation.

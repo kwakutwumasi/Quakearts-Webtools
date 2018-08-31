@@ -26,8 +26,8 @@ import javax.security.auth.login.LoginException;
 
 import com.quakearts.webapp.security.auth.callback.TokenCallback;
 import com.quakearts.webapp.security.rest.cache.AuthenticationCacheService;
-import com.quakearts.webapp.security.rest.cache.AuthenticationCacheServiceFactory;
 import com.quakearts.webapp.security.rest.context.LoginContext;
+import com.quakearts.webapp.security.rest.util.PluginService;
 
 /**Base class for JAAS dependent authentication systems. 
  * It provides a mechanism for loading a JAAS configuration. This class
@@ -42,25 +42,25 @@ public abstract class JAASAuthenticatorBase {
 	private AuthenticationCacheService cacheService;
 	
 	protected JAASAuthenticatorBase() {
-		cacheService = AuthenticationCacheServiceFactory.findService();
+		cacheService = PluginService.loadPlugin(AuthenticationCacheService.class);
 	}
 	
 	protected void init(String username, String password, String remoteHost, int remotePort,
 			Map<String, String> requestHeaders, String host, int port, String application, String applicationContext) {
-		SecurityContext.getSecurityContext().init(username, password, remoteHost, remotePort, requestHeaders, host,
+		SecurityContext.getCurrentSecurityContext().init(username, password, remoteHost, remotePort, requestHeaders, host,
 				port, application, applicationContext);
 	}
 	
 	protected void init(byte[] credentials, String remoteHost, int remotePort,
 			Map<String, String> requestHeaders, String host, int port, String application, String applicationContext){
-		SecurityContext.getSecurityContext().init(credentials, remoteHost, remotePort, requestHeaders, host,
+		SecurityContext.getCurrentSecurityContext().init(credentials, remoteHost, remotePort, requestHeaders, host,
 				port, application, applicationContext);
 	}
 	
 	protected void authenticateViaUsernameAndPassword(String contextName) 
 			throws LoginException {
 
-		final SecurityContext context = SecurityContext.getSecurityContext();
+		final SecurityContext context = SecurityContext.getCurrentSecurityContext();
 		
 		if(tryAuthenticateFromCache(context.getIdentity(), context.getCredentials(), contextName))
 			return;
@@ -80,7 +80,7 @@ public abstract class JAASAuthenticatorBase {
 	}
 	
 	protected void authenticateViaByteCredentials(String contextName) throws LoginException{
-		final SecurityContext context = SecurityContext.getSecurityContext();
+		final SecurityContext context = SecurityContext.getCurrentSecurityContext();
 
 		authenticate((c)->{
 			for(Callback cb:c){
@@ -110,7 +110,7 @@ public abstract class JAASAuthenticatorBase {
 		LoginContext context = new LoginContext(contextName, null, handler, jaasConfig);
 		context.login();
 		context.getSubject().setReadOnly();
-		SecurityContext.getSecurityContext().setSubject(context.getSubject());
+		SecurityContext.getCurrentSecurityContext().setSubject(context.getSubject());
 	}
 	
 	private boolean tryAuthenticateFromCache(String identity, String authenticationData, String contextName) {
@@ -118,7 +118,7 @@ public abstract class JAASAuthenticatorBase {
 		if(cacheService!=null) {
 			subject = cacheService.retrieveSubject(cacheService.getKey(identity, authenticationData, contextName));
 			if(subject!=null)
-				SecurityContext.getSecurityContext().setSubject(subject);
+				SecurityContext.getCurrentSecurityContext().setSubject(subject);
 		}
 		
 		return subject != null;

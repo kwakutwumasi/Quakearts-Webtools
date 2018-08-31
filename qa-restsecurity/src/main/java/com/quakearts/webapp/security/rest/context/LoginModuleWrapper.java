@@ -22,6 +22,8 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
+import org.jboss.weld.exceptions.IllegalStateException;
+
 /**A wrapper around login module that don't implement {@linkplain LoginModule}
  * @author kwakutwumasi-afriyie
  *
@@ -31,7 +33,7 @@ public class LoginModuleWrapper implements LoginModule {
 	private Object module;
 	private Handles handles;
 	
-	public LoginModuleWrapper(Class<?> moduleClass) throws LoginException {
+	public LoginModuleWrapper(Class<?> moduleClass) throws LoginException, IllegalAccessException, InstantiationException {
 		try {
 			module = moduleClass.newInstance();
 			if(!handlesMap.containsKey(moduleClass)){
@@ -50,9 +52,9 @@ public class LoginModuleWrapper implements LoginModule {
 			} else {
 				handles = handlesMap.get(moduleClass);
 			}
-		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException e) {
+		} catch (NoSuchMethodException | SecurityException e) {
 			throw new LoginException("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()
-			+ ". Exception occured whiles executing login() on "+module.getClass().getName());
+			+ ". Exception occured whiles executing login() on "+moduleClass.getName());
 		}
 	}
 
@@ -66,6 +68,7 @@ public class LoginModuleWrapper implements LoginModule {
 		try {
 			handles.initializeHandle.invoke(module, subject, callbackHandler, sharedState, options);
 		} catch (Throwable e) {
+			throw new IllegalStateException(e);
 		}
 	}
 

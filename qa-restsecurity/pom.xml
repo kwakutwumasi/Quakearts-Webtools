@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-restsecurity</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<name>REST Security Filters and CDI Interceptors for Login</name>
 	<description>A simple library that adds a Servlet Request Filter for JAAS login modules and a CDI Authentication Interceptor for REST calls</description>
 	<dependencies>
@@ -15,7 +15,7 @@
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-appbase</artifactId>
-			<version>2.0</version>
+			<version>2.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -25,9 +25,16 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.quakearts.webtools.test</groupId>
+			<artifactId>qa-testtools</artifactId>
+			<version>1.0.3</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>

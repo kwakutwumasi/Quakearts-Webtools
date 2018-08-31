@@ -1,5 +1,10 @@
 package test;
 
+import static org.junit.Assert.*;
+import static org.hamcrest.core.Is.*;
+import static org.hamcrest.core.IsNull.*;
+import static org.hamcrest.core.IsInstanceOf.*;
+
 import java.io.IOException;
 
 import javax.inject.Inject;
@@ -7,6 +12,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.quakearts.webapp.security.rest.requestwrapper.AuthenticationServletRequestWrapper;
 
 public class TestAuthenticationRequiredServlet extends HttpServlet {
 
@@ -25,6 +32,21 @@ public class TestAuthenticationRequiredServlet extends HttpServlet {
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		assertThat(req, is(instanceOf(AuthenticationServletRequestWrapper.class)));
+		assertThat(req.getAuthType(), is("com.quakearts.security.AUTHENTICATION"));
+		assertThat(req.getHeader("user-agent"), is("Generic REST Client"));
+		assertThat(req.getHeaders("user-agent"), is(notNullValue()));
+		assertThat(req.getHeader("Authorization"), is(nullValue()));
+		assertThat(req.getHeader("authorization"), is(nullValue()));
+		assertThat(req.getHeaders("authorization"), is(nullValue()));
+		assertThat(req.getHeaders("Authorization"), is(nullValue()));
+		assertThat(req.authenticate(resp), is(true));
+		assertThat(req.isUserInRole("TestRole"), is(true));
+		assertThat(req.isUserInRole("NoTestRole"), is(false));
+		assertThat(req.getUserPrincipal().getName(), is("testuser"));
+		assertThat(req.getRemoteUser(), is("testuser"));
+		
+		
 		testService.process(req, resp);
 	}
 }
