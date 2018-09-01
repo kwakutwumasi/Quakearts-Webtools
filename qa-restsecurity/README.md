@@ -114,7 +114,7 @@ The library provides a service interface for changing the storage mechanism for 
 
 The library allows you to directly secure method calls using CDI interceptors. This simplifies authorization by making it possible for unauthenticated/unauthorized users to access functionality that is not harmful and focusing security on method calls that are most sensitive. the _com.quakearts.webapp.security.rest.cdi.RequireAuthorization_ annotation can be placed on methods or classes that need to be restricted. The _allow_ attribute specifies the roles that can access the method/class. The _deny_ attribute specifies roles that must be prohibited.
 
-```
+```java
 	@Path("/mycontroller")
 	public class MyController {
 		@GET
