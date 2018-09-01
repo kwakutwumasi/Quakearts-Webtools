@@ -2,13 +2,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.quakearts.webtools</groupId>
   <artifactId>qa-allwebtools</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <packaging>pom</packaging>
   <name>All Quakearts Webtools</name>
   <modules>
   	<module>../qa-appbase</module>
   	<module>../qa-appbase-archetype</module>
   	<module>../qa-appbase-jsf-orm-archetype</module>
+  	<module>../qa-appbase-minimal-archetype</module>
   	<module>../qa-appbase-resteasy-orm-archetype</module>
   	<module>../qa-appbase-test-helper</module>
   	<module>../qa-auth</module>

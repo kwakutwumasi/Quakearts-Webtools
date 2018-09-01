@@ -1,5 +1,5 @@
 # qa-allwebtools
-A POM project for building all webtools at one goal.
+A POM project for building all webtools at once.
 
 ##### Requirements
 * Java 8+
