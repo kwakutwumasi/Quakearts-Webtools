@@ -54,7 +54,7 @@ A third authentication method _authenticate(CallbackHandler handler, String cont
 The _authenticateViaUsernameAndPassword()_ uses the standard username/password callbacks 
 _javax.security.auth.callback.NameCallback_/_javax.security.auth.callback.PasswordCallback_ for the login modules. The _authenticateViaByteCredentials()_ method uses _com.quakearts.webapp.security.auth.callback.TokenCallback_ from the [qa-auth](https://github.com/kwakutwumasi/Quakearts-Webtools/tree/master/qa-auth/) library. See the [JAAS Reference Guide](https://docs.oracle.com/javase/8/docs/technotes/guides/security/jaas/JAASRefGuide.html) for more information on login modules.
 
-###### com.quakearts.webapp.security.rest.filter.AuthenticationFilter
+##### com.quakearts.webapp.security.rest.filter.AuthenticationFilter
 
 The _com.quakearts.webapp.security.rest.filter.AuthenticationFilter_ is a _javax.servlet.Filter_ that can be installed to provide security for web resources. It can be used for RESTful webservices and microservices. The filter has three initial parameters:
 
@@ -102,10 +102,68 @@ You can configure the filter using _javax.servlet.annotation.WebFilter_ and _jav
 	public class MyFilter extends AuthenticationFilter(){}
 ```
 
-###### com.quakearts.webapp.security.rest.cache.AuthenticationCacheService
+##### com.quakearts.webapp.security.rest.cache.AuthenticationCacheService
 
 The library provides a service interface for plugging in an authentication cache. The cache allows temporary storage of an authenticated subject to match against the provided credentials. This makes it possible to improve authentication performance especially when an expensive external call is required (such as to a data store). To activate cache storage implement _com.quakearts.webapp.security.rest.cache.AuthenticationCacheService_, then create a file named _com.quakearts.webapp.security.rest.cache.AuthenticationCacheService_ in the _META-INF/services_ folder of your class folder or jar, with a single line entry of the name of your implementation. For more information on the [Java ServiceLoader](https://docs.oracle.com/javase/9/docs/api/java/util/ServiceLoader.html), see Java Online documentation.
 
-###### com.quakearts.webapp.security.rest.SecurityContextStorageService
+##### com.quakearts.webapp.security.rest.SecurityContextStorageService
 
 The library provides a service interface for changing the storage mechanism for _com.quakearts.webapp.security.rest.SecurityContext_. The default implementation uses a _java.util.concurrent.ThreadLocal_ variable to store the context. This can create problems in asynchronous environments. You may override this behavior by implementing _com.quakearts.webapp.security.rest.SecurityContextStorageService_, then create a file named _com.quakearts.webapp.security.rest.SecurityContextStorageService_ in the _META-INF/services_ folder of your class folder or jar, with a single line entry of the name of your implementation. For more information on the [Java ServiceLoader](https://docs.oracle.com/javase/9/docs/api/java/util/ServiceLoader.html), see Java Online documentation.
+
+##### Securing resources using CDI
+
+The library allows you to directly secure method calls using CDI interceptors. This simplifies authorization by making it possible for unauthenticated/unauthorized users to access functionality that is not harmful and focusing security on method calls that are most sensitive. the _com.quakearts.webapp.security.rest.cdi.RequireAuthorization_ annotation can be placed on methods or classes that need to be restricted. The _allow_ attribute specifies the roles that can access the method/class. The _deny_ attribute specifies roles that must be prohibited.
+
+```
+	@Path("/mycontroller")
+	public class MyController {
+		@GET
+		public WelcomeJson getWelcome(){
+			....
+		}
+		
+		@POST
+		@RequireAuthorization(allow="User")
+		public ResponseJson postWelcome(WelcomeJson json){
+			....
+		}
+
+		@PUT
+		@RequireAuthorization(deny="User",allow="Admin")
+		public ResponseJson updateWelcome(WelcomeJson json){
+			....
+		}
+
+		@DELETE
+		@RequireAuthorization(deny="User")
+		public ResponseJson deleteWelcome(WelcomeJson json){
+			....
+		}
+		
+	}
+	
+	@Path("/my-super-admin-controller")
+	@RequireAuthorization(deny="User",allow="Admin")
+	public class MySuperAdminController {
+		@GET
+		public SiteJson getSite(){
+			....
+		}
+		
+		@POST
+		public ResponseJson postSite(SiteJson json){
+			....
+		}
+
+		@PUT
+		public ResponseJson updateSite(SiteJson json){
+			....
+		}
+
+		@DELETE
+		public ResponseJson deleteSite(SiteJson json){
+			....
+		}
+		
+	}
+```
