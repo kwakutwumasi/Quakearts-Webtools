@@ -5,7 +5,7 @@ This library forms the basis of the QuakeArts.com Application Development Platfo
 #### Requirements
 
 * Java 8+
-* Maven (for building from source)
+* Maven
 
 #### Quick Start
 
