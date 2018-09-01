@@ -51,6 +51,9 @@ is used for authentication requiring some kind of token. The token is sent as a 
 <br />
 A third authentication method _authenticate(CallbackHandler handler, String contextName)_ can be used to directly provide the callbacks required by the login modules.
 
+The _authenticateViaUsernameAndPassword()_ uses the standard username/password callbacks 
+_javax.security.auth.callback.NameCallback_/_javax.security.auth.callback.PasswordCallback_ for the login modules. The _authenticateViaByteCredentials()_ method uses _com.quakearts.webapp.security.auth.callback.TokenCallback_ from the [qa-auth](https://github.com/kwakutwumasi/Quakearts-Webtools/tree/master/qa-auth/) library. See the [JAAS Reference Guide](https://docs.oracle.com/javase/8/docs/technotes/guides/security/jaas/JAASRefGuide.html) for more information on login modules.
+
 ###### com.quakearts.webapp.security.rest.filter.AuthenticationFilter
 
 The _com.quakearts.webapp.security.rest.filter.AuthenticationFilter_ is a _javax.servlet.Filter_ that can be installed to provide security for web resources. It can be used for RESTful webservices and microservices. The filter has three initial parameters:
@@ -63,6 +66,42 @@ The _com.quakearts.webapp.security.rest.filter.AuthenticationFilter_ is a _javax
 	errorWriterClass - a class that implements the com.quakearts.webapp.security.rest.filter.AuthenticationErrorWriter. This is used when sending an authentication error
 	
 ```
+
+There are two ways of configuring the web filter for authentication.
+1. **Using web.xml** <br /><br />
+You can configure the filter using the web.xml. See [Servlet 3.0 documentation](https://javaee.github.io/tutorial/webapp005.html) for more information.
+
+```
+ <filter>
+		<filter-name>AuthenticationFilter</filter-name>
+		<filter-class>com.quakearts.webapp.security.rest.filter.AuthenticationFilter</filter-class>
+		<init-param>
+			<param-name>requireAuthorization</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>contextName</param-name>
+			<param-value>JAASContext</param-value>
+		</init-param>
+		<init-param>
+			<param-name>errorWriterClass</param-name>
+			<param-value>com.my.ErrorWriterClass</param-value>
+		</init-param>
+	</filter>
+```
+2. **Using annotations** <br /><br />
+You can configure the filter using _javax.servlet.annotation.WebFilter_ and _javax.servlet.annotation.WebInitParam_ by subclassing _com.quakearts.webapp.security.rest.filter.AuthenticationFilter_. See documentation of the annotations for more information.
+
+```java
+	import javax.servlet.annotation.WebFilter;
+	import javax.servlet.annotation.WebInitParam;
+	import com.quakearts.webapp.security.rest.filter.AuthenticationFilter;
+	
+	@WebFilter(urlPatterns="/*",
+		initParams={@WebInitParam(name="contextName",value="JAASContext")})
+	public class MyFilter extends AuthenticationFilter(){}
+```
+
 ###### com.quakearts.webapp.security.rest.cache.AuthenticationCacheService
 
 The library provides a service interface for plugging in an authentication cache. The cache allows temporary storage of an authenticated subject to match against the provided credentials. This makes it possible to improve authentication performance especially when an expensive external call is required (such as to a data store). To activate cache storage implement _com.quakearts.webapp.security.rest.cache.AuthenticationCacheService_, then create a file named _com.quakearts.webapp.security.rest.cache.AuthenticationCacheService_ in the _META-INF/services_ folder of your class folder or jar, with a single line entry of the name of your implementation. For more information on the [Java ServiceLoader](https://docs.oracle.com/javase/9/docs/api/java/util/ServiceLoader.html), see Java Online documentation.
