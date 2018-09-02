@@ -48,9 +48,8 @@ public class BootSelectOneInputRenderer extends BootSelectInputGroupRenderer {
 		writer.writeAttribute("id", id, "clientId");
 		if(!componentDisabled) {
 			renderOnchange(context, component);
-			renderOverlayTarget(context, component);
 		}
-	
+		renderHTML5DataAttributes(context, component);	
 		writeAttributeIfPresent("mainClass", "class", component, writer);
 		writeAttributeIfPresent("mainStyle", "style", component, writer);
 		

@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.quakearts.webapp.facelets.bootstrap.renderers;
 
+import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.renderHTML5DataAttributes;
+
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -41,6 +43,7 @@ public class BootRowRenderer extends HtmlBasicRenderer {
 			writer.writeAttribute("style", style, null);
 			
 		writeIdAttributeIfNecessary(context, writer, component);
+		renderHTML5DataAttributes(context, component);
 		writer.write("\n");
 	}
 	

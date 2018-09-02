@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.quakearts.webapp.facelets.bootstrap.renderers;
 
+import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.renderHTML5DataAttributes;
+
 import java.io.IOException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -46,6 +48,7 @@ public class BootFlaticonRenderer extends HtmlBasicRenderer {
 		
 		writer.startElement("span", component);
 		writeIdAttributeIfNecessary(context, writer, component);
+		renderHTML5DataAttributes(context, component);
 		writer.writeAttribute("class", "flaticon-"+typeString+(styleClass!=null?" "+styleClass:""), null);
 		if(label!=null){
 			writer.writeAttribute("aria-label",label, null);

@@ -103,6 +103,7 @@ public class BootFormRenderer extends HtmlBasicRenderer {
 						: "navbar-form")
 						+ (styleClass != null ? " " + styleClass : ""), null);
 		writer.writeAttribute("action", getActionStr(context), null);
+		renderHTML5DataAttributes(context, component);
 		
 		String style = form.get("style");
 		if(style!=null){

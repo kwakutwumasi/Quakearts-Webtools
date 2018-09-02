@@ -15,7 +15,6 @@ import com.quakearts.webapp.facelets.bootstrap.components.BootDateButton;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.Attribute;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.AttributeManager;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.AttributeManager.Key;
-import com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.html_basic.HtmlBasicInputRenderer;
 
 import java.io.IOException;
@@ -30,7 +29,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
-import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.renderOverlayTarget;
+import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.*;
 import static com.quakearts.webapp.facelets.util.UtilityMethods.*;
 
 public class BootDateButtonRenderer extends HtmlBasicInputRenderer {
@@ -123,13 +122,13 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer {
 
 		writer.startElement("div", component);
 		writeIdAttributeIfNecessary(context, writer, component);
-		RenderKitUtils.renderPassThruAttributes(context, writer, component, ATTRIBUTES);
-		RenderKitUtils.renderXHTMLStyleBooleanAttributes(writer, component);
+		renderPassThruAttributes(context, writer, component, ATTRIBUTES);
+		renderXHTMLStyleBooleanAttributes(writer, component);
 		
 		if(!componentDisabled) {
-			renderOverlayTarget(context, component);
-			RenderKitUtils.renderOnchange(context, component);
+			renderOnchange(context, component);
 		}
+		renderHTML5DataAttributes(context, component);
 		
 		String styleClass = button.get("styleClass");
 		if (styleClass != null)

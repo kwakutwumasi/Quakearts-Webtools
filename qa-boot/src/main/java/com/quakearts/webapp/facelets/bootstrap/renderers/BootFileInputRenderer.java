@@ -175,7 +175,7 @@ public class BootFileInputRenderer extends Renderer {
 				+(render!=null&&render.length()>0? ",render: '"+render+"'":"")
 				+(onevent!=null&&onevent.length()>0? ",onevent: "+onevent+"":"")
 				+(onerror!=null&&onerror.length()>0?",onerror: "+onerror+"":"")+"});", null);
-        	renderOverlayTarget(context, component);
+        	renderHTML5DataAttributes(context, component);
         }
 		
     	renderPassThruAttributes(context, writer, component, new Attribute[0]);

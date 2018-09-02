@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.quakearts.webapp.facelets.bootstrap.renderers;
 
+import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.renderHTML5DataAttributes;
+
 import java.io.IOException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -38,6 +40,7 @@ public class BootLabelRenderer extends HtmlBasicRenderer {
 		writer.writeAttribute("class", "label label-"+type+(styleClass!=null?" "+styleClass:""), null);
 		if(style!=null)
 			writer.writeAttribute("style", style, null);
+		renderHTML5DataAttributes(context, component);
 		writer.write(currentValue);
 		writer.endElement("span");
 	}

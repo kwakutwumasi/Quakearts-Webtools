@@ -40,6 +40,7 @@ public class BootSideMenuRenderer extends HtmlBasicRenderer {
 		writer.startElement("div", component);
 		writeIdAttributeIfNecessary(context, writer, component);
 		renderPassThruAttributes(context, writer, component, ATTRIBUTES);
+		renderHTML5DataAttributes(context, component);
 		String styleClass = sideMenu.get("styleClass");
 		writer.writeAttribute("class", "side-menu"+(styleClass!=null?" "+styleClass:"")+(disabled?" disabled":""), null);		
 		String style = sideMenu.get("style");

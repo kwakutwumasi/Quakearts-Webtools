@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.quakearts.webapp.facelets.bootstrap.renderers;
 
+import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.*;
+
 import java.io.IOException;
 
 import javax.faces.component.UIComponent;
@@ -92,6 +94,7 @@ public class BootColumnRenderer extends HtmlBasicRenderer {
 		ResponseWriter writer = context.getResponseWriter();
 		writer.startElement("div",component);
 		writeIdAttributeIfNecessary(context, writer, component);
+		renderHTML5DataAttributes(context, component);
 		writer.writeAttribute("class", classString.append(styleClass != null ? " "+styleClass : "").toString(), null);
 		if(style!=null)
 			writer.writeAttribute("style", style, null);

@@ -58,6 +58,7 @@ public class BootNavBarRenderer extends HtmlBasicRenderer {
 		writer.writeAttribute("role", "navigation", null);
 		writer.writeAttribute("id", id, null);
 		renderPassThruAttributes(context, writer, component, ATTRIBUTES);
+		renderHTML5DataAttributes(context, component);
 		
 		writer.write("\n");
 		writer.startElement("div", component);

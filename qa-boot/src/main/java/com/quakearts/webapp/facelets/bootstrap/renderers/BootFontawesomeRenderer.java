@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.quakearts.webapp.facelets.bootstrap.renderers;
 
+import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.renderHTML5DataAttributes;
+
 import java.io.IOException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -45,6 +47,7 @@ public class BootFontawesomeRenderer extends HtmlBasicRenderer {
 		
 		writer.startElement("i", component);
 		writeIdAttributeIfNecessary(context, writer, component);
+		renderHTML5DataAttributes(context, component);
 		writer.writeAttribute("class", "fa fa-"+type+(styleClass!=null?" "+styleClass:""), null);
 		if(label!=null){
 			writer.writeAttribute("aria-label",label, null);

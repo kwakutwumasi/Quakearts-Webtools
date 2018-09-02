@@ -21,6 +21,7 @@ import javax.faces.model.SelectItem;
 
 import com.quakearts.webapp.facelets.bootstrap.handlers.HTML5DataRule;
 
+import javax.el.ValueExpression;
 import javax.faces.component.*;
 import static com.quakearts.webapp.facelets.util.UtilityMethods.*;
 
@@ -96,24 +97,7 @@ public class RenderKitUtils {
         } else {
 			renderPassThruAttributesUnoptimized(context, writer, component,
 					attributes, behaviors);
-        }
-        
-		List<String> html5PassThru = (List<String>) component.getAttributes().get(HTML5DataRule.HTML5DATAATTRIBUTES);
-		if(html5PassThru!=null){
-			for(String attribute:html5PassThru){
-				String value;
-				if(component.getValueExpression(attribute)!=null){
-					Object valueObject = component.getValueExpression(attribute).getValue(context.getELContext());
-					value = valueObject!=null?valueObject.toString():null;
-				} else{
-					value = (String) component.getAttributes().get(attribute);
-				}
-				
-				if(value!=null){
-					writer.writeAttribute(attribute, value, null);
-				}
-			}
-		}
+        }        
     }
 
     @SuppressWarnings("rawtypes")
@@ -170,11 +154,26 @@ public class RenderKitUtils {
 				behaviorEventName);
     }
 
-    public static void renderOverlayTarget(FacesContext context, UIComponent component) throws IOException{
-    	final Object overlayTarget = component.getAttributes().get("data-overlay-target");
-    	if(overlayTarget != null){
-    		context.getResponseWriter().writeAttribute("data-overlay-target", overlayTarget, "data-overlay-target");
-    	}
+    @SuppressWarnings("unchecked")
+	public static void renderHTML5DataAttributes(FacesContext context, UIComponent component) throws IOException{
+		List<String> html5PassThru = (List<String>) component.getAttributes().get(HTML5DataRule.HTML5DATAATTRIBUTES);
+		if(html5PassThru!=null){
+			for(String attribute:html5PassThru){
+				String value = null;
+				Object attributeValue = component.getAttributes().get(attribute);
+				if(attributeValue instanceof ValueExpression){
+					Object valueObject = ((ValueExpression)attributeValue).getValue(context.getELContext());
+					value = valueObject!=null?valueObject.toString():null;
+				} else if(attributeValue!=null){
+					value = attributeValue.toString();
+				}
+				
+				if(value!=null){
+					context.getResponseWriter().writeAttribute(attribute, value, null);
+				}
+			}
+		}
+
     }
 
     

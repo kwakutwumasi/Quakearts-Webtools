@@ -64,6 +64,7 @@ public class BootOutputPanelRenderer extends HtmlBasicRenderer {
 		
 		writeIdAttributeIfNecessary(context, writer, component);
 		renderPassThruAttributes(context, writer, component, ATTRIBUTES);
+		renderHTML5DataAttributes(context, component);
 		writer.write("\n");
 		
 		UIComponent facet = panel.getFacet("header");

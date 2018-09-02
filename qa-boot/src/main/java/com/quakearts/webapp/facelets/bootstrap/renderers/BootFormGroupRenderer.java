@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.quakearts.webapp.facelets.bootstrap.renderers;
 
+import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.renderHTML5DataAttributes;
+
 import java.io.IOException;
 
 import javax.faces.component.UIComponent;
@@ -38,6 +40,7 @@ public class BootFormGroupRenderer extends HtmlBasicRenderer {
 		
         writer.startElement("div", component);
         writeIdAttributeIfNecessary(context, writer, component);
+		renderHTML5DataAttributes(context, component);
         writer.writeAttribute("class", "form-group"+(styleClass!=null?" "+styleClass:""), null);
         if(style!=null)
         	writer.writeAttribute("style", style, null);

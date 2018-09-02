@@ -49,6 +49,7 @@ public class BootResponsiveImageRenderer extends HtmlBasicRenderer {
 		writer.writeAttribute("src", entries.get(entries.size()-1).getImagePath(), null);
 		if(styleClass!=null)
 		renderPassThruAttributes(context, writer, component, ATTRIBUTES);
+		renderHTML5DataAttributes(context, component);
 		writer.endElement("img");
 		writer.write("\n");
 		

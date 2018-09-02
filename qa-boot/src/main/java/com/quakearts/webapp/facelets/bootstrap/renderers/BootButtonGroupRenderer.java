@@ -49,6 +49,7 @@ public class BootButtonGroupRenderer extends HtmlBasicRenderer {
         if(style!=null)
         	writer.writeAttribute("style", style, null);        
         renderPassThruAttributes(context, writer, component, new Attribute[0]);
+		renderHTML5DataAttributes(context, component);
         writer.write("\n");
 	}
 	

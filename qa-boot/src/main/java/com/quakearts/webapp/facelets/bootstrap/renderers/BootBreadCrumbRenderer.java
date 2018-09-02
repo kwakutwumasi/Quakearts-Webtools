@@ -54,6 +54,7 @@ public class BootBreadCrumbRenderer extends HtmlBasicRenderer {
 			
 		writeIdAttributeIfNecessary(context, writer, component);
 		renderPassThruAttributes(context, writer, component, ATTRIBUTES);
+		renderHTML5DataAttributes(context, component);
 
 	}
 	

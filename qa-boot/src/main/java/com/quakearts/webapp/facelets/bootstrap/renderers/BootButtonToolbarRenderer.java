@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.quakearts.webapp.facelets.bootstrap.renderers;
 
+import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.renderHTML5DataAttributes;
 import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.renderPassThruAttributes;
 
 import java.io.IOException;
@@ -50,6 +51,7 @@ public class BootButtonToolbarRenderer extends HtmlBasicRenderer {
         if(style!=null)
         	writer.writeAttribute("style", style, null);        
         renderPassThruAttributes(context, writer, component, new Attribute[0]);
+		renderHTML5DataAttributes(context, component);
         writer.write("\n");
 
 	}

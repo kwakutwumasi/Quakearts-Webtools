@@ -80,6 +80,7 @@ public class BootNavRenderer extends HtmlBasicRenderer {
 		}
 		
 		writeIdAttributeIfNecessary(context, writer, component);
+		renderHTML5DataAttributes(context, component);
 		renderPassThruAttributes(context, writer, component, ATTRIBUTES);
 	}
 	

@@ -68,6 +68,7 @@ public class BootBreadCrumbItemRenderer extends HtmlBasicRenderer {
 				if(styleClass!=null)
 					writer.writeAttribute("class", styleClass, null);
 				renderPassThruAttributes(context, writer, component, ATTRIBUTES);
+				renderHTML5DataAttributes(context, component);
 				writer.writeText(label==null?valueObject:label,null);
 				writer.endElement("a");
 			}

@@ -54,6 +54,7 @@ public class BootTableRenderer extends HtmlBasicRenderer {
 		String styleClass = data.get("styleClass");
 		writer.writeAttribute("class","table "+(styleClass !=null?" "+styleClass:""), "styleClass");
 
+		renderHTML5DataAttributes(context, component);
 		renderPassThruAttributes(context, writer, component,
 				ATTRIBUTES);
 		writer.writeText("\n", component, null);

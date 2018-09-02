@@ -97,8 +97,8 @@ public class BootCheckboxRenderer extends HtmlBasicInputRenderer {
         writeIdAttributeIfNecessary(context, writer, component);
         if(!UtilityMethods.componentIsDisabled(component)){
 	        renderSelectOnclick(context, component);
-	        renderOverlayTarget(context, component);
         }
+        renderHTML5DataAttributes(context, component);
         
         String mainClass = box.get("mainClass");
         writer.writeAttribute("class", "input-group"+(mainClass!=null?" "+mainClass:""), null);

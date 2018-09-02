@@ -241,7 +241,7 @@ public class BootPaginationRenderer extends HtmlBasicRenderer {
 				+tableId+(render!=null?" "+render:"")+"'"
 				+(onevent!=null&&onevent.length()>0? ",onevent: "+onevent:"")
 				+(onerror!=null&&onerror.length()>0?",onerror: "+onerror:"")+"});", null);
-		renderOverlayTarget(context, component);
+		renderHTML5DataAttributes(context, component);
 		renderPassThruAttributes(context, writer, component, ATTRIBUTES);
 		writer.endElement("input");
     	writer.write("\n");

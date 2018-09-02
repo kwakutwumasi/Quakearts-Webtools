@@ -57,7 +57,7 @@ public class HTML5DataRule extends MetaRule {
 			if(value!=null){
 				((UIComponent)instance).getAttributes().put(name, value);
 			} else {
-				((UIComponent)instance).setValueExpression(name, attr.getValueExpression(ctx, type));
+				((UIComponent)instance).getAttributes().put(name, attr.getValueExpression(ctx, type));
 			}			
 		}
 	}
