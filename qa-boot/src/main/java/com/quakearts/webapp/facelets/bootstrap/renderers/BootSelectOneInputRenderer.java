@@ -10,11 +10,7 @@
  ******************************************************************************/
 package com.quakearts.webapp.facelets.bootstrap.renderers;
 
-import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.findClientBehavior;
-import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.getSelectItems;
-import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.renderOnchange;
-import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.renderPassThruAttributes;
-import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.renderXHTMLStyleBooleanAttributes;
+import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.*;
 import static com.quakearts.webapp.facelets.util.UtilityMethods.componentIsDisabled;
 
 import java.io.IOException;
@@ -50,8 +46,11 @@ public class BootSelectOneInputRenderer extends BootSelectInputGroupRenderer {
 		
 		writer.startElement("div", component);
 		writer.writeAttribute("id", id, "clientId");
-		if(!componentDisabled)
+		if(!componentDisabled) {
 			renderOnchange(context, component);
+			renderOverlayTarget(context, component);
+		}
+	
 		writeAttributeIfPresent("mainClass", "class", component, writer);
 		writeAttributeIfPresent("mainStyle", "style", component, writer);
 		

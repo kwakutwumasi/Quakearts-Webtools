@@ -167,15 +167,18 @@ public class BootFileInputRenderer extends Renderer {
 		writer.writeAttribute("id", "btn_"+id_js, null);
 		writer.writeAttribute("type", "button", null);
 		writer.writeAttribute("class", "btn btn-default", null);
-		if(componentDisabled)
+		if(componentDisabled) {
 			writer.writeAttribute("disabled", "disabled", "disabled");
-		
-		writer.writeAttribute("onclick", "$('#iframe_"+id_js+"').contents().find('#upload-button').click();", null);
-		writer.writeAttribute("onchange", "jsf.ajax.request(this, event, {execute:'"+id+(execute!=null?" "+execute:"")+"'"
+		} else {
+			writer.writeAttribute("onclick", "$('#iframe_"+id_js+"').contents().find('#upload-button').click();", null);
+			writer.writeAttribute("onchange", "jsf.ajax.request(this, event, {execute:'"+id+(execute!=null?" "+execute:"")+"'"
 				+(render!=null&&render.length()>0? ",render: '"+render+"'":"")
 				+(onevent!=null&&onevent.length()>0? ",onevent: "+onevent+"":"")
 				+(onerror!=null&&onerror.length()>0?",onerror: "+onerror+"":"")+"});", null);
-        renderPassThruAttributes(context, writer, component, new Attribute[0]);
+        	renderOverlayTarget(context, component);
+        }
+		
+    	renderPassThruAttributes(context, writer, component, new Attribute[0]);
         writer.write(label!=null?label:"Browse");
 		writer.endElement("button");
         writer.write("\n");

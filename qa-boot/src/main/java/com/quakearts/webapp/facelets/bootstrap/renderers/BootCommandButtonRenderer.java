@@ -91,7 +91,6 @@ public class BootCommandButtonRenderer extends HtmlBasicRenderer {
         writer.writeAttribute("name", clientId, "clientId");
 		renderPassThruAttributes(context, writer, component, ATTRIBUTES,
 				getNonOnClickBehaviors(component));
-
 		renderXHTMLStyleBooleanAttributes(writer, component);
 		
 		String displayType = command.get("displayType");
@@ -102,6 +101,7 @@ public class BootCommandButtonRenderer extends HtmlBasicRenderer {
 			writer.writeAttribute("style", style, null);
 
 		
+		renderOverlayTarget(context, component);
 		renderOnclick(context, component, getBehaviorParameters(component));
         writer.write("\n");
         

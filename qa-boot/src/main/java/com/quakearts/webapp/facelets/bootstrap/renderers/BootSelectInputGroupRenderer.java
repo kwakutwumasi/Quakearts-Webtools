@@ -46,8 +46,12 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		
 		writer.startElement("div", component);
 		writer.writeAttribute("id", id, "clientId");
-		if(!componentDisabled)
+		
+		if(!componentDisabled) {
 			renderOnchange(context, component);
+			renderOverlayTarget(context, component);
+		}
+
 		writeAttributeIfPresent("mainClass", "class", component, writer);
 		writeAttributeIfPresent("mainStyle", "style", component, writer);
 		

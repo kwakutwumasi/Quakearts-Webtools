@@ -29,6 +29,8 @@ import java.util.TreeMap;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
+
+import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.renderOverlayTarget;
 import static com.quakearts.webapp.facelets.util.UtilityMethods.*;
 
 public class BootDateButtonRenderer extends HtmlBasicInputRenderer {
@@ -123,8 +125,12 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer {
 		writeIdAttributeIfNecessary(context, writer, component);
 		RenderKitUtils.renderPassThruAttributes(context, writer, component, ATTRIBUTES);
 		RenderKitUtils.renderXHTMLStyleBooleanAttributes(writer, component);
-		RenderKitUtils.renderOnchange(context, component);
-
+		
+		if(!componentDisabled) {
+			renderOverlayTarget(context, component);
+			RenderKitUtils.renderOnchange(context, component);
+		}
+		
 		String styleClass = button.get("styleClass");
 		if (styleClass != null)
 			writer.writeAttribute("class", styleClass, null);
