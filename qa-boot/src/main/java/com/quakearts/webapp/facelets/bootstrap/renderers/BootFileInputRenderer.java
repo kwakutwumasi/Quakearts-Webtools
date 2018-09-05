@@ -134,7 +134,7 @@ public class BootFileInputRenderer extends Renderer {
 		writer.writeAttribute("id", "img_ldg_"+id_js, null);
 		writer.writeAttribute("alt", "Loading...", null);
 		writer.writeAttribute("class", "collapse", null);
-		writer.writeAttribute("src", root+"/boot-services/css/images/loading.gif", null);
+		writer.writeAttribute("src", root+"/boot-services/images/loading.gif", null);
 		writer.endElement("img"); 
 		writer.write("\n");
 		writer.startElement("img", component);
@@ -142,14 +142,14 @@ public class BootFileInputRenderer extends Renderer {
 		writer.writeAttribute("alt", "Loaded", null);
 		if(name==null)
 			writer.writeAttribute("class", "collapse", null);
-		writer.writeAttribute("src", root+"/boot-services/css/images/loaded.png", null);
+		writer.writeAttribute("src", root+"/boot-services/images/loaded.png", null);
 		writer.endElement("img"); 
 		writer.write("\n");
 		writer.startElement("img", component);
 		writer.writeAttribute("id", "img_lde_"+id_js, null);
 		writer.writeAttribute("alt", "Loading error", null);
 		writer.writeAttribute("class", "collapse", null);
-		writer.writeAttribute("src", root+"/boot-services/css/images/loading-error.png", null);
+		writer.writeAttribute("src", root+"/boot-services/images/loading-error.png", null);
 		writer.endElement("img"); 
 		writer.write("\n");
 		writer.endElement("span");
