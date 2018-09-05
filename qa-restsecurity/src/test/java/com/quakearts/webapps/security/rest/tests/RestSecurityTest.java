@@ -212,13 +212,13 @@ public class RestSecurityTest {
 
 	@Test
 	public void testGetParameter() {
-		assertThat(getWrapper().getParameter("j_password"), is(nullValue()));	
+		assertThat(getWrapper().getParameter("j_password"), is(""));	
 		assertThat(getWrapper().getParameter("test"), is("Test"));	
 	}
 
 	@Test
 	public void testGetParameterValues() {
-		assertThat(getWrapper().getParameterValues("j_password"), is(nullValue()));
+		assertThat(getWrapper().getParameterValues("j_password"), is(new String[] {""}));
 		assertThat(getWrapper().getParameterValues("test"), is(notNullValue()));	
 	}
 

@@ -6,6 +6,7 @@ import static org.hamcrest.core.IsNull.*;
 import static org.hamcrest.core.IsInstanceOf.*;
 
 import java.io.IOException;
+import java.util.Enumeration;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -36,10 +37,22 @@ public class TestAuthenticationRequiredServlet extends HttpServlet {
 		assertThat(req.getAuthType(), is("com.quakearts.security.AUTHENTICATION"));
 		assertThat(req.getHeader("user-agent"), is("Generic REST Client"));
 		assertThat(req.getHeaders("user-agent"), is(notNullValue()));
-		assertThat(req.getHeader("Authorization"), is(nullValue()));
-		assertThat(req.getHeader("authorization"), is(nullValue()));
-		assertThat(req.getHeaders("authorization"), is(nullValue()));
-		assertThat(req.getHeaders("Authorization"), is(nullValue()));
+		assertThat(req.getHeader("Authorization"), is(""));
+		assertThat(req.getHeader("authorization"), is(""));
+		Enumeration<String> authorizations = req.getHeaders("authorization");
+		assertThat(authorizations, is(notNullValue()));	
+		while (authorizations.hasMoreElements()) {
+			String authorization = (String) authorizations.nextElement();
+			assertThat(authorization, is(""));	
+		}
+
+		authorizations = req.getHeaders("Authorization");
+		assertThat(authorizations, is(notNullValue()));	
+		while (authorizations.hasMoreElements()) {
+			String authorization = (String) authorizations.nextElement();
+			assertThat(authorization, is(""));	
+		}
+
 		assertThat(req.authenticate(resp), is(true));
 		assertThat(req.isUserInRole("TestRole"), is(true));
 		assertThat(req.isUserInRole("NoTestRole"), is(false));

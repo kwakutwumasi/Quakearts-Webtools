@@ -12,6 +12,8 @@ package com.quakearts.webapp.security.rest.requestwrapper;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 
 import javax.security.auth.Subject;
@@ -50,7 +52,7 @@ public final class AuthenticationServletRequestWrapper extends HttpServletReques
 	@Override
 	public String getHeader(String name) {
 		if(AUTHORIZATION_HEADER.equals(name.toLowerCase()))
-			return null;
+			return "";
 		
 		return super.getHeader(name);
 	}
@@ -58,7 +60,7 @@ public final class AuthenticationServletRequestWrapper extends HttpServletReques
 	@Override
 	public Enumeration<String> getHeaders(String name) {
 		if(AUTHORIZATION_HEADER.equals(name.toLowerCase()))
-			return null;
+			return Collections.enumeration(Arrays.asList(""));
 
 		return super.getHeaders(name);
 	}
@@ -113,7 +115,7 @@ public final class AuthenticationServletRequestWrapper extends HttpServletReques
 	@Override
 	public String getParameter(String name) {
 		if(PASSWORD.equals(name))
-			return null;
+			return "";
 		
 		return super.getParameter(name);
 	}
@@ -121,7 +123,7 @@ public final class AuthenticationServletRequestWrapper extends HttpServletReques
 	@Override
 	public String[] getParameterValues(String name) {
 		if(PASSWORD.equals(name))
-			return null;
+			return new String[]{""};
 
 		return super.getParameterValues(name);
 	}
