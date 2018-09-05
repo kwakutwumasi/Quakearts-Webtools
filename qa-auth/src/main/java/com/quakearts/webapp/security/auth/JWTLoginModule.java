@@ -109,7 +109,7 @@ public class JWTLoginModule implements LoginModule {
 
 		try {
 			if (options.containsKey(VALIDITY_PERIODPARAMETER)) {
-				validity = parseDuration(options.get(VALIDITY_PERIODPARAMETER).toString(), options);
+				validity = parseDuration(VALIDITY_PERIODPARAMETER, options);
 			}
 		} catch (Exception e) {
 			log.severe("Invalid parameter: " + VALIDITY_PERIODPARAMETER + "; " + e.getMessage());
@@ -125,7 +125,7 @@ public class JWTLoginModule implements LoginModule {
 
 		try {
 			if (options.containsKey(ACTIVATEAFTERPERIODPARAMETER)) {
-				activateAfter = parseDuration(options.get(ACTIVATEAFTERPERIODPARAMETER).toString(), options);
+				activateAfter = parseDuration(ACTIVATEAFTERPERIODPARAMETER, options);
 			}
 		} catch (Exception e) {
 			log.severe("Invalid parameter: " + ACTIVATEAFTERPERIODPARAMETER + "; " + e.getMessage());
