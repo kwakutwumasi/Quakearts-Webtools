@@ -23,7 +23,7 @@
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>repo</classpathPrefix>
 							<classpathLayoutType>repository</classpathLayoutType>
-							<mainClass>com.quakearts.appbase.Main</mainClass>
+							<mainClass>${package}.Main</mainClass>
 						</manifest>
 						<manifestEntries>
 							<Class-Path>etc/</Class-Path>
@@ -40,20 +40,14 @@
 					<programs>
 						<program>
 							<id>webapp</id>
-							<mainClass>com.quakearts.appbase.Main</mainClass>
-							<commandLineArguments>
-								<commandLineArgument>${package}.Main</commandLineArgument>
-							</commandLineArguments>
+							<mainClass>${package}.Main</mainClass>
 						</program>
 						<program>
 							<id>webapptest</id>
-							<mainClass>com.quakearts.appbase.Main</mainClass>
+							<mainClass>${package}.Main</mainClass>
 							<jvmSettings>
 								<extraArgument>-agentlib:jdwp=transport=dt_socket,address=localhost:4000,server=y,suspend=y</extraArgument>
 							</jvmSettings>
-							<commandLineArguments>
-								<commandLineArgument>${package}.Main</commandLineArgument>
-							</commandLineArguments>
 						</program>
 					</programs>
 				</configuration>

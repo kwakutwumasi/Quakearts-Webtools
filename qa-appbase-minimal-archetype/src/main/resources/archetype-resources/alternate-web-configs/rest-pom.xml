@@ -40,20 +40,14 @@
 					<programs>
 						<program>
 							<id>webapp</id>
-							<mainClass>com.quakearts.appbase.Main</mainClass>
-							<commandLineArguments>
-								<commandLineArgument>${package}.Main</commandLineArgument>
-							</commandLineArguments>
+							<mainClass>${package}.Main</mainClass>
 						</program>
 						<program>
 							<id>webapptest</id>
-							<mainClass>com.quakearts.appbase.Main</mainClass>
+							<mainClass>${package}.Main</mainClass>
 							<jvmSettings>
 								<extraArgument>-agentlib:jdwp=transport=dt_socket,address=localhost:4000,server=y,suspend=y</extraArgument>
 							</jvmSettings>
-							<commandLineArguments>
-								<commandLineArgument>${package}.Main</commandLineArgument>
-							</commandLineArguments>
 						</program>
 					</programs>
 				</configuration>
@@ -63,28 +57,6 @@
 						<goals>
 							<goal>assemble</goal>
 						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.8</version>
-				<executions>
-					<execution>
-						<id>copy-wars</id>
-						<phase>package</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<target name="Copy wars">
-								<echo>Copying Resources</echo>
-								<mkdir dir="target/etc" />
-								<copy file="conf/main-server.config.json" tofile="target/etc/main-server.config.json" overwrite="true" />
-								<copy file="conf/main-web.xml" tofile="target/etc/main-web.xml" overwrite="true" />
-								<copy file="conf/main-webapp.config.json" tofile="target/etc/main-webapp.config.json" overwrite="true" />
-							</target>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>
