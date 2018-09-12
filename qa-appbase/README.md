@@ -28,7 +28,7 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-appbase</artifactId>
-	<version>2.1</version>
+	<version>2.1.1</version>
 </dependency>
 
 ```
@@ -167,7 +167,9 @@ For more information on ds.json files see the code and documentation for _com.qu
 
 ##### Using Environment Variables
 
-The Tomcat Servlet Container and the Atomikos JCA implementation allow users to set variables using environment variables. This makes deplpoyment to containers such as Docker simpler and easier. A docker file can exist for live and test environments, using the same code base to pull application files. To provide environment variables for the Tomcat Servlet Container, use the configuration properties and add a prefix of '_web._' to each variable. To provide environment variables for the Atomikos JCA implementation, use the configuration properties and add a prefix of '_ds._' to each variable. For OS environments that treat variables as case insensitive values, use the prefix '_WEB&#95;_' for tomcat and '_DS&#95;_' and for CamelCase variables use the '&#95;' separated version of the strings, i.e. camelCase will become camel_case or CAMEL_CASE.. Note that using environment variables is only supported for single webserver and single datasource applications. If there is a need for multiple web servers and or multiple datasources, the use of individual configuration files is required.
+The Tomcat Servlet Container and the Atomikos JCA implementation allow users to set variables using environment variables. This makes deplpoyment to containers such as Docker simpler and easier. A docker file can exist for live and test environments, using the same code base to pull application files. To provide environment variables for the Tomcat Servlet Container, use the configuration properties and add a prefix of '_web._' to each variable. To provide environment variables for the Atomikos JCA implementation, use the configuration properties and add a prefix of '_ds._' to each variable. For OS environments that treat variables as case insensitive values, use the prefix '_WEB&#95;_' for tomcat and '_DS&#95;_' and for CamelCase variables use the '&#95;' separated version of the strings, i.e. camelCase will become camel_case or CAMEL_CASE. 
+Some environments do not support the use of the '.' character in environment names (like the bash shell in *nix environments). In such environments you may use the case insensitive format and replace the '.' with double underscore '&#95;&#95;'. A variable like _'dot.CamelCase'_ will become _'DOT&#95;&#95;CAMEL&#95;CASE'_.
+Note that using environment variables is only supported for single webserver and single datasource applications. If there is a need for multiple web servers and or multiple datasources, the use of individual configuration files is required.
 
 ##### Using app.cofig.json
 

@@ -134,23 +134,30 @@ public class AppBasePropertiesLoaderImpl implements AppBasePropertiesLoader {
 		return key;
 	}
 
+	enum ParseState {
+		LOWER,
+		UPPER
+	}
+	
 	private String convertWindowsTypeVariable(String key) {
-		boolean lower=false;
+		ParseState parseState=ParseState.LOWER;
 		StringBuilder builder = new StringBuilder();
 		for(char c:key.toCharArray()) {
-			switch (c) {
-			case '_':
-				lower=true;
-				break;
-			default:
-				if(lower && Character.isLowerCase(c)) {
+			if(c == '_') {
+				if(parseState == ParseState.LOWER) {
+					parseState=ParseState.UPPER;
+				} else if(parseState == ParseState.UPPER) {
+					builder.append(".");
+					parseState = ParseState.LOWER;
+				}
+			} else {
+				if(parseState == ParseState.UPPER && Character.isLowerCase(c)) {
 					c = Character.toUpperCase(c);
-				} else if(!lower && Character.isUpperCase(c)) {
+				} else if(parseState == ParseState.LOWER && Character.isUpperCase(c)) {
 					c = Character.toLowerCase(c);
 				}
-				lower=false;
+				parseState=ParseState.LOWER;
 				builder.append(c);
-				break;
 			}
 		}
 		return builder.toString();

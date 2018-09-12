@@ -91,7 +91,9 @@ public class TestAppBasePropertiesLoader {
 				.set("test_variable4").as("variable4")
 				.set("test_variable_five").as("variableFive")
 				.set("TEST_VARIABLE_SIX").as("variableSix")
-				.set("TEST_VARIABLESEVEN").as("variableseven");
+				.set("TEST_VARIABLESEVEN").as("variableseven")
+				.set("TEST_VARIABLE__EIGHT").as("variableeight")
+				.set("TEST_VARIABLE__LAST_NINE").as("variablenine");
 		
 		AppBasePropertiesLoader loader = new AppBasePropertiesLoaderImpl();
 		
@@ -100,7 +102,7 @@ public class TestAppBasePropertiesLoader {
 		
 		assertThat(map1, is(map2));
 		
-		assertThat(map1.size(), is(7));
+		assertThat(map1.size(), is(9));
 		assertThat(map1.containsKey("variable"), is(true));
 		assertThat(map1.getString("variable"), is("variable"));
 		assertThat(map1.containsKey("variableTwo"), is(true));
@@ -117,6 +119,8 @@ public class TestAppBasePropertiesLoader {
 		assertThat(map1.getString("variableSix"), is("variableSix"));
 		assertThat(map1.containsKey("variableseven"), is(true));
 		assertThat(map1.getString("variableseven"), is("variableseven"));
+		assertThat(map1.getString("variable.eight"), is("variableeight"));
+		assertThat(map1.getString("variable.lastNine"), is("variablenine"));
 	}
 	
 	@Test
