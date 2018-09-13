@@ -26,10 +26,10 @@ public class BootResourceTagHandler extends TagHandler {
 	private static final String CSS = "css";
 	private static final String SCRIPT = "script";
 	
-	private TagAttribute nameAttribute = getRequiredAttribute("name"),
-			libraryAttribute = getRequiredAttribute("library"),
-			positionAttribute = getAttribute("position"), 
-			typeAttribute = getRequiredAttribute("type");
+	private TagAttribute nameAttribute = getRequiredAttribute("name");
+	private TagAttribute libraryAttribute = getRequiredAttribute("library");
+	private TagAttribute positionAttribute = getAttribute("position"); 
+	private TagAttribute typeAttribute = getRequiredAttribute("type");
 	
 	public BootResourceTagHandler(TagConfig config) {
 		super(config);
@@ -45,7 +45,7 @@ public class BootResourceTagHandler extends TagHandler {
 		String position = POSITION_BOTTOM;
 		if(positionAttribute!=null){
 			position = ObjectExtractor.extractString(positionAttribute.getValueExpression(ctx, String.class),ctx);
-			if(!POSITION_TOP.equals(position)||!POSITION_BOTTOM.equals(position))
+			if(!POSITION_TOP.equals(position)&&!POSITION_BOTTOM.equals(position))
 				position = POSITION_BOTTOM;
 		}
 		
