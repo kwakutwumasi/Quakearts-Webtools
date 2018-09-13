@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.quakearts.webapp.facelets.bootstrap.common;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.faces.component.UIComponent;
@@ -20,58 +21,70 @@ import static com.quakearts.webapp.facelets.bootstrap.common.BootOnLoadComponent
 import static com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler.*;
 
 public class BootOnLoadRenderer extends HtmlBasicRenderer {
+	private static final String ROOT = "@root";
+
 	private static final String BOOTSTRAP_ONLOAD = "com.quakearts.bootstrap.onload";
 
-	public static String RESPOND = "<script src=\"@root/boot-services/js/respond.min.js\" type=\"text/javascript\"></script>\r\n";
-	public static String JQUERY = "<script src=\"@root/boot-services/js/jquery-1.12.2.min.js\" type=\"text/javascript\"></script>\r\n";
-	public static String JQUERYDEBUG = "<script src=\"@root/boot-services/js/jquery-1.12.2.js\" type=\"text/javascript\"></script>\r\n";
-	public static String JS = "<script src=\"@root/boot-services/js/bootstrap.min.js\" type=\"text/javascript\"></script>\r\n"+
+	public static final String RESPOND = "<script src=\"@root/boot-services/js/respond.min.js\" type=\"text/javascript\"></script>\r\n";
+	public static final String JQUERY = "<script src=\"@root/boot-services/js/jquery-1.12.2.min.js\" type=\"text/javascript\"></script>\r\n";
+	public static final String JQUERYDEBUG = "<script src=\"@root/boot-services/js/jquery-1.12.2.js\" type=\"text/javascript\"></script>\r\n";
+	public static final String JS = "<script src=\"@root/boot-services/js/bootstrap.min.js\" type=\"text/javascript\"></script>\r\n"+
 									"<script src=\"@root/boot-services/js/qaboot.min.js\" type=\"text/javascript\"></script>\r\n";
-	public static String JSDEBUG = "<script src=\"@root/boot-services/js/bootstrap.js\" type=\"text/javascript\"></script>\r\n"+
+	public static final String JSDEBUG = "<script src=\"@root/boot-services/js/bootstrap.js\" type=\"text/javascript\"></script>\r\n"+
 			"<script src=\"@root/boot-services/js/qaboot.js\" type=\"text/javascript\"></script>\r\n";
 
-	
-	@SuppressWarnings("unchecked")
+	@Override
 	public void encodeEnd(FacesContext context, UIComponent component) throws java.io.IOException {
-		//If this is an AJAX request, then this is not necessary no? TODO: investigate
-		if(context.getPartialViewContext().isPartialRequest()){
-			if(!context.getPartialViewContext().getRenderIds().contains("javax.faces.ViewRoot")
+		if(context.getPartialViewContext().isPartialRequest() && !context.getPartialViewContext().getRenderIds().contains("javax.faces.ViewRoot")
 					&& !context.getPartialViewContext().getRenderIds().contains("@all")) {
-				return;
-			}
+			return;
 		}
 		
 		if(context.getAttributes().get(BOOTSTRAP_ONLOAD)==null){
 			ResponseWriter writer = context.getResponseWriter();
 			String contextPath = context.getExternalContext().getRequestContextPath();
-			UIComponent topComponent = component.getFacet(POSITION_TOP);
-			if(topComponent !=null)
-				topComponent.encodeAll(context);
-
-			if(isBootstrapEnabled()){
-				if(isRespondEnabled())
-					writer.write(RESPOND.replaceAll("@root", contextPath));
-				if(isjQueryEnabled())
-					writer.write((isInJSDebugMode()?JQUERYDEBUG:JQUERY).replaceAll("@root", contextPath));
-
-				writer.write((isInJSDebugMode()? JSDEBUG:JS).replaceAll("@root", contextPath));
-			}
-
-			List<String> scriptContentList = (List<String>) context.getAttributes().get(SCRIPTCONTENTLIST);
-			if(scriptContentList!=null){
-				writer.startElement("script", component);				
-				writer.write("\n");				
-				for(String scriptContent:scriptContentList)
-					writer.write(scriptContent);
-				writer.write("\n");
-				writer.endElement("script");
-			}
-		
-			UIComponent bottomComponent = component.getFacet(POSITION_BOTTOM);
-			if(bottomComponent !=null)
-				bottomComponent.encodeAll(context);
-
+			renderTopResources(context, component);
+			renderJqueryAndBootstrap(writer, contextPath);
+			renderBottomResources(context, component);
+			renderScriptContent(context, component, writer);
 			context.getAttributes().put(BOOTSTRAP_ONLOAD, Boolean.TRUE);
+		}
+	}
+
+	private void renderTopResources(FacesContext context, UIComponent component) throws IOException {
+		UIComponent topComponent = component.getFacet(POSITION_TOP);
+		if(topComponent !=null)
+			topComponent.encodeAll(context);
+	}
+
+	private void renderJqueryAndBootstrap(ResponseWriter writer, String contextPath) throws IOException {
+		if(isBootstrapEnabled()){
+			if(isRespondEnabled())
+				writer.write(RESPOND.replaceAll(ROOT, contextPath));
+			if(isjQueryEnabled())
+				writer.write((isInJSDebugMode()?JQUERYDEBUG:JQUERY).replaceAll(ROOT, contextPath));
+
+			writer.write((isInJSDebugMode()? JSDEBUG:JS).replaceAll(ROOT, contextPath));
+		}
+	}
+
+	private void renderBottomResources(FacesContext context, UIComponent component) throws IOException {
+		UIComponent bottomComponent = component.getFacet(POSITION_BOTTOM);
+		if(bottomComponent !=null)
+			bottomComponent.encodeAll(context);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void renderScriptContent(FacesContext context, UIComponent component, ResponseWriter writer)
+			throws IOException {
+		List<String> scriptContentList = (List<String>) context.getAttributes().get(SCRIPTCONTENTLIST);
+		if(scriptContentList!=null){
+			writer.startElement("script", component);				
+			writer.write("\n");				
+			for(String scriptContent:scriptContentList)
+				writer.write(scriptContent);
+			writer.write("\n");
+			writer.endElement("script");
 		}
 	}
 }
