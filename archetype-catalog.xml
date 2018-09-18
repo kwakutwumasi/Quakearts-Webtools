@@ -7,36 +7,24 @@
 		<archetype>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-appbase-archetype</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.3</version>
 			<repository>https://raw.github.com/kwakutwumasi/Quakearts-Webtools/mvn-repo/</repository>
 		</archetype>
 		<archetype>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-appbase-resteasy-orm-archetype</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.3</version>
 			<repository>https://raw.github.com/kwakutwumasi/Quakearts-Webtools/mvn-repo/</repository>
 		</archetype>
 		<archetype>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-appbase-jsf-orm-archetype</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.3</version>
 			<repository>https://raw.github.com/kwakutwumasi/Quakearts-Webtools/mvn-repo/</repository>
 		</archetype>
 		<archetype>
 			<groupId>com.quakearts.webtools</groupId>
-			<artifactId>qa-appbase-archetype</artifactId>
-			<version>1.0.1</version>
-			<repository>https://raw.github.com/kwakutwumasi/Quakearts-Webtools/mvn-repo/</repository>
-		</archetype>
-		<archetype>
-			<groupId>com.quakearts.webtools</groupId>
-			<artifactId>qa-appbase-resteasy-orm-archetype</artifactId>
-			<version>1.0.1</version>
-			<repository>https://raw.github.com/kwakutwumasi/Quakearts-Webtools/mvn-repo/</repository>
-		</archetype>
-		<archetype>
-			<groupId>com.quakearts.webtools</groupId>
-			<artifactId>qa-appbase-jsf-orm-archetype</artifactId>
+			<artifactId>qa-appbase-minimal-archetype</artifactId>
 			<version>1.0.1</version>
 			<repository>https://raw.github.com/kwakutwumasi/Quakearts-Webtools/mvn-repo/</repository>
 		</archetype>		
