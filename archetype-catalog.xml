@@ -34,5 +34,11 @@
 			<version>1.0.0</version>
 			<repository>https://raw.github.com/kwakutwumasi/Quakearts-Webtools/mvn-repo/</repository>
 		</archetype>
+		<archetype>
+			<groupId>com.quakearts.webtools</groupId>
+			<artifactId>qa-appbase-minimal-archetype</artifactId>
+			<version>1.0.0</version>
+			<repository>https://raw.github.com/kwakutwumasi/Quakearts-Webtools/mvn-repo/</repository>
+		</archetype>
 	</archetypes>
 </archetype-catalog>
