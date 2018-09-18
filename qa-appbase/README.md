@@ -33,11 +33,12 @@ then add the dependency
 
 ```
 
-You can also use one of the three maven archetypes created for quickly bootstrapping a qa-appbase project:
+You can also use one of the four maven archetypes created for quickly bootstrapping a qa-appbase project:
 
-* com.quakearts.webtools:qa-appbase-archetype:1.0.1
-* com.quakearts.webtools:qa-appbase-jsf-orm-archetype:1.0.1
-* com.quakearts.webtools:qa-appbase-resteasy-orm-archetype:1.0.1
+* com.quakearts.webtools:qa-appbase-archetype:1.0.3
+* com.quakearts.webtools:qa-appbase-jsf-orm-archetype:1.0.3
+* com.quakearts.webtools:qa-appbase-resteasy-orm-archetype:1.0.3
+* com.quakearts.webtools:qa-appbase-minimal-archetype:1.0.1
 
 They can be viewed in the [repository root](/kwakutwumasi/Quakearts-Webtools)
 
