@@ -123,14 +123,31 @@
 			<version>${jsf-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.security.jacc</groupId>
-			<artifactId>javax.security.jacc-api</artifactId>
-			<version>1.5</version>
-		</dependency>
-		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-weldjsf-cdi</artifactId>
 			<version>1.0.1</version>
+		</dependency>
+	<!-- Additional Libraries for Web Application-->
+		<dependency>
+			<groupId>com.quakearts.webtools</groupId>
+			<artifactId>qa-classpathscanner</artifactId>
+			<version>1.0.1</version>
+		</dependency>		
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.4</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.security.jacc</groupId>
+			<artifactId>javax.security.jacc-api</artifactId>
+			<version>1.5</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>javax.servlet-api</artifactId>
+					<groupId>javax.servlet</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	<!-- ORM  -->
 		<dependency>
@@ -141,6 +158,11 @@
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-orm-cdi</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.quakearts.webtools</groupId>
+			<artifactId>qa-orm-hibernate-web</artifactId>
 			<version>1.0.1</version>
 		</dependency>
 		<dependency>
@@ -170,12 +192,6 @@
 			<artifactId>qa-syshub-webapp</artifactId>
 			<version>1.0.1</version>
 			<classifier>deploy</classifier>
-		</dependency>
-	<!-- SFTP -->
-		<dependency>
-			<groupId>com.jcraft</groupId>
-			<artifactId>jsch</artifactId>
-			<version>0.1.54</version>
 		</dependency>
 	<!-- Testing -->	
 		<dependency>
