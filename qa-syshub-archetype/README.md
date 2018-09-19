@@ -15,7 +15,7 @@ To create this archetype, use the command:
 	-DartifactId=YOUR-PROJ-AID \
 	-DarchetypeGroupId=com.quakearts.syshub \
 	-DarchetypeArtifactId=qa-syshub-archetype \
-	-DarchetypeVersion=1.0.2
+	-DarchetypeVersion=1.0.2 \
 	-DremoteRepositories=https://raw.github.com/kwakutwumasi/Quakearts-Webtools/mvn-repo/
 	
 ```
