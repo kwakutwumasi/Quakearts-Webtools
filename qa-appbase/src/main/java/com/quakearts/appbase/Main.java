@@ -17,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.MessageFormat;
 import java.util.Properties;
 
 import javax.enterprise.inject.Vetoed;
@@ -163,6 +164,8 @@ public class Main {
 		if(instance != null)
 			return;
 		
+		long start = System.currentTimeMillis();
+		
 		Properties props = new Properties();
 		String propertiesFilename, mainClassName;
 		mainClassName = null;
@@ -221,6 +224,7 @@ public class Main {
 			}
 		}));
 				
+		log.info(MessageFormat.format("Started in {0, time, ss.S} seconds", System.currentTimeMillis()-start));
 		if(waitInMain){
 			int port = Integer.parseInt(props.getProperty("shutdown.port", "9999"));
 			log.info("Listening for shutdown command on port "+port);
