@@ -11,8 +11,6 @@
 package com.quakearts.webapp.security.rest.context;
 
 import java.util.Map;
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
 import java.util.HashMap;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
@@ -21,23 +19,22 @@ import javax.security.auth.login.Configuration;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
-/**A copy of {@link javax.security.auth.login.LoginContext LoginContext} that is 50%
+/**A copy of {@link javax.security.auth.login.LoginContext LoginContext} that is ~70%
  * faster.
  * @author kwakutwumasi-afriyie
  *
  */
 public class LoginContext {
 
-	private static final String LOGIN_METHOD = "login";
-	private static final String COMMIT_METHOD = "commit";
-	private static final String ABORT_METHOD = "abort";
-	private static final String LOGOUT_METHOD = "logout";
+	enum ModuleMethod {
+		LOGIN_METHOD, COMMIT_METHOD,ABORT_METHOD,LOGOUT_METHOD;
+	}
 	private static final String OTHER = "other";
 	private Subject subject = null;
 	private boolean subjectProvided = false;
 	private boolean loginSucceeded = false;
 	private CallbackHandler callbackHandler;
-	private Map<String, ?> state = new HashMap<String, Object>();
+	private Map<String, ?> state = new HashMap<>();
 
 	private Configuration config;
 	private ModuleHandle[] moduleStack;
@@ -62,8 +59,7 @@ public class LoginContext {
 		
 		moduleStack = new ModuleHandle[entries.length];
 		for (int i = 0; i < entries.length; i++) {
-			moduleStack[i] = new ModuleHandle(new AppConfigurationEntry(entries[i].getLoginModuleName(),
-					entries[i].getControlFlag(), entries[i].getOptions()), null);
+			moduleStack[i] = new ModuleHandle(entries[i], null);
 		}
 
 		contextClassLoader = Thread.currentThread().getContextClassLoader();
@@ -182,12 +178,12 @@ public class LoginContext {
 		}
 
 		try {
-			invoke(LOGIN_METHOD);
-			invoke(COMMIT_METHOD);
+			invoke(ModuleMethod.LOGIN_METHOD);
+			invoke(ModuleMethod.COMMIT_METHOD);
 			loginSucceeded = true;
 		} catch (LoginException le) {
 			try {
-				invoke(ABORT_METHOD);
+				invoke(ModuleMethod.ABORT_METHOD);
 			} catch (LoginException le2) {
 				throw le;
 			}
@@ -222,7 +218,7 @@ public class LoginContext {
 			throw new LoginException("Null subject. Logout called before login");
 		}
 
-		invoke(LOGOUT_METHOD);
+		invoke(ModuleMethod.LOGOUT_METHOD);
 	}
 
 	/**
@@ -252,42 +248,20 @@ public class LoginContext {
 
 	private void throwException(LoginException originalError, LoginException le) throws LoginException {
 		clearState();
-		LoginException error = (originalError != null) ? originalError : le;
-		throw error;
+		if(originalError != null) 
+			throw originalError;
+
+		throw le;
 	}
 
-	private void invoke(String methodName) throws LoginException {
+	private void invoke(ModuleMethod methodName) throws LoginException {
 		for (ModuleHandle moduleHandle: moduleStack) {
 			try {
-				if (moduleHandle.module == null) {
-					Class<?> c = Class.forName(moduleHandle.entry.getLoginModuleName(), true, contextClassLoader);
-
-					if(!LoginModule.class.isAssignableFrom(c)){
-						moduleHandle.module = new LoginModuleWrapper(c);
-					} else {
-						moduleHandle.module =(LoginModule) c.newInstance();
-					}
-					moduleHandle.module.initialize(subject, callbackHandler, state, moduleHandle.entry.getOptions());
-				}
-					
-				boolean status = false;
-				switch (methodName) {
-				case LOGIN_METHOD:
-					status = moduleHandle.module.login();
-					break;
-				case COMMIT_METHOD:
-					status = moduleHandle.module.commit();
-					break;
-				case LOGOUT_METHOD:
-					status = moduleHandle.module.logout();
-					break;
-				case ABORT_METHOD:
-					status = moduleHandle.module.abort();
-					break;
-				}
-
-				if (status == true) {
-					if (!methodName.equals(ABORT_METHOD) && !methodName.equals(LOGOUT_METHOD)
+				initializeModule(moduleHandle);
+				boolean status = executeModuleMethod(methodName, moduleHandle);
+				if (status) {
+					if (methodName !=ModuleMethod.ABORT_METHOD 
+							&& methodName != ModuleMethod.LOGOUT_METHOD
 							&& moduleHandle.entry
 									.getControlFlag() == AppConfigurationEntry.LoginModuleControlFlag.SUFFICIENT
 							&& firstRequiredError == null) {
@@ -302,57 +276,103 @@ public class LoginContext {
 				throwException(null, new LoginException("Unable to find LoginModule class " + cnfe.getMessage()));
 			} catch (IllegalAccessException iae) {
 				throwException(null, new LoginException("Unable to access LoginModule " + iae.getMessage()));
-			} catch (Throwable ite) {
-				LoginException le;
-
-				if (ite.getCause() instanceof LoginException) {
-
-					le = (LoginException) ite.getCause();
-
-				} else if (ite.getCause() instanceof SecurityException) {
-					le = new LoginException("Security Exception");
-					le.initCause(new SecurityException());
-				} else {
-					if(ite.getCause()!=null){
-						java.io.StringWriter sw = new java.io.StringWriter();
-						ite.getCause().printStackTrace(new java.io.PrintWriter(sw));
-						sw.flush();
-						le = new LoginException(sw.toString());
-					} else {
-						le = new LoginException("Exception of type " 
-								+ ite.getClass().getName() 
-								+ " was thrown. Message is " 
-								+ ite.getMessage());
-					}
-				}
-
-				if (moduleHandle.entry.getControlFlag() == AppConfigurationEntry.LoginModuleControlFlag.REQUISITE) {
-					if (methodName.equals(ABORT_METHOD) || methodName.equals(LOGOUT_METHOD)) {
-						if (firstRequiredError == null)
-							firstRequiredError = le;
-					} else {
-						throwException(firstRequiredError, le);
-					}
-				} else if (moduleHandle.entry
-						.getControlFlag() == AppConfigurationEntry.LoginModuleControlFlag.REQUIRED) {
-					if (firstRequiredError == null)
-						firstRequiredError = le;
-				} else {
-					if (firstError == null)
-						firstError = le;
-				}
+			} catch (Exception ite) {
+				LoginException le = getLoginException(ite);
+				setFirstErrorParameters(methodName, moduleHandle, le);
 			}
 		}
 
+		handleException();
+	}
+
+	private boolean executeModuleMethod(ModuleMethod methodName, ModuleHandle moduleHandle) throws LoginException {
+		boolean status = false;
+		switch (methodName) {
+		case LOGIN_METHOD:
+			status = moduleHandle.module.login();
+			break;
+		case COMMIT_METHOD:
+			status = moduleHandle.module.commit();
+			break;
+		case LOGOUT_METHOD:
+			status = moduleHandle.module.logout();
+			break;
+		case ABORT_METHOD:
+			status = moduleHandle.module.abort();
+			break;
+		}
+		return status;
+	}
+
+	private void initializeModule(ModuleHandle moduleHandle)
+			throws ClassNotFoundException, LoginException, IllegalAccessException, InstantiationException {
+		if (moduleHandle.module == null) {
+			Class<?> c = Class.forName(moduleHandle.entry.getLoginModuleName(), true, contextClassLoader);
+
+			if(!LoginModule.class.isAssignableFrom(c)){
+				moduleHandle.module = new LoginModuleWrapper(c);
+			} else {
+				moduleHandle.module =(LoginModule) c.newInstance();
+			}
+			moduleHandle.module.initialize(subject, callbackHandler, state, moduleHandle.entry.getOptions());
+		}
+	}
+
+	private LoginException getLoginException(Exception ite) {
+		LoginException le;
+
+		if (ite.getCause() instanceof LoginException) {
+
+			le = (LoginException) ite.getCause();
+
+		} else if (ite.getCause() instanceof SecurityException) {
+			le = new LoginException("Security Exception");
+			le.initCause(new SecurityException());
+		} else {
+			if(ite.getCause()!=null){
+				java.io.StringWriter sw = new java.io.StringWriter();
+				ite.getCause().printStackTrace(new java.io.PrintWriter(sw));
+				sw.flush();
+				le = new LoginException(sw.toString());
+			} else {
+				le = new LoginException("Exception of type " 
+						+ ite.getClass().getName() 
+						+ " was thrown. Message is " 
+						+ ite.getMessage());
+			}
+		}
+		return le;
+	}
+
+	private void setFirstErrorParameters(ModuleMethod methodName, ModuleHandle moduleHandle, LoginException le)
+			throws LoginException {
+		if (moduleHandle.entry.getControlFlag() == AppConfigurationEntry.LoginModuleControlFlag.REQUISITE) {
+			if (methodName == ModuleMethod.ABORT_METHOD 
+					|| methodName == ModuleMethod.LOGOUT_METHOD) {
+				if (firstRequiredError == null)
+					firstRequiredError = le;
+			} else {
+				throwException(firstRequiredError, le);
+			}
+		} else if (moduleHandle.entry
+				.getControlFlag() == AppConfigurationEntry.LoginModuleControlFlag.REQUIRED) {
+			if (firstRequiredError == null)
+				firstRequiredError = le;
+		} else {
+			if (firstError == null)
+				firstError = le;
+		}
+	}
+
+	private void handleException() throws LoginException {
 		if (firstRequiredError != null) {
 			throwException(firstRequiredError, null);
-		} else if (success == false && firstError != null) {
+		} else if (!success && firstError != null) {
 			throwException(firstError, null);
-		} else if (success == false) {
+		} else if (!success) {
 			throwException(new LoginException("Login Failure: All modules ignored"), null);
 		} else {
 			clearState();
-			return;
 		}
 	}
 
