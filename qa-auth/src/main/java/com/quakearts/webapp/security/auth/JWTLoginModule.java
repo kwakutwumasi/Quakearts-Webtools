@@ -199,6 +199,7 @@ public class JWTLoginModule implements LoginModule {
 					
 					if(!audience.equals(claims.getAudience())){
 						loginOk = false;
+						return loginOk;
 					}
 
 					long currentTimeInSeconds = System.currentTimeMillis() / 1000;
