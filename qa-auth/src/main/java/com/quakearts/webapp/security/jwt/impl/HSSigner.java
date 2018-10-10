@@ -21,7 +21,7 @@ import com.quakearts.webapp.security.jwt.signature.MacBase;
 
 public class HSSigner extends SignerBase {
 
-	private static final String SECRETPARAMETER = "secret";
+	public static final String SECRETPARAMETER = "secret";
 	private HMac mac;
 	private HSAlgorithmType algorithmType;
 	private byte[] key;
