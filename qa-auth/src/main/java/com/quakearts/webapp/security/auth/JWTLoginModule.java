@@ -53,8 +53,8 @@ public class JWTLoginModule implements LoginModule {
 	private static final Logger log = Logger.getLogger(JWTLoginModule.class.getName());
 	private String issuer = JWTLoginModule.class.getName();
 	private String audience = JWTLoginModule.class.getName();
-	public static final long DEFAULTVALIDITY = 54000;
-	public long validity = DEFAULTVALIDITY;
+	private static final long DEFAULTVALIDITY = 54000;
+	private long validity;
 	private long activateAfter = 0;
 	private int gracePeriod = 10;
 	private JWTVerifier verifier;
@@ -101,7 +101,7 @@ public class JWTLoginModule implements LoginModule {
 			
 		try {
 			if (options.containsKey(VALIDITYPARAMETER)){
-			validity = Long.parseLong(options.get(VALIDITYPARAMETER).toString()) * 1000;
+				validity = Long.parseLong(options.get(VALIDITYPARAMETER).toString()) * 1000;
 			}
 		} catch (Exception e) {
 			log.severe("Invalid parameter: " + VALIDITYPARAMETER + "; " + e.getMessage());
@@ -131,6 +131,9 @@ public class JWTLoginModule implements LoginModule {
 			log.severe("Invalid parameter: " + ACTIVATEAFTERPERIODPARAMETER + "; " + e.getMessage());
 		}
 
+		if(validity==0)
+			validity = DEFAULTVALIDITY;
+		
 		loginOk = false;
 		authenticationMode = null;
 	}
@@ -150,7 +153,7 @@ public class JWTLoginModule implements LoginModule {
 					.parse("P" + (prefix.equals("H") || prefix.equals("M") || prefix.equals("S") ? "T" : "")
 							+ periodAmount + prefix);
 
-			return duration.getSeconds() * 1000;
+			return duration.getSeconds();
 		}
 		return 0;
 	}
@@ -159,13 +162,15 @@ public class JWTLoginModule implements LoginModule {
 	public boolean login() throws LoginException {
 		if (sharedState != null) {
 			log.fine("Using first pass....");
-			Object loginDN_val = sharedState
+			Object loginPrincipal = sharedState
 					.get("javax.security.auth.login.name");
-			username = (loginDN_val != null && loginDN_val instanceof Principal) ? ((Principal) loginDN_val)
+			username = (loginPrincipal instanceof Principal) ? ((Principal) loginPrincipal)
 					.getName() : null;
 				
 			Object loginOkObject = sharedState.get("com.quakearts.LoginOk");
-			loginOk = (loginOkObject == null ? false : (Boolean) (loginOkObject));
+			if(loginOkObject != null )
+				loginOk = (Boolean) (loginOkObject);
+			
 			if(loginOk)
 				authenticationMode = AuthenticationMode.GENERATE;
 		}
