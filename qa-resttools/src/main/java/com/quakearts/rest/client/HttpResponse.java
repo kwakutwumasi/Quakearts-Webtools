@@ -28,7 +28,8 @@ public class HttpResponse implements Serializable {
 	private int httpCode;
 	private Map<String, List<String>> headers = new HashMap<>();
 	
-	HttpResponse(String output, String message, int httpCode, Map<String, List<String>> headers) {
+	public HttpResponse(String output, String message,
+			int httpCode, Map<String, List<String>> headers) {
 		this.output = output;
 		this.message = message;
 		this.httpCode = httpCode;

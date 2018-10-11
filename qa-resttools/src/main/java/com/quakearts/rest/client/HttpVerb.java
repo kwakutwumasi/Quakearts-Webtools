@@ -27,26 +27,25 @@ public enum HttpVerb {
 	GET,
 	CONNECT;
 	
-	private static Set<HttpVerb>
-			REQUIRES_OUTPUT = new HashSet<>(),
-			CAN_DO_OUTPUT = new HashSet<>();
+	private static Set<HttpVerb> requiresOutput = new HashSet<>();
+	private static Set<HttpVerb> canDoOutput = new HashSet<>();
 	
 	static {
-		REQUIRES_OUTPUT.add(POST);
-		REQUIRES_OUTPUT.add(PUT);
-		REQUIRES_OUTPUT.add(PATCH);
-		REQUIRES_OUTPUT.add(CONNECT);
+		requiresOutput.add(POST);
+		requiresOutput.add(PUT);
+		requiresOutput.add(PATCH);
+		requiresOutput.add(CONNECT);
 		
-		CAN_DO_OUTPUT.add(GET);
-		CAN_DO_OUTPUT.add(OPTIONS);
+		canDoOutput.add(GET);
+		canDoOutput.add(OPTIONS);
 	}
 		
 	public static boolean optionalOutputMethodsInlude(HttpVerb httpMethod) {
-		return CAN_DO_OUTPUT.contains(httpMethod);
+		return canDoOutput.contains(httpMethod);
 	}
 	
 	public static boolean requiringOutputMethodsInclude(HttpVerb httpMethod) {
-		return REQUIRES_OUTPUT.contains(httpMethod);
+		return requiresOutput.contains(httpMethod);
 	}
 	
 	public static boolean returningInputMethodsInclude(HttpVerb httpMethod) {

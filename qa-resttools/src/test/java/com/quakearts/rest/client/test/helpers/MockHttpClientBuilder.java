@@ -13,13 +13,22 @@ import com.quakearts.rest.client.HttpClientBuilder;
 
 public class MockHttpClientBuilder extends HttpClientBuilder<MockHttpClient> {
 
-	public MockHttpClientBuilder() {
+	private MockHttpClientBuilder() {}
+
+	private static MockHttpClientBuilder instance = new MockHttpClientBuilder();
+	
+	public static MockHttpClientBuilder getInstance() {
+		return instance;
+	}
+	
+	public HttpClientBuilder<MockHttpClient> createNewHttpClient(){
 		httpClient = new MockHttpClient();
+		return this;
 	}
 	
 	@Override
 	public MockHttpClient thenBuild() {
-		return (MockHttpClient)httpClient;
+		return httpClient;
 	}
 
 }

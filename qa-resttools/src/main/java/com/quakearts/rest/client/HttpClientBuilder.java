@@ -10,6 +10,10 @@
 package com.quakearts.rest.client;
 
 import java.net.HttpCookie;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import com.quakearts.rest.client.exception.HttpClientRuntimeException;
 
 /**Base class for creating builders for {@linkplain HttpClient}
  * @author kwakutwumasi-afriyie
@@ -17,8 +21,37 @@ import java.net.HttpCookie;
  * @param <T>
  */
 public abstract class HttpClientBuilder<T extends HttpClient> {
-	protected HttpClient httpClient;
+	private static final String HTTP = "http";
+	private static final String HTTPS = "https";
+	protected T httpClient;
 		
+	public HttpClientBuilder<T> setURLAs(String url){
+		try {
+			return setURLAs(new URL(url));
+		} catch (MalformedURLException e) {
+			throw new HttpClientRuntimeException("The URL was malformed", e);
+		}
+	}
+	
+	public HttpClientBuilder<T> setURLAs(URL url){
+		if(!url.getProtocol().equals(HTTP)
+				&& !url.getProtocol().equals(HTTPS))
+			throw new HttpClientRuntimeException("Only http and https protocols are supported");
+		
+		setHostAs(url.getHost())
+			.setPortAs(getPort(url))
+			.setSecuredAs(url.getProtocol().equals(HTTPS));
+		
+		return this;		
+	}
+	
+	private int getPort(URL url) {
+		if(url.getPort()==-1) {
+			return url.getProtocol().equals(HTTPS)?443:80;
+		}
+		return url.getPort();
+	}
+
 	public HttpClientBuilder<T> setPortAs(int port) {
 		httpClient.port = port;
 		return this;
@@ -54,8 +87,13 @@ public abstract class HttpClientBuilder<T extends HttpClient> {
 		return this;
 	}
 
-	public HttpClientBuilder<T> setMatchesHostname(boolean matchHostname){
-		httpClient.matchHostname = true;
+	public HttpClientBuilder<T> setMatchesHostnameAs(boolean matchHostname){
+		httpClient.matchHostname = matchHostname;
+		return this;
+	}
+	
+	public HttpClientBuilder<T> setFollowRedirectAs(boolean followRedirects){
+		httpClient.followRedirects = followRedirects;
 		return this;
 	}
 	

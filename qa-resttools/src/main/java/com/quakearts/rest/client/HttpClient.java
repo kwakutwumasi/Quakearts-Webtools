@@ -19,7 +19,7 @@ import java.io.Serializable;
 import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
@@ -38,6 +38,8 @@ import com.quakearts.rest.client.exception.HttpClientException;
  */
 public abstract class HttpClient implements Serializable {
 
+	private static final String LOCALHOST = "localhost";
+	private static final String LOOPBACK = "127.0.0.1";
 	/**
 	 * 
 	 */
@@ -48,12 +50,12 @@ public abstract class HttpClient implements Serializable {
 	String password;
 	private SimpleDateFormat dateFormat = new SimpleDateFormat(
 				"DDD, dd MMM yyyy HH:mm:ss");
-	HttpCookie defaultCookie;
+	transient HttpCookie defaultCookie;
 	boolean secured;
 	String userAgent;
 	boolean followRedirects;
 	boolean matchHostname;
-	CookieManager cookieManager = new CookieManager();
+	transient CookieManager cookieManager = new CookieManager();
 	
 	public int getPort() {
 		return port;
@@ -87,7 +89,7 @@ public abstract class HttpClient implements Serializable {
 		return followRedirects;
 	}
 	
-	public boolean matchedHostnames() {
+	public boolean matchesHostnames() {
 		return matchHostname;
 	}
 
@@ -100,12 +102,21 @@ public abstract class HttpClient implements Serializable {
 	}
 	
 	protected HttpResponse sendRequest(String file, String requestValue, HttpVerb method, String contentType) 
-			throws MalformedURLException, IOException, HttpClientException {
+			throws IOException, HttpClientException {
 		return sendRequest(file, requestValue, method, contentType, null);
 	}
 		
 	protected HttpResponse sendRequest(String file, String requestValue, HttpVerb method, String contentType,
-			Map<String, List<String>> additionalHeaders) throws MalformedURLException, IOException, HttpClientException {
+			Map<String, List<String>> additionalHeaders) throws IOException, HttpClientException {
+		runValidations(file, requestValue, method);
+		HttpURLConnection con = prepareConnection(file, requestValue, method, contentType, additionalHeaders);
+		int responseCode = connect(con);
+		String output = storeOutput(method, con, responseCode);
+		storeCookies(con, responseCode);		
+		return new HttpResponse(output, con.getResponseMessage(), responseCode, con.getHeaderFields());
+	}
+
+	private void runValidations(String file, String requestValue, HttpVerb method) throws HttpClientException {
 		if(host == null)
 			throw new HttpClientException("Property host has not been set");	
 
@@ -113,7 +124,7 @@ public abstract class HttpClient implements Serializable {
 			throw new HttpClientException("Property port has not been set");	
 
 		if(file == null)
-			throw new HttpClientException("Parameter method is required");	
+			throw new HttpClientException("Parameter file is required");	
 
 		if(method == null)
 			throw new HttpClientException("Parameter method is required");	
@@ -121,57 +132,79 @@ public abstract class HttpClient implements Serializable {
 		if(requiringOutputMethodsInclude(method) && requestValue == null) {
 			throw new HttpClientException("Http Verb "+method+" requires requestValue");
 		}
-		
+	}
+
+	private HttpURLConnection prepareConnection(String file, String requestValue, HttpVerb method, String contentType,
+			Map<String, List<String>> additionalHeaders)
+			throws IOException, HttpClientException {
+		HttpURLConnection con = setupConnection(file);		
+		setConnectionProperties(method, con);		
+		addUsernameAndPassword(con);
+		addGeneralHeaders(con);
+		addCookies(con);
+		addCustomRequestHeaders(additionalHeaders, con);
+		addRequestValue(requestValue, method, contentType, con);
+		return con;
+	}
+
+	private HttpURLConnection setupConnection(String file) throws IOException {
 		HttpURLConnection con;
-		
 		if(secured){
 			HttpsURLConnection scon = (HttpsURLConnection) new URL("https", host, port, file).openConnection();
-			if(matchHostname 
-					|| host.matches("localhost") 
-					|| host.matches("127.0.0.1")) {
-				scon.setHostnameVerifier((hostname,session) -> {
-					return true;
-				});
+			if(matchHostname) {
+				scon.setHostnameVerifier((hostname,session) ->  host.matches(LOCALHOST) 
+							|| host.matches(LOOPBACK));
 			}
 			
 			con = scon;
 		} else {
 			con = (HttpURLConnection) new URL("http", host, port, file).openConnection();
-		}		
+		}
+		return con;
+	}
 
-		if(followRedirects)
-			con.setInstanceFollowRedirects(followRedirects);
-		
+	private void setConnectionProperties(HttpVerb method, HttpURLConnection con) throws ProtocolException {
+		con.setRequestMethod(method.name());
+		con.setDoInput(true);
+		con.setInstanceFollowRedirects(followRedirects);
+	}
+
+	private void addUsernameAndPassword(HttpURLConnection con) {
 		if(username!=null && password !=null){
 			con.addRequestProperty("Authorization", "Basic "+(Base64.getEncoder().encodeToString((username+":"+password).getBytes())));
 		}
-		
+	}
+
+	private void addGeneralHeaders(HttpURLConnection con) {
 		con.addRequestProperty("Accept", "application/json, text/*, application/xml");
 		con.addRequestProperty("User-Agent", userAgent==null? "Generic REST Client":userAgent);
 		con.addRequestProperty("Date", dateFormat.format(new Date()) + " GMT");
 		con.addRequestProperty("Accept-Language", "en-US");
+	}
+
+	private void addCookies(HttpURLConnection con) {
 		if(defaultCookie!=null)
 			con.addRequestProperty("Cookie", defaultCookie.toString());
 
 		for(HttpCookie cookie:cookieManager.getCookieStore().getCookies()) {
 			con.addRequestProperty("Cookie", cookie.toString());
 		}
-		
+	}
+
+	private void addCustomRequestHeaders(Map<String, List<String>> additionalHeaders, HttpURLConnection con) {
 		if(additionalHeaders!=null){
 			for(Entry<String, List<String>> entry:additionalHeaders.entrySet()){
 				for(String value:entry.getValue())
 					con.addRequestProperty(entry.getKey(), value);
 			}
 		}
+	}
 
-		con.setRequestMethod(method.name());
-		
-		if(returningInputMethodsInclude(method))
-			con.setDoInput(true);
-				
+	private void addRequestValue(String requestValue, HttpVerb method, String contentType, HttpURLConnection con)
+			throws HttpClientException, IOException {
 		if (requestValue != null && !requestValue.isEmpty()) {
 			if(!requiringOutputMethodsInclude(method)
-					&& !optionalOutputMethodsInlude(method) && requestValue != null) {
+					&& !optionalOutputMethodsInlude(method)) {
 				throw new HttpClientException("Http Verb "+method+" cannot have a requestValue");
 			}
 			con.addRequestProperty("Content-Length",
@@ -180,11 +213,16 @@ public abstract class HttpClient implements Serializable {
 			con.setDoOutput(true);
 			con.getOutputStream().write(requestValue.getBytes());
 		}
-		
+	}
+
+	private int connect(HttpURLConnection con) throws IOException {
 		int responseCode=0;
 		con.connect();
-
 		responseCode = con.getResponseCode();
+		return responseCode;
+	}
+
+	private String storeOutput(HttpVerb method, HttpURLConnection con, int responseCode) throws IOException {
 		String output = null;
 		InputStream is = null;
 		if(responseCode==200 
@@ -202,7 +240,10 @@ public abstract class HttpClient implements Serializable {
 			}
 			output = new String(bos.toByteArray());
 		}
-		
+		return output;
+	}
+
+	private void storeCookies(HttpURLConnection con, int responseCode) {
 		if(200<=responseCode 
 				&& responseCode<300 
 				&& con.getHeaderField("Set-Cookie")!=null){
@@ -210,7 +251,5 @@ public abstract class HttpClient implements Serializable {
 				for(HttpCookie cookie: HttpCookie.parse(value))
 					cookieManager.getCookieStore().add(null, cookie);
 		}
-		
-		return new HttpResponse(output, con.getResponseMessage(), con.getResponseCode(), con.getHeaderFields());
 	}
 }

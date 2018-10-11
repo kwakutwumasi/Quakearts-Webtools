@@ -11,6 +11,8 @@ package com.quakearts.rest.client.test;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.*;
+import static org.hamcrest.core.IsNull.*;
+
 
 import java.io.UnsupportedEncodingException;
 import java.net.HttpCookie;
@@ -21,10 +23,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.servlet.http.Cookie;
@@ -36,6 +42,7 @@ import org.junit.Test;
 import com.quakearts.rest.client.HttpResponse;
 import com.quakearts.rest.client.HttpVerb;
 import com.quakearts.rest.client.exception.HttpClientException;
+import com.quakearts.rest.client.exception.HttpClientRuntimeException;
 import com.quakearts.rest.client.test.helpers.MockHttpClient;
 import com.quakearts.rest.client.test.helpers.MockHttpClientBuilder;
 import com.quakearts.tools.test.mockserver.MockServer;
@@ -110,34 +117,63 @@ public class TestHttpClient {
 				});
 		mockServer.start();
 		try {
-			MockHttpClient client = new MockHttpClientBuilder()
+			MockHttpClient client = MockHttpClientBuilder.getInstance()
+					.createNewHttpClient()
 					.setHostAs("localhost")
 					.setPortAs(8443)
 					.setSecuredAs(true)
 					.thenBuild();
 			
-			HttpResponse httpResponse = client.sendRequest(httpRequest);
+			assertThat(client.getCookieManager(), is(notNullValue()));
+			assertThat(client.getCookies(), is(notNullValue()));
+			assertThat(client.getDefaultCookie(), is(nullValue()));
+			assertThat(client.getHost(), is("localhost"));
+			assertThat(client.getPassword(), is(nullValue()));
+			assertThat(client.getPort(), is(8443));
+			assertThat(client.getUserAgent(), is(nullValue()));
+			assertThat(client.getUsername(), is(nullValue()));
+			assertThat(client.isSecured(), is(true));
+			assertThat(client.matchesHostnames(), is(false));
+			assertThat(client.followsRedirects(), is(false));
+			
+			HttpResponse httpResponse;
+			try {
+				httpResponse = client.sendRequest(httpRequest);
+				fail("Did not throw ssl handshake error.");
+			} catch (SSLHandshakeException e) {
+			}
+
+			client = MockHttpClientBuilder.getInstance()
+					.createNewHttpClient()
+					.setHostAs("localhost")
+					.setPortAs(8443)
+					.setSecuredAs(true)
+					.setMatchesHostnameAs(true)
+					.thenBuild();
+			
+			httpResponse = client.sendRequest(httpRequest);
 			assertThat(httpResponse.getHttpCode(), is(200));
 			assertThat(httpResponse.getOutput(), is("Successful"));
 			
-			client = new MockHttpClientBuilder()
-					.setHostAs("127.0.0.1")
-					.setPortAs(8443)
-					.setSecuredAs(true)
+			client = MockHttpClientBuilder.getInstance()
+					.createNewHttpClient()
+					.setURLAs("https://127.0.0.1:8443")
+					.setMatchesHostnameAs(true)
 					.thenBuild();
 			httpResponse = client.sendRequest(httpRequest);
 			assertThat(httpResponse.getHttpCode(), is(200));
 			assertThat(httpResponse.getOutput(), is("Successful"));
 			
-			client = new MockHttpClientBuilder()
+			client = MockHttpClientBuilder.getInstance()
+					.createNewHttpClient()
 					.setHostAs("127.0.0.1")
 					.setPortAs(8443)
 					.setSecuredAs(true)
-					.setMatchesHostname(true)
+					.setMatchesHostnameAs(true)
 					.thenBuild();
 			httpResponse = client.sendRequest(httpRequest);
 			assertThat(httpResponse.getHttpCode(), is(200));
-			assertThat(httpResponse.getOutput(), is("Successful"));
+			assertThat(httpResponse.getOutput(), is("Successful"));	
 		} finally {
 			mockServer.stop();
 		}
@@ -145,31 +181,38 @@ public class TestHttpClient {
 	
 	@Test(expected=HttpClientException.class)
 	public void testMissingMethod() throws Exception {
-		MockHttpClient client = new MockHttpClientBuilder().thenBuild();
-		client.sendRequest(new TestHttpRequest());
+		MockHttpClient client = MockHttpClientBuilder.getInstance()
+				.createNewHttpClient()
+				.setHostAs("localhost")
+				.setPortAs(8080).thenBuild();
+
+		client.sendRequest(new TestHttpRequest(null, "/test"));
 	}
 	
 	@Test(expected=HttpClientException.class)
 	public void testMissingHost() throws Exception {
-		MockHttpClient client = new MockHttpClientBuilder()
+		MockHttpClient client = MockHttpClientBuilder.getInstance()
+				.createNewHttpClient()
 				.setPortAs(8080).thenBuild();
 		client.sendRequest(new TestHttpRequest(HttpVerb.GET,"/test"));
 	}
 
 	@Test(expected=HttpClientException.class)
 	public void testMissingPort() throws Exception {
-		MockHttpClient client = new MockHttpClientBuilder()
+		MockHttpClient client = MockHttpClientBuilder.getInstance()
+				.createNewHttpClient()
 				.setHostAs("localhost").thenBuild();
 		client.sendRequest(new TestHttpRequest(HttpVerb.GET,"/test"));
 	}
 
 	@Test(expected=HttpClientException.class)
 	public void testMissingFile() throws Exception {
-		MockHttpClient client = new MockHttpClientBuilder()
+		MockHttpClient client = MockHttpClientBuilder.getInstance()
+				.createNewHttpClient()
 				.setHostAs("localhost")
 				.setPortAs(8080).thenBuild();
 
-		client.sendRequest(new TestHttpRequest(HttpVerb.GET));
+		client.sendRequest(new TestHttpRequest(HttpVerb.GET, null));
 	}
 
 	@Test
@@ -199,8 +242,8 @@ public class TestHttpClient {
 						.setResponseCodeAs(200)
 						.setContentBytes("Authenticated".getBytes())
 						.thenBuild())
-				.thenBuild(),
-				defaultCookieRequest = HttpMessageBuilder
+				.thenBuild();
+		HttpRequest defaultCookieRequest = HttpMessageBuilder
 					.createNewHttpRequest()
 					.setMethodAs("GET")
 					.setResourceAs("/test-default-cookie")
@@ -211,8 +254,8 @@ public class TestHttpClient {
 							.setContentBytes("Authenticated".getBytes())
 							.addHeaders(new HttpHeaderImpl("Set-Cookie",cookieHeaders))
 							.thenBuild())
-					.thenBuild(),
-				additionalHeadersRequest = HttpMessageBuilder
+					.thenBuild();
+		HttpRequest additionalHeadersRequest = HttpMessageBuilder
 						.createNewHttpRequest()
 						.setMethodAs("GET")
 						.setResourceAs("/test-additional-headers")
@@ -222,16 +265,16 @@ public class TestHttpClient {
 								.setResponseCodeAs(200)
 								.setContentBytes("Header Present".getBytes())
 								.thenBuild())
-						.thenBuild(),
-				headRequest = HttpMessageBuilder.createNewHttpRequest()
+						.thenBuild();
+		HttpRequest headRequest = HttpMessageBuilder.createNewHttpRequest()
 						.setMethodAs("HEAD")
 						.setResourceAs("/test-head")
 						.setId("/test-head")
 						.setResponseAs(HttpMessageBuilder.createNewHttpResponse()
 								.setResponseCodeAs(204)
 								.thenBuild())
-						.thenBuild(),
-				requestValueRequest = HttpMessageBuilder.createNewHttpRequest()
+						.thenBuild();
+		HttpRequest requestValueRequest = HttpMessageBuilder.createNewHttpRequest()
 						.setMethodAs("POST")
 						.setResourceAs("/test-request-value")
 						.setId("/test-request-value")
@@ -240,8 +283,8 @@ public class TestHttpClient {
 								.setResponseCodeAs(200)
 								.setContentBytes("Request Value Present. This is a long response. This is to ensure that the issues that existed before have been fixed".getBytes())
 								.thenBuild())
-						.thenBuild(),
-				errorReturningRequest = HttpMessageBuilder.createNewHttpRequest()
+						.thenBuild();
+		HttpRequest errorReturningRequest = HttpMessageBuilder.createNewHttpRequest()
 						.setMethodAs("PUT")
 						.setResourceAs("/test-error-returning")
 						.setId("/test-error-returning")
@@ -251,6 +294,25 @@ public class TestHttpClient {
 								.setContentBytes("Error Response Present".getBytes())
 								.thenBuild())
 						.thenBuild();
+		HttpRequest redirectingRequest = HttpMessageBuilder.createNewHttpRequest()
+						.setMethodAs("POST")
+						.setResourceAs("/test-redirecting-request")
+						.setId("/test-redirecting-request")
+						.setContentBytes("test=true&post=true".getBytes())
+						.setResponseAs(HttpMessageBuilder.createNewHttpResponse()
+								.setResponseCodeAs(301)
+								.addHeaders(new HttpHeaderImpl("Location", "http://localhost:8080/test-redirecting-response"))
+								.thenBuild())
+						.thenBuild();
+		HttpRequest redirectingRequestResponse = HttpMessageBuilder.createNewHttpRequest()
+				.setMethodAs("GET")
+				.setResourceAs("/test-redirecting-response")
+				.setId("/test-redirecting-response")
+				.setResponseAs(HttpMessageBuilder.createNewHttpResponse()
+						.setResponseCodeAs(200)
+						.setContentBytes("Redirect complete".getBytes())
+						.thenBuild())
+				.thenBuild();
 		
 		MockServer mockServer = MockServerFactory.getInstance()
 				.getMockServer()
@@ -262,15 +324,16 @@ public class TestHttpClient {
 						.setRequestAs(basicAuthenticationRequest)
 						.setResponseActionAs((request, response)->{
 							if(("Basic "+Base64.getEncoder().encodeToString("test:password".getBytes()))
-									.equalsIgnoreCase(request.getHeaderValue("authorization")))
+									.equalsIgnoreCase(request.getHeaderValue("authorization"))
+									&& "Custom Agent".equals(request.getHeaderValue("user-agent")))
 								return null;
-							
+														
 							return HttpMessageBuilder.createNewHttpResponse()
 									.setResponseCodeAs(401)
 									.setContentBytes("Not authorized".getBytes())
 									.thenBuild();
 						}).thenBuild(),
-						MockActionBuilder.createNewMockAction()
+					MockActionBuilder.createNewMockAction()
 						.setRequestAs(defaultCookieRequest)
 						.setResponseActionAs((context, response)->{
 							if(context.getHeaderValue("cookie").contains("testCookie"))
@@ -280,7 +343,7 @@ public class TestHttpClient {
 									.setContentBytes("Not authorized".getBytes())
 									.thenBuild();
 						}).thenBuild(),
-						MockActionBuilder.createNewMockAction()
+					MockActionBuilder.createNewMockAction()
 						.setRequestAs(additionalHeadersRequest)
 						.setResponseActionAs((request, response)->{
 							if(request.getHeaderValue("x-additional-header")!=null)
@@ -291,9 +354,9 @@ public class TestHttpClient {
 										.setContentBytes("Bad Message".getBytes())
 										.thenBuild();
 						}).thenBuild(),
-						MockActionBuilder.createNewMockAction()
+					MockActionBuilder.createNewMockAction()
 						.setRequestAs(headRequest).thenBuild(),
-						MockActionBuilder.createNewMockAction()
+					MockActionBuilder.createNewMockAction()
 						.setRequestAs(requestValueRequest)
 						.setResponseActionAs((request, response)->{
 							if(request.getContentBytes()!=null
@@ -304,28 +367,65 @@ public class TestHttpClient {
 									.setResponseCodeAs(400)
 									.setContentBytes("Bad Message".getBytes()).thenBuild();
 						}).thenBuild(),
-						MockActionBuilder.createNewMockAction()
+					MockActionBuilder.createNewMockAction()
 						.setRequestAs(errorReturningRequest)
+						.thenBuild(),
+					MockActionBuilder.createNewMockAction()
+						.setRequestAs(redirectingRequest)
+						.thenBuild(),
+					MockActionBuilder.createNewMockAction()
+						.setRequestAs(redirectingRequestResponse)
 						.thenBuild());
 		mockServer.start();
 		try {
-			MockHttpClient client = new MockHttpClientBuilder()
+			MockHttpClient client = MockHttpClientBuilder.getInstance()
+					.createNewHttpClient()
 					.setHostAs("localhost")
 					.setPortAs(8080)
 					.setUsernameAs("test")
 					.setPasswordAs("password")
+					.setUserAgentAs("Custom Agent")
 					.thenBuild();
-					
+		
+			assertThat(client.isSecured(), is(false));
+
 			HttpResponse httpResponse = client.sendRequest(basicAuthenticationRequest);
 			assertThat(httpResponse.getHttpCode(), is(200));
 			assertThat(httpResponse.getOutput(), is("Authenticated"));			
 			assertThat(httpResponse.getHeaders().isEmpty(), is(false));
 			
-			client = new MockHttpClientBuilder()
+			client = MockHttpClientBuilder.getInstance()
+					.createNewHttpClient()
 					.setHostAs("localhost")
 					.setPortAs(8080)
-					.setDefaultCookieAs(new HttpCookie("testCookie", "testCookie"))
+					.setUsernameAs("test")
+					.setUserAgentAs("Custom Agent")
 					.thenBuild();
+			
+			httpResponse = client.sendRequest(basicAuthenticationRequest);
+			assertThat(httpResponse.getHttpCode(), is(401));
+			
+			client = MockHttpClientBuilder.getInstance()
+					.createNewHttpClient()
+					.setHostAs("localhost")
+					.setPortAs(8080)
+					.setPasswordAs("password")
+					.setUserAgentAs("Custom Agent")
+					.thenBuild();
+			
+			httpResponse = client.sendRequest(basicAuthenticationRequest);
+			assertThat(httpResponse.getHttpCode(), is(401));
+			
+			HttpCookie httpCookie = new HttpCookie("testCookie", "testCookie");
+			
+			client = MockHttpClientBuilder.getInstance()
+					.createNewHttpClient()
+					.setHostAs("localhost")
+					.setPortAs(8080)
+					.setDefaultCookieAs(httpCookie)
+					.thenBuild();
+			
+			assertThat(client.getDefaultCookie(), is(httpCookie));
 			
 			httpResponse = client.sendRequest(defaultCookieRequest);
 			assertThat(httpResponse.getHttpCode(), is(200));
@@ -337,9 +437,9 @@ public class TestHttpClient {
 			assertThat(cookies.contains(client.getCookies().get(0).getValue()), is(true));
 			assertThat(cookies.contains(client.getCookies().get(1).getValue()), is(true));
 			
-			client = new MockHttpClientBuilder()
-					.setHostAs("localhost")
-					.setPortAs(8080)
+			client = MockHttpClientBuilder.getInstance()
+					.createNewHttpClient()
+					.setURLAs("http://localhost:8080")
 					.thenBuild();
 
 			httpResponse = client.sendRequest(additionalHeadersRequest);
@@ -354,9 +454,42 @@ public class TestHttpClient {
 			assertThat(httpResponse.getHttpCode(), is(200));
 			assertThat(httpResponse.getOutput(), is("Request Value Present. This is a long response. This is to ensure that the issues that existed before have been fixed"));
 			
+			requestValueRequest = HttpMessageBuilder.createNewHttpRequest()
+					.setMethodAs("POST")
+					.setResourceAs("/test-request-value")
+					.setId("/test-request-value")
+					.setContentBytes("".getBytes())
+				.thenBuild();
+			
+			httpResponse = client.sendRequest(requestValueRequest);
+			assertThat(httpResponse.getHttpCode(), is(400));
+			
 			httpResponse = client.sendRequest(errorReturningRequest);
 			assertThat(httpResponse.getHttpCode(), is(401));
 			assertThat(httpResponse.getOutput(), is("Error Response Present"));
+			
+			client = MockHttpClientBuilder.getInstance()
+				.createNewHttpClient()
+				.setHostAs("localhost")
+				.setPortAs(8080)
+				.setFollowRedirectAs(true)
+				.thenBuild();
+			
+			assertThat(client.followsRedirects(), is(true));
+			
+			httpResponse = client.sendRequest(redirectingRequest);
+			assertThat(httpResponse.getHttpCode(), is(200));
+			assertThat(httpResponse.getOutput(), is("Redirect complete"));
+			
+			client = MockHttpClientBuilder.getInstance()
+					.createNewHttpClient()
+					.setHostAs("localhost")
+					.setPortAs(8080)
+					.thenBuild();
+			
+			httpResponse = client.sendRequest(redirectingRequest);
+			assertThat(httpResponse.getHttpCode(), is(301));
+			assertThat(httpResponse.getOutput(), is(nullValue()));
 		} finally {
 			mockServer.stop();
 		}
@@ -364,7 +497,8 @@ public class TestHttpClient {
 	
 	@Test(expected=HttpClientException.class)
 	public void testVerbRequiringRequestValueWithNoRequestValue() throws Exception {
-		MockHttpClient client = new MockHttpClientBuilder()
+		MockHttpClient client = MockHttpClientBuilder.getInstance()
+				.createNewHttpClient()
 				.setHostAs("localhost")
 				.setPortAs(8080)
 				.thenBuild();
@@ -379,7 +513,8 @@ public class TestHttpClient {
 	
 	@Test(expected=HttpClientException.class)
 	public void testVerbThatCannotHaveRequestValueWithRequestValue() throws Exception {
-		MockHttpClient client = new MockHttpClientBuilder()
+		MockHttpClient client = MockHttpClientBuilder.getInstance()
+				.createNewHttpClient()
 				.setHostAs("localhost")
 				.setPortAs(8080)
 				.thenBuild();
@@ -393,15 +528,57 @@ public class TestHttpClient {
 				.thenBuild());		
 	}
 	
+	@Test(expected=HttpClientRuntimeException.class)
+	public void testBuildWithNonHttpHttpsURL() throws Exception {
+		MockHttpClientBuilder.getInstance()
+			.createNewHttpClient()
+			.setURLAs("file:pom.xml");
+	}
+	
+	@Test(expected=HttpClientRuntimeException.class)
+	public void testBuildWithMalformedURL() throws Exception {
+		MockHttpClientBuilder.getInstance()
+			.createNewHttpClient()
+			.setURLAs("http/pom.xml");
+	}
+	
+	@Test
+	public void testHttpResponse() throws Exception {
+		Map<String, List<String>> headers= new HashMap<>();
+		headers.put("header-with-values", Arrays.asList("Test"));
+		headers.put("empty-header", Collections.emptyList());
+		
+		HttpResponse httpResponse = new HttpResponse("Test output", 
+				"test message", 200, headers);
+		assertThat(httpResponse.getOutput(), is("Test output"));
+		assertThat(httpResponse.getMessage(), is("test message"));
+		assertThat(httpResponse.getHttpCode(), is(200));
+		assertThat(httpResponse.getHeaders(), is(headers));
+		assertThat(httpResponse.getHeaderList("header-with-values"), 
+				is(headers.get("header-with-values")));
+		assertThat(httpResponse.getHeader("header-with-values"), is("Test"));
+		assertThat(httpResponse.getHeader("empty-header"), is(nullValue()));
+		assertThat(httpResponse.getHeader("non-existent-header"), is(nullValue()));
+	}
+	
+	@Test
+	public void testURLPort() throws Exception {
+		MockHttpClient client = MockHttpClientBuilder
+				.getInstance().createNewHttpClient()
+			.setURLAs("https://www.quakearts.com").thenBuild();
+		
+		assertThat(client.getPort(), is(443));
+		client = MockHttpClientBuilder.getInstance()
+				.createNewHttpClient().setURLAs("http://demo.quakearts.com")
+				.thenBuild();
+		assertThat(client.getPort(), is(80));		
+	}
+	
 	public static class TestHttpRequest implements HttpRequest {
 		public TestHttpRequest() {
 		}
 		
 		HttpVerb verb;
-		public TestHttpRequest(HttpVerb verb) {
-			this.verb = verb;
-		}
-
 		String file;
 		public TestHttpRequest(HttpVerb verb, String file) {
 			this.verb = verb;
