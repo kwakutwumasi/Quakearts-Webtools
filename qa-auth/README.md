@@ -391,7 +391,7 @@ grace.period - the time in seconds to add as a grace period to make up for
 
 ###### LoadProfileLoginModule
 
-This login module connects to a database using JCA and executes a query to load the profile of a subject. The query takes the form of a java.sql.PreparedStatement with one parameters, the username. This login module is to be used in conjunction with other login modules. It exists as a way to load roles from a single datasource, in the event that authentication occurs on a different datasource, or as a way to share role storage across different authentication modules.
+This login module connects to a database using JCA and executes a query to load the profile of a subject. The query takes the form of a java.sql.PreparedStatement with one parameter, the username. This login module is to be used in conjunction with other login modules. It exists as a way to load roles from a single datasource, in the event that authentication occurs on a different datasource, or as a way to share role storage across different authentication modules.
 
 This module uses no call backs.
 
