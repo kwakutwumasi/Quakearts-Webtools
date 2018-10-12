@@ -89,44 +89,83 @@ This module uses two call backs : _javax.security.auth.callback.NameCallback_ an
 Configuration options:
 
 ```
-database.authenticationquery - The query to execute. It must be a valid java.sql.PreparedStatement query that takes two parameters. The first is the username, the second is the password. Ex. SELECT * FROM user.table WHERE username = ? AND password= ?
+database.authenticationquery - The query to execute. It must be a valid 
+ java.sql.PreparedStatement query that takes two parameters. The first is 
+ the username, the second is the password. Ex. SELECT * FROM user.table 
+ WHERE username = ? AND password= ?
 
-database.jndiname - The JNDI name of the java.sql.DataSource to obtain connections from
+database.jndiname - The JNDI name of the java.sql.DataSource to obtain 
+ connections from
 
-database.rolename - This parameter is for use in JAAS modules that are integrated with Jboss/Wildfly's authentication system. All roles are grouped within a java.security.acl.Group with a specific name. This defaults to Roles
+database.rolename - This parameter is for use in JAAS modules that are 
+ integrated with Jboss/Wildfly's authentication system. All roles are 
+ grouped within a java.security.acl.Group with a specific name. This 
+ defaults to Roles
 
-require_password_change - A string that evaluates to the Boolean value of true or false. If true the password will be compared with the value in the default_password option to 
-determine if the user needs to change their password
+require_password_change - A string that evaluates to the Boolean value 
+ of true or false. If true the password will be compared with the 
+ value in the default_password option to determine if the user needs to
+ change their password
 
-default_password - The default password value. Note that this must be a valid hash value if password hashing is turned on. Also note that this will not work if username_as_salt is set to true since the hashed passwords would not be the same for different users. In such instances two DatabaseLoginModule's can be used, the first set to hash with the username, and the second that will not hash with the user name. Whichever one succeeds is used to authenticate the user
+default_password - The default password value. Note that this must be a 
+ valid hash value if password hashing is turned on. Also note that this
+ will not work if username_as_salt is set to true since the hashed 
+ passwords would not be the same for different users. In such instances
+ two DatabaseLoginModule's can be used, the first set to hash with the 
+ username, and the second that will not hash with the user name. Whichever 
+ one succeeds is used to authenticate the user
 
-change_password_role - The role to assign a subject that requires a password change. All other roles will be ignored if a password change is required
+change_password_role - The role to assign a subject that requires a 
+ password change. All other roles will be ignored if a password change is 
+ required
 
-database.defaultroles - A comma separated list of the default roles to assign to all authenticated subjects
+database.defaultroles - A comma separated list of the default roles to 
+ assign to all authenticated subjects
 
-database.rolesquery - The query for retrieving user roles. It must be a valid java.sql.PreparedStatement query that takes one parameter. Ex. SELECT * FROM user.roles.table WHERE username = ?
+database.rolesquery - The query for retrieving user roles. It must be a 
+ valid java.sql.PreparedStatement query that takes one parameter. Ex.  
+ SELECT * FROM user.roles.table WHERE username = ?
 
-database.rolescolumns - The list of columns returned by the database.rolesquery, spearated by commas
+database.rolescolumns - The list of columns returned by the 
+ database.rolesquery, spearated by commas
 
-result_orientation_potrait - A string that evaluates to the Boolean value of true or false. Determines the type of the result set returned by database.rolesquery. A value of true means multiple rows are returned. In such an instance the database.rolescolumns must return only one column. If false it is assumed a single row is returned. The database.rolescolumns is parsed and the row is iterated over using the columns
+result_orientation_potrait - A string that evaluates to the Boolean value 
+ of true or false. Determines the type of the result set returned by 
+ database.rolesquery. A value of true means multiple rows are returned. In 
+ such an instance the database.rolescolumns must return only one column. 
+ If false it is assumed a single row is returned. The 
+ database.rolescolumns is parsed and the row is iterated over using the 
+ columns
 
-database.usehash - A string that evaluates to the Boolean value of true or false. A value of true sets the module to hash passwords before comparing them to the stored value
+database.usehash - A string that evaluates to the Boolean value of true or 
+ false. A value of true sets the module to hash passwords before comparing 
+ them to the stored value
 
 hash_algorithm - The JCE hash algorithm to use
 
 hash_iterations - The number of hash iterations, to increase difficulty
 
-salt_value - a value to append to the password. Salts make it harder to compare brute forced dictionary hashes to the stored value, in the event that the user table is compromised and password values are leaked
+salt_value - a value to append to the password. Salts make it harder to 
+ compare brute forced dictionary hashes to the stored value, in the event  
+ that the user table is compromised and password values are leaked
 
-username_as_salt - Adds the username as a salt. Using the username as salt makes it difficult for passwords to be replaced in a database with a known hash
+username_as_salt - Adds the username as a salt. Using the username as salt 
+ makes it difficult for passwords to be replaced in a database with a 
+ known hash
 
 max_try_attempts - The maximum number of tries for wrong passwords
 
-lockout_time - The time, in milliseconds, to lockout a subject after exceeding max_try_attempts
+lockout_time - The time, in milliseconds, to lockout a subject after 
+ exceeding max_try_attempts
 
-use_first_pass - A string that evaluates to the Boolean value of true or false. If true, and multiple modules are used, it will attempt to use the username and password from the previous module, if any, rather than perform a callback
+use_first_pass - A string that evaluates to the Boolean value of true or 
+ false. If true, and multiple modules are used, it will attempt to use the 
+ username and password from the previous module, if any, rather than 
+ perform a callback
 
-load_profile_only - A string that evaluates to the Boolean value of true or false. If true, authentication will not be performed. The module will skip straight to loading roles
+load_profile_only - A string that evaluates to the Boolean value of true 
+ or false. If true, authentication will not be performed. The module will  
+ skip straight to loading roles
 ```
 
 ###### DatabaseServerLoginModule
@@ -138,27 +177,50 @@ This module uses two call backs : _javax.security.auth.callback.NameCallback_ an
 Configuration options:
 
 ```
-database.rolename - This parameter is for use in JAAS modules that are integrated with Jboss/Wildfly's authentication system. All roles are grouped within a java.security.acl.Group with a specific name. This defaults to Roles
+database.rolename - This parameter is for use in JAAS modules that are 
+ integrated with Jboss/Wildfly's authentication system. All roles are 
+ grouped within a java.security.acl.Group with a specific name. This 
+ defaults to Roles
 
-database.jndiname - The JNDI name of the java.sql.DataSource to obtain connections from
+database.jndiname - The JNDI name of the java.sql.DataSource to obtain 
+ connections from
 
-database.defaultroles - A comma separated list of the default roles to assign to all authenticated subjects
+database.defaultroles - A comma separated list of the default roles to 
+ assign to all authenticated subjects
 
-database.rolesquery - The query for retrieving user roles. It must be a valid java.sql.PreparedStatement query that takes one parameter. Ex. SELECT * FROM user.roles.table WHERE username = ?
+database.rolesquery - The query for retrieving user roles. It must be a 
+ valid  java.sql.PreparedStatement query that takes one parameter. Ex. 
+ SELECT * FROM user.roles.table WHERE username = ?
 
-database.rolescolumns - The list of columns returned by the database.rolesquery, spearated by commas
+database.rolescolumns - The list of columns returned by the 
+ database.rolesquery, spearated by commas
 
-result_orientation_potrait - A string that evaluates to the Boolean value of true or false. Determines the type of the result set returned by database.rolesquery. A value of true means multiple rows are returned. In such an instance the database.rolescolumns must return only one column. If false it is assumed a single row is returned. The database.rolescolumns is parsed and the row is iterated over using the columns.
+result_orientation_potrait - A string that evaluates to the Boolean value 
+ of true or false. Determines the type of the result set returned by 
+ database.rolesquery. A value of true means multiple rows are returned. In 
+ such an instance the database.rolescolumns must return only one column. 
+ If false it is assumed a single row is returned. The 
+ database.rolescolumns is parsed and the row is iterated over using the 
+ columns.
 
 max_try_attempts - The maximum number of tries for wrong passwords
 
-lockout_time - The time, in milliseconds, to lockout a subject after exceeding max_try_attempts
+lockout_time - The time, in milliseconds, to lockout a subject after 
+ exceeding max_try_attempts
 
-database.case_sensitivity - one of the values none,upper,lower. Some databases may require passwords in upper or lower case in order to authenticate. A value of upper will convert the password to uppercase before attempting to authentic. The same is true for lower. None leaves the password as is
+database.case_sensitivity - one of the values none,upper,lower. Some 
+ databases may require passwords in upper or lower case in order to 
+ authenticate. A value of upper will convert the password to uppercase 
+ before attempting to authentic. The same is true for lower. None leaves 
+ the password as is
 
-authenticate_only - A string that evaluates to the Boolean value of true or false. 
+authenticate_only - A string that evaluates to the Boolean value of true 
+ or false. 
 
-use_first_pass - A string that evaluates to the Boolean value of true or false. If true, and multiple modules are used, it will attempt to use the username and password from the previous module, if any, rather than perform a callback.
+use_first_pass - A string that evaluates to the Boolean value of true or 
+ false. If true, and multiple modules are used, it will attempt to use the 
+ username and password from the previous module, if any, rather than 
+ perform a callback.
 
 ```
 
@@ -171,39 +233,63 @@ This module uses two call backs : _javax.security.auth.callback.NameCallback_ an
 Configuration options:
 
 ```
-directory.rolename - This parameter is for use in JAAS modules that are integrated with Jboss/Wildfly's authentication system. All roles are grouped within a java.security.acl.Group with a specific name. This defaults to Roles
+directory.rolename - This parameter is for use in JAAS modules that are 
+ integrated with Jboss/Wildfly's authentication system. All roles are 
+ grouped within a java.security.acl.Group with a specific name. This 
+ defaults to Roles
 
 ldap.server - the LDAP server URL or IP address
 
 ldap.port - the port if the default ports are not used (389/636)
 
-ldap.allow.anonymousbind - A string that evaluates to the Boolean value of true or false. If true, the module will attempt to bind anonymously to the server. If false, the module will expect ldap.search.dn and ldap.search.dn properties to be present, and will use them to bind to the server
+ldap.allow.anonymousbind - A string that evaluates to the Boolean value of 
+ true or false. If true, the module will attempt to bind anonymously to 
+ the server. If false, the module will expect ldap.search.dn and 
+ ldap.search.dn properties to be present, and will use them to bind to the 
+ server
 
-ldap.ssl.use - A string that evaluates to the Boolean value of true or false. If true, the module will attempt to make a secure connection to the server. The default port for ssl connections is 636
+ldap.ssl.use - A string that evaluates to the Boolean value of true or 
+ false. If true, the module will attempt to make a secure connection to 
+ the server. The default port for ssl connections is 636
 
-ldap.keystore - The keystore location holding the list of certificates to trust. This setting only takes effect if a systemwide trust store has not been setup.
+ldap.keystore - The keystore location holding the list of certificates to 
+ trust. This setting only takes effect if a systemwide trust store has not 
+ been setup.
 
-ldap.search.dn - The user name/dn for a user with read access to the directory tree holding user information
+ldap.search.dn - The user name/dn for a user with read access to the 
+ directory tree holding user information
 
 ldap.search.acc - the password for the user specified in ldap.search.dn
 
-ldap.compare.use - A string that evaluates to the Boolean value of true or false. If true, the module will attempt to compare the password to an attribute in the users profile found in the ldap.password.param.
+ldap.compare.use - A string that evaluates to the Boolean value of true or 
+ false. If true, the module will attempt to compare the password to an 
+ attribute in the users profile found in the ldap.password.param.
 
 ldap.password.param - The name of the password attribute to compare to
 
-directory.attributes - a list of nine attributes corresponding to the following: first name, last name, email address, unit, department, branch, position, salary grade/level/staff position, staff number. The attributes must be listed in this order and separated by ';'. If empty or less than 9, none of the attributes specified will be loaded.
+directory.attributes - a list of nine attributes corresponding to the 
+ following: first name, last name, email address, unit, department, 
+ branch, position, salary grade/level/staff position, staff number. The 
+ attributes must be listed in this order and separated by ';'. If empty or 
+ less than 9, none of  the attributes specified will be loaded.
 
-directory.defaultroles - A comma separated list of the default roles to assign to all authenticated subjects
+directory.defaultroles - A comma separated list of the default roles to 
+ assign to all authenticated subjects
 
-ldap.search.baseDN - the base of the directory tree to start the search from
+ldap.search.baseDN - the base of the directory tree to start the search 
+ from
 
 ldap.filter - a filter for ignoring certain branches in the directory tree
 
-use_first_pass - A string that evaluates to the Boolean value of true or false. If true, and multiple modules are used, it will attempt to use the username and password from the previous module, if any, rather than perform a callback.
+use_first_pass - A string that evaluates to the Boolean value of true or 
+ false. If true, and multiple modules are used, it will attempt to use the  
+ username and password from the previous module, if any, rather than 
+ perform a callback.
 
 max_try_attempts - The maximum number of tries for wrong passwords
 
-lockout_time - The time, in milliseconds, to lockout a subject after exceeding max_try_attempts
+lockout_time - The time, in milliseconds, to lockout a subject after 
+ exceeding max_try_attempts
 
 ```
 
@@ -216,17 +302,26 @@ This module does not use call backs. It expects that the servlet container would
 Configuration options:
 
 ```
-rolename - This parameter is for use in JAAS modules that are integrated with Jboss/Wildfly's authentication system. All roles are grouped within a java.security.acl.Group with a specific name. This defaults to Roles
+rolename - This parameter is for use in JAAS modules that are integrated 
+ with Jboss/Wildfly's authentication system. All roles are grouped within 
+ a java.security.acl.Group with a specific name. This defaults to Roles
 
-defaultroles - A comma separated list of the default roles to assign to all authenticated subjects
+defaultroles - A comma separated list of the default roles to assign to 
+ all authenticated subjects
 
-use_first_pass - A string that evaluates to the Boolean value of true or false. If true, and multiple modules are used, it will attempt to use the username and password from the previous module, if any, rather than perform a callback.
+use_first_pass - A string that evaluates to the Boolean value of true or 
+ false. If true, and multiple modules are used, it will attempt to use the 
+ username and password from the previous module, if any, rather than 
+ perform a callback.
 
 max_try_attempts - The maximum number of tries for wrong passwords
 
-lockout_time - The time, in milliseconds, to lockout a subject after exceeding max_try_attempts
+lockout_time - The time, in milliseconds, to lockout a subject after 
+ exceeding max_try_attempts
 
-properties.file - The filename and location of a properties file containing the list of IP addresses to allow. The value is a ';' separated list of roles to assign the authenticated subject
+properties.file - The filename and location of a properties file 
+ containing the list of IP addresses to allow. The value is a ';' 
+ separated list of roles to assign the authenticated subject
 
 ```
 
@@ -239,35 +334,58 @@ This module uses two call backs : _com.quakearts.webapp.security.auth.callback.T
 Configuration options:
 
 ```
-issuer - The issuer name for the JWT token
+issuer - The issuer name for the JWT
 
-audience - The audience for the JWT token
+audience - The audience for the JWT
 
-algorithm - The signing algorithm to use in generation/verification. Must be one of HS256,HS384,HS512,RS256,RS384,RS512,ES256,ES384, or ES512
+algorithm - The signing algorithm to use in generation/verification of the 
+ JWT. Must be one of HS256,HS384,HS512,RS256,RS384,RS512,ES256,ES384, or 
+ ES512. The algorithms prefixed with ES use the ECC signing algorithm
 
-file - Required if the algorithm is prefixed with ES or RS. The filename and location of the Java keystore file containing the signing keys for the RSA or ESS signing algorithms.
+file - Required if the algorithm is prefixed with ES or RS. The filename 
+ and location of the key store file containing the signing keys for the 
+ RSA or ESS signing algorithms.
 
-storeType - Required if the algorithm is prefixed with ES or RS. The Java Key Store type
+storeType - Required if the algorithm is prefixed with ES or RS. The store 
+ type of the keystore that holds the signing keys for the RSA and ESA 
+ algorithms. Can be one of: 
+		JKS - Java Key Store;
+		JCEKS - JCE key store(Java Cryptography Extension KeyStore);
+		PKCS12 - this is a standard key store type which can be used in Java 
+		and other languages;
 
-alias - Required if the algorithm is prefixed with ES or RS. The alias of the signing keys
+alias - Required if the algorithm is prefixed with ES or RS. The alias of 
+ the signingkey pairs
 
-password - Required if the algorithm is prefixed with ES or RS. The password for the keystore file
+password - Required if the algorithm is prefixed with ES or RS. The 
+ password for the key store file
 
-rolesgroupname - This parameter is for use in JAAS modules that are integrated with Jboss/Wildfly's authentication system. All roles are grouped within a java.security.acl.Group with a specific name. This defaults to Roles
+rolesgroupname - This parameter is for use in JAAS modules that are 
+ integrated with Jboss/Wildfly's authentication system. All roles are 
+ grouped within a java.security.acl.Group with a specific name.  This 
+ defaults to Roles
 
-secret - Required if the algorithm is prefixed with HS. The secret with which the JWT signature is hashed for verification
+secret - Required if the algorithm is prefixed with HS. The secret with 
+ which the JWT signature is hashed for verification
 
-validity - The number of time periods the JWT token is valid for, from the time of issue
+validity - The number of seconds the JWT token is valid for, from the 
+ time of issue
 
-validity.period - The unit of time 'validity' is expressed in 
+validity.period - A more convenient way to express validity in instances 
+ other than seconds. It takes a number and any one of these time periods:
+ Minutes, Hours, Days. Ex. 1 Day; 15 Minutes; 2 Hours
 
-activate.after - The number of time periods that must precede JWT token activation, from the time of issue
+activate.after - The number of seconds that must elapse before JWT 
+ activation, from the time of issue
 
-activate.after.period - The unit of time the 'activate.after' is expressed in 
+activate.after.period - A more convenient way to express activate.after 
+in instances other than seconds. It takes a number and any one of these 
+time periods: Minutes, Hours, Days. Ex. 1 Day; 15 Minutes; 2 Hours
 
-additional.claims - Key pair values of additional claims
+additional.claims - Key pair values of additional claims. Ex. allow:write;deny:delete
 
-grace.period - the time in seconds to add as a grace period to make up for possible time differences and network lag.
+grace.period - the time in seconds to add as a grace period to make up for 
+ possible time differences and network lag.
 
 ```
 
@@ -280,22 +398,40 @@ This module uses no call backs.
 Configuration options:
 
 ```
-database.jndiname - The JNDI name of the java.sql.DataSource to obtain connections from
+database.jndiname - The JNDI name of the java.sql.DataSource to obtain 
+ connections from
 
-database.rolename - This parameter is for use in JAAS modules that are integrated with Jboss/Wildfly's authentication system. All roles are grouped within a java.security.acl.Group with a specific name. This defaults to Roles
+database.rolename - This parameter is for use in JAAS modules that are 
+ integrated with Jboss/Wildfly's authentication system. All roles are 
+ grouped within a java.security.acl.Group with a specific name. This 
+ defaults to Roles
 
-require_password_change - A string that evaluates to the Boolean value of true or false. If true the password will be compared with the value in the default_password option to 
-determine if the user needs to change their password
+require_password_change - A string that evaluates to the Boolean value of 
+ true or false. If true the password will be compared with the value in 
+ the default_password option to determine if the user needs to change 
+ their password
 
-change_password_role - The role to assign a subject that requires a password change. All other roles will be ignored if a password change is required
+change_password_role - The role to assign a subject that requires a 
+ password change. All other roles  will be ignored if a password change is 
+ required
 
-database.defaultroles - A comma separated list of the default roles to assign to all authenticated subjects
+database.defaultroles - A comma separated list of the default roles to 
+ assign to all authenticated subjects
 
-database.rolesquery - The query for retrieving user roles. It must be a valid java.sql.PreparedStatement query that takes one parameter. Ex. SELECT * FROM user.roles.table WHERE username = ?
+database.rolesquery - The query for retrieving user roles. It must be a 
+ valid java.sql.PreparedStatement query that takes one parameter. Ex. 
+ SELECT * FROM user.roles.table WHERE username = ?
 
-database.rolescolumns - The list of columns returned by the database.rolesquery, spearated by commas
+database.rolescolumns - The list of columns returned by the 
+ database.rolesquery, spearated by commas
 
-result_orientation_potrait - A string that evaluates to the Boolean value of true or false. Determines the type of the result set returned by database.rolesquery. A value of true means multiple rows are returned. In such an instance the database.rolescolumns must return only one column. If false it is assumed a single row is returned. The database.rolescolumns is parsed and the row is iterated over using the columns
+result_orientation_potrait - A string that evaluates to the Boolean value 
+ of true or false. Determines the type of the result set returned by 
+ database.rolesquery. A value of true means multiple rows are returned. In 
+ such an instance the database.rolescolumns must return only one column. 
+ If false it is assumed a single row is returned. The 
+ database.rolescolumns is parsed and the row is iterated over using the 
+ columns
 
 ```
 
