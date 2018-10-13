@@ -1,0 +1,8 @@
+{
+"xa.createDatabase":"create",
+"xa.databaseName":"./defaultDB",
+"datasource.class":"org.apache.derby.jdbc.EmbeddedXADataSource",
+"datasource.name":"DefaultDS",
+"maxPoolSize":20,
+"poolSize":3
+}

@@ -1,5 +1,5 @@
 # qa-appbase-test-helper
-A collection of abstract classes for use as parent classes for appbase tests
+A collection of JUnit4 runners for use as with qa-appbase app tests
 
 ##### Requirements
 * Java 8+
@@ -25,16 +25,17 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.webtools.test</groupId>
 	<artifactId>qa-appbase-test-helper</artifactId>
-	<version>1.0.2</version>
+	<version>2.0.0</version>
 </dependency>
 
 ```
 
-There are four test classes that can be implemented:
+There are four test Runners that can be used:
 
-* com.quakearts.webtools.test.AppBaseCDIBaseTest - a base class for tests that require CDI services in qa-appbase
-* com.quakearts.webtools.test.AppBaseFullBaseTest - a base class for tests that require the full qa-appbase services
-* com.quakearts.webtools.test.AppBaseTransactionManagerTestBase - a base for tests that require transaction manager services
-* com.quakearts.webtools.test.AppDatasourceBeanTestBase - a base class for tests that require Datasource services
+* com.quakearts.webtools.test.CDIRunner - a runner for tests that require CDI 2.0 services in qa-appbase
+* com.quakearts.webtools.test.AllServicesRunner - a runner for tests that require the full qa-appbase services
+* com.quakearts.webtools.test.TransactionManagerRunner - a base for tests that require transaction manager services
+* com.quakearts.webtools.test.DataSourceRunner - a runner for tests that require data source services
+* com.quakearts.webtools.test.EmbeddedWebServerRunner - a runner for tests that require Servlet 3+/4+ services
 
 The classes take care of startup and tear down of the necessary services in order to ensure the environment perfectly matches running conditions. 
