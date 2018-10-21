@@ -23,7 +23,6 @@ package com.quakearts.webapp.security.jwt.internal.json;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -75,6 +74,7 @@ import java.util.List;
 @SuppressWarnings("serial") // use default serial UID
 public class JsonObject extends JsonValue implements Iterable<JsonObject.Member> {
 
+	private static final String NAME_IS_NULL = "name is null";
 	private final List<String> names;
 	private final List<JsonValue> values;
 	private transient HashIndexTable table;
@@ -83,81 +83,21 @@ public class JsonObject extends JsonValue implements Iterable<JsonObject.Member>
 	 * Creates a new empty JsonObject.
 	 */
 	public JsonObject() {
-		names = new ArrayList<String>();
-		values = new ArrayList<JsonValue>();
+		names = new ArrayList<>();
+		values = new ArrayList<>();
 		table = new HashIndexTable();
 	}
 
-	/**
-	 * Creates a new JsonObject, initialized with the contents of the specified
-	 * JSON object.
-	 *
-	 * @param object
-	 *            the JSON object to get the initial contents from, must not be
-	 *            <code>null</code>
-	 */
-	public JsonObject(JsonObject object) {
-		this(object, false);
-	}
-
-	private JsonObject(JsonObject object, boolean unmodifiable) {
+	private JsonObject(JsonObject object) {
 		if (object == null) {
 			throw new NullPointerException("object is null");
 		}
-		if (unmodifiable) {
-			names = Collections.unmodifiableList(object.names);
-			values = Collections.unmodifiableList(object.values);
-		} else {
-			names = new ArrayList<String>(object.names);
-			values = new ArrayList<JsonValue>(object.values);
-		}
+		names = Collections.unmodifiableList(object.names);
+		values = Collections.unmodifiableList(object.values);
 		table = new HashIndexTable();
 		updateHashIndex();
 	}
-
-	/**
-	 * Reads a JSON object from the given reader.
-	 * <p>
-	 * Characters are read in chunks and buffered internally, therefore wrapping
-	 * an existing reader in an additional <code>BufferedReader</code> does
-	 * <strong>not</strong> improve reading performance.
-	 * </p>
-	 *
-	 * @param reader
-	 *            the reader to read the JSON object from
-	 * @return the JSON object that has been read
-	 * @throws IOException
-	 *             if an I/O error occurs in the reader
-	 * @throws ParseException
-	 *             if the input is not valid JSON
-	 * @throws UnsupportedOperationException
-	 *             if the input does not contain a JSON object
-	 * @deprecated Use {@link Json#parse(Reader)}{@link JsonValue#asObject()
-	 *             .asObject()} instead
-	 */
-	@Deprecated
-	public static JsonObject readFrom(Reader reader) throws IOException {
-		return JsonValue.readFrom(reader).asObject();
-	}
-
-	/**
-	 * Reads a JSON object from the given string.
-	 *
-	 * @param string
-	 *            the string that contains the JSON object
-	 * @return the JSON object that has been read
-	 * @throws ParseException
-	 *             if the input is not valid JSON
-	 * @throws UnsupportedOperationException
-	 *             if the input does not contain a JSON object
-	 * @deprecated Use {@link Json#parse(String)}{@link JsonValue#asObject()
-	 *             .asObject()} instead
-	 */
-	@Deprecated
-	public static JsonObject readFrom(String string) {
-		return JsonValue.readFrom(string).asObject();
-	}
-
+	
 	/**
 	 * Returns an unmodifiable JsonObject for the specified one. This method
 	 * allows to provide read-only access to a JsonObject.
@@ -173,7 +113,7 @@ public class JsonObject extends JsonValue implements Iterable<JsonObject.Member>
 	 * @return an unmodifiable view of the specified JsonObject
 	 */
 	public static JsonObject unmodifiableObject(JsonObject object) {
-		return new JsonObject(object, true);
+		return new JsonObject(object);
 	}
 
 	/**
@@ -341,7 +281,7 @@ public class JsonObject extends JsonValue implements Iterable<JsonObject.Member>
 	 */
 	public JsonObject add(String name, JsonValue value) {
 		if (name == null) {
-			throw new NullPointerException("name is null");
+			throw new NullPointerException(NAME_IS_NULL);
 		}
 		if (value == null) {
 			throw new NullPointerException("value is null");
@@ -516,7 +456,7 @@ public class JsonObject extends JsonValue implements Iterable<JsonObject.Member>
 	 */
 	public JsonObject set(String name, JsonValue value) {
 		if (name == null) {
-			throw new NullPointerException("name is null");
+			throw new NullPointerException(NAME_IS_NULL);
 		}
 		if (value == null) {
 			throw new NullPointerException("value is null");
@@ -544,33 +484,13 @@ public class JsonObject extends JsonValue implements Iterable<JsonObject.Member>
 	 */
 	public JsonObject remove(String name) {
 		if (name == null) {
-			throw new NullPointerException("name is null");
+			throw new NullPointerException(NAME_IS_NULL);
 		}
 		int index = indexOf(name);
 		if (index != -1) {
 			table.remove(index);
 			names.remove(index);
 			values.remove(index);
-		}
-		return this;
-	}
-
-	/**
-	 * Copies all members of the specified object into this object. When the
-	 * specified object contains members with names that also exist in this
-	 * object, the existing values in this object will be replaced by the
-	 * corresponding values in the specified object.
-	 *
-	 * @param object
-	 *            the object to merge
-	 * @return the object itself, to enable method chaining
-	 */
-	public JsonObject merge(JsonObject object) {
-		if (object == null) {
-			throw new NullPointerException("object is null");
-		}
-		for (Member member : object) {
-			this.set(member.name, member.value);
 		}
 		return this;
 	}
@@ -588,7 +508,7 @@ public class JsonObject extends JsonValue implements Iterable<JsonObject.Member>
 	 */
 	public JsonValue get(String name) {
 		if (name == null) {
-			throw new NullPointerException("name is null");
+			throw new NullPointerException(NAME_IS_NULL);
 		}
 		int index = indexOf(name);
 		return index != -1 ? values.get(index) : null;
@@ -760,16 +680,19 @@ public class JsonObject extends JsonValue implements Iterable<JsonObject.Member>
 		final Iterator<JsonValue> valuesIterator = values.iterator();
 		return new Iterator<Member>() {
 
+			@Override
 			public boolean hasNext() {
 				return namesIterator.hasNext();
 			}
 
+			@Override
 			public Member next() {
 				String name = namesIterator.next();
 				JsonValue value = valuesIterator.next();
 				return new Member(name, value);
 			}
-
+			
+			@Override
 			public void remove() {
 				throw new UnsupportedOperationException();
 			}
@@ -836,7 +759,7 @@ public class JsonObject extends JsonValue implements Iterable<JsonObject.Member>
 		return names.lastIndexOf(name);
 	}
 
-	private synchronized void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
+	private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
 		inputStream.defaultReadObject();
 		table = new HashIndexTable();
 		updateHashIndex();
@@ -904,13 +827,6 @@ public class JsonObject extends JsonValue implements Iterable<JsonObject.Member>
 	public static class HashIndexTable {
 
 		private final byte[] hashTable = new byte[32]; // must be a power of two
-
-		public HashIndexTable() {
-		}
-
-		public HashIndexTable(HashIndexTable original) {
-			System.arraycopy(original.hashTable, 0, hashTable, 0, hashTable.length);
-		}
 
 		void add(String name, int index) {
 			int slot = hashSlotFor(name);

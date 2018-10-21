@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 
 public class DirectoryRoles implements Group{
-    private ArrayList<Principal> userroles = new ArrayList<Principal>();
+    private ArrayList<Principal> userroles = new ArrayList<>();
     private String name;
     public DirectoryRoles(String groupname) {
         name = groupname ==null? "Roles" :groupname;

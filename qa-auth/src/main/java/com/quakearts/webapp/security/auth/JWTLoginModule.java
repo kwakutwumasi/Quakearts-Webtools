@@ -3,13 +3,14 @@ package com.quakearts.webapp.security.auth;
 import java.io.IOException;
 import java.security.Principal;
 import java.security.acl.Group;
-import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.security.auth.Subject;
@@ -27,9 +28,14 @@ import com.quakearts.webapp.security.jwt.JWTSigner;
 import com.quakearts.webapp.security.jwt.JWTVerifier;
 import com.quakearts.webapp.security.jwt.exception.JWTException;
 import com.quakearts.webapp.security.jwt.factory.JWTFactory;
+import static com.quakearts.webapp.security.jwt.RegisteredNames.*;
+import static com.quakearts.webapp.security.util.UtilityMethods.*;
 
 public class JWTLoginModule implements LoginModule {
 
+	private static final List<String> REGISTEREDNAMESLIST = Arrays.asList(NBF,EXP,IAT,ISS,AUD,SUB);
+	private static final Logger log = Logger.getLogger(JWTLoginModule.class.getName());
+	private static final String INVALID_PARAMETER = "Invalid parameter: ";
 	public static final String ACTIVATEAFTERPARAMETER = "activate.after";
 	public static final String ACTIVATEAFTERPERIODPARAMETER = "activate.after.period";
 	public static final String ADDITIONALCLAIMSPARAMETER = "additional.claims";
@@ -40,79 +46,92 @@ public class JWTLoginModule implements LoginModule {
 	public static final String ISSUERPARAMETER = "issuer";
 	public static final String AUDIENCEPARAMETER = "audience";
 	public static final String ALGORITHMPARAMETER = "algorithm";
+	private static final long DEFAULTVALIDITY = 900;
+
 	private boolean loginOk;
-	private Map<String, Object> sharedState;
+	private Map<String, ?> sharedState;
 	private Subject subject;
 	private CallbackHandler callbackHandler;
 	private AuthenticationMode authenticationMode;
-	private String algorithm;
-	private String rolesgrpname = "Roles";
-	private String additionalClaims;
-	private List<String[]> foundRoles;
-	private Map<String, ?> options;
-	private static final Logger log = Logger.getLogger(JWTLoginModule.class.getName());
-	private String issuer = JWTLoginModule.class.getName();
-	private String audience = JWTLoginModule.class.getName();
-	private static final long DEFAULTVALIDITY = 54000;
-	private long validity;
-	private long activateAfter = 0;
-	private int gracePeriod = 10;
-	private JWTVerifier verifier;
-	private String username;
-	
-	
 	private enum AuthenticationMode {
 		VERIFY, GENERATE
 	}
 
-	@SuppressWarnings("unchecked")
+	private Map<String, ?> options;
+	private String algorithm = "HS256";
+	private String rolesgrpname = "Roles";
+	private String additionalClaims;
+	private String issuer = JWTLoginModule.class.getName();
+	private String audience = JWTLoginModule.class.getName();
+	private long validity = DEFAULTVALIDITY;
+	private long activateAfter = 0;
+	private int gracePeriod = 10;
+
+	private JWTVerifier verifier;
+
+	private String username;
+
 	@Override
-	public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
-			Map<String, ?> options) {
+	public void initialize(Subject subject, CallbackHandler callbackHandler, 
+			Map<String, ?> sharedState, Map<String, ?> options) {
 		this.subject = subject;
 		this.callbackHandler = callbackHandler;
-		this.sharedState = (Map<String, Object>) sharedState;
+		this.sharedState = sharedState;
 		this.options = options;
 
+		setAlgorithm(options);
+		configureAudienceAndIssuer(options);
+		setCommonOptions(options);	
+		loadValidityOptions(options);
+		
+		loginOk = false;
+		authenticationMode = null;
+	}
+
+	private void setAlgorithm(Map<String, ?> options) {
 		if (options.containsKey(ALGORITHMPARAMETER))
 			algorithm = options.get(ALGORITHMPARAMETER).toString();
-		else
-			algorithm = "HS256";
+	}
 
+	private void configureAudienceAndIssuer(Map<String, ?> options) {
 		if (options.containsKey(AUDIENCEPARAMETER))
 			audience = options.get(AUDIENCEPARAMETER).toString();
 
 		if (options.containsKey(ISSUERPARAMETER))
 			issuer = options.get(ISSUERPARAMETER).toString();
+	}
 
+	private void setCommonOptions(Map<String, ?> options) {
 		if (options.containsKey(ROLESGROUPNAMEPARAMETER))
 			rolesgrpname = options.get(ROLESGROUPNAMEPARAMETER).toString();
 
+		if(options.containsKey(ADDITIONALCLAIMSPARAMETER)){
+			additionalClaims = options.get(ADDITIONALCLAIMSPARAMETER).toString();
+		}
+	}
+
+	private void loadValidityOptions(Map<String, ?> options) {
 		try {
 			if(options.containsKey(GRACEPERIODPARAMETER))
 				gracePeriod = Integer.parseInt(options.get(GRACEPERIODPARAMETER).toString());
 		} catch (Exception e) {
-			log.severe("Invalid parameter: " + GRACEPERIODPARAMETER + "; " + e.getMessage());
+			log.severe(INVALID_PARAMETER + GRACEPERIODPARAMETER + "; " + e.getMessage());
 		}
 		
-		if(options.containsKey(ADDITIONALCLAIMSPARAMETER)){
-			additionalClaims = options.get(ADDITIONALCLAIMSPARAMETER).toString();
-		}
-			
 		try {
 			if (options.containsKey(VALIDITYPARAMETER)){
 				validity = Long.parseLong(options.get(VALIDITYPARAMETER).toString()) * 1000;
 			}
 		} catch (Exception e) {
-			log.severe("Invalid parameter: " + VALIDITYPARAMETER + "; " + e.getMessage());
+			log.severe(INVALID_PARAMETER + VALIDITYPARAMETER + "; " + e.getMessage());
 		}
 
 		try {
 			if (options.containsKey(VALIDITY_PERIODPARAMETER)) {
-				validity = parseDuration(VALIDITY_PERIODPARAMETER, options);
+				validity = parseDuration(options.get(VALIDITY_PERIODPARAMETER).toString());
 			}
 		} catch (Exception e) {
-			log.severe("Invalid parameter: " + VALIDITY_PERIODPARAMETER + "; " + e.getMessage());
+			log.severe(INVALID_PARAMETER + VALIDITY_PERIODPARAMETER + "; " + e.getMessage());
 		}
 
 		try {
@@ -120,115 +139,117 @@ public class JWTLoginModule implements LoginModule {
 				activateAfter = Long.parseLong(options.get(ACTIVATEAFTERPARAMETER).toString());
 			}
 		} catch (Exception e) {
-			log.severe("Invalid parameter: " + ACTIVATEAFTERPARAMETER + "; " + e.getMessage());
+			log.severe(INVALID_PARAMETER + ACTIVATEAFTERPARAMETER + "; " + e.getMessage());
 		}
 
 		try {
 			if (options.containsKey(ACTIVATEAFTERPERIODPARAMETER)) {
-				activateAfter = parseDuration(ACTIVATEAFTERPERIODPARAMETER, options);
+				activateAfter = parseDuration(options.get(ACTIVATEAFTERPERIODPARAMETER).toString());
 			}
 		} catch (Exception e) {
-			log.severe("Invalid parameter: " + ACTIVATEAFTERPERIODPARAMETER + "; " + e.getMessage());
+			log.severe(INVALID_PARAMETER + ACTIVATEAFTERPERIODPARAMETER + "; " + e.getMessage());
 		}
 
-		if(validity==0)
-			validity = DEFAULTVALIDITY;
-		
-		loginOk = false;
-		authenticationMode = null;
-	}
-
-	public static long parseDuration(String parameter, Map<String, ?> options) {
-		String durationString = options.get(parameter).toString();
-		String[] durationStringParts = durationString.split("[\\s]+", 2);
-
-		if (durationStringParts.length == 2 
-				&& durationStringParts[0] != null
-				&& !durationStringParts[0].trim().isEmpty()
-				&& durationStringParts[1] != null
-				&& !durationStringParts[1].trim().isEmpty()) {
-			int periodAmount = Integer.parseInt(durationStringParts[0].trim());
-			String prefix = durationStringParts[1].trim().substring(0, 1).toUpperCase();
-			Duration duration = Duration
-					.parse("P" + (prefix.equals("H") || prefix.equals("M") || prefix.equals("S") ? "T" : "")
-							+ periodAmount + prefix);
-
-			return duration.getSeconds();
-		}
-		return 0;
 	}
 
 	@Override
 	public boolean login() throws LoginException {
 		if (sharedState != null) {
-			log.fine("Using first pass....");
-			Object loginPrincipal = sharedState
-					.get("javax.security.auth.login.name");
-			username = (loginPrincipal instanceof Principal) ? ((Principal) loginPrincipal)
-					.getName() : null;
-				
-			Object loginOkObject = sharedState.get("com.quakearts.LoginOk");
-			if(loginOkObject != null )
-				loginOk = (Boolean) (loginOkObject);
-			
-			if(loginOk)
-				authenticationMode = AuthenticationMode.GENERATE;
+			loadAuthenticationState();
 		}
 
-		if (!loginOk) {
+		if(loginOk) {
+			authenticationMode = AuthenticationMode.GENERATE;
+		} else {
+			authenticationMode = AuthenticationMode.VERIFY;
 			try {
-				TokenCallback headerCallback = new TokenCallback();
-				PasswordCallback passwordCallback = new PasswordCallback("Enter your password", false);
-				callbackHandler.handle(new Callback[] { headerCallback, passwordCallback });
-
-				if (headerCallback.getTokenData() != null || passwordCallback.getPassword() != null) {
-					authenticationMode = AuthenticationMode.VERIFY;
-
-					byte[] token = headerCallback.getTokenData() != null ? headerCallback.getTokenData()
-							: new String(passwordCallback.getPassword()).getBytes();
-
-					try {
-						verifier = JWTFactory.getInstance().getVerifier(algorithm, options);
-						verifier.verify(token);
-					} catch (JWTException e) {
-						throw new LoginException(e.getMessage());
-					}
-
-					loginOk = true;
-					JWTClaims claims = verifier.getClaims();
-					
-					if(!issuer.equals(claims.getIssuer())){
-						loginOk = false;
-						return loginOk;
-					}
-					
-					if(!audience.equals(claims.getAudience())){
-						loginOk = false;
-						return loginOk;
-					}
-
-					long currentTimeInSeconds = System.currentTimeMillis() / 1000;
-					if (claims.getExpiry() > 0 && claims.getExpiry() < currentTimeInSeconds + gracePeriod) {
-						loginOk = false;
-						return loginOk;
-					}
-					
-					if (claims.getNotBefore() > 0 && claims.getNotBefore() > currentTimeInSeconds) {
-						loginOk = false;
-						return loginOk;
-					}
-					log.fine("Storing state....");
-					UserPrincipal shareduser = new UserPrincipal(claims.getSubject());
-					sharedState.put("javax.security.auth.login.name",
-							shareduser);
-					sharedState.put("com.quakearts.LoginOk", loginOk);
-				}
-			} catch (IOException | UnsupportedCallbackException e) {
+				verifyToken();
+			} catch (LoginOperationException e) {
+				loginOk = false;
+				log.log(Level.SEVERE, e.getMessage(), e);
 				return loginOk;
 			}
+			
 		}
 
 		return loginOk;
+	}
+
+	private void verifyToken() throws LoginException, LoginOperationException {
+		byte[] token;
+		try {
+			token = handleCallbacks();
+		} catch (IOException | UnsupportedCallbackException e) {
+			throw new LoginOperationException("Unable to process call backs");
+		}				
+		verify(token);
+		JWTClaims claims = validateToken();
+		performCompletionActions(claims);
+	}
+
+	private void loadAuthenticationState() {
+		Object loginPrincipal = sharedState.get("javax.security.auth.login.name");
+		username = (loginPrincipal instanceof Principal) ? ((Principal) loginPrincipal)
+				.getName() : null;
+			
+		Object loginOkObject = sharedState.get("com.quakearts.LoginOk");
+		if(loginOkObject != null ) 
+			loginOk = (Boolean) (loginOkObject);	
+	}
+
+	private byte[] handleCallbacks() throws IOException, 
+		UnsupportedCallbackException, LoginException {
+		TokenCallback headerCallback = new TokenCallback();
+		PasswordCallback passwordCallback = new PasswordCallback("Enter your password", false);
+		callbackHandler.handle(new Callback[] { headerCallback, passwordCallback });
+		if (headerCallback.getTokenData() == null  && passwordCallback.getPassword() == null) {
+			throw new LoginException("Credentials are missing");
+		}
+		return headerCallback.getTokenData() != null ? headerCallback.getTokenData()
+				: new String(passwordCallback.getPassword()).getBytes();
+	}
+
+	private void verify(byte[] token) throws LoginException {
+		try {
+			verifier = JWTFactory.getInstance().getVerifier(algorithm, options);
+			verifier.verify(token);
+		} catch (JWTException e) {
+			throw new LoginException(e.getMessage());
+		}
+	}
+
+	private JWTClaims validateToken() throws LoginException {
+		JWTClaims claims = verifier.getClaims();
+		
+		if(!issuer.equals(claims.getIssuer())){
+			throw new LoginException("Issuer is not recognized");
+		}
+		
+		if(!audience.equals(claims.getAudience())){
+			throw new LoginException("Audience is not recognized");
+		}
+
+		long currentTimeInSeconds = System.currentTimeMillis() / 1000;
+		if (claims.getExpiry() > 0 && claims.getExpiry() < currentTimeInSeconds + gracePeriod) {
+			throw new LoginException("Token has expired");
+		}
+
+		if(claims.getNotBefore() > 0 && claims.getNotBefore() > currentTimeInSeconds) {
+			throw new LoginException("Token is not active");
+		}
+		
+		return claims;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void performCompletionActions(JWTClaims claims) {
+		UserPrincipal shareduser = new UserPrincipal(claims.getSubject());
+		loginOk = true;
+		if(sharedState!=null) {
+			Map<String, Object> sharedStateObj = (Map<String, Object>) sharedState;
+			sharedStateObj.put("javax.security.auth.login.name", shareduser);
+			sharedStateObj.put("com.quakearts.LoginOk", loginOk);
+		}
 	}
 
 	@Override
@@ -237,104 +258,133 @@ public class JWTLoginModule implements LoginModule {
 			Set<Principal> principalset = subject.getPrincipals();
 
 			Group rolesgrp = null;
-			log.fine("Fetching already existing roles group...");
-			for (Iterator<?> i = principalset.iterator(); i.hasNext();) {
-				Object obj = i.next();
-				if (obj instanceof Group && ((Group) obj).getName().equals(rolesgrpname)) {
-					rolesgrp = (Group) obj;
-					log.fine("Found existing roles group: " + rolesgrp.getName());
-					break;
-				}
-			}
-
+			rolesgrp = findRolesGroup(principalset, rolesgrp);
 			if (rolesgrp == null) {
-				log.fine("Creating roles group...");
-				rolesgrp = new DirectoryRoles(rolesgrpname);
-				principalset.add(rolesgrp);
+				rolesgrp = createRolesGroup(principalset);
 			}
 
 			if (authenticationMode == AuthenticationMode.GENERATE) {
-				if(rolesgrp!=null) {
-					foundRoles = new ArrayList<>();
-					Principal principal;
-					Enumeration<? extends Principal> roles = ((Group)rolesgrp).members();
-					int count = 1;
-					while(roles.hasMoreElements()) {
-						principal = roles.nextElement();
-						
-						if(principal instanceof OtherPrincipal) {
-							OtherPrincipal otherPrincipal = (OtherPrincipal) principal;
-							foundRoles.add(new String[] {otherPrincipal.getAttribute(),otherPrincipal.getName()});
-						} else if(principal instanceof DirectoryPrincipal) {
-							DirectoryPrincipal directoryPrincipal = (DirectoryPrincipal) principal;
-							foundRoles.add(new String[] {directoryPrincipal.getAttribute(),directoryPrincipal.getName()});
-						} else {
-							foundRoles.add(new String[] {"role"+(count++), principal.getName()});							
-						}
-					}
-				}
-				
-				JWTPrincipal principal = new JWTPrincipal(generateJWTToken(username));
+				List<String[]> foundRoles = loadPrincipalsFromSubject(rolesgrp);
+				JWTPrincipal principal = new JWTPrincipal(generateJWTToken(foundRoles));
 				rolesgrp.addMember(principal);
 				principalset.add(principal);				
-			} else if (authenticationMode == AuthenticationMode.VERIFY) {
-				JWTClaims claims = verifier.getClaims();
-				for(JWTClaims.Claim claim:claims){
-					if(!JWTClaims.REGISTEREDNAMESLIST.contains(claim.getName().trim())){
-						OtherPrincipal principal = new OtherPrincipal(claim.getValue(), claim.getName());
-						rolesgrp.addMember(principal);
-						principalset.add(principal);
-					}
-					
-					if(claim.getName().equals(JWTClaims.SUB)){
-						UserPrincipal principal = new UserPrincipal(claim.getValue());
-						rolesgrp.addMember(principal);
-						principalset.add(principal);
-					}
-				}
+			} else {
+				loadPrincipalsFromToken(principalset, rolesgrp);
 			}
 		}
 		return loginOk;
 	}
 
-	public String generateJWTToken(String username) throws LoginException{
+	private Group findRolesGroup(Set<Principal> principalset, Group rolesgrp) {
+		for (Iterator<?> i = principalset.iterator(); i.hasNext();) {
+			Object obj = i.next();
+			if (obj instanceof Group && ((Group) obj).getName().equals(rolesgrpname)) {
+				rolesgrp = (Group) obj;
+				break;
+			}
+		}
+		return rolesgrp;
+	}
+
+	private Group createRolesGroup(Set<Principal> principalset) {
+		Group rolesgrp;
+		rolesgrp = new DirectoryRoles(rolesgrpname);
+		principalset.add(rolesgrp);
+		return rolesgrp;
+	}
+
+	private List<String[]> loadPrincipalsFromSubject(Group rolesgrp) {
+		List<String[]> foundRoles = new ArrayList<>();
+		Principal principal;
+		Enumeration<? extends Principal> roles = rolesgrp.members();
+		int count = 1;
+		while(roles.hasMoreElements()) {
+			principal = roles.nextElement();
+			
+			if(principal instanceof OtherPrincipal) {
+				OtherPrincipal otherPrincipal = (OtherPrincipal) principal;
+				foundRoles.add(new String[] {otherPrincipal.getAttribute(),otherPrincipal.getName()});
+			} else if(principal instanceof NamePrincipal) {
+				NamePrincipal namePrincipal = (NamePrincipal) principal;
+				foundRoles.add(new String[] {namePrincipal.getAttribute(),namePrincipal.getName()});		
+			} else if(principal instanceof EmailPrincipal) {
+				EmailPrincipal emailPrincipal = (EmailPrincipal) principal;
+				foundRoles.add(new String[] {emailPrincipal.getAttribute(),emailPrincipal.getName()});
+			} else {
+				foundRoles.add(new String[] {"role"+(count++), principal.getName()});							
+			}
+		}
+		return foundRoles;
+	}
+
+	private void loadPrincipalsFromToken(Set<Principal> principalset, Group rolesgrp) {
+		JWTClaims claims = verifier.getClaims();
+		for(JWTClaims.Claim claim:claims){
+			if(!REGISTEREDNAMESLIST.contains(claim.getName().trim())){
+				OtherPrincipal principal = new OtherPrincipal(claim.getValue(), claim.getName());
+				rolesgrp.addMember(principal);
+				principalset.add(principal);
+			}
+			
+			if(claim.getName().equals(SUB)){
+				UserPrincipal principal = new UserPrincipal(claim.getValue());
+				rolesgrp.addMember(principal);
+				principalset.add(principal);
+			}
+		}
+	}
+
+	public String generateJWTToken(List<String[]> foundRoles) throws LoginException{
+		JWTHeader header = JWTFactory.getInstance().createEmptyClaimsHeader();		
 		JWTClaims claims = JWTFactory.getInstance().createEmptyClaims();
+		setValidationAttributes(claims);		
+		populateClaims(claims, foundRoles);		
+		return signToken(claims, header);
+	}
+
+	private void setValidationAttributes(JWTClaims claims) {
 		claims.setAudience(audience);
 		claims.setIssuer(issuer);
-
-		if(validity > 0)
-			claims.setExpiry((claims.getIssuedAt())+validity);
+		claims.setExpiry((claims.getIssuedAt())+validity);
 		
 		if(activateAfter>0){
 			claims.setNotBefore(claims.getIssuedAt()+activateAfter);
 		}
-		
+	}
+
+	private void populateClaims(JWTClaims claims, List<String[]> foundRoles) {
 		if(username!=null)
 			claims.setSubject(username);
 		
-		if(additionalClaims != null 
-				&& !additionalClaims.trim().isEmpty()){
+		addAdditionalClaims(claims);	
+		addFoundRoles(claims, foundRoles);
+	}
+
+	private void addAdditionalClaims(JWTClaims claims) {
+		if(additionalClaims != null && !additionalClaims.trim().isEmpty()){
 			String[] additionalClaimsParts = additionalClaims.split(";");
 			for(String additionalClaimsPart:additionalClaimsParts){
-				String[] claimParts = additionalClaimsPart.split(":",2);
-				if(claimParts.length == 2
-						&& claimParts[0] != null
-						&& !claimParts[0].trim().isEmpty()
-						&& claimParts[1] != null
-						&& !claimParts[1].trim().isEmpty()) {
-					claims.addPrivateClaim(claimParts[0].toLowerCase(), claimParts[1]);
-				}
+				addAdditionalClaim(claims, additionalClaimsPart);
 			}
 		}
-		
-		if(foundRoles !=null) {
-			for(String[] role:foundRoles) {
-				claims.addPrivateClaim(role[0].toLowerCase(), role[1]);		
-			}
+	}
+
+	private void addAdditionalClaim(JWTClaims claims, String additionalClaimsPart) {
+		String[] claimParts = additionalClaimsPart.split(":",2);
+		if(claimParts.length == 2
+				&& !claimParts[0].trim().isEmpty()
+				&& !claimParts[1].trim().isEmpty()) {
+			claims.addPrivateClaim(claimParts[0].toLowerCase(), claimParts[1]);
 		}
-		
-		JWTHeader header = JWTFactory.getInstance().createEmptyClaimsHeader();
-		
+	}
+
+	private void addFoundRoles(JWTClaims claims, List<String[]> foundRoles) {
+		for(String[] role:foundRoles) {
+			claims.addPrivateClaim(role[0].toLowerCase(), role[1]);		
+		}
+	}
+	
+	private String signToken(JWTClaims claims, JWTHeader header) throws LoginException {
 		JWTSigner signer;
 		try {
 			signer = JWTFactory.getInstance().getSigner(algorithm, options);
@@ -346,12 +396,17 @@ public class JWTLoginModule implements LoginModule {
 	
 	@Override
 	public boolean abort() throws LoginException {
-		return loginOk;
+		loginOk = false;
+		sharedState = null;
+		subject = null;
+		callbackHandler = null;
+		authenticationMode = null;
+		return true;
 	}
 
 	@Override
 	public boolean logout() throws LoginException {
-		return loginOk;
+		return abort();
 	}
 
 }

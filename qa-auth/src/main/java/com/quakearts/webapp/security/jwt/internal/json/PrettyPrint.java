@@ -135,10 +135,7 @@ public class PrettyPrint extends WriterConfig {
 
     @Override
     protected void writeObjectSeparator() throws IOException {
-      writer.write(',');
-      if (!writeNewLine()) {
-        writer.write(' ');
-      }
+    	writeArraySeparator();
     }
 
     private boolean writeNewLine() throws IOException {

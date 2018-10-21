@@ -10,16 +10,16 @@
  ******************************************************************************/
 package com.quakearts.webapp.security.jwt.impl;
 
-import java.util.Date;
 import java.util.Iterator;
 
 import com.quakearts.webapp.security.jwt.JWTClaims;
 import com.quakearts.webapp.security.jwt.internal.json.JsonObject.Member;
+import static com.quakearts.webapp.security.jwt.RegisteredNames.*;
 
 public class JWTClaimsImpl extends JWTJsonObjectBase implements JWTClaims {
 
 	public JWTClaimsImpl() {
-		jsonObject.set(IAT, new Date().getTime() / 1000);
+		jsonObject.set(IAT, System.currentTimeMillis() / 1000);
 	}
 
 	@Override
@@ -33,10 +33,10 @@ public class JWTClaimsImpl extends JWTJsonObjectBase implements JWTClaims {
 		try {
 			if (jsonObject.get(SUB) != null)
 				return jsonObject.get(SUB).asString();
+			return null;
 		} catch (UnsupportedOperationException e) {
-		}
-	
-		return null;
+			return null;
+		}	
 	}
 
 	@Override
@@ -50,10 +50,10 @@ public class JWTClaimsImpl extends JWTJsonObjectBase implements JWTClaims {
 		try {
 			if (jsonObject.get(ISS) != null)
 				return jsonObject.get(ISS).asString();
+			return null;
 		} catch (UnsupportedOperationException e) {
-		}
-	
-		return null;
+			return null;
+		}	
 	}
 
 	@Override
@@ -67,15 +67,15 @@ public class JWTClaimsImpl extends JWTJsonObjectBase implements JWTClaims {
 		try {
 			if (jsonObject.get(AUD) != null)
 				return jsonObject.get(AUD).asString();
+			return null;
 		} catch (UnsupportedOperationException e) {
-		}
-	
-		return null;
+			return null;
+		}	
 	}
 
 	@Override
 	public JWTClaims setExpiry(long time) {
-		jsonObject.add(EXP, time);
+		jsonObject.set(EXP, time);
 		return this;
 	}
 
@@ -84,16 +84,15 @@ public class JWTClaimsImpl extends JWTJsonObjectBase implements JWTClaims {
 		try {
 			if (jsonObject.get(EXP) != null)
 				return jsonObject.get(EXP).asLong();
-			
+			return 0;
 		} catch (UnsupportedOperationException e) {
-		}
-	
-		return 0;
+			return 0;
+		}	
 	}
 
 	@Override
 	public JWTClaims setNotBefore(long time) {
-		jsonObject.add(NBF, time);
+		jsonObject.set(NBF, time);
 		return this;
 	}
 
@@ -102,10 +101,10 @@ public class JWTClaimsImpl extends JWTJsonObjectBase implements JWTClaims {
 		try {
 			if (jsonObject.get(NBF) != null)
 				return jsonObject.get(NBF).asLong();
+			return 0;
 		} catch (UnsupportedOperationException e) {
-		}
-	
-		return 0;
+			return 0;
+		}	
 	}
 
 	@Override
@@ -113,15 +112,15 @@ public class JWTClaimsImpl extends JWTJsonObjectBase implements JWTClaims {
 		try {
 			if (jsonObject.get(IAT) != null)
 				return jsonObject.get(IAT).asLong();
+			return 0;
 		} catch (UnsupportedOperationException e) {
-		}
-	
-		return 0;
+			return 0;
+		}	
 	}
 
 	@Override
 	public JWTClaims setIssuedAt(long time) {
-		jsonObject.add(IAT, time);
+		jsonObject.set(IAT, time);
 		return this;
 	}
 	
@@ -144,8 +143,8 @@ public class JWTClaimsImpl extends JWTJsonObjectBase implements JWTClaims {
 		try {
 			return jsonObject.get(name).asString();
 		} catch (UnsupportedOperationException e) {
+			return null;
 		}
-		return null;
 	}
 
 	@Override
@@ -169,7 +168,7 @@ class ClaimsIterator implements Iterator<JWTClaims.Claim> {
 
 	@Override
 	public JWTClaims.Claim next() {
-		Member next = wrappedIterator.next();;
+		Member next = wrappedIterator.next();
 		try {
 			return new JWTClaims.Claim(next.getName(), next.getValue().asString());
 		} catch (UnsupportedOperationException e) {

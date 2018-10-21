@@ -10,12 +10,21 @@
  ******************************************************************************/
 package com.quakearts.webapp.security.auth;
 
-public class GradePrincipal extends DirectoryPrincipal{
-    public GradePrincipal(String value) {
-        super(value);
-    }
+public class LoginOperationException extends Exception {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8025568717701561834L;
 
-    public String getAttribute() {
-        return "employeetype";
+	public LoginOperationException() {
+        super();
+    }
+    
+    public LoginOperationException(String ex) {
+        super(ex);
+    }
+    
+    public LoginOperationException(String ex, Throwable thr) {
+        super(ex, thr);
     }
 }

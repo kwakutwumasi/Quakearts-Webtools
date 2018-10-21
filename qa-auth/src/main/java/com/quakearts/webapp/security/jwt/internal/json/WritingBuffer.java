@@ -37,10 +37,6 @@ class WritingBuffer extends Writer {
   private final char[] buffer;
   private int fill = 0;
 
-  WritingBuffer(Writer writer) {
-    this(writer, 16);
-  }
-
   WritingBuffer(Writer writer, int bufferSize) {
     this.writer = writer;
     buffer = new char[bufferSize];
@@ -94,6 +90,7 @@ class WritingBuffer extends Writer {
    */
   @Override
   public void close() throws IOException {
+	  //Empty
   }
 
 }

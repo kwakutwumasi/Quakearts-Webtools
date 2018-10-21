@@ -52,7 +52,9 @@ import java.io.Reader;
  */
 public final class Json {
 
-  private Json() {
+  private static final String VALUES_IS_NULL = "values is null";
+
+private Json() {
     // not meant to be instantiated
   }
 
@@ -163,7 +165,7 @@ public final class Json {
    */
   public static JsonArray array(int... values) {
     if (values == null) {
-      throw new NullPointerException("values is null");
+      throw new NullPointerException(VALUES_IS_NULL);
     }
     JsonArray array = new JsonArray();
     for (int value : values) {
@@ -182,7 +184,7 @@ public final class Json {
    */
   public static JsonArray array(long... values) {
     if (values == null) {
-      throw new NullPointerException("values is null");
+      throw new NullPointerException(VALUES_IS_NULL);
     }
     JsonArray array = new JsonArray();
     for (long value : values) {
@@ -201,7 +203,7 @@ public final class Json {
    */
   public static JsonArray array(float... values) {
     if (values == null) {
-      throw new NullPointerException("values is null");
+      throw new NullPointerException(VALUES_IS_NULL);
     }
     JsonArray array = new JsonArray();
     for (float value : values) {
@@ -220,7 +222,7 @@ public final class Json {
    */
   public static JsonArray array(double... values) {
     if (values == null) {
-      throw new NullPointerException("values is null");
+      throw new NullPointerException(VALUES_IS_NULL);
     }
     JsonArray array = new JsonArray();
     for (double value : values) {
@@ -239,7 +241,7 @@ public final class Json {
    */
   public static JsonArray array(boolean... values) {
     if (values == null) {
-      throw new NullPointerException("values is null");
+      throw new NullPointerException(VALUES_IS_NULL);
     }
     JsonArray array = new JsonArray();
     for (boolean value : values) {
@@ -257,7 +259,7 @@ public final class Json {
    */
   public static JsonArray array(String... strings) {
     if (strings == null) {
-      throw new NullPointerException("values is null");
+      throw new NullPointerException(VALUES_IS_NULL);
     }
     JsonArray array = new JsonArray();
     for (String value : strings) {

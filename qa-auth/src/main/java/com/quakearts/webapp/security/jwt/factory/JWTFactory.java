@@ -23,8 +23,11 @@ import com.quakearts.webapp.security.jwt.impl.HSSigner;
 import com.quakearts.webapp.security.jwt.impl.JWTClaimsImpl;
 import com.quakearts.webapp.security.jwt.impl.JWTHeaderImpl;
 import com.quakearts.webapp.security.jwt.impl.RSSigner;
+import static com.quakearts.webapp.security.jwt.RegisteredNames.*;
 
 public class JWTFactory {
+	private static final String INVALID_ALGORITHM = "Invalid algorithm: ";
+
 	private JWTFactory() {
 	}
 	
@@ -36,26 +39,20 @@ public class JWTFactory {
 	
 	public JWTSigner getSigner(String algorithm, Map<String, ?> options) throws JWTException{
 		JWTBase signerObject = createFromParameters(algorithm, options);
-		if(signerObject instanceof JWTSigner)
-			return (JWTSigner) signerObject;
-		else
-			throw new JWTException("Unable to obtain JWTSigner. Factory did not produce a valid "+JWTSigner.class.getName());
+		return (JWTSigner) signerObject;
 	}
 	
 	public JWTVerifier getVerifier(String algorithm, Map<String, ?> options) throws JWTException{
 		Object verifierObject = createFromParameters(algorithm, options);
-		if(verifierObject instanceof JWTVerifier)
-			return (JWTVerifier) verifierObject;
-		else
-			throw new JWTException("Unable to obtain JWTSigner. Factory did not produce a valid "+JWTSigner.class.getName());
+		return (JWTVerifier) verifierObject;
 	}
 	
 	private JWTBase createFromParameters(String algorithm, Map<String, ?> options) throws JWTException {
-		if(algorithm == null || algorithm.length()<2)
-			throw new JWTException("Invalid algorithm: "+algorithm);
+		if(algorithm == null || algorithm.trim().length()<2)
+			throw new JWTException(INVALID_ALGORITHM+algorithm);
 		
 		if(options == null)
-			throw new JWTException("Invalid algorithm: "+algorithm);			
+			throw new JWTException(INVALID_ALGORITHM+algorithm);			
 		
 		JWTBase signer = null;
 		
@@ -71,14 +68,13 @@ public class JWTFactory {
 			signer = new ESSigner();
 			break;
 		default:
-			throw new JWTException("Invalid algorithm: "+algorithm);
+			throw new JWTException(INVALID_ALGORITHM+algorithm);
 		}
 		
 		try {
 			signer.setAlgorithim(algorithm);
 			for(Entry<String, ?> entry:options.entrySet()){
-				if(entry.getValue()!=null)
-					signer.setParameter(entry.getKey(), entry.getValue());
+				signer.setParameter(entry.getKey(), entry.getValue());
 			}
 			
 			return signer;			
@@ -100,34 +96,33 @@ public class JWTFactory {
 		return claims;
 	}
 
-	public JWTClaims createJWTClaimsFromMap(Map<String, String> map) throws JWTException{
+	public JWTClaims createJWTClaimsFromMap(Map<String, ?> map) throws JWTException{
 		JWTClaims claims = new JWTClaimsImpl();
 		
-		for(Entry<String, String> entry:map.entrySet()){
-			if(entry.getKey().equals(JWTClaims.SUB))
-				claims.setSubject(entry.getValue());
-			else if(entry.getKey().equals(JWTClaims.AUD))
-				claims.setAudience(entry.getValue());
-			else if(entry.getKey().equals(JWTClaims.EXP))
-				try {
-					claims.setExpiry(Long.parseLong(entry.getValue()));
-				} catch (NumberFormatException e) {
-					throw new JWTException("Claim '"+JWTClaims.EXP+"' must be a valid integer");
-				}
-			else if(entry.getKey().equals(JWTClaims.IAT))
-				try {
-					claims.setIssuedAt(Long.parseLong(entry.getValue()));
-				} catch (NumberFormatException e) {
-					throw new JWTException("Claim '"+JWTClaims.IAT+"' must be a valid integer");
-				}
-			else if(entry.getKey().equals(JWTClaims.ISS))
-				claims.setIssuer(entry.getValue());
-			else if(entry.getKey().equals(JWTClaims.NBF))
-				try {
-					claims.setNotBefore(Long.parseLong(entry.getValue()));
-				} catch (NumberFormatException e) {
-					throw new JWTException("Claim '"+JWTClaims.NBF+"' must be a valid integer");
-				}
+		for(Entry<String, ?> entry:map.entrySet()){
+			switch(entry.getKey()) {
+			case SUB:
+				claims.setSubject(entry.getValue().toString());
+				break;
+			case AUD:
+				claims.setAudience(entry.getValue().toString());
+				break;
+			case EXP:
+				claims.setExpiry((Long)entry.getValue());
+			break;
+			case IAT:
+				claims.setIssuedAt((Long)entry.getValue());
+			break;
+			case ISS:
+				claims.setIssuer(entry.getValue().toString());
+			break;
+			case NBF:
+				claims.setNotBefore((Long)entry.getValue());
+			break;
+			default:
+				claims.addPrivateClaim(entry.getKey(), entry.getValue().toString());
+				break;
+			}
 		}
 		
 		return claims;

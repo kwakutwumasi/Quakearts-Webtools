@@ -19,7 +19,7 @@ import com.quakearts.webapp.security.jwt.signature.SignatureBase;
 public abstract class KeyStoreSignerBase extends SignerBase {
 
 	public static final String STORE_TYPEPARAMETER = "storeType";
-	public static final String PASSWORDPARAMETER = "password";
+	public static final String STORECREDENTIALSPARAMETER = "password";
 	public static final String FILEPARAMETER = "file";
 	public static final String ALIASPARAMETER = "alias";
 	protected SignatureBase signature;
@@ -36,7 +36,7 @@ public abstract class KeyStoreSignerBase extends SignerBase {
 		case FILEPARAMETER:
 			file = parameter.toString();
 			break;
-		case PASSWORDPARAMETER:
+		case STORECREDENTIALSPARAMETER:
 			password = parameter.toString().toCharArray();
 			break;
 		case STORE_TYPEPARAMETER:
@@ -58,9 +58,12 @@ public abstract class KeyStoreSignerBase extends SignerBase {
 		return getSignature().sign(prepare.getBytes());
 	}
 
-	private SignatureBase getSignature() throws SignatureException {
+	private SignatureBase getSignature() throws SignatureException {	
 		if(signature == null){
-			if(alias == null || file == null || password == null || storeType == null)
+			if(alias == null 
+					|| file == null 
+					|| password == null 
+					|| storeType == null)
 				throw new SignatureException("Incomplete setup. Missing: "+getNullParameter());
 			
 			signature = createSignatureInstance();

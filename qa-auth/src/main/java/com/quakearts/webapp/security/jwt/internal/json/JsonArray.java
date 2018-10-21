@@ -22,7 +22,6 @@
 package com.quakearts.webapp.security.jwt.internal.json;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -68,87 +67,8 @@ public class JsonArray extends JsonValue implements Iterable<JsonValue> {
    * Creates a new empty JsonArray.
    */
   public JsonArray() {
-    values = new ArrayList<JsonValue>();
+    values = new ArrayList<>();
   }
-
-  /**
-   * Creates a new JsonArray with the contents of the specified JSON array.
-   *
-   * @param array
-   *          the JsonArray to get the initial contents from, must not be <code>null</code>
-   */
-  public JsonArray(JsonArray array) {
-    this(array, false);
-  }
-
-  private JsonArray(JsonArray array, boolean unmodifiable) {
-    if (array == null) {
-      throw new NullPointerException("array is null");
-    }
-    if (unmodifiable) {
-      values = Collections.unmodifiableList(array.values);
-    } else {
-      values = new ArrayList<JsonValue>(array.values);
-    }
-  }
-
-  /**
-   * Reads a JSON array from the given reader.
-   * <p>
-   * Characters are read in chunks and buffered internally, therefore wrapping an existing reader in
-   * an additional <code>BufferedReader</code> does <strong>not</strong> improve reading
-   * performance.
-   * </p>
-   *
-   * @param reader
-   *          the reader to read the JSON array from
-   * @return the JSON array that has been read
-   * @throws IOException
-   *           if an I/O error occurs in the reader
-   * @throws ParseException
-   *           if the input is not valid JSON
-   * @throws UnsupportedOperationException
-   *           if the input does not contain a JSON array
-   * @deprecated Use {@link Json#parse(Reader)}{@link JsonValue#asArray() .asArray()} instead
-   */
-  @Deprecated
-  public static JsonArray readFrom(Reader reader) throws IOException {
-    return JsonValue.readFrom(reader).asArray();
-  }
-
-  /**
-   * Reads a JSON array from the given string.
-   *
-   * @param string
-   *          the string that contains the JSON array
-   * @return the JSON array that has been read
-   * @throws ParseException
-   *           if the input is not valid JSON
-   * @throws UnsupportedOperationException
-   *           if the input does not contain a JSON array
-   * @deprecated Use {@link Json#parse(String)}{@link JsonValue#asArray() .asArray()} instead
-   */
-  @Deprecated
-  public static JsonArray readFrom(String string) {
-    return JsonValue.readFrom(string).asArray();
-  }
-
-  /**
-   * Returns an unmodifiable wrapper for the specified JsonArray. This method allows to provide
-   * read-only access to a JsonArray.
-   * <p>
-   * The returned JsonArray is backed by the given array and reflects subsequent changes. Attempts
-   * to modify the returned JsonArray result in an <code>UnsupportedOperationException</code>.
-   * </p>
-   *
-   * @param array
-   *          the JsonArray for which an unmodifiable JsonArray is to be returned
-   * @return an unmodifiable view of the specified JsonArray
-   */
-  public static JsonArray unmodifiableArray(JsonArray array) {
-    return new JsonArray(array, true);
-  }
-
   /**
    * Appends the JSON representation of the specified <code>int</code> value to the end of this
    * array.
@@ -437,14 +357,17 @@ public class JsonArray extends JsonValue implements Iterable<JsonValue> {
     final Iterator<JsonValue> iterator = values.iterator();
     return new Iterator<JsonValue>() {
 
+      @Override
       public boolean hasNext() {
         return iterator.hasNext();
       }
 
+      @Override
       public JsonValue next() {
         return iterator.next();
       }
 
+      @Override
       public void remove() {
         throw new UnsupportedOperationException();
       }

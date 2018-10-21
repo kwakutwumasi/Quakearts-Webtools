@@ -32,26 +32,14 @@ public abstract class KeystoreKeyPairProvider {
 	private String storeType;
 	private char[] password;
 
-	public String getFile() {
-		return file;
-	}
-
 	public KeystoreKeyPairProvider setFile(String file) {
 		this.file = file;
 		return this;
 	}
 
-	public String getStoreType() {
-		return storeType;
-	}
-
 	public KeystoreKeyPairProvider setStoreType(String storeType) {
 		this.storeType = storeType;
 		return this;
-	}
-
-	public char[] getPassword() {
-		return password;
 	}
 
 	public KeystoreKeyPairProvider setPassword(char[] password) {
@@ -81,8 +69,7 @@ public abstract class KeystoreKeyPairProvider {
 
 			Entry entry = keyStore.getEntry(alias, new KeyStore.PasswordProtection(password));
 			if (entry instanceof PrivateKeyEntry) {
-				PrivateKeyEntry privateKeyEntry = (PrivateKeyEntry) entry;
-				return privateKeyEntry;
+				return (PrivateKeyEntry) entry;
 			} else {
 				throw new InvalidKeyException(
 						"Alias " + alias + " in file " + file + " is not a valid PrivateKeyEntry");

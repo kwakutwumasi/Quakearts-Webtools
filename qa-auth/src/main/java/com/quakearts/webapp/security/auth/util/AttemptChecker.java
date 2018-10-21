@@ -14,25 +14,34 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AttemptChecker {
-	private static final Map<String,AttemptChecker> checkers = new ConcurrentHashMap<String,AttemptChecker>();
-	private Map<String, CacheRecord> cache = new ConcurrentHashMap<String, CacheRecord>();
+	private static final Map<String,AttemptChecker> checkers = new ConcurrentHashMap<>();
+	private Map<String, CacheRecord> cache = new ConcurrentHashMap<>();
 	private int maxAttempts = 4;
 	private int lockoutTime = 3600000;
 	
 	private class CacheRecord{
 		int attempts = 1;
-		long createtime = new Date().getTime();
+		long createtime = System.currentTimeMillis();
 	}
 
-	private class CleanerDeamon extends TimerTask{
+	private class CleanerDeamon extends TimerTask {
+		final long currentTime = System.currentTimeMillis();
 		@Override
 		public void run() {
-			cache.clear();
+			Set<Entry<String, CacheRecord>> entries = cache.entrySet();
+			entries.forEach(entry->{
+				long lifeTime = currentTime - entry.getValue().createtime;
+				if(lifeTime>lockoutTime) {
+					entries.remove(entry);
+				}
+			});
 		}
 	}
 	
@@ -41,8 +50,9 @@ public class AttemptChecker {
 			AttemptChecker checker = new AttemptChecker();
 			checkers.put(authgrp, checker);
 			return checker;
-		}else
+		} else {
 			return checkers.get(authgrp);
+		}
 	}
 	
 	public static void createChecker(String authgrp,int maxAttempts,int lockoutTime){
@@ -64,7 +74,8 @@ public class AttemptChecker {
 		cal.set(Calendar.SECOND, 0);
 		cal.set(Calendar.MILLISECOND, 0);
 			
-		new Timer().schedule(new CleanerDeamon(), cal.getTime(), 86400000);
+		String timerInterval = System.getProperty("com.quakearts.attemptschecker.clearinterval", "86400000");
+		new Timer().schedule(new CleanerDeamon(), cal.getTime(), Long.parseLong(timerInterval));
 	}
 		
 	public int getMaxAttempts() {
@@ -81,16 +92,17 @@ public class AttemptChecker {
 			rec = new CacheRecord();
 			cache.put(username, rec);
 			return false;
-		}else{
+		} else {
 			if(rec.attempts > maxAttempts){
-				long now = new Date().getTime();
+				long now = System.currentTimeMillis();
 				if(now - rec.createtime > lockoutTime){
 					rec.attempts=1;
 					rec.createtime=now;
 					return false;
-				}else
+				} else {
 					return true;
-			}else{
+				}
+			} else{
 				return false;
 			}
 		}
@@ -111,7 +123,7 @@ public class AttemptChecker {
 		CacheRecord rec = cache.get(username);
 		if(rec != null){
 			rec.attempts = 0;
-			rec.createtime = new Date().getTime();;
+			rec.createtime = new Date().getTime();
 		}		
 	}
 	

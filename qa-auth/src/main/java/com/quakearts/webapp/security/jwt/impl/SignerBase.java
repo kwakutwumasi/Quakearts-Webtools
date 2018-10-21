@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.quakearts.webapp.security.jwt.impl;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -34,17 +33,13 @@ public abstract class SignerBase implements JWTSigner, JWTVerifier {
 	public String sign(JWTHeader header, JWTClaims claims) throws JWTException {
 		byte[] signed;
 		setHeaderAlgorithm(header);
-		String payload = prepare(header, claims);
+		String payloadString = prepare(header, claims);
 		try {
-			signed = doSigning(payload);
+			signed = doSigning(payloadString);
 		} catch (InvalidKeyException | NoSuchAlgorithmException | SignatureException e) {
 			throw new JWTException("Unable to sign: "+e.getMessage());
 		}
-		try {
-			return payload + "." + UtilityMethods.base64EncodeWithoutPadding(signed);
-		} catch (IOException e) {
-			throw new JWTException("Unable to encode: "+e.getMessage());
-		}
+		return payloadString + "." + UtilityMethods.base64EncodeWithoutPadding(signed);
 	}
 
 	protected abstract void setHeaderAlgorithm(JWTHeader header);
@@ -61,11 +56,7 @@ public abstract class SignerBase implements JWTSigner, JWTVerifier {
 		split(token);
 
 		byte[] signatureDecoded;
-		try {
-			signatureDecoded = UtilityMethods.base64DecodeMissingPaddingToBytes(new String(signature));
-		} catch (IOException e) {
-			throw new JWTException("Unable to decode signature: "+e.getMessage());
-		}
+		signatureDecoded = UtilityMethods.base64DecodeMissingPaddingToBytes(new String(signature));
 
 		try {
 			doVerification(payload, signatureDecoded);

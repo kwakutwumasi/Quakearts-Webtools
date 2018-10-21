@@ -10,17 +10,11 @@
  ******************************************************************************/
 package com.quakearts.webapp.security.util;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLDecoder;
+import java.time.Duration;
+import java.util.Base64;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
-import com.quakearts.webapp.security.jwt.internal.Base64;
 
 public class UtilityMethods {
 
@@ -36,41 +30,23 @@ public class UtilityMethods {
 		}
     }
 	
-	private UtilityMethods() {
-	}
+	private UtilityMethods() {}
 	
-	public static InputStream getResource(String name){
-		return Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
-	}
-	
-	public static OutputStream getOutputstream(String name) throws Exception{
-		OutputStream out = null;
-		URL url = Thread.currentThread().getContextClassLoader().getResource(name);
-		if(url!=null){
-			out = new FileOutputStream(URLDecoder.decode(url.getFile(),"UTF-8"));
-		}
-		return out;
-	}
-
-	public static URL getRootDir() throws Exception{
-		return Thread.currentThread().getContextClassLoader().getResource(".");
-	}
-
 	public static InitialContext getInitialContext() {
 		return icx;
 	}
 	
-	public static String base64EncodeWithoutPadding(byte[] toEncode) throws IOException{
-		String encoded = Base64.encodeBytes(toEncode, Base64.URL_SAFE);
+	public static String base64EncodeWithoutPadding(byte[] toEncode){
+		String encoded = Base64.getUrlEncoder().encodeToString(toEncode);
 		if(encoded.endsWith("=")){
-			return encoded.substring(0, encoded.indexOf("="));
+			return encoded.substring(0, encoded.indexOf('='));
 		}
 		
 		return encoded;
 	}
 	
-	public static String base64DecodeMissingPadding(String toDecode) throws IOException{
-		return Base64.decode(pad(toDecode), Base64.URL_SAFE);
+	public static String base64DecodeMissingPadding(String toDecode){
+		return new String(base64DecodeMissingPaddingToBytes(toDecode));
 	}
 
 	private static String pad(String toDecode){
@@ -90,8 +66,26 @@ public class UtilityMethods {
 		return toDecode;
 	}
 	
-	public static byte[] base64DecodeMissingPaddingToBytes(String toDecode) throws IOException{
-		return Base64.decodeToBytes(pad(toDecode), Base64.URL_SAFE);
+	public static byte[] base64DecodeMissingPaddingToBytes(String toDecode){
+		return Base64.getUrlDecoder().decode(pad(toDecode));
 	}
+	
+	public static long parseDuration(String durationString) {
+		String[] durationStringParts = durationString.split("[\\s]+", 2);
+
+		if (durationStringParts.length == 2 
+				&& !durationStringParts[0].trim().isEmpty()
+				&& !durationStringParts[1].trim().isEmpty()) {
+			int periodAmount = Integer.parseInt(durationStringParts[0].trim());
+			String prefix = durationStringParts[1].trim().substring(0, 1).toUpperCase();
+			Duration duration = Duration
+					.parse("P" + (prefix.equals("H") || prefix.equals("M") || prefix.equals("S") ? "T" : "")
+							+ periodAmount + prefix);
+
+			return duration.getSeconds();
+		}
+		return 0;
+	}
+
 }
 

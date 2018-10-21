@@ -16,6 +16,6 @@ public class UserPrincipal extends DirectoryPrincipal{
     }
 
     public String getAttribute() {
-        return "sAMAccountName";
+        return "username";
     }
 }

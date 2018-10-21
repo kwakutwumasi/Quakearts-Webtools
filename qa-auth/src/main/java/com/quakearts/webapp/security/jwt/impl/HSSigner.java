@@ -45,7 +45,7 @@ public class HSSigner extends SignerBase {
 
 	@Override
 	public HSSigner setAlgorithim(String algorithm) {
-		algorithmType = HSAlgorithmType.valueOf(algorithm.toString());
+		algorithmType = HSAlgorithmType.valueOf(algorithm);
 		return this;
 	}
 	

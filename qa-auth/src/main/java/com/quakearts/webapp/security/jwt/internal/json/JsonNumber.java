@@ -30,9 +30,6 @@ class JsonNumber extends JsonValue {
   private final String string;
 
   JsonNumber(String string) {
-    if (string == null) {
-      throw new NullPointerException("string is null");
-    }
     this.string = string;
   }
 
