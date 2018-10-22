@@ -11,7 +11,8 @@
 package com.quakearts.webapp.security.jwt.keyprovider.impl;
 
 import java.security.InvalidKeyException;
-import java.security.KeyStore.PrivateKeyEntry;
+import java.security.KeyStore.Entry;
+import java.security.PublicKey;
 import java.security.interfaces.ECPublicKey;
 
 import com.quakearts.webapp.security.jwt.keyprovider.KeystoreKeyPairProvider;
@@ -20,7 +21,7 @@ public class ECKeystoreKeyPairProvider extends KeystoreKeyPairProvider {
 
 	private static final String ECALGORITHM = "EC";
 	private ECDSAKeySize keySize = ECDSAKeySize.ES256KEY;
-	public static enum ECDSAKeySize {
+	public enum ECDSAKeySize {
 		ES256KEY(256),
 		ES384KEY(384),
 		ES512KEY(521);
@@ -31,20 +32,18 @@ public class ECKeystoreKeyPairProvider extends KeystoreKeyPairProvider {
 			this.keySize = keySize;
 		}
 	}
-	
-	public ECKeystoreKeyPairProvider() {
-	}
-	
+		
 	public ECKeystoreKeyPairProvider(ECDSAKeySize keySize) {
 		this.keySize = keySize;
 	}
 
 	@Override
-	protected void validateKeyType(PrivateKeyEntry privateKeyEntry) throws InvalidKeyException {
-		validatePrivateKeyEntry(ECALGORITHM, privateKeyEntry);
+	protected void validateKeyType(Entry entry) throws InvalidKeyException {
+		validatePrivateKeyEntry(ECALGORITHM, entry);
 		
-		if(!(privateKeyEntry.getCertificate().getPublicKey() instanceof ECPublicKey)
-				|| ((ECPublicKey)privateKeyEntry.getCertificate().getPublicKey()).getParams().getOrder().bitLength() != keySize.keySize){
+		PublicKey publicKey = getPublicKey(entry);
+		if(!(publicKey instanceof ECPublicKey)
+				|| ((ECPublicKey)publicKey).getParams().getOrder().bitLength() != keySize.keySize){
 			throw new InvalidKeyException("Key is not a valid EC key of key size "+keySize.keySize);
 		}
 	}

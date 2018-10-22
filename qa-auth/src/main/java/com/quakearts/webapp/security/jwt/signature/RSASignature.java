@@ -26,7 +26,7 @@ public class RSASignature extends SignatureBase {
 	private String alias;
 	private RSAAlgorithmType algorithmType;
 	
-	public static enum RSAAlgorithmType {
+	public enum RSAAlgorithmType {
 		RS256("SHA256withRSA"),
 		RS384("SHA384withRSA"),
 		RS512("SHA512withRSA");
@@ -42,11 +42,13 @@ public class RSASignature extends SignatureBase {
 		}
 	}
 	
-	public RSASignature(RSAAlgorithmType algorithmType, String alias, String file, char[] password, String storeType) {
+	public RSASignature(RSAAlgorithmType algorithmType, String alias, String file, 
+			char[] password, String storeType, String keyType) {
 		keyProvider = new RSAKeystoreKeyPairProvider();
-		keyProvider.setFile(file);
-		keyProvider.setPassword(password);
-		keyProvider.setStoreType(storeType);
+		keyProvider.setFile(file)
+			.setPassword(password)
+			.setStoreType(storeType)
+			.setKeyType(keyType);
 		this.alias = alias;
 		this.algorithmType = algorithmType;
 	}

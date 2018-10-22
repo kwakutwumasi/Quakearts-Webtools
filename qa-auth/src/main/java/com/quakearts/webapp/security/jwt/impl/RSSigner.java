@@ -32,7 +32,7 @@ public class RSSigner extends KeyStoreSignerBase {
 
 	@Override
 	protected SignatureBase createSignatureInstance() {
-		return new RSASignature(algorithmType, alias, file, password, storeType);
+		return new RSASignature(algorithmType, alias, file, password, storeType, keyType);
 	}
 
 	@Override

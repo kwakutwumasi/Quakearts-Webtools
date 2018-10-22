@@ -28,7 +28,7 @@ public class ESSignature extends SignatureBase {
 	private String alias;
 	private ESAlgorithmType algorithmType;
 	
-	public static enum ESAlgorithmType {
+	public enum ESAlgorithmType {
 		ES256("SHA256withECDSA", ECDSAKeySize.ES256KEY),
 		ES384("SHA384withECDSA", ECDSAKeySize.ES384KEY),
 		ES512("SHA512withECDSA", ECDSAKeySize.ES512KEY);
@@ -50,11 +50,13 @@ public class ESSignature extends SignatureBase {
 		}
 	}
 	
-	public ESSignature(ESAlgorithmType algorithmType, String alias, String file, char[] password, String storeType) {
+	public ESSignature(ESAlgorithmType algorithmType, String alias, String file, 
+			char[] password, String storeType, String keyType) {
 		keyProvider = new ECKeystoreKeyPairProvider(algorithmType.getKeySize());
-		keyProvider.setFile(file);
-		keyProvider.setPassword(password);
-		keyProvider.setStoreType(storeType);
+		keyProvider.setFile(file)
+			.setPassword(password)
+			.setStoreType(storeType)
+			.setKeyType(keyType);
 		this.algorithmType = algorithmType;
 		this.alias = alias;
 	}

@@ -22,11 +22,13 @@ public abstract class KeyStoreSignerBase extends SignerBase {
 	public static final String STORECREDENTIALSPARAMETER = "password";
 	public static final String FILEPARAMETER = "file";
 	public static final String ALIASPARAMETER = "alias";
+	public static final String KEYTYPEPARAMETER = "keyType";
 	protected SignatureBase signature;
 	protected String alias;
 	protected String file;
 	protected char[] password;
 	protected String storeType;
+	protected String keyType;
 
 	protected void doSetParameter(String name, Object parameter) {
 		switch (name) {
@@ -41,6 +43,9 @@ public abstract class KeyStoreSignerBase extends SignerBase {
 			break;
 		case STORE_TYPEPARAMETER:
 			storeType = parameter.toString();
+			break;
+		case KEYTYPEPARAMETER:
+			keyType = parameter.toString();
 			break;
 		default:
 		}

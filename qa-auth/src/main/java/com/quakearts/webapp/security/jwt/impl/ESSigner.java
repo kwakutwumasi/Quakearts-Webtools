@@ -33,7 +33,7 @@ public class ESSigner extends KeyStoreSignerBase {
 
 	@Override
 	protected SignatureBase createSignatureInstance() {
-		return new ESSignature(algorithmType, alias, file, password, storeType);
+		return new ESSignature(algorithmType, alias, file, password, storeType, keyType);
 	}
 
 	@Override
