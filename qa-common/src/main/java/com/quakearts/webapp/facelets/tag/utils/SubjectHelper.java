@@ -24,19 +24,16 @@ import javax.security.auth.Subject;
 import javax.security.jacc.PolicyContext;
 import javax.security.jacc.PolicyContextException;
 
-import com.quakearts.webapp.security.auth.DeptPrincipal;
 import com.quakearts.webapp.security.auth.EmailPrincipal;
-import com.quakearts.webapp.security.auth.GradePrincipal;
 import com.quakearts.webapp.security.auth.NamePrincipal;
 import com.quakearts.webapp.security.auth.OtherPrincipal;
-import com.quakearts.webapp.security.auth.PositionPrincipal;
-import com.quakearts.webapp.security.auth.UnitPrincipal;
 import com.quakearts.webapp.security.auth.UserPrincipal;
 
 public class SubjectHelper implements Serializable {
     private static final long serialVersionUID = 4894523893065329890L;
-	private final Map<String, Principal> map = new HashMap<String, Principal>();
-	public static final String KEY = "QUAKEARTS.subject.helper", ROLESNAME="Roles";
+	private final transient Map<String, Principal> map = new HashMap<>();
+	public static final String KEY = "QUAKEARTS.subject.helper";
+	public static final String ROLESNAME="Roles";
 	
 	public SubjectHelper() throws PolicyContextException{
 		this(ROLESNAME);
@@ -85,18 +82,10 @@ public class SubjectHelper implements Serializable {
 						map.put(((OtherPrincipal)principal).getAttribute(), principal);
 					} else if (principal instanceof UserPrincipal){
 						map.put(DirectoryPrincipal.USER.toString(), principal);						
-					} else if (principal instanceof GradePrincipal){
-						map.put(DirectoryPrincipal.GRADE.toString(), principal);						
 					} else if (principal instanceof NamePrincipal){
 						map.put(DirectoryPrincipal.NAME.toString(), principal);						
-					} else if (principal instanceof DeptPrincipal){
-						map.put(DirectoryPrincipal.DEPARTMENT.toString(), principal);
-					} else if (principal instanceof UnitPrincipal){
-						map.put(DirectoryPrincipal.UNIT.toString(), principal);
 					} else if (principal instanceof EmailPrincipal){
 						map.put(DirectoryPrincipal.EMAIL.toString(), principal);						
-					} else if (principal instanceof PositionPrincipal){
-						map.put(DirectoryPrincipal.POSITION.toString(), principal);						
 					} else {
 						customMapping(principal, map);
 					}
@@ -106,5 +95,6 @@ public class SubjectHelper implements Serializable {
 	}
 
 	protected void customMapping(Principal principal, Map<String, Principal> map) {
+		//Override for subclasses
 	}
 }
