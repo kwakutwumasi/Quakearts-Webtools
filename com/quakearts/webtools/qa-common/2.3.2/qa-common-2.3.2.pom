@@ -2,10 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.quakearts.webtools</groupId>
-	<artifactId>qa-boot</artifactId>
-	<version>2.2.1</version>
-	<name>Quakearts Bootstrap JSF Library</name>
-	<description>Twitter Bootstrap Tags and Entities for JSF</description>
+	<artifactId>qa-common</artifactId>
+	<version>2.3.2</version>
+	<name>Quakearts JSF Common Tools</name>
+	<description>Tools for web application development using JSF</description>
 	<build>
 		<plugins>
 			<plugin>
@@ -15,6 +15,9 @@
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
+					<excludes>
+						<exclude>com/quakearts/test/*.java</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -33,6 +36,11 @@
 	</build>
 	<dependencies>
 		<dependency>
+		  <groupId>com.quakearts.webtools</groupId>
+		  <artifactId>qa-orm</artifactId>
+		  <version>2.3.1</version>
+		</dependency>
+		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
 			<version>7.0</version>
@@ -40,8 +48,14 @@
 		</dependency>
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
-			<artifactId>qa-common</artifactId>
-			<version>2.3.2</version>			
+			<artifactId>qa-auth</artifactId>
+			<version>2.0.3</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jta</artifactId>
+					<groupId>javax.transaction</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 </project>
