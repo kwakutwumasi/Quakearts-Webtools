@@ -20,7 +20,7 @@ qab.mlis = function (obj){
 		select.addClass('active');
 	}
 	//trigger change event
-	input.change();
+	$('#'+ipid+"_change").change();
 };
 
 qab.ssdd = function(obj){
@@ -104,7 +104,7 @@ qab.olis = function (obj){
 		}
 	}
 	//trigger change event
-	input.change();
+	$('#'+ipid+"_change").change();
 };
 
 qab.pp = function(obj){
@@ -259,6 +259,7 @@ qab.dc = function(day,month,year,hour,minute,second,
 	msel=idBase+"_month",
 	ysel=idBase+"_year",
 	insel=idBase+"_input",
+	chngsel=idBase+"_change",
 	dbsel=idBase+"_btn_day",
 	hrsel=idBase+"_hour",
 	mnsel=idBase+"_min",
@@ -273,6 +274,7 @@ qab.dc = function(day,month,year,hour,minute,second,
 		"insel":insel,
 		"dbsel":dbsel,
 		"type":type,
+		"chngsel":chngsel,
 		"ud" : function(obj) {
 			this.day = obj.innerHTML;
 			this.uc();
@@ -536,7 +538,7 @@ qab.dc = function(day,month,year,hour,minute,second,
 				}
 			};
 			$(this.insel).val(dateString);
-			$(this.insel).change();
+			$(this.chngsel).change();
 		}
 	};
 };

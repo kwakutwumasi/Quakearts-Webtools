@@ -129,6 +129,7 @@ public class BootCheckboxRenderer extends HtmlBasicInputRenderer {
 				writer.writeAttribute("data-input-control", child.getClientId(context), null);
 				String childClass = (String) child.getAttributes().get("styleClass");
 				childClass = (childClass!=null?childClass+" ":"")+"form-control";
+				writer.writeAttribute("class",childClass, null);
 				
 				if(!isChecked(currentValue)){
 					child.getAttributes().put("disabled", true);

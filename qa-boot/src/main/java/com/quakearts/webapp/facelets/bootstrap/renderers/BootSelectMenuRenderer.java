@@ -243,9 +243,6 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 		
 		writer.startElement("div", component);
 		writer.writeAttribute("id", id, "clientId");
-		if(!componentDisabled) {
-			renderOnchange(context, component);
-		}
 		renderHTML5DataAttributes(context, component);
 		
 		if(mainStyle!=null)
@@ -428,7 +425,16 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 				writer.writeAttribute("value", value, null);
 				writer.endElement("input");
 				writer.write("\n");
-			}
+			}	
+		if(!componentDisabled) {
+			writer.write("\n");
+			writer.startElement("input", component);
+			writer.writeAttribute("id", id + "_change", null);
+			writer.writeAttribute("type", "hidden", null);
+			renderOnchange(context, component, component.getClientId());
+			writer.endElement("input");
+			writer.write("\n");
+		}
 		writer.endElement("div");
 		writer.write("\n");		
 	}

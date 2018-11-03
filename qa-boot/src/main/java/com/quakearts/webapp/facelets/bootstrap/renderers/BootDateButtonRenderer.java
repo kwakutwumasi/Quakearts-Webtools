@@ -38,9 +38,9 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer {
 	public static final int[] MONTHDAYS = new int[] { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 	private static final Map<Integer, String> months = new TreeMap<Integer, String>();
 	private static final Attribute[] ATTRIBUTES = AttributeManager.getAttributes(Key.DATEBUTTON);
-	public static final String DATE_SCRIPT_FUNCTION = "var dc_idVal = qab.dc('#dayVal', #monthVal, '#yearVal',"
-			+ "#hourVal, #minVal, #secondVal," + "#hourStep, #minStep, #secondStep,"
-			+ "#is24hr, #isAM, '#idVal', '#type');";
+	public static final String DATE_SCRIPT_FUNCTION = "var dc_idVal = qab.dc('dayVal', monthVal, 'yearVal',"
+			+ "hourVal, minVal, secondVal," + "hourStep, minStep, secondStep,"
+			+ "is24hr, isAM, '#idVal', 'type');";
 
 	static {
 		months.put(1, "Jan");
@@ -125,9 +125,6 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer {
 		renderPassThruAttributes(context, writer, component, ATTRIBUTES);
 		renderXHTMLStyleBooleanAttributes(writer, component);
 		
-		if(!componentDisabled) {
-			renderOnchange(context, component);
-		}
 		renderHTML5DataAttributes(context, component);
 		
 		String styleClass = button.get("styleClass");
@@ -223,7 +220,15 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer {
 		writer.writeAttribute("type", "hidden", null);
 		writer.writeAttribute("value", currentValue != null ? currentValue : "", "value");
 		writer.endElement("input");
-		writer.write("\n");
+		if(!componentDisabled) {
+			writer.write("\n");
+			writer.startElement("input", button);
+			writer.writeAttribute("id", idJs + "_change", null);
+			writer.writeAttribute("type", "hidden", null);
+			renderOnchange(context, component, component.getClientId());
+			writer.endElement("input");
+			writer.write("\n");
+		}
 		writer.endElement("div");
 		writer.write("\n");
 
@@ -414,13 +419,13 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer {
 			int dayInt, int monthInt, int yearInt, int hourInt, int minInt, int secondInt, int hourStep, int minStep,
 			int secondStep, boolean is24hr, boolean isAM) {
 		return DATE_SCRIPT_FUNCTION.replace("idVal", idJs)
-				.replace("#dayVal", isNull ? "" : (dayInt < 10 ? "0" + dayInt : "" + dayInt))
-				.replace("#monthVal", isNull ? "0" : (monthInt + "")).replace("#yearVal", isNull ? "" : ("" + yearInt))
-				.replace("#hourVal", isNull ? "0" : hourInt + "").replace("#minVal", isNull ? "0" : minInt + "")
-				.replace("#secondVal", isNull ? "0" : secondInt + "").replace("#hourStep", hourStep + "")
-				.replace("#minStep", minStep + "").replace("#secondStep", secondStep + "")
-				.replace("#is24hr", is24hr + "").replace("#isAM", isAM + "")
-				.replace("#type", dateComponent.formatVal().getFormat());
+				.replace("dayVal", isNull ? "" : (dayInt < 10 ? "0" + dayInt : "" + dayInt))
+				.replace("monthVal", isNull ? "0" : (monthInt + "")).replace("yearVal", isNull ? "" : ("" + yearInt))
+				.replace("hourVal", isNull ? "0" : hourInt + "").replace("minVal", isNull ? "0" : minInt + "")
+				.replace("secondVal", isNull ? "0" : secondInt + "").replace("hourStep", hourStep + "")
+				.replace("minStep", minStep + "").replace("secondStep", secondStep + "")
+				.replace("is24hr", is24hr + "").replace("isAM", isAM + "")
+				.replace("type", dateComponent.formatVal().getFormat());
 	}
 
 	private Map<Integer, String> getYearsMap(int max, int min, int yearInt) {

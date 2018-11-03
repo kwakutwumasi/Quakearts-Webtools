@@ -46,9 +46,6 @@ public class BootSelectOneInputRenderer extends BootSelectInputGroupRenderer {
 		
 		writer.startElement("div", component);
 		writer.writeAttribute("id", id, "clientId");
-		if(!componentDisabled) {
-			renderOnchange(context, component);
-		}
 		renderHTML5DataAttributes(context, component);	
 		writeAttributeIfPresent("mainClass", "class", component, writer);
 		writeAttributeIfPresent("mainStyle", "style", component, writer);
@@ -143,6 +140,15 @@ public class BootSelectOneInputRenderer extends BootSelectInputGroupRenderer {
 			writer.writeAttribute("name", id, "clientId");
 			writer.writeAttribute("type", "hidden", null);
 			writer.writeAttribute("value", value, null);
+			writer.endElement("input");
+			writer.write("\n");
+		}
+		if(!componentDisabled) {
+			writer.write("\n");
+			writer.startElement("input", component);
+			writer.writeAttribute("id", id + "_change", null);
+			writer.writeAttribute("type", "hidden", null);
+			renderOnchange(context, component, component.getClientId());
 			writer.endElement("input");
 			writer.write("\n");
 		}

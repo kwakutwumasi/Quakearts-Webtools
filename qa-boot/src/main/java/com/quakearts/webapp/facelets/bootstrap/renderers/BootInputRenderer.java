@@ -52,9 +52,6 @@ public class BootInputRenderer extends HtmlBasicInputRenderer {
         String id = component.getClientId(context);
         writer.startElement("div", component);
         writeIdAttributeIfNecessary(context, writer, component);
-        if(! UtilityMethods.componentIsDisabled(component)){
-        	renderOnchange(context, component);
-        }
 		renderHTML5DataAttributes(context, component);
         
         if(style!=null)
@@ -93,7 +90,9 @@ public class BootInputRenderer extends HtmlBasicInputRenderer {
         }
         
         writer.writeAttribute("class", "form-control"+(styleClass!=null?" "+styleClass:""), "styleClass");
-        writer.writeAttribute("onchange", "$('#"+id+"').change()", null);
+        if(! UtilityMethods.componentIsDisabled(component)){
+        	renderOnchange(context, component, component.getClientId());
+        }
         
         renderPassThruAttributes(context, writer, component, INPUT_ATTRIBUTES, getNonOnChangeBehaviors(component));
         renderXHTMLStyleBooleanAttributes(writer, component);

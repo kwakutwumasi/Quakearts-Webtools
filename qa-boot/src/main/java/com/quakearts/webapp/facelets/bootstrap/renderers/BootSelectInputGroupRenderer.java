@@ -45,13 +45,8 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		AutoCompleteBehavior autocompleteBehavior = findClientBehavior(AutoCompleteBehavior.class, "keyup", component);
 		
 		writer.startElement("div", component);
-		writer.writeAttribute("id", id, "clientId");
-		
-		if(!componentDisabled) {
-			renderOnchange(context, component);
-		}
+		writer.writeAttribute("id", id, "clientId");		
 		renderHTML5DataAttributes(context, component);
-
 		writeAttributeIfPresent("mainClass", "class", component, writer);
 		writeAttributeIfPresent("mainStyle", "style", component, writer);
 		
@@ -160,7 +155,16 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 			writer.writeAttribute("value", value, null);
 			writer.endElement("input");
 			writer.write("\n");
-		}
+		}		
+		if(!componentDisabled) {
+			writer.write("\n");
+			writer.startElement("input", component);
+			writer.writeAttribute("id", id + "_change", null);
+			writer.writeAttribute("type", "hidden", null);
+			renderOnchange(context, component, component.getClientId());
+			writer.endElement("input");
+			writer.write("\n");
+		}		
 		writer.endElement("div");
 		writer.write("\n");
 	}
