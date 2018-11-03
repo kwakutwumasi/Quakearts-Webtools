@@ -45,6 +45,7 @@ import java.util.NoSuchElementException;
 import java.util.Map;
 import java.util.ListIterator;
 import java.io.ObjectOutputStream;
+import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
@@ -52,6 +53,8 @@ import java.lang.reflect.Array;
 
 import javax.faces.model.SelectItem;
 import javax.faces.context.FacesContext;
+import javax.faces.context.ResponseWriter;
+import javax.faces.event.AbortProcessingException;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UISelectItem;
 import javax.faces.component.UISelectItems;
@@ -71,7 +74,10 @@ final class SelectItemsIterator implements Iterator<SelectItem> {
     // ------------------------------------------------------------ Constructors
 
 
-    /**
+    private static final String LABEL_FACET = "label";
+
+
+	/**
      * <p>Construct an iterator instance for the specified parent component.</p>
      *
      * @param ctx the {@link FacesContext} for the current request
@@ -188,8 +194,16 @@ final class SelectItemsIterator implements Iterator<SelectItem> {
             UISelectItem ui = (UISelectItem) kid;
             SelectItem item = (SelectItem) ui.getValue();
             if (item == null) {
+            	String label;
+            	UIComponent labelFacet = ui.getFacet(LABEL_FACET);
+            	if(labelFacet!=null) {
+            		label = getLabelFromFacet(ctx, labelFacet);
+            	} else {
+            		label = ui.getItemLabel();
+            	}
+            	
                 item = new SelectItem(ui.getItemValue(),
-                                      ui.getItemLabel(),
+                                      label,
                                       ui.getItemDescription(),
                                       ui.isItemDisabled(),
                                       ui.isItemEscaped(),
@@ -257,7 +271,24 @@ final class SelectItemsIterator implements Iterator<SelectItem> {
 
     }
 
-
+	private static String getLabelFromFacet(FacesContext ctx, UIComponent labelFacet) {
+		String itemLabelResult;
+		itemLabelResult = null;
+		ResponseWriter oldWriter = ctx.getResponseWriter();
+		CharArrayWriter charWriter = new CharArrayWriter();
+		ResponseWriter tempWriter = ctx.getResponseWriter().cloneWithWriter(charWriter);
+		ctx.setResponseWriter(tempWriter);
+		try {
+			labelFacet.encodeAll(ctx);
+			itemLabelResult = charWriter.toString();
+		} catch (IOException e) {
+			throw new AbortProcessingException("Unable to render label facet", e);
+		} finally {
+			ctx.setResponseWriter(oldWriter);
+		}
+		return itemLabelResult;
+	}
+    
     // ---------------------------------------------------------- Nested Classes
 
 
@@ -468,7 +499,13 @@ final class SelectItemsIterator implements Iterator<SelectItem> {
                 try {
                     Map<String,Object> attrs = sourceComponent.getAttributes();
                     Object itemValueResult = attrs.get(ITEM_VALUE);
-                    Object itemLabelResult = attrs.get(ITEM_LABEL);
+                    Object itemLabelResult;
+                    UIComponent labelFacet = sourceComponent.getFacet(LABEL_FACET);
+                    if(labelFacet!=null) {
+                    	itemLabelResult = getLabelFromFacet(ctx, labelFacet);
+                    } else {
+                    	itemLabelResult = attrs.get(ITEM_LABEL);
+                    }
                     Object itemDescriptionResult = attrs.get(ITEM_DESCRIPTION);
                     Object itemEscapedResult = attrs.get(ITEM_ESCAPED);
                     Object itemDisabledResult = attrs.get(ITEM_DISABLED);
@@ -503,7 +540,6 @@ final class SelectItemsIterator implements Iterator<SelectItem> {
                 }
 
             }
-
 
             // --------------------------------------- Methods from Serializable
 
