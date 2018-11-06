@@ -245,21 +245,6 @@ public class BootDateButton extends HtmlInputText {
 		return Collections.singletonList("change");
 	}
 	
-    @Override
-	public void restoreState(FacesContext context, Object obj) {
-		Object[] state = (Object[])obj;
-		formatVal = (DateFormat) state[0];
-		minAsInt = (Integer) state[1];
-		maxAsInt = (Integer) state[2];
-		nullable = (Boolean) state[3];
-		super.restoreState(context, state[4]);
-	}
-
-	@Override
-	public Object saveState(FacesContext context) {
-		return new Object[]{formatVal(),minAsInt(),maxAsInt(), nullable(),super.saveState(context)};
-	}
-
 	public boolean nullable(){
 		if(!checkedNullable){
 			ValueExpression nullableExpression = getValueExpression("nullable");
