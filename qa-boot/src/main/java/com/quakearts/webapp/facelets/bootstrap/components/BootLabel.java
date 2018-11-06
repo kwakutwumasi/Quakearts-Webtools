@@ -12,15 +12,10 @@ package com.quakearts.webapp.facelets.bootstrap.components;
 
 import java.util.HashMap;
 
-import javax.el.ValueExpression;
 import javax.faces.component.UIOutput;
-import javax.faces.context.FacesContext;
-
 import com.quakearts.webapp.facelets.util.ObjectExtractor;
 
-public class BootLabel extends UIOutput {
-	private ValueExpression typeExpression;
-	
+public class BootLabel extends UIOutput {	
 	public static final String COMPONENT_FAMILY="com.quakearts.bootstrap.label";
 	public static final String RENDERER_TYPE="com.quakearts.bootstrap.label.renderer";
 
@@ -28,28 +23,9 @@ public class BootLabel extends UIOutput {
 	public String getFamily() {
 		return COMPONENT_FAMILY;
 	}
-
-	public ValueExpression getTypeExpression() {
-		return typeExpression;
-	}
-	
-	public void setTypeExpression(ValueExpression typeExpression) {
-		this.typeExpression = typeExpression;
-	}
-	
-	@Override
-	public Object saveState(FacesContext context) {
-		return  new Object[]{typeExpression, super.saveState(context)};
-	}
-	
-	@Override
-	public void restoreState(FacesContext context, Object state) {
-		typeExpression = (ValueExpression)((Object[])state)[0];
-		super.restoreState(context, ((Object[])state)[1]);
-	}
 	
 	private static final HashMap<String, String> VALID_TYPES = new HashMap<String, String>();
-	static{
+	static {
 		VALID_TYPES.put("default", "");
 		VALID_TYPES.put("primary", "");
 		VALID_TYPES.put("success", "");
@@ -68,8 +44,7 @@ public class BootLabel extends UIOutput {
 	}
 
 	@Override
-	public void setRendererType(String rendererType) {
-	}
+	public void setRendererType(String rendererType) {}
 	
 	public String get(String attribute) {
 		String attributeValue = ObjectExtractor
