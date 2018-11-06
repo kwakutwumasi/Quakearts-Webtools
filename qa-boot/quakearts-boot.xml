@@ -1559,17 +1559,27 @@
 			</trait>
 			<trait id="valid-values">
 				<value xsi:type="mdt:ListOfValues">
-					<item>dmy</item>
+					<item>d</item>
+					<item>dh</item>
+					<item>dhn</item>
+					<item>dhns</item>
 					<item>dm</item>
+					<item>dmh</item>
+					<item>dmhn</item>
+					<item>dmhns</item>
+					<item>dmy</item>
+					<item>dmyh</item>
+					<item>dmyhn</item>
+					<item>dmyhns</item>
+					<item>h</item>
+					<item>hn</item>
+					<item>hns</item>
 					<item>m</item>
 					<item>my</item>
+					<item>n</item>
+					<item>ns</item>
+					<item>s</item>
 					<item>y</item>
-					<item>dmyhns</item>
-					<item>dmyhn</item>
-					<item>dmyh</item>
-					<item>hns</item>
-					<item>hn</item>
-					<item>h</item>
 				</value>
 			</trait>
 		</entity>
