@@ -172,7 +172,9 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer {
 			writer.endElement("span");
 		}
 
-		if (button.formatVal().hasHour()) {
+		if (button.formatVal().hasHour()
+				|| button.formatVal().hasMinute()
+				|| button.formatVal().hasSeconds()) {
 			writer.write("\n");
 			writer.startElement("div", component);
 			String timeClass = button.get("timeClass");
@@ -180,8 +182,10 @@ public class BootDateButtonRenderer extends HtmlBasicInputRenderer {
 				timeClass = "time-md";
 			
 			writer.writeAttribute("class", "time-control-group "+timeClass, null);
-			generateTimeControl(writer, component, idJs, "hour", "vhr", "hrup", "hrdown", currentValue == null, hourInt,
+			if(button.formatVal().hasHour()) {
+				generateTimeControl(writer, component, idJs, "hour", "vhr", "hrup", "hrdown", currentValue == null, hourInt,
 					getDisplayType(button, context, "hourType"), componentDisabled);
+			}
 			if (button.formatVal().hasMinute()) {
 				generateTimeControl(writer, component, idJs, "min", "vmn", "mnup", "mndown", currentValue == null,
 						minuteInt, getDisplayType(button, context, "minuteType"), componentDisabled);
