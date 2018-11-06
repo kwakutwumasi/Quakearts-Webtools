@@ -509,26 +509,17 @@ qab.dc = function(day,month,year,hour,minute,second,
 						dateString = dateString + "/";
 					dateString = dateString + this.year
 					break;
-				case 'h':
-					if(this.hour == 0)
-						return;
-					
+				case 'h':				
 					if(dateString.length>0)
 						dateString = dateString + " ";
 					dateString = dateString + hourString;
 					break;
 				case 'n':
-					if(this.minute == 0)
-						return;
-					
 					if(dateString.length>0)
 						dateString = dateString + ":";
 					dateString = dateString + minuteString;
 					break;
 				case 's':
-					if(this.second == 0)
-						return;
-						
 					if(dateString.length>0)
 						dateString = dateString + ":";
 					dateString = dateString + secondString;
