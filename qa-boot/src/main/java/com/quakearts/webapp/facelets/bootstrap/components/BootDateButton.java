@@ -10,10 +10,12 @@
  ******************************************************************************/
 package com.quakearts.webapp.facelets.bootstrap.components;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,7 +48,8 @@ public class BootDateButton extends HtmlInputText {
     }
     
     public static class DateFormat {
-    	private static final String checkRegex = "(m|y|my|(dm)y?)?(h|(hn)s?)?";
+		private static final List<String> VALIDCOMBINATIONS = Arrays.asList("d", "dh", "dhn", "dhns", "dm", "dmh", "dmhn",
+				"dmhns", "dmy", "dmyh", "dmyhn", "dmyhns", "h", "hn", "hns", "m", "my", "n", "ns", "s", "y");
     	private Set<Character> formatChars = new HashSet<>();
     	private String dateFormatString, format;
     	
@@ -62,7 +65,7 @@ public class BootDateButton extends HtmlInputText {
     	}
     	
     	public DateFormat(String formatString) {
-    		if(!formatString.matches(checkRegex)){
+    		if(!VALIDCOMBINATIONS.contains(formatString)){
     			throw new IllegalArgumentException(formatString+" is not a valid format string.");
     		}
 
@@ -74,7 +77,7 @@ public class BootDateButton extends HtmlInputText {
     			builder.append(formatProducerMap.get(part).getFormatString(builder.length() == 0));
     		}
     		dateFormatString = builder.toString();
-	}
+    	}
     	
     	public boolean hasDay(){
     		return formatChars.contains('d');
