@@ -25,7 +25,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.inject.Vetoed;
 import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpSessionListener;
 
@@ -449,15 +448,11 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 			throw new ConfigurationException("Invalid web application. Must be a folder. If it is a zipped war file, explode it in the webapps directory");
 	
 	    StandardContext ctx;
-		try {
-			String contextName = webappFolder.getName().equals("webapp")?"":"/"+webappFolder.getName();
-			if(contextName.endsWith(".war"))
-				contextName = contextName.substring(0, contextName.indexOf(".war"));
-			
-			ctx = (StandardContext) tomcat.addWebapp(contextName, webappFolder.getAbsolutePath());
-		} catch (ServletException e) {
-			throw new ConfigurationException("ServletException adding webapp "+webappFolder.getAbsolutePath(), e);
-		}	        		
+		String contextName = webappFolder.getName().equals("webapp")?"":"/"+webappFolder.getName();
+		if(contextName.endsWith(".war"))
+			contextName = contextName.substring(0, contextName.indexOf(".war"));
+		
+		ctx = (StandardContext) tomcat.addWebapp(contextName, webappFolder.getAbsolutePath());
 		
 		//Prevent the scanning of the main app classpath to improve performance and prevent errors
 		((StandardJarScanner)ctx.getJarScanner()).setScanClassPath(false);
