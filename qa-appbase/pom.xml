@@ -43,7 +43,7 @@
 		<weld.se.version>3.0.4.Final</weld.se.version>
 		<weld.spi.version>3.0.SP3</weld.spi.version>
 		<slf4j.version>1.7.25</slf4j.version>
-		<tomcat.version>9.0.8</tomcat.version>
+		<tomcat.version>9.0.12</tomcat.version>
 		<tomcat.juli.version>9.0.0.M6</tomcat.juli.version>
 		<atomikos.version>4.0.6</atomikos.version>
 		<junit.version>4.12</junit.version>
