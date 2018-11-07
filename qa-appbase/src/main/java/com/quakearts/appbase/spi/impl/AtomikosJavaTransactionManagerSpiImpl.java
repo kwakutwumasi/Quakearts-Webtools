@@ -11,6 +11,7 @@
 package com.quakearts.appbase.spi.impl;
 
 import javax.enterprise.inject.Vetoed;
+import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
@@ -24,20 +25,26 @@ import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
 @Vetoed
 public class AtomikosJavaTransactionManagerSpiImpl implements JavaTransactionManagerSpi {
 
-	private static UserTransactionManager tm;
-	
+	private static final String JAVA_COMP_USER_TRANSACTION = "java:comp/UserTransaction";
+	private static final String JAVA_COMP = "java:comp";
+	private UserTransactionManager tm;
+
 	public TransactionManager getTransactionManager() {
+		return getTm();
+	}
+
+	private UserTransactionManager getTm() {
 		return tm;
 	}
-	
+
 	@Override
 	public UserTransaction getUserTransaction() {
-		return tm;
+		return getTm();
 	}
-	
+
 	@Override
 	public void initiateJavaTransactionManager() {
-		if(tm==null){
+		if (tm == null) {
 			tm = new UserTransactionManager();
 			try {
 				tm.init();
@@ -45,22 +52,33 @@ public class AtomikosJavaTransactionManagerSpiImpl implements JavaTransactionMan
 				throw new ConfigurationException("Unable to create Transaction Manager", e);
 			}
 			try {
-				JavaNamingDirectorySpiFactory.getInstance()
-					.getJavaNamingDirectorySpi()
-					.createContext("java:comp");
-				
-				JavaNamingDirectorySpiFactory.getInstance()
-				.getJavaNamingDirectorySpi().getInitialContext().bind("java:comp/UserTransaction", tm);
+				JavaNamingDirectorySpiFactory.getInstance().getJavaNamingDirectorySpi().createContext(JAVA_COMP);
+
+				JavaNamingDirectorySpiFactory.getInstance().getJavaNamingDirectorySpi().getInitialContext()
+						.bind(JAVA_COMP_USER_TRANSACTION, tm);
 			} catch (NamingException e) {
-				new ConfigurationException(e.getMessage(),e);
+				throw new ConfigurationException(e.getMessage(), e);
 			}
-			
+
 		}
 	}
 
 	@Override
 	public void shutdownJavaTransactionManager() {
-		if(tm!=null){
+		if (tm != null) {
+			InitialContext initialContext =
+					JavaNamingDirectorySpiFactory.getInstance()
+					.getJavaNamingDirectorySpi().getInitialContext();
+			try {
+				initialContext.unbind(JAVA_COMP_USER_TRANSACTION);
+			} catch (NamingException e) {
+				//Do nothing
+			}
+			try {
+				initialContext.unbind(JAVA_COMP);
+			} catch (NamingException e) {
+				//Do nothing
+			}
 			tm.close();
 			tm = null;
 		}

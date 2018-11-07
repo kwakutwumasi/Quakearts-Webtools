@@ -35,7 +35,7 @@ public class JavaTransactionManagerSpiFactory {
 		if(transactionManagerSpi == null)
 			try {
 				Class<?> javaTmSpiClass = Class.forName(javaTmSpiClassname);
-				Main.log.info("JavaTransactionManagerSpi class: "+javaTmSpiClassname+" loaded");
+				Main.log.info("JavaTransactionManagerSpi class: {} loaded", javaTmSpiClassname);
 				transactionManagerSpi = (JavaTransactionManagerSpi) javaTmSpiClass.newInstance();
 				return transactionManagerSpi;
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException| ClassCastException e) {

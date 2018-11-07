@@ -23,6 +23,7 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.inject.Vetoed;
+import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
@@ -95,6 +96,8 @@ import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
 @Vetoed
 public class AtomikosBeanDatasourceProviderSpiImpl implements DataSourceProviderSpi {
 
+	private static final String JAVA_JDBC = "java:/jdbc";
+	private static final String JAVA_JDBC_PREFIX = "java:/jdbc/";
 	private Map<String, AtomikosDataSourceBean> datasources = new ConcurrentHashMap<>();
 	private String resourceLocation = "atomikos";
 	
@@ -110,9 +113,9 @@ public class AtomikosBeanDatasourceProviderSpiImpl implements DataSourceProvider
 		try {
 			JavaNamingDirectorySpiFactory.getInstance()
 				.getJavaNamingDirectorySpi()
-				.createContext("java:/jdbc");
+				.createContext(JAVA_JDBC);
 		} catch (NamingException e) {
-			new ConfigurationException(e.getMessage(),e);
+			throw new ConfigurationException(e.getMessage(),e);
 		}
 
 		AppBasePropertiesLoader appBasePropertiesLoaderImpl = Main.getAppBasePropertiesLoader();
@@ -148,15 +151,17 @@ public class AtomikosBeanDatasourceProviderSpiImpl implements DataSourceProvider
 	@Override
 	public DataSource getDataSource(ConfigurationPropertyMap configurationParameters) {
 		AtomikosDataSourceBean atomikosDataSourceBean = new AtomikosDataSourceBean();
-		atomikosDataSourceBean.setXaDataSourceClassName((String) configurationParameters.get(DATASOURCECLASS));
+		atomikosDataSourceBean.setXaDataSourceClassName((String) configurationParameters
+				.get(PropertyNames.DATASOURCECLASS.getPropertyName()));
 		atomikosDataSourceBean.setXaProperties(getProperties(configurationParameters));		
 		setOtherParameters(atomikosDataSourceBean, configurationParameters);
 		
-		if(configurationParameters.containsKey(NAME)){
-			atomikosDataSourceBean.setUniqueResourceName(configurationParameters.getString(NAME));
+		if(configurationParameters.containsKey(PropertyNames.NAME.getPropertyName())){
+			atomikosDataSourceBean.setUniqueResourceName(configurationParameters
+					.getString(PropertyNames.NAME.getPropertyName()));
 			datasources.put(atomikosDataSourceBean.getUniqueResourceName(), atomikosDataSourceBean);
 			try {
-				JavaNamingDirectorySpiFactory.getInstance().getJavaNamingDirectorySpi().getInitialContext().bind("java:/jdbc/" + atomikosDataSourceBean.getUniqueResourceName(), atomikosDataSourceBean);
+				JavaNamingDirectorySpiFactory.getInstance().getJavaNamingDirectorySpi().getInitialContext().bind(JAVA_JDBC_PREFIX + atomikosDataSourceBean.getUniqueResourceName(), atomikosDataSourceBean);
 			} catch (NamingException e) {
 				throw new ConfigurationException("Unable to bind name 'java:/jdbc/" + atomikosDataSourceBean.getUniqueResourceName()+"' to context");
 			}
@@ -222,7 +227,22 @@ public class AtomikosBeanDatasourceProviderSpiImpl implements DataSourceProvider
 	public void shutDownDataSourceProvider() {
 		if(datasources.isEmpty())
 			return;
-		
-		datasources.values().stream().forEach((dataSourceBean)-> dataSourceBean.close());
+		final InitialContext initialContext = JavaNamingDirectorySpiFactory
+				.getInstance()
+				.getJavaNamingDirectorySpi()
+				.getInitialContext(); 
+		datasources.entrySet().stream().forEach(entry->{
+			try {
+				initialContext.unbind(JAVA_JDBC_PREFIX + entry.getValue().getUniqueResourceName());
+			} catch (NamingException e) {
+				//Do nothing
+			}
+		});
+		try {
+			initialContext.unbind(JAVA_JDBC);
+		} catch (NamingException e) {
+			//Do nothing
+		}
+		datasources.clear();
 	}
 }

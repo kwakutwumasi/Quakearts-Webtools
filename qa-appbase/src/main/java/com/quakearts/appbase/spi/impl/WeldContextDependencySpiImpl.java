@@ -50,7 +50,7 @@ public class WeldContextDependencySpiImpl implements ContextDependencySpi {
 		}
 		try {
 			weld.shutdown();
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			// Suppress error
 		}
 	}

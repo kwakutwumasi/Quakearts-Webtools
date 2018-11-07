@@ -14,7 +14,7 @@ import com.quakearts.appbase.internal.json.JsonArray;
 import com.quakearts.appbase.internal.json.JsonObject;
 import com.quakearts.appbase.internal.json.JsonObject.Member;
 import com.quakearts.appbase.internal.json.JsonValue;
-import com.quakearts.appbase.internal.json.WriterConfig;
+import com.quakearts.appbase.internal.json.WriterConfigs;
 
 public class TestInternalJson {
 
@@ -91,7 +91,7 @@ public class TestInternalJson {
 		assertThat(array2, is(array));
 
 		StringWriter stringWriter = new StringWriter();
-		array.writeTo(stringWriter, WriterConfig.PRETTY_PRINT);
+		array.writeTo(stringWriter, WriterConfigs.PRETTY_PRINT);
 	}
 
 	@Test(expected=UnsupportedOperationException.class)
@@ -217,7 +217,7 @@ public class TestInternalJson {
 		assertThat(object2, is(object));
 		
 		StringWriter stringWriter = new StringWriter();
-		object.writeTo(stringWriter, WriterConfig.PRETTY_PRINT);
+		object.writeTo(stringWriter, WriterConfigs.PRETTY_PRINT);
 		
 		JsonObject object3 = new JsonObject()
 				.add("hello", "world");

@@ -31,8 +31,8 @@ import com.quakearts.appbase.Main;
 public class AppBaseCDIInstanceManager implements InstanceManager {
 	BeanManager manager;
 	private final Map<Object, UnmanagedInstance<?>> unmanagedCache = new ConcurrentHashMap<>();
-	private final Map<Object, Boolean> otherObjectsCache = new ConcurrentHashMap<Object, Boolean>();
-	
+	private final Map<Object, Boolean> otherObjectsCache = new ConcurrentHashMap<>();
+
 	public AppBaseCDIInstanceManager(BeanManager manager) {
 		this.manager = manager;
 	}
@@ -42,11 +42,8 @@ public class AppBaseCDIInstanceManager implements InstanceManager {
 			throws IllegalAccessException, InvocationTargetException, NamingException, InstantiationException {
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		UnmanagedInstance<?> instance = new Unmanaged(clazz).newInstance();
-		Object o = instance.produce()
-				.inject()
-				.postConstruct()
-				.get();
-		
+		Object o = instance.produce().inject().postConstruct().get();
+
 		unmanagedCache.put(o, instance);
 		return o;
 	}
@@ -54,17 +51,13 @@ public class AppBaseCDIInstanceManager implements InstanceManager {
 	@Override
 	public Object newInstance(String className) throws IllegalAccessException, InvocationTargetException,
 			NamingException, InstantiationException, ClassNotFoundException {
-		try {
-			return newInstance(Class.forName(className));			
-		} catch (ClassNotFoundException e) {
-			throw e;
-		}
+		return newInstance(Class.forName(className));
 	}
 
 	@Override
 	public Object newInstance(String fqcn, ClassLoader classLoader) throws IllegalAccessException,
 			InvocationTargetException, NamingException, InstantiationException, ClassNotFoundException {
-		if(classLoader!=Main.class.getClassLoader()) {
+		if (classLoader != Main.class.getClassLoader()) {
 			Class<?> clazz = classLoader.loadClass(fqcn);
 			Object o = clazz.newInstance();
 			otherObjectsCache.put(o, Boolean.TRUE);
@@ -89,14 +82,14 @@ public class AppBaseCDIInstanceManager implements InstanceManager {
 		CreationalContext context = manager.createCreationalContext(bean);
 		target.inject(o, context);
 	}
-	
+
 	@Override
 	public void destroyInstance(Object o) throws IllegalAccessException, InvocationTargetException {
-		if(!unmanagedCache.containsKey(o))
+		if (!unmanagedCache.containsKey(o))
 			return;
-		
+
 		UnmanagedInstance<?> unmanaged = unmanagedCache.get(o);
-		if(unmanaged!=null) {
+		if (unmanaged != null) {
 			unmanaged.preDestroy();
 			unmanaged.dispose();
 			unmanagedCache.remove(o);

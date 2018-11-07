@@ -31,12 +31,17 @@ public class JavaNamingDirectorySpiImpl implements JavaNamingDirectorySpi {
 
 	@Override
 	public void shutdownJNDIService() {
+		//Do nothing
 	}
 
 	private static InitialContext initial;
 	
 	@Override
 	public InitialContext getInitialContext() {
+		return initInternal();
+	}
+
+	private static InitialContext initInternal() {
 		if(initial == null)
 			try {
 				initial = new InitialContext();

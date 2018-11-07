@@ -20,8 +20,20 @@ import com.quakearts.appbase.internal.properties.ConfigurationPropertyMap;
  *
  */
 public interface DataSourceProviderSpi {
-	public static final String DATASOURCECLASS = "datasource.class", 
-			NAME = "datasource.name";
+	public enum PropertyNames {
+		DATASOURCECLASS("datasource.class"),
+		NAME("datasource.name");
+		
+		private String propertyName;
+		
+		public String getPropertyName() {
+			return propertyName;
+		}
+
+		private PropertyNames(String propertyName) {
+			this.propertyName = propertyName;
+		}
+	}
 	/**Start the JCA implementation
 	 * @throws ConfigurationException if there is an error initializing the instance
 	 */

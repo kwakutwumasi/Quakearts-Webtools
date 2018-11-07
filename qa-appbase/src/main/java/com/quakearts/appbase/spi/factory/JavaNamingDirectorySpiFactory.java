@@ -35,7 +35,7 @@ public class JavaNamingDirectorySpiFactory {
 		if(javaNamingDirectorySpi == null)
 			try {
 				Class<?> javaTmSpiClass = Class.forName(javaNamingDirectorySpiClassName);
-				Main.log.info("EmbeddedWebServerSpi class: "+javaNamingDirectorySpiClassName+" loaded");
+				Main.log.info("JavaNamingDirectorySpi class: {} loaded", javaNamingDirectorySpiClassName);
 				javaNamingDirectorySpi = (JavaNamingDirectorySpi) javaTmSpiClass.newInstance();
 				return javaNamingDirectorySpi;
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException| ClassCastException e) {

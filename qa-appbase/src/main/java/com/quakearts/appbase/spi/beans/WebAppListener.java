@@ -14,7 +14,7 @@ import javax.enterprise.inject.Vetoed;
 
 @Vetoed
 public class WebAppListener {
-	public static enum Priority {
+	public enum Priority {
 		ANY,
 		FIRST,
 		LAST
@@ -57,11 +57,10 @@ public class WebAppListener {
 		if (listenerClass == null) {
 			if (other.listenerClass != null)
 				return false;
-		} else if (listenerClass != other.listenerClass)
+		} else if (listenerClass != other.listenerClass) {
 			return false;
-		if (priority != other.priority)
-			return false;
-		return true;
+		}
+		return priority == other.priority;
 	}
 	
 	

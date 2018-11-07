@@ -22,63 +22,61 @@ import org.apache.juli.logging.LogFactory;
 
 public class AppBaseContextConfig extends ContextConfig {
 
-    private static final Log log = LogFactory.getLog(ContextConfig.class);
+	private static final Log log = LogFactory.getLog(ContextConfig.class);
 
 	@Override
-    protected void processServletContainerInitializers() {
+	protected void processServletContainerInitializers() {
 
-        List<ServletContainerInitializer> detectedScis;
-        try {
-        		AppBaseWebappServiceLoader<ServletContainerInitializer> loader = new AppBaseWebappServiceLoader<>(context);
-            detectedScis = loader.load(ServletContainerInitializer.class);
-        } catch (IOException e) {
-            log.error(sm.getString(
-                    "contextConfig.servletContainerInitializerFail",
-                    context.getName()),
-                e);
-            ok = false;
-            return;
-        }
+		List<ServletContainerInitializer> detectedScis;
+		try {
+			AppBaseWebappServiceLoader<ServletContainerInitializer> loader = new AppBaseWebappServiceLoader<>(context);
+			detectedScis = loader.load(ServletContainerInitializer.class);
+		} catch (IOException e) {
+			log.error(sm.getString("contextConfig.servletContainerInitializerFail", context.getName()), e);
+			ok = false;
+			return;
+		}
 
-        for (ServletContainerInitializer sci : detectedScis) {
-            initializerClassMap.put(sci, new HashSet<Class<?>>());
+		for (ServletContainerInitializer sci : detectedScis) {
+			handleServletContainerInitializer(sci);
+		}
+	}
 
-            HandlesTypes ht;
-            try {
-                ht = sci.getClass().getAnnotation(HandlesTypes.class);
-            } catch (Exception e) {
-                if (log.isDebugEnabled()) {
-                    log.info(sm.getString("contextConfig.sci.debug",
-                            sci.getClass().getName()),
-                            e);
-                } else {
-                    log.info(sm.getString("contextConfig.sci.info",
-                            sci.getClass().getName()));
-                }
-                continue;
-            }
-            if (ht == null) {
-                continue;
-            }
-            Class<?>[] types = ht.value();
-            if (types == null) {
-                continue;
-            }
+	private void handleServletContainerInitializer(ServletContainerInitializer sci) {
+		initializerClassMap.put(sci, new HashSet<Class<?>>());
 
-            for (Class<?> type : types) {
-                if (type.isAnnotation()) {
-                    handlesTypesAnnotations = true;
-                } else {
-                    handlesTypesNonAnnotations = true;
-                }
-                Set<ServletContainerInitializer> scis =
-                        typeInitializerMap.get(type);
-                if (scis == null) {
-                    scis = new HashSet<>();
-                    typeInitializerMap.put(type, scis);
-                }
-                scis.add(sci);
-            }
-        }
-    }
+		HandlesTypes ht;
+		try {
+			ht = sci.getClass().getAnnotation(HandlesTypes.class);
+			Class<?>[] types = ht == null ? null : ht.value();
+			if (types != null)
+				for (Class<?> type : types) {
+					setHandlesAnnotationsaOrNonAnnotations(type);
+					addServletContainerInitializers(sci, type);
+				}
+		} catch (Exception e) {
+			handleException(sci, e);
+		}
+	}
+
+	private void setHandlesAnnotationsaOrNonAnnotations(Class<?> type) {
+		if (type.isAnnotation()) {
+			handlesTypesAnnotations = true;
+		} else {
+			handlesTypesNonAnnotations = true;
+		}
+	}
+
+	private void addServletContainerInitializers(ServletContainerInitializer sci, Class<?> type) {
+		Set<ServletContainerInitializer> scis = typeInitializerMap.computeIfAbsent(type, k -> new HashSet<>());
+		scis.add(sci);
+	}
+
+	private void handleException(ServletContainerInitializer sci, Exception e) {
+		if (log.isDebugEnabled()) {
+			log.info(sm.getString("contextConfig.sci.debug", sci.getClass().getName()), e);
+		} else {
+			log.info(sm.getString("contextConfig.sci.info", sci.getClass().getName()));
+		}
+	}
 }

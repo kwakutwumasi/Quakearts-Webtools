@@ -24,7 +24,7 @@ import org.apache.naming.NamingContext;
 @Vetoed
 public class AppBaseInitialContextFactory implements InitialContextFactory, ObjectFactory {
 
-	public static NamingContext context;
+	private static NamingContext context;
 
 	@Override
 	public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment)
@@ -32,12 +32,16 @@ public class AppBaseInitialContextFactory implements InitialContextFactory, Obje
 		return getInitialContext(environment);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
+		return init(environment);	
+	}
+
+	@SuppressWarnings("unchecked")
+	private static Context init(Hashtable<?, ?> environment) {
 		if(context==null)
 			context = new NamingContext((Hashtable<String, Object>)environment, "main");
 
-		return context;	
+		return context;
 	}
 }

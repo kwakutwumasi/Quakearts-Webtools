@@ -46,34 +46,35 @@ public class ClasspathResourcesImpl implements ClasspathResources {
 			Manifest manifest = con.getManifest();
 			if(manifest != null && manifest.getMainAttributes().getValue("Class-Path")!=null) {
 				String[] classpathEntries = manifest.getMainAttributes().getValue("Class-Path").split(" ");
-				for(String classpathEntry:classpathEntries) {
-					try {
-						URL fileurl; 
-						File file; 
-						
-						if(classpathEntry.startsWith("file:/")) {
-							fileurl = new URL(classpathEntry);
-							file = new File(fileurl.toURI());
-						} else {
-							file = new File(classpathEntry);
-							if(!file.exists())
-								continue;
-							
-							fileurl = file.toURI().toURL();
-						}
-						
-						if(file.isDirectory())
-							continue;
-						
-						String name = file.getName();		
-							libraryMap.put(name,fileurl);
-					} catch (URISyntaxException e) {
-						throw new ConfigurationException("Unable to create url for entry "+classpathEntry);
-					}
-				}
+				handleManifestEntries(classpathEntries);
 			}
 		} catch (IOException e) {
 			throw new ConfigurationException("Unable to access jar url", e);
+		}
+	}
+
+	private void handleManifestEntries(String[] classpathEntries) throws MalformedURLException {
+		for(String classpathEntry:classpathEntries) {
+			try {
+				URL fileurl; 
+				File file; 
+				
+				if(classpathEntry.startsWith("file:/")) {
+					fileurl = new URL(classpathEntry);
+					file = new File(fileurl.toURI());
+				} else {
+					file = new File(classpathEntry);
+					if(!file.exists())
+						continue;
+					
+					fileurl = file.toURI().toURL();
+				}
+				
+				String name = file.getName();		
+				libraryMap.put(name,fileurl);
+			} catch (URISyntaxException e) {
+				throw new ConfigurationException("Unable to create url for entry "+classpathEntry);
+			}
 		}
 	}
 	

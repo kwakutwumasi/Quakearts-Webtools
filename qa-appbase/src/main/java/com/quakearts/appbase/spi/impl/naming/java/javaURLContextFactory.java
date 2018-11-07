@@ -25,8 +25,12 @@ public class javaURLContextFactory extends URLContextFactoryBase {
 	private static NamingContext context;
 	private static final String TRANSCONTEXT = "java:";
 	
-	@SuppressWarnings({ "unchecked"})
 	protected NamingContext getContext(Hashtable<?, ?> environment) throws NamingException {
+		return init(environment);
+	}
+
+	@SuppressWarnings({ "unchecked"})
+	private static NamingContext init(Hashtable<?, ?> environment) throws NamingException {
 		if(context==null){
 			context = new NamingContext((Hashtable<String, Object>)environment, TRANSCONTEXT);
 			context.bind(TRANSCONTEXT, context);

@@ -29,14 +29,14 @@ public interface ClasspathResources {
 	 * @return a URL object that can be used to retrieve the contents of the library
 	 * @throws ConfigurationException if there is an error retrieving the library
 	 */
-	URL getLibraryPath(String libraryName) throws ConfigurationException;
+	URL getLibraryPath(String libraryName);
 	/**Add a library to the store. The URL will be used to generate the library name
 	 * @param libraryPathUrl the URL of the library
 	 * @throws ConfigurationException if there is an error storing the library
 	 */
-	void addLibraryPath(URL libraryPathUrl) throws ConfigurationException;
+	void addLibraryPath(URL libraryPathUrl);
 	/**API method called to instantiate classpath scanning
 	 * @throws ConfigurationException
 	 */
-	void loadClassPath() throws ConfigurationException;
+	void loadClassPath();
 }

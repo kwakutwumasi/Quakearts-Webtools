@@ -112,7 +112,7 @@ public class Main {
 			}
 	}
 	
-	void startUp(String mainClassName, Properties props){
+	void init(String mainClassName, Properties props){
 		javaNamingDirectorySpi = JavaNamingDirectorySpiFactory
 				.getInstance()
 				.createJavaNamingDirectorySpi(props.getProperty("jndi.spi.class"));
@@ -166,96 +166,115 @@ public class Main {
 		
 		long start = System.currentTimeMillis();
 		
-		Properties props = new Properties();
-		String propertiesFilename, mainClassName;
-		mainClassName = null;
-		propertiesFilename = "default.configuration";
-		if(args.length>3 || args.length<=0) {
+		if(argumentsAreInvalid(args)) {
 			log.error(USAGE);
 			return;
 		} 
 		
-		mainClassName = args[0];
+		String mainClassName = args[0];
+		StartOptions startOptions = new StartOptions();
 		
-		boolean waitInMain = true;
-		
-		if(args.length == 1){
-			propertiesFilename = "default.configuration";
-		} else if(args.length == 2) {
-			if(!args[1].equals(DONT_WAIT_IN_MAIN))
-				propertiesFilename = args[1];
-			else
-				waitInMain = false;
-		} else if(args.length == 3) {
-			if(!args[2].equals(DONT_WAIT_IN_MAIN) 
-					&& !args[1].equals(DONT_WAIT_IN_MAIN)) {
+		switch(args.length){
+		case 1:
+			startOptions.propertiesFilename = "default.configuration";
+		break;
+		case 2:
+			loadEitherOption(args, startOptions);
+		break;
+		case 3:
+			if(missingDontWaitInMain(args)) {
 				log.error(USAGE);
 				return;
 			}
-
-			if(!args[1].equals(DONT_WAIT_IN_MAIN)){
-				propertiesFilename = args[1];
-			} else {
-				propertiesFilename = args[2];
-			} 
-
-			waitInMain = false;
+			loadAllOptions(args, startOptions);
+		default:
 		}
 		
-		try(InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(propertiesFilename)){
+		Properties props = new Properties();
+		try(InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(startOptions.propertiesFilename)){
 			if(is!=null){
 				props.load(is);
 			} else {
-				log.error("Unable to load file "+propertiesFilename);
+				log.error("Unable to load file {}", startOptions.propertiesFilename);
 				return;
 			}
 		} catch(IOException e){
-			log.error("Unable to load file "+propertiesFilename+": "+e.getMessage());
-			e.printStackTrace();
+			log.error("Unable to load file {}:{}", startOptions.propertiesFilename, e.getMessage());
+			log.error("",e);
 			return;
 		}
 		
-		getInstance();
-		instance.startUp(mainClassName, props);
+		getInstance().init(mainClassName, props);
 		Runtime.getRuntime().addShutdownHook(new Thread(()->{
 			try {
 				instance.shutDown();
 			} catch (Exception e) {
+				//Do nothing
 			}
 		}));
-				
-		log.info(MessageFormat.format("Started in {0, time, ss.S} seconds", System.currentTimeMillis()-start));
-		if(waitInMain){
-			int port = Integer.parseInt(props.getProperty("shutdown.port", "9999"));
-			log.info("Listening for shutdown command on port "+port);
+		
+		String startupTime = MessageFormat.format("Started in {0, time, ss.S} seconds", System.currentTimeMillis()-start);
+		log.info(startupTime);
+		if(startOptions.waitInMain){
+			listenForShutdown(props);
+		}
+	}
 
-			ServerSocket shutdownSocket;
-			
-			try {
-				shutdownSocket = ServerSocketFactory.getDefault().createServerSocket(port);
-			} catch (IOException e) {
-				log.error("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()
-						+ ". Exception occured whiles getting shutdown hook");
-				return;
-			}
-			
-			while(true){
-				Socket commandSocket;
-				try {
-					commandSocket = shutdownSocket.accept();
-					if(commandSocket.getInetAddress().isLoopbackAddress()){
-						int b = commandSocket.getInputStream().read();
-						if(b==0xFA) {
-							Main.log.info("Shutdown called....");
-							instance.shutDown();
-							Main.log.info("Shutdown complete");
-							break;
-						}
+	private static boolean argumentsAreInvalid(String[] args) {
+		return args.length>3 || args.length<=0;
+	}
+
+	private static void loadEitherOption(String[] args, StartOptions startOptions) {
+		if(firstArgumentNotWaitInMain(args))
+			startOptions.propertiesFilename = args[1];
+		else
+			startOptions.waitInMain = false;
+	}
+
+	private static boolean missingDontWaitInMain(String[] args) {
+		return !args[2].equals(DONT_WAIT_IN_MAIN) 
+				&& firstArgumentNotWaitInMain(args);
+	}
+
+	private static void loadAllOptions(String[] args, StartOptions startOptions) {
+		if(firstArgumentNotWaitInMain(args)){
+			startOptions.propertiesFilename = args[1];
+		} else {
+			startOptions.propertiesFilename = args[2];
+		}
+
+		startOptions.waitInMain = false;
+	}
+
+	private static boolean firstArgumentNotWaitInMain(String[] args) {
+		return !args[1].equals(DONT_WAIT_IN_MAIN);
+	}
+
+	private static void listenForShutdown(Properties props) {
+		int port = Integer.parseInt(props.getProperty("shutdown.port", "9999"));
+		log.info("Listening for shutdown command on port {}", port);
+		
+		while(true){
+			Socket commandSocket;
+			try(ServerSocket shutdownSocket = ServerSocketFactory.getDefault().createServerSocket(port)) {
+				commandSocket = shutdownSocket.accept();
+				if(commandSocket.getInetAddress().isLoopbackAddress()){
+					int b = commandSocket.getInputStream().read();
+					if(b==0xFA) {
+						Main.log.info("Shutdown called....");
+						instance.shutDown();
+						Main.log.info("Shutdown complete");
+						break;
 					}
-				} catch (IOException e) {
-					log.error("Could not understand message from shutdown command:"+e.getMessage());
 				}
+			} catch (IOException e) {
+				log.error("Could not understand message from shutdown command: {}",e.getMessage());
 			}
 		}
+	}
+	
+	static class StartOptions {
+		boolean waitInMain = true;
+		String propertiesFilename = "default.configuration";
 	}
 }

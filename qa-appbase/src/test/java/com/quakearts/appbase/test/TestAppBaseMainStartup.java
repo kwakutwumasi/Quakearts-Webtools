@@ -1,12 +1,13 @@
 package com.quakearts.appbase.test;
 
 import static org.junit.Assert.*;
+import static org.hamcrest.core.Is.*;
+import static org.awaitility.Awaitility.*;
 
 import java.lang.reflect.Field;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.core.Is.*;
-
+import org.awaitility.Duration;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
@@ -57,46 +58,45 @@ public class TestAppBaseMainStartup {
 
 		Main.main(new String[] {MainTestHelper.class.getName(),"-dontwaitinmain"});
 		Main.main(new String[] {MainTestHelper.class.getName(),"-dontwaitinmain"});
-		Thread.sleep(100);
-		
-		assertThat(MainTestHelper.isContextDependencyInjectionStarted(), is(true));
-		assertThat(MainTestHelper.isDatasourceStarted(), is(true));
-		assertThat(MainTestHelper.isEmbeddedWebServerStarted(), is(true));
-		assertThat(MainTestHelper.isJndiServicesStarted(), is(true));
-		assertThat(MainTestHelper.isJavaTransactionManagerInitiated(), is(true));
-		assertThat(MainTestHelper.isMainSingletonClassMatches(), is(true));
-		assertThat(MainTestHelper.isMainSingletonIniated(), is(true));
-
-		assertThat(MainNonDefaultTestHelper.isContextDependencyInjectionStarted(), is(false));
-		assertThat(MainNonDefaultTestHelper.isDatasourceStarted(), is(false));
-		assertThat(MainNonDefaultTestHelper.isEmbeddedWebServerStarted(), is(false));
-		assertThat(MainNonDefaultTestHelper.isJndiServicesStarted(), is(false));
-		assertThat(MainNonDefaultTestHelper.isJavaTransactionManagerInitiated(), is(false));
-		assertThat(MainNonDefaultTestHelper.isMainSingletonClassMatches(), is(false));
-		assertThat(MainNonDefaultTestHelper.isMainSingletonIniated(), is(false));
-
+		await().atMost(new Duration(1, TimeUnit.SECONDS)).untilAsserted(()->{
+			assertThat(MainTestHelper.isContextDependencyInjectionStarted(), is(true));
+			assertThat(MainTestHelper.isDatasourceStarted(), is(true));
+			assertThat(MainTestHelper.isEmbeddedWebServerStarted(), is(true));
+			assertThat(MainTestHelper.isJndiServicesStarted(), is(true));
+			assertThat(MainTestHelper.isJavaTransactionManagerInitiated(), is(true));
+			assertThat(MainTestHelper.isMainSingletonClassMatches(), is(true));
+			assertThat(MainTestHelper.isMainSingletonIniated(), is(true));
+	
+			assertThat(MainNonDefaultTestHelper.isContextDependencyInjectionStarted(), is(false));
+			assertThat(MainNonDefaultTestHelper.isDatasourceStarted(), is(false));
+			assertThat(MainNonDefaultTestHelper.isEmbeddedWebServerStarted(), is(false));
+			assertThat(MainNonDefaultTestHelper.isJndiServicesStarted(), is(false));
+			assertThat(MainNonDefaultTestHelper.isJavaTransactionManagerInitiated(), is(false));
+			assertThat(MainNonDefaultTestHelper.isMainSingletonClassMatches(), is(false));
+			assertThat(MainNonDefaultTestHelper.isMainSingletonIniated(), is(false));
+		});
 		clearInstanceVariables();
 		MainTestHelper.resetChecks();		
 		MainNonDefaultTestHelper.resetChecks();
 
 		Main.main(new String[] {MainNonDefaultTestHelper.class.getName(),"test.configuration","-dontwaitinmain"});
-		Thread.sleep(100);
-		
-		assertThat(MainTestHelper.isContextDependencyInjectionStarted(), is(false));
-		assertThat(MainTestHelper.isDatasourceStarted(), is(false));
-		assertThat(MainTestHelper.isEmbeddedWebServerStarted(), is(false));
-		assertThat(MainTestHelper.isJndiServicesStarted(), is(false));
-		assertThat(MainTestHelper.isJavaTransactionManagerInitiated(), is(false));
-		assertThat(MainTestHelper.isMainSingletonClassMatches(), is(false));
-		assertThat(MainTestHelper.isMainSingletonIniated(), is(false));
-
-		assertThat(MainNonDefaultTestHelper.isContextDependencyInjectionStarted(), is(true));
-		assertThat(MainNonDefaultTestHelper.isDatasourceStarted(), is(true));
-		assertThat(MainNonDefaultTestHelper.isEmbeddedWebServerStarted(), is(true));
-		assertThat(MainNonDefaultTestHelper.isJndiServicesStarted(), is(true));
-		assertThat(MainNonDefaultTestHelper.isJavaTransactionManagerInitiated(), is(true));
-		assertThat(MainNonDefaultTestHelper.isMainSingletonClassMatches(), is(true));
-		assertThat(MainNonDefaultTestHelper.isMainSingletonIniated(), is(true));		
+		await().atMost(new Duration(1, TimeUnit.SECONDS)).untilAsserted(()->{
+			assertThat(MainTestHelper.isContextDependencyInjectionStarted(), is(false));
+			assertThat(MainTestHelper.isDatasourceStarted(), is(false));
+			assertThat(MainTestHelper.isEmbeddedWebServerStarted(), is(false));
+			assertThat(MainTestHelper.isJndiServicesStarted(), is(false));
+			assertThat(MainTestHelper.isJavaTransactionManagerInitiated(), is(false));
+			assertThat(MainTestHelper.isMainSingletonClassMatches(), is(false));
+			assertThat(MainTestHelper.isMainSingletonIniated(), is(false));
+	
+			assertThat(MainNonDefaultTestHelper.isContextDependencyInjectionStarted(), is(true));
+			assertThat(MainNonDefaultTestHelper.isDatasourceStarted(), is(true));
+			assertThat(MainNonDefaultTestHelper.isEmbeddedWebServerStarted(), is(true));
+			assertThat(MainNonDefaultTestHelper.isJndiServicesStarted(), is(true));
+			assertThat(MainNonDefaultTestHelper.isJavaTransactionManagerInitiated(), is(true));
+			assertThat(MainNonDefaultTestHelper.isMainSingletonClassMatches(), is(true));
+			assertThat(MainNonDefaultTestHelper.isMainSingletonIniated(), is(true));		
+		});
 
 		clearInstanceVariables();
 		MainTestHelper.resetChecks();		
@@ -110,15 +110,13 @@ public class TestAppBaseMainStartup {
 			Main.main(new String[] {MainTestHelper.class.getName()});
 		});
 		mainTestHelperThread.start();
-		Thread.sleep(100);
+		await().atMost(new Duration(1, TimeUnit.SECONDS)).untilAsserted(()->
+			assertTrue("Main execution for MainTestHelper did not wait in main method", 
+					MainTestHelper.isMainSingletonIniated() && mainTestHelperThread.isAlive()));
 		
-		if(MainTestHelper.isMainSingletonIniated() && !mainTestHelperThread.isAlive())
-			fail("Main execution for MainTestHelper did not wait in main method");
-
 		Shutdown.main(new String[0]);
-		Thread.sleep(100);
-		if(mainTestHelperThread.isAlive())
-			fail("MainTestHelper did not shutdown as expected");
+		await().atMost(new Duration(1, TimeUnit.SECONDS)).untilAsserted(()->
+			assertTrue("MainTestHelper did not shutdown as expected", !mainTestHelperThread.isAlive()));
 
 		Thread mainNonDefaultTestHelperThread = new Thread(()->{
 			try {
@@ -129,14 +127,14 @@ public class TestAppBaseMainStartup {
 		});
 		
 		mainNonDefaultTestHelperThread.start();
-		Thread.sleep(100);
-		if(MainNonDefaultTestHelper.isMainSingletonIniated() && !mainNonDefaultTestHelperThread.isAlive())
-			fail("Main execution for MainNonDefaultTestHelper did not wait in main method");
+		await().atMost(new Duration(1, TimeUnit.SECONDS)).untilAsserted(()->
+			assertTrue("Main execution for MainNonDefaultTestHelper did not wait in main method",
+					MainNonDefaultTestHelper.isMainSingletonIniated() && mainNonDefaultTestHelperThread.isAlive()));
 		
 		Shutdown.main(new String[] {"10000"});
-		Thread.sleep(100);
-		if(mainNonDefaultTestHelperThread.isAlive())
-			fail("MainNonDefaultTestHelper did not shutdown as expected");
+		await().atMost(new Duration(1, TimeUnit.SECONDS)).untilAsserted(()->
+			assertTrue("MainNonDefaultTestHelper did not shutdown as expected", 
+					!mainNonDefaultTestHelperThread.isAlive()));
 		
 		clearInstanceVariables();
 	}
@@ -158,8 +156,7 @@ public class TestAppBaseMainStartup {
 	
 	private static void clearInstanceVariable(Object object, String fieldName) throws IllegalArgumentException, IllegalAccessException {
         Field[] declaredFields = object.getClass().getDeclaredFields();
-        for(Field field: declaredFields)
-        {
+        for(Field field: declaredFields) {
             if(fieldName.equals(field.getName())){
 	            field.setAccessible(true);
 	            field.set(object, null);
@@ -169,8 +166,7 @@ public class TestAppBaseMainStartup {
 	
 	private static void clearMainInstance() throws IllegalArgumentException, IllegalAccessException {
         Field[] declaredFields = Main.class.getDeclaredFields();
-        for(Field field: declaredFields)
-        {
+        for(Field field: declaredFields) {
             if("instance".equals(field.getName())){
 	            field.setAccessible(true);
 	            field.set(null, null);

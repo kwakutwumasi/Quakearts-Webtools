@@ -36,7 +36,7 @@ public @interface Transactional {
 	 * @author kwakutwumasi-afriyie
 	 *
 	 */
-	public static enum TransactionType{
+	public enum TransactionType{
 		/**Indicates that the method is at the start of a transaction chain.
 		 * If a transaction is already active throw an error.
 		 * If not start a transaction

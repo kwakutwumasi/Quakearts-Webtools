@@ -38,9 +38,10 @@ import com.quakearts.appbase.internal.properties.ConfigurationPropertyMap;
  */
 public class AppBasePropertiesLoaderImpl implements AppBasePropertiesLoader {
 	
-	public AppBasePropertiesLoaderImpl() {
-	}
-	
+	private static final String MUST_BE_A_JSON_OBJECT = ". Must be a json object.";
+	private static final String FOUND_IN = " found in ";
+	private static final String INVALID_CONFIGURATION_PARAMETER = "Invalid configuration parameter ";
+
 	/**Retrieve a list of {@linkplain ConfigurationPropertyMap} objects within the given folder
 	 * @param fileLocation the name of the search folder relative to the application root
 	 * @param fileSuffix the suffix of files to scan and load
@@ -78,8 +79,8 @@ public class AppBasePropertiesLoaderImpl implements AppBasePropertiesLoader {
 			}
 		} else if(!configurationFilesLocation.exists()){
 			configurationFilesLocation.mkdirs();
-			Main.log.info("Created "+configurationFilesLocation.getAbsolutePath()
-				+" to store "+appName+" files (*"+fileSuffix+")");
+			Main.log.info("Created {} to store {} files (*{})",
+					configurationFilesLocation.getAbsolutePath(),appName,fileSuffix);
 		} else {
 			throw new ConfigurationException("File "+configurationFilesLocation.getAbsolutePath()+" is not a directory. "
 					+ "This location must be a folder to hold configuration files");
@@ -230,9 +231,9 @@ public class AppBasePropertiesLoaderImpl implements AppBasePropertiesLoader {
 	}
 	
 	private void extractProperties(String filePath, Map<String, Serializable> map, JsonObject jsonObject, String path) {
-		jsonObject.forEach((c)->{
-			map.put(c.getName(), extractValue(new ParseContext(filePath, (path!=null?path+".":"")+c.getName()), c.getValue()));
-		});
+		jsonObject.forEach(c->
+			map.put(c.getName(), extractValue(new ParseContext(filePath, (path!=null?path+".":"")+c.getName()), c.getValue()))
+		);
 	}
 
 	private Serializable extractValue(ParseContext ctx, JsonValue jsonValue) {
@@ -256,7 +257,7 @@ public class AppBasePropertiesLoaderImpl implements AppBasePropertiesLoader {
 		} else if(jsonValue.isObject()){
 			value = handleSpecialObject(ctx, jsonValue.asObject());
 		} else {
-			throw new ConfigurationException("Invalid configuration parameter "+ctx.getPath()+" found in "
+			throw new ConfigurationException(INVALID_CONFIGURATION_PARAMETER+ctx.getPath()+FOUND_IN
 					+ctx.getFilePath()+". Json type "+jsonValue.getClass().getName()+" is handled.");
 		}
 		
@@ -265,7 +266,7 @@ public class AppBasePropertiesLoaderImpl implements AppBasePropertiesLoader {
 
 	private Serializable handleSpecialObject(ParseContext ctx, JsonObject object) {
 		if(object.isEmpty())
-			throw new ConfigurationException("Invalid configuration parameter "+ctx.getPath()+" found in "
+			throw new ConfigurationException(INVALID_CONFIGURATION_PARAMETER+ctx.getPath()+FOUND_IN
 					+ctx.getFilePath()+". Must not be empty.");
 			
 		Serializable value;
@@ -299,13 +300,13 @@ public class AppBasePropertiesLoaderImpl implements AppBasePropertiesLoader {
 	private Serializable extractSpecialObjectList(ParseContext ctx, JsonValue jsonValue) {
 		Serializable value;
 		if(!jsonValue.isArray())
-			throw new ConfigurationException("Invalid configuration parameter "+ctx.getPath()+" found in "
-					+ctx.getFilePath()+". Must be a json object.");
+			throw new ConfigurationException(INVALID_CONFIGURATION_PARAMETER+ctx.getPath()+FOUND_IN
+					+ctx.getFilePath()+MUST_BE_A_JSON_OBJECT);
 
 		ArrayList<Serializable> arrayList = new ArrayList<>();
-		jsonValue.asArray().forEach((v)->{
-			arrayList.add(extractValue(ctx, v));
-		});
+		jsonValue.asArray().forEach(v->
+			arrayList.add(extractValue(ctx, v))
+		);
 		value = arrayList;
 		return value;
 	}
@@ -313,26 +314,26 @@ public class AppBasePropertiesLoaderImpl implements AppBasePropertiesLoader {
 	private Serializable extractSpecialObjectSet(ParseContext ctx, JsonValue jsonValue) {
 		Serializable value;
 		if(!jsonValue.isArray())
-			throw new ConfigurationException("Invalid configuration parameter "+ctx.getPath()+" found in "
-					+ctx.getFilePath()+". Must be a json object.");
+			throw new ConfigurationException(INVALID_CONFIGURATION_PARAMETER+ctx.getPath()+FOUND_IN
+					+ctx.getFilePath()+MUST_BE_A_JSON_OBJECT);
 		
 		HashSet<Serializable> hashSet = new HashSet<>();
-		jsonValue.asArray().forEach((v)->{
-			hashSet.add(extractValue(ctx, v));
-		});
+		jsonValue.asArray().forEach(v->
+			hashSet.add(extractValue(ctx, v))
+		);
 		value = hashSet;
 		return value;
 	}
 
 	private Serializable extractSpecialObjectBinary(ParseContext ctx, JsonValue jsonValue) {
 		if(!jsonValue.isString())
-			throw new ConfigurationException("Invalid configuration parameter "+ctx.getPath()+" found in "
+			throw new ConfigurationException(INVALID_CONFIGURATION_PARAMETER+ctx.getPath()+FOUND_IN
 					+ctx.getFilePath()+". Must be a string enclosed by \"\".");
 
 		String base64String = jsonValue.asString();
 		
 		if(!base64String.matches("(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"))
-			throw new ConfigurationException("Invalid configuration parameter "+ctx.getPath()+" found in "
+			throw new ConfigurationException(INVALID_CONFIGURATION_PARAMETER+ctx.getPath()+FOUND_IN
 					+ctx.getFilePath()+". Must be a valid Base 64 encoded string enclosed by \"\".");
 
 		return Base64.getDecoder().decode(base64String);
@@ -340,8 +341,8 @@ public class AppBasePropertiesLoaderImpl implements AppBasePropertiesLoader {
 
 	private Serializable extractSpecialObjectMap(ParseContext ctx, JsonValue jsonValue) {
 		if(!jsonValue.isObject())
-			throw new ConfigurationException("Invalid configuration parameter "+ctx.getPath()
-					+" found in "+ctx.getFilePath()+". Must be a json object.");
+			throw new ConfigurationException(INVALID_CONFIGURATION_PARAMETER+ctx.getPath()
+					+FOUND_IN+ctx.getFilePath()+MUST_BE_A_JSON_OBJECT);
 
 		HashMap<String, Serializable> subMap = new HashMap<>();
 		extractProperties(ctx.getFilePath(), subMap, jsonValue.asObject(), ctx.getPath());

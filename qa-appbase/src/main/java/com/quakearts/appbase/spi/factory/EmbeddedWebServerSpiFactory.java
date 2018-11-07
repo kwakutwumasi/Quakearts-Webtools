@@ -35,7 +35,7 @@ public class EmbeddedWebServerSpiFactory {
 		if(webServerSpi == null)
 			try {
 				Class<?> javaTmSpiClass = Class.forName(embeddedSpiClassname);
-				Main.log.info("EmbeddedWebServerSpi class: "+embeddedSpiClassname+" loaded");
+				Main.log.info("EmbeddedWebServerSpi class: {} loaded", embeddedSpiClassname);
 				webServerSpi = (EmbeddedWebServerSpi) javaTmSpiClass.newInstance();
 				return webServerSpi;
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException| ClassCastException e) {

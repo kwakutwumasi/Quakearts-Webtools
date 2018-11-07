@@ -28,22 +28,24 @@ import org.apache.tomcat.util.modeler.Registry;
 
 import com.quakearts.appbase.exception.ConfigurationException;
 
-public class AppBaseWebAppLoader extends LifecycleMBeanBase 
-	implements PropertyChangeListener, Loader {
+public class AppBaseWebAppLoader extends LifecycleMBeanBase implements PropertyChangeListener, Loader {
 
+	private static final String CONTEXTSTRING = ",context=";
+	private static final String HOSTSTRING = ",host=";
 	private Context context;
-	
+
 	public AppBaseWebAppLoader(Context context) {
-		if(context == null)
+		if (context == null)
 			throw new ConfigurationException("context cannot be null");
 	}
-	
+
 	@Override
 	public void backgroundProcess() {
+		// Do nothing
 	}
 
 	private AppBaseWebappClassLoader classLoader;
-	
+
 	@Override
 	public ClassLoader getClassLoader() {
 		return classLoader;
@@ -56,29 +58,21 @@ public class AppBaseWebAppLoader extends LifecycleMBeanBase
 
 	@Override
 	public void setContext(Context context) {
+		if (getState().isAvailable()) {
+			throw new IllegalStateException("Loader is not available for change");
+		}
+
+		if (this.context != null) {
+			this.context.removePropertyChangeListener(this);
+		}
+
+		Context oldContext = this.context;
 		this.context = context;
-		
-        if (this.context == context) {
-            return;
-        }
+		support.firePropertyChange("context", oldContext, this.context);
 
-        if (getState().isAvailable()) {
-            throw new IllegalStateException("Loader is not available for change");
-        }
-        
-        if (this.context != null) {
-            this.context.removePropertyChangeListener(this);
-        }
-
-        Context oldContext = this.context;
-        this.context = context;
-        support.firePropertyChange("context", oldContext, this.context);
-
-        if (this.context != null) {
-            setReloadable(this.context.getReloadable());
-            this.context.addPropertyChangeListener(this);
-        }
-
+		if (this.context != null) {
+			this.context.addPropertyChangeListener(this);
+		}
 	}
 
 	@Override
@@ -88,6 +82,7 @@ public class AppBaseWebAppLoader extends LifecycleMBeanBase
 
 	@Override
 	public void setDelegate(boolean delegate) {
+		// Do nothing
 	}
 
 	@Override
@@ -97,13 +92,14 @@ public class AppBaseWebAppLoader extends LifecycleMBeanBase
 
 	@Override
 	public void setReloadable(boolean reloadable) {
+		// Do nothing
 	}
-	
-    protected final PropertyChangeSupport support = new PropertyChangeSupport(this);
+
+	protected final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
 	@Override
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
-        support.addPropertyChangeListener(listener);
+		support.addPropertyChangeListener(listener);
 	}
 
 	@Override
@@ -113,41 +109,29 @@ public class AppBaseWebAppLoader extends LifecycleMBeanBase
 
 	@Override
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
-        support.removePropertyChangeListener(listener);
+		support.removePropertyChangeListener(listener);
 	}
 
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
-		if(event.getSource() instanceof Context) {
-			if(event.getPropertyName().equals("configured")
-					&& ((Boolean) event.getNewValue()) 
-					&& classLoader != null) {
-				try {
-					classLoader.stop();
-				} catch (LifecycleException e) {
-				}
-				classLoader = null;
-			}
-		}
+		// Do nothing
 	}
 
 	@Override
 	protected String getDomainInternal() {
-        return context.getDomain();
+		return context.getDomain();
 	}
 
 	@Override
 	protected String getObjectNameKeyProperties() {
-        StringBuilder name = new StringBuilder("type=Loader")
-        	.append(",host=")
-        .append(context.getParent().getName())
-        .append(",context=");
-        String contextName = context.getName();
-        if (!contextName.startsWith("/")) {
-            name.append("/");
-        }
-        name.append(contextName);
-        return name.toString();
+		StringBuilder name = new StringBuilder("type=Loader").append(HOSTSTRING).append(context.getParent().getName())
+				.append(CONTEXTSTRING);
+		String contextName = context.getName();
+		if (!contextName.startsWith("/")) {
+			name.append("/");
+		}
+		name.append(contextName);
+		return name.toString();
 	}
 
 	@Override
@@ -167,7 +151,7 @@ public class AppBaseWebAppLoader extends LifecycleMBeanBase
 
 		try {
 			ObjectName cloname = new ObjectName(context.getDomain() + ":type=" + classLoader.getClass().getSimpleName()
-					+ ",host=" + context.getParent().getName() + ",context=" + contextName);
+					+ HOSTSTRING + context.getParent().getName() + CONTEXTSTRING + contextName);
 			Registry.getRegistry(null, null).registerComponent(classLoader, cloname, null);
 		} catch (Throwable e) {
 			e = ExceptionUtils.unwrapInvocationTargetException(e);
@@ -180,33 +164,34 @@ public class AppBaseWebAppLoader extends LifecycleMBeanBase
 
 	@Override
 	protected void stopInternal() throws LifecycleException {
-        setState(LifecycleState.STOPPING);
+		setState(LifecycleState.STOPPING);
 
-        // Remove context attributes as appropriate
-        ServletContext servletContext = context.getServletContext();
-        servletContext.removeAttribute(Globals.CLASS_PATH_ATTR);
+		// Remove context attributes as appropriate
+		ServletContext servletContext = context.getServletContext();
+		servletContext.removeAttribute(Globals.CLASS_PATH_ATTR);
 
-        if (classLoader != null) {
-            try {
-                classLoader.stop();
-            } finally {
-                classLoader.destroy();
-            }
+		if (classLoader != null) {
+			try {
+				classLoader.stop();
+			} finally {
+				classLoader.destroy();
+			}
 
-            // classLoader must be non-null to have been registered
-            try {
-                String contextName = context.getName();
-                if (!contextName.startsWith("/")) {
-                    contextName = "/" + contextName;
-                }
-                ObjectName cloname = new ObjectName(context.getDomain() + ":type=" +
-                        classLoader.getClass().getSimpleName() + ",host=" +
-                        context.getParent().getName() + ",context=" + contextName);
-                Registry.getRegistry(null, null).unregisterComponent(cloname);
-            } catch (Exception e) {
-            }
-        }
+			// classLoader must be non-null to have been registered
+			try {
+				String contextName = context.getName();
+				if (!contextName.startsWith("/")) {
+					contextName = "/" + contextName;
+				}
+				ObjectName cloname = new ObjectName(
+						context.getDomain() + ":type=" + classLoader.getClass().getSimpleName() + HOSTSTRING
+								+ context.getParent().getName() + CONTEXTSTRING + contextName);
+				Registry.getRegistry(null, null).unregisterComponent(cloname);
+			} catch (Exception e) {
+				// Do nothing
+			}
+		}
 
-        classLoader = null;
+		classLoader = null;
 	}
 }

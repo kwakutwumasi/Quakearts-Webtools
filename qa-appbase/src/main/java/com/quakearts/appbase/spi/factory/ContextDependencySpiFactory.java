@@ -35,7 +35,7 @@ public class ContextDependencySpiFactory {
 		if(dependencySpi == null)
 			try {
 				Class<?> cdiSpiClass = Class.forName(cdiSpiClassname);
-				Main.log.info("ContextDependencySpi class: "+cdiSpiClassname+" loaded");
+				Main.log.info("ContextDependencySpi class: {} loaded", cdiSpiClassname);
 				dependencySpi = (ContextDependencySpi) cdiSpiClass.newInstance();
 				return dependencySpi;
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException| ClassCastException e) {

@@ -35,7 +35,7 @@ public class DataSourceProviderSpiFactory {
 		if(dataSourceProviderSpi == null)
 			try {
 				Class<?> javaTmSpiClass = Class.forName(dataSourceProviderSpiClassName);
-				Main.log.info("DataSourceProviderSpi class: "+dataSourceProviderSpiClassName+" loaded");
+				Main.log.info("DataSourceProviderSpi class: {} loaded", dataSourceProviderSpiClassName);
 				dataSourceProviderSpi = (DataSourceProviderSpi) javaTmSpiClass.newInstance();
 				return dataSourceProviderSpi;
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException| ClassCastException e) {

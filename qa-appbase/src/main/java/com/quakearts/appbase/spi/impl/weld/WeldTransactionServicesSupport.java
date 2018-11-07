@@ -28,6 +28,7 @@ public class WeldTransactionServicesSupport implements TransactionServices {
 	
 	@Override
 	public void cleanup() {
+		//Do nothing
 	}
 
 	@Override
@@ -41,6 +42,7 @@ public class WeldTransactionServicesSupport implements TransactionServices {
 			if(transaction.getStatus()==Status.STATUS_ACTIVE)
 				transaction.registerSynchronization(synchronizedObserver);
 		} catch (SystemException | IllegalStateException | RollbackException e) {
+			Main.log.error("Register synchronization error",e);
 		}
 	}
 
@@ -54,6 +56,7 @@ public class WeldTransactionServicesSupport implements TransactionServices {
 					.getTransaction();
 			return transaction.getStatus()==Status.STATUS_ACTIVE;
 		} catch (SystemException | IllegalStateException e) {
+			Main.log.error("Is transaction active error",e);
 		}
 		return false;
 	}

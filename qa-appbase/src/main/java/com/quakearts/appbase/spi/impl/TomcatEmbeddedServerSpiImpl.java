@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.enterprise.inject.Vetoed;
 import javax.servlet.ServletContextListener;
@@ -140,10 +140,14 @@ import com.quakearts.appbase.spi.impl.tomcat.AppBaseWebAppLoader;
 @Vetoed
 public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 	
+	private static final String CLASS_FILE_NOT_VISIBLE = "Class file resource {} is not visible to the CDI container. Injection of beans will not be available.";
+	private static final String COMMA = ".";
+	private static final String UNABLE_TO_INSTROSPECT = "Unable to instrospect ";
 	private List<Tomcat> tomcatInstances = new ArrayList<>();
 	private AppBasePropertiesLoader propertiesLoader = Main.getAppBasePropertiesLoader();
 	private Set<WebAppListener> webAppListeners = new HashSet<>();
-	private WebAppListener firstListener, lastListener;
+	private WebAppListener firstListener;
+	private WebAppListener lastListener;
 	private String rootLocation = "webservers";
 	
 	public TomcatEmbeddedServerSpiImpl() {
@@ -166,7 +170,7 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 	}
 	
 	@Override
-	public void addDefaultListener(WebAppListener listener) throws ConfigurationException {
+	public void addDefaultListener(WebAppListener listener) {
 		if(listener == null)
 			throw new ConfigurationException("Listener is required");
 		
@@ -191,7 +195,7 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 		}
 	}
 	
-	private void checkType(Class<?> listener) throws ConfigurationException {
+	private void checkType(Class<?> listener) {
 		if(!ServletContextListener.class.isAssignableFrom(listener)
 				&& !ServletRequestListener.class.isAssignableFrom(listener)
 				&& !HttpSessionListener.class.isAssignableFrom(listener))
@@ -223,12 +227,9 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 	private boolean createWebserverFromClasspath(File webserversDirLocation) {
 		ClassLoader loader = Thread.currentThread()
 				.getContextClassLoader();
-		InputStream webappconfigin = loader
-				.getResourceAsStream("main-webapp.config.json"),
-				webxmlin = loader
-					.getResourceAsStream("main-web.xml"),
-				serverconfigin = loader
-					.getResourceAsStream("main-server.config.json");
+		InputStream webappconfigin = loader.getResourceAsStream("main-webapp.config.json");
+		InputStream webxmlin = loader.getResourceAsStream("main-web.xml");
+		InputStream serverconfigin = loader.getResourceAsStream("main-server.config.json");
 		if(webappconfigin!=null || webxmlin!=null) {
 			createWebserver(webserversDirLocation, webappconfigin, webxmlin, serverconfigin);
 			return true;
@@ -290,7 +291,7 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 		}
 	}
 
-	private void launchInstance(File webserverLocation) throws ConfigurationException {
+	private void launchInstance(File webserverLocation) {
         File webappDirLocation = new File(webserverLocation,"webapps");
         if(webappDirLocation.exists() && webappDirLocation.isDirectory()) {
 	        final Tomcat tomcat = new Tomcat();
@@ -298,16 +299,8 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 	        tomcat.setBaseDir(webserverLocation.getPath());
 	        tomcat.getHost().setConfigClass(AppBaseContextConfig.class.getName());        
 	        File configurationFile = new File(webserverLocation, "conf"+File.separator+"server.config.json");
-	        ConfigurationPropertyMap webAppConfigurationMap;
-	        if(configurationFile.exists() && configurationFile.isFile()){
-	        	webAppConfigurationMap = propertiesLoader.loadParametersFromFile(configurationFile);
-		    } else if(configurationFile.exists() && !configurationFile.isFile()) {
-		    	throw new ConfigurationException("Invalid file in /"+webserverLocation+". conf/server.config.json is not a file.");
-	        } else {
-	        	webAppConfigurationMap = Main.getInstance().getAppConfiguration().getSubConfigurationPropertyMap("web");
-	        	if(webAppConfigurationMap == null)
-	        		webAppConfigurationMap = propertiesLoader.loadParametersFromEnvironment("web");
-	        }
+	        ConfigurationPropertyMap webAppConfigurationMap = 
+	        		getConfigurationProperty(webserverLocation, configurationFile);
 
 			configureWebServer(webAppConfigurationMap, tomcat, webserverLocation);
 
@@ -327,8 +320,22 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 	        }).start();
 	        tomcatInstances.add(tomcat);
 		} else if(webappDirLocation.exists() && webappDirLocation.isFile()) {
-        		throw new ConfigurationException("Invalid file in /"+webserverLocation+". webapps is not a directory.");
+        	throw new ConfigurationException("Invalid file in /"+webserverLocation+". webapps is not a directory.");
 		}
+	}
+
+	private ConfigurationPropertyMap getConfigurationProperty(File webserverLocation, File configurationFile) {
+		ConfigurationPropertyMap webAppConfigurationMap;
+		if(configurationFile.exists() && configurationFile.isFile()){
+			webAppConfigurationMap = propertiesLoader.loadParametersFromFile(configurationFile);
+		} else if(configurationFile.exists() && !configurationFile.isFile()) {
+			throw new ConfigurationException("Invalid file in /"+webserverLocation+". conf/server.config.json is not a file.");
+		} else {
+			webAppConfigurationMap = Main.getInstance().getAppConfiguration().getSubConfigurationPropertyMap("web");
+			if(webAppConfigurationMap == null)
+				webAppConfigurationMap = propertiesLoader.loadParametersFromEnvironment("web");
+		}
+		return webAppConfigurationMap;
 	}
 	
 	private void configureWebServer(ConfigurationPropertyMap serverConfiguration, Tomcat tomcat, File webserverLocation) {
@@ -341,123 +348,147 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 			tomcat.setHostname(serverConfiguration.getString("hostname"));
 	
 		if (serverConfiguration.containsKey("connectorProtocol")){
-			Connector connector = new Connector(serverConfiguration.getString("connectorProtocol"));
-	        
-			if (serverConfiguration.containsKey("port")) {
-	        	connector.setPort(serverConfiguration.getInt("port"));
-	        }
-	        
-			tomcat.setConnector(connector);
+			setConnector(serverConfiguration, tomcat);
 		} else {
-		    //The port that we should run on can be set into an environment variable
-		    //Look for that variable and default to 8080 if it isn't there.
-		    if (serverConfiguration.containsKey("port")) {
-				tomcat.getConnector().setPort(serverConfiguration.getInt("port"));
-			}
+		    setPort(serverConfiguration, tomcat);
 		}
 		
+		loadConnectorProperties(serverConfiguration, tomcat, webserverLocation);
+		loadConnectorProtocolProperties(serverConfiguration, tomcat);
+	
+		if (serverConfiguration.containsKey("usessl") 
+				&& serverConfiguration.getBoolean("usessl")) {
+			configureTLS(serverConfiguration, tomcat, webserverLocation);
+		}
+	}
+
+	private void setConnector(ConfigurationPropertyMap serverConfiguration, Tomcat tomcat) {
+		Connector connector = new Connector(serverConfiguration.getString("connectorProtocol"));
+		
+		if (serverConfiguration.containsKey("port")) {
+			connector.setPort(serverConfiguration.getInt("port"));
+		}
+		
+		tomcat.setConnector(connector);
+	}
+
+	private void setPort(ConfigurationPropertyMap serverConfiguration, Tomcat tomcat) {
+		//The port that we should run on can be set into an environment variable
+		//Look for that variable and default to 8080 if it isn't there.
+		if (serverConfiguration.containsKey("port")) {
+			tomcat.getConnector().setPort(serverConfiguration.getInt("port"));
+		}
+	}
+
+	private void loadConnectorProperties(ConfigurationPropertyMap serverConfiguration, Tomcat tomcat,
+			File webserverLocation) {
 		try {
 			serverConfiguration.populateBean(tomcat.getConnector(), "connector");				
 		} catch (ConfigurationException e) {
 			throw new ConfigurationException("Invalid connector property in configuration for "+webserverLocation.getPath()+":"+e.getMessage(), e);
 		} catch (IntrospectionException e) {
-			throw new ConfigurationException("Unable to instrospect "+Connector.class+": "+e.getMessage(), e);
+			throw new ConfigurationException(UNABLE_TO_INSTROSPECT+Connector.class+": "+e.getMessage(), e);
 		}
-		
-		getProperties("connectorProtocol.", serverConfiguration).keySet().stream().forEach((key)->{
-			String propertyName = key.substring(key.indexOf(".")+1);
+	}
+
+	private void loadConnectorProtocolProperties(ConfigurationPropertyMap serverConfiguration, Tomcat tomcat) {
+		getProperties("connectorProtocol.", serverConfiguration).keySet().stream().forEach(key->{
+			String propertyName = key.substring(key.indexOf(COMMA)+1);
 			String value = serverConfiguration.getString(key);
 			tomcat.getConnector().setProperty(propertyName, value);
 		});
-	
-		if (serverConfiguration.containsKey("usessl") 
-				&& serverConfiguration.getBoolean("usessl")) {
-			SSLHostConfig sslHostConfig = new SSLHostConfig();
-			
-			String protocols = serverConfiguration.getString("protocols");
-			if(protocols!=null) {
-				sslHostConfig.setProtocols(protocols);
-			}
-			
-			try {
-				serverConfiguration.populateBean(sslHostConfig, "sslHostConfig");
-			} catch (ConfigurationException e) {
-				throw new ConfigurationException("Invalid ssl property in configuration for "+webserverLocation.getPath()+":"+e.getMessage());
-			} catch (IntrospectionException e) {
-				throw new ConfigurationException("Unable to instrospect "+SSLHostConfig.class+": "+e.getMessage());
-			}
-			
-			tomcat.getConnector().addSslHostConfig(sslHostConfig);
-			tomcat.getConnector().setScheme("https");
-			tomcat.getConnector().setProperty("SSLEnabled", "true");
-			tomcat.getConnector().setSecure(true);
-			
-			if(serverConfiguration.containsKey("usehttp2")
-					&& serverConfiguration.getBoolean("usehttp2")) {
-				//Only do this for the main connector. No need to use it for the second connector (i.e. when the
-				//main connector is TLS and the secondary connector is unsecured, to allow for redirection
-				Http2Protocol http2Protocol = new Http2Protocol();
-				try {
-					serverConfiguration.populateBean(http2Protocol, "connector.http2");
-				} catch (ConfigurationException e) {
-					throw new ConfigurationException("Invalid ssl property in configuration for "+webserverLocation.getPath()+":"+e.getMessage());
-				} catch (IntrospectionException e) {
-					throw new ConfigurationException("Unable to instrospect "+SSLHostConfig.class+": "+e.getMessage());
-				}
-				
-				tomcat.getConnector().addUpgradeProtocol(http2Protocol);
-			}
-			
-			if(serverConfiguration.containsKey("addunsecured") 
-					&& serverConfiguration.getBoolean("addunsecured")) {
-				Connector connector;
-				if (serverConfiguration.containsKey("unsecuredConnectorProtocol")){
-					connector = new Connector(serverConfiguration.getString("unsecuredConnectorProtocol"));
-				} else {
-					connector = new Connector();
-				}
-				
-				if (serverConfiguration.containsKey("unsecuredPort")) {
-					connector.setPort(serverConfiguration.getInt("unsecuredPort"));
-				} else {
-					throw new ConfigurationException("Missing property inconfiguration for "+webserverLocation.getPath()+": unsecuredPort is required");
-				}
-				
-				try {
-					serverConfiguration.populateBean(connector, "unsecuredConnector");				
-				} catch (ConfigurationException e) {
-					throw new ConfigurationException("Invalid unsecured connector property in /"+webserverLocation.getName()+":"+e.getMessage(), e);
-				} catch (IntrospectionException e) {
-					throw new ConfigurationException("Unable to instrospect "+Connector.class+": "+e.getMessage(), e);
-				}
-				
-				getProperties("unsecuredConnectorProtocol.", serverConfiguration).keySet().stream().forEach((key)->{
-					String propertyName = key.substring(key.indexOf(".")+1);
-					String value = serverConfiguration.getString(key);
-					connector.setProperty(propertyName, value);
-				});
-				
-				connector.setRedirectPort(tomcat.getConnector().getPort());
-				tomcat.getService().addConnector(connector);
-			}
+	}
+
+	private void configureTLS(ConfigurationPropertyMap serverConfiguration, Tomcat tomcat, File webserverLocation) {
+		addTLS(serverConfiguration, tomcat, webserverLocation);
+		
+		if(serverConfiguration.containsKey("usehttp2")
+				&& serverConfiguration.getBoolean("usehttp2")) {
+			addHttp2(serverConfiguration, tomcat, webserverLocation);
 		}
+		
+		if(serverConfiguration.containsKey("addunsecured") 
+				&& serverConfiguration.getBoolean("addunsecured")) {
+			addUnsecured(serverConfiguration, tomcat, webserverLocation);
+		}
+	}
+
+	private void addTLS(ConfigurationPropertyMap serverConfiguration, Tomcat tomcat, File webserverLocation) {
+		SSLHostConfig sslHostConfig = new SSLHostConfig();
+		
+		String protocols = serverConfiguration.getString("protocols");
+		if(protocols!=null) {
+			sslHostConfig.setProtocols(protocols);
+		}
+		
+		try {
+			serverConfiguration.populateBean(sslHostConfig, "sslHostConfig");
+		} catch (ConfigurationException e) {
+			throw new ConfigurationException("Invalid ssl property in configuration for "+webserverLocation.getPath()+":"+e.getMessage());
+		} catch (IntrospectionException e) {
+			throw new ConfigurationException(UNABLE_TO_INSTROSPECT+SSLHostConfig.class+": "+e.getMessage());
+		}
+		
+		tomcat.getConnector().addSslHostConfig(sslHostConfig);
+		tomcat.getConnector().setScheme("https");
+		tomcat.getConnector().setProperty("SSLEnabled", "true");
+		tomcat.getConnector().setSecure(true);
+	}
+
+	private void addHttp2(ConfigurationPropertyMap serverConfiguration, Tomcat tomcat, File webserverLocation) {
+		//Only do this for the main connector. No need to use it for the second connector (i.e. when the
+		//main connector is TLS and the secondary connector is unsecured, to allow for redirection
+		Http2Protocol http2Protocol = new Http2Protocol();
+		try {
+			serverConfiguration.populateBean(http2Protocol, "connector.http2");
+		} catch (ConfigurationException e) {
+			throw new ConfigurationException("Invalid ssl property in configuration for "+webserverLocation.getPath()+":"+e.getMessage());
+		} catch (IntrospectionException e) {
+			throw new ConfigurationException(UNABLE_TO_INSTROSPECT+SSLHostConfig.class+": "+e.getMessage());
+		}
+		
+		tomcat.getConnector().addUpgradeProtocol(http2Protocol);
+	}
+
+	private void addUnsecured(ConfigurationPropertyMap serverConfiguration, Tomcat tomcat, File webserverLocation) {
+		Connector connector;
+		if (serverConfiguration.containsKey("unsecuredConnectorProtocol")){
+			connector = new Connector(serverConfiguration.getString("unsecuredConnectorProtocol"));
+		} else {
+			connector = new Connector();
+		}
+		
+		if (serverConfiguration.containsKey("unsecuredPort")) {
+			connector.setPort(serverConfiguration.getInt("unsecuredPort"));
+		} else {
+			throw new ConfigurationException("Missing property inconfiguration for "+webserverLocation.getPath()+": unsecuredPort is required");
+		}
+		
+		try {
+			serverConfiguration.populateBean(connector, "unsecuredConnector");				
+		} catch (ConfigurationException e) {
+			throw new ConfigurationException("Invalid unsecured connector property in /"+webserverLocation.getName()+":"+e.getMessage(), e);
+		} catch (IntrospectionException e) {
+			throw new ConfigurationException(UNABLE_TO_INSTROSPECT+Connector.class+": "+e.getMessage(), e);
+		}
+		
+		getProperties("unsecuredConnectorProtocol.", serverConfiguration).keySet().stream().forEach(key->{
+			String propertyName = key.substring(key.indexOf(COMMA)+1);
+			String value = serverConfiguration.getString(key);
+			connector.setProperty(propertyName, value);
+		});
+		
+		connector.setRedirectPort(tomcat.getConnector().getPort());
+		tomcat.getService().addConnector(connector);
 	}
 
 	private void configureWepapp(File webappFolder, Tomcat tomcat) {
 		if(!webappFolder.isDirectory())
 			throw new ConfigurationException("Invalid web application. Must be a folder. If it is a zipped war file, explode it in the webapps directory");
 	
-	    StandardContext ctx;
-		String contextName = webappFolder.getName().equals("webapp")?"":"/"+webappFolder.getName();
-		if(contextName.endsWith(".war"))
-			contextName = contextName.substring(0, contextName.indexOf(".war"));
-		
-		ctx = (StandardContext) tomcat.addWebapp(contextName, webappFolder.getAbsolutePath());
-		
-		//Prevent the scanning of the main app classpath to improve performance and prevent errors
-		((StandardJarScanner)ctx.getJarScanner()).setScanClassPath(false);
-	    
-		Main.log.debug("Configured web application with base directory: " +webappFolder.getAbsolutePath());
+		String contextName = getContextName(webappFolder);		
+	    StandardContext ctx = getContext(webappFolder, tomcat, contextName);
+		Main.log.debug("Configured web application with base directory: {}", webappFolder.getAbsolutePath());
 	
 	    File webInfClasses = new File(webappFolder,"WEB-INF/classes");
 	    
@@ -465,68 +496,111 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 	    		webInfClasses.mkdirs();
 		    Main.log.debug("Created WEB-INF/classes");
 	    } else if(!webInfClasses.isDirectory()){ //Someone is playing games....
-	    		throw new ConfigurationException(webInfClasses.getAbsolutePath()+ " is not a directory");
+	    	throw new ConfigurationException(webInfClasses.getAbsolutePath()+ " is not a directory");
 	    } else {
-	    		for(String file:webInfClasses.list()) {//Check to see if there are class files and warn of no CDI injection
-	    			if(file.endsWith(".class"))
-					    Main.log.warn("Class file resource "+file+" is not visible to the CDI container. Injection of beans will not be available.");
-	    		}
+    		checkWebInfClasses(webInfClasses);
 	    }
 	    
 	    File webInfLibs = new File(webappFolder,"WEB-INF/lib");
 	    if(webInfLibs.exists()){
-	    		for(String file:webInfLibs.list()) {//Check to see if there are jar files and warn of no CDI injection
-	    		if(file.endsWith(".jar"))
-	    			Main.log.warn("Jar file resource "+file+" is not visible to the CDI container. Injection of beans will not be available.");
-	    		}
+    		checkWebInfLibs(webInfLibs);
 	    }
 	   
 		File webappConfigurationFile = new File(webappFolder, "META-INF" + File.separator + "webapp.config.json");
 		if (webappConfigurationFile.exists() && webappConfigurationFile.isFile()) {
-			final ConfigurationPropertyMap webappConfiguration = propertiesLoader
-					.loadParametersFromFile(webappConfigurationFile);
-			WebResourceRoot resources = new StandardRoot(ctx);
-			ctx.setResources(resources);
-			if (webappConfiguration.containsKey("webapp.libraries")) {
-				@SuppressWarnings("unchecked")
-				Set<String> libraries = webappConfiguration.get("webapp.libraries", Set.class);
-				if(libraries.size()>0) {
-					String repoBase = webappConfiguration.getString("webapp.libraries.base");
-					if(repoBase == null)
-						repoBase = "repo";
-					
-					AppBaseVirtualDirectoryResourceSet resourceSet = new AppBaseVirtualDirectoryResourceSet(resources, 
-							"/WEB-INF/lib", repoBase,"/");
-					for (String library : libraries) {
-						resourceSet.addUrl(library, ClassPathSupport.getClasspathResources().getLibraryPath(library));
-					}
-					resources.addJarResources(resourceSet);
-				}
-			}
-			
-			if(webappConfiguration.containsKey("webapp.directories")) {
-				@SuppressWarnings("unchecked")
-				Set<String> directories = webappConfiguration.get("webapp.directories", Set.class);
-				if(directories.size()>0) {
-					for(String directory:directories) {
-						File file = new File(directory);
-						if(file.exists() && file.isDirectory()) {
-							if(!file.isAbsolute())
-								file = file.getAbsoluteFile();
-							
-							resources.addPostResources(new DirResourceSet(resources, "/WEB-INF/classes", file.getAbsolutePath(), "/"));
-						} else {
-							throw new ConfigurationException("Unable to locate directory "+directory);
-						}
-					}
-				}
-			}
-			
-	        if(webappConfiguration.containsKey("webapp.scifilter")) {
-	        	ctx.setContainerSciFilter(webappConfiguration.getString("webapp.scifilter"));
-	        }			        
+			configureWebApp(ctx, webappConfigurationFile);			        
 	    }
 		
+		addWebAppListeners(ctx);		
+		addContainerListenerEvents(ctx);				        
+	    setClassLoader(ctx);
+		setInstanceManager(ctx);
+	}
+
+	private String getContextName(File webappFolder) {
+		String contextName = webappFolder.getName().equals("webapp")?"":"/"+webappFolder.getName();
+		if(contextName.endsWith(".war"))
+			contextName = contextName.substring(0, contextName.indexOf(".war"));
+		return contextName;
+	}
+
+	private StandardContext getContext(File webappFolder, Tomcat tomcat, String contextName) {
+		StandardContext ctx;
+		ctx = (StandardContext) tomcat.addWebapp(contextName, webappFolder.getAbsolutePath());
+		
+		//Prevent the scanning of the main app classpath to improve performance and prevent errors
+		((StandardJarScanner)ctx.getJarScanner()).setScanClassPath(false);
+		return ctx;
+	}
+
+	private void checkWebInfClasses(File webInfClasses) {
+		for(String file:webInfClasses.list()) {//Check to see if there are class files and warn of no CDI injection
+			if(file.endsWith(".class"))
+			    Main.log.warn(CLASS_FILE_NOT_VISIBLE, file);
+		}
+	}
+
+	private void checkWebInfLibs(File webInfLibs) {
+		for(String file:webInfLibs.list()) {//Check to see if there are jar files and warn of no CDI injection
+			if(file.endsWith(".jar"))
+			    Main.log.warn(CLASS_FILE_NOT_VISIBLE, file);
+		}
+	}
+
+	private void configureWebApp(StandardContext ctx, File webappConfigurationFile) {
+		final ConfigurationPropertyMap webappConfiguration = propertiesLoader
+				.loadParametersFromFile(webappConfigurationFile);
+		WebResourceRoot resources = new StandardRoot(ctx);
+		ctx.setResources(resources);
+		if (webappConfiguration.containsKey("webapp.libraries")) {
+			addWebAppLibraries(webappConfiguration, resources);
+		}
+		
+		if(webappConfiguration.containsKey("webapp.directories")) {
+			addWebAppDirectories(webappConfiguration, resources);
+		}
+		
+		if(webappConfiguration.containsKey("webapp.scifilter")) {
+			ctx.setContainerSciFilter(webappConfiguration.getString("webapp.scifilter"));
+		}
+	}
+
+	private void addWebAppLibraries(final ConfigurationPropertyMap webappConfiguration, WebResourceRoot resources) {
+		@SuppressWarnings("unchecked")
+		Set<String> libraries = webappConfiguration.get("webapp.libraries", Set.class);
+		if(!libraries.isEmpty()) {
+			String repoBase = webappConfiguration.getString("webapp.libraries.base");
+			if(repoBase == null)
+				repoBase = "repo";
+			
+			AppBaseVirtualDirectoryResourceSet resourceSet = new AppBaseVirtualDirectoryResourceSet(resources, 
+					"/WEB-INF/lib", repoBase,"/");
+			for (String library : libraries) {
+				resourceSet.addUrl(library, ClassPathSupport.getClasspathResources().getLibraryPath(library));
+			}
+			resources.addJarResources(resourceSet);
+		}
+	}
+
+	private void addWebAppDirectories(final ConfigurationPropertyMap webappConfiguration, WebResourceRoot resources) {
+		@SuppressWarnings("unchecked")
+		Set<String> directories = webappConfiguration.get("webapp.directories", Set.class);
+		if(!directories.isEmpty()) {
+			for(String directory:directories) {
+				File file = new File(directory);
+				if(file.exists() && file.isDirectory()) {
+					if(!file.isAbsolute())
+						file = file.getAbsoluteFile();
+					
+					resources.addPostResources(new DirResourceSet(resources, "/WEB-INF/classes", file.getAbsolutePath(), "/"));
+				} else {
+					throw new ConfigurationException("Unable to locate directory "+directory);
+				}
+			}
+		}
+	}
+
+	private void addWebAppListeners(StandardContext ctx) {
 		if(firstListener != null) {
 			ctx.addApplicationListener(firstListener.getListenerClass().getName());
 		} 
@@ -539,8 +613,10 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 		if(lastListener != null) {
 			ctx.addApplicationListener(lastListener.getListenerClass().getName());				
 		}
-		
-		ctx.addContainerListener((event)->{
+	}
+
+	private void addContainerListenerEvents(StandardContext ctx) {
+		ctx.addContainerListener(event->{
 			synchronized (this) {
 				if(event.getType().equals("addApplicationListener") 
 						&& lastListener != null //It is supposed to be always last
@@ -550,22 +626,23 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 				}
 			}
 		});
-				        
-	    AppBaseWebAppLoader webappLoader = new AppBaseWebAppLoader(ctx);
+	}
+
+	private void setClassLoader(StandardContext ctx) {
+		AppBaseWebAppLoader webappLoader = new AppBaseWebAppLoader(ctx);
 	    ctx.setLoader(webappLoader);
+	}
+
+	private void setInstanceManager(StandardContext ctx) {
 		ctx.setInstanceManager(new AppBaseCDIInstanceManager(
 				ContextDependencySpiFactory.getInstance()
 				.getContextDependencySpi().getBeanManager()));
 	}
 
 	private Map<String, Serializable> getProperties(String prefix, Map<String, Serializable> properties){
-		Map<String, Serializable> filteredMap = new ConcurrentHashMap<>();
-		
-		properties.keySet().stream().parallel().filter((key)->{ return key.startsWith(prefix);}).forEach((key)->{
-			filteredMap.put(key, properties.get(key));
-		});
-		
-		return filteredMap;
+		return properties.entrySet().stream()
+				.filter(entry-> entry.getKey().startsWith(prefix))
+				.collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));		
 	}
 	
 	public List<Tomcat> getTomcatInstances() {
@@ -577,7 +654,7 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 		if(tomcatInstances.isEmpty())
 			return;
 		
-		tomcatInstances.stream().forEach((tomcat)-> {
+		tomcatInstances.stream().forEach(tomcat-> {
 			try {
 				tomcat.stop();
 			} catch (LifecycleException e) {

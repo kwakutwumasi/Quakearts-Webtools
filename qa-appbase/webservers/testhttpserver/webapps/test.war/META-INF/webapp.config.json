@@ -1,5 +1,5 @@
 {
 	"webapp.libraries": {
-		"set": ["tomcat-embed-el-9.0.8.jar","tomcat-embed-websocket-9.0.8.jar"]
+		"set": ["tomcat-embed-el-9.0.12.jar","tomcat-embed-websocket-9.0.12.jar"]
 	}
 }

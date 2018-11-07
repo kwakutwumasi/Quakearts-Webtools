@@ -52,6 +52,7 @@
 		<derby.version>10.13.1.1</derby.version>
 		<jspapi.version>2.3.1</jspapi.version>
 		<jstl.version>1.2.1</jstl.version>
+		<awaitility.version>3.1.2</awaitility.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -199,6 +200,12 @@
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
 			<version>${derby.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.awaitility</groupId>
+			<artifactId>awaitility</artifactId>
+			<version>${awaitility.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

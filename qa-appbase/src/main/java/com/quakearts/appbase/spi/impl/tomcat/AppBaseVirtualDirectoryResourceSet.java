@@ -66,16 +66,16 @@ public class AppBaseVirtualDirectoryResourceSet extends AbstractResourceSet {
 		return Collections.unmodifiableCollection(libraryUrls.values());
 	}
 
-    private static final String[] EMPTY_STRING_ARRAY = new String[0];
+	private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
 	@Override
 	public WebResource getResource(String path) {
 		checkPath(path);
 		if (path.startsWith(getWebAppMount())) {
 			String libraryName = path.substring(getWebAppMount().length());
-			if(libraryName.startsWith("/"))
+			if (libraryName.startsWith("/"))
 				libraryName = libraryName.substring(1);
-			
+
 			URL libraryUrl = libraryUrls.get(libraryName);
 			if (libraryUrl != null) {
 				File file;
@@ -84,7 +84,7 @@ public class AppBaseVirtualDirectoryResourceSet extends AbstractResourceSet {
 				} catch (URISyntaxException e) {
 					file = new File(libraryUrl.getPath());
 				}
-				
+
 				return new FileResource(getRoot(), path, file, true, getManifest(libraryUrl));
 			} else {
 				return new EmptyResource(getRoot(), path);
@@ -96,24 +96,23 @@ public class AppBaseVirtualDirectoryResourceSet extends AbstractResourceSet {
 
 	private Manifest getManifest(URL libraryUrl) {
 		try {
-			URL jarUrl = new URL("jar:"+libraryUrl+"!/");
+			URL jarUrl = new URL("jar:" + libraryUrl + "!/");
 			JarURLConnection con = (JarURLConnection) jarUrl.openConnection();
 			return con.getManifest();
 		} catch (ClassCastException | IOException e) {
-			throw new ConfigurationException("Unable to create jar url 'jar:"+libraryUrl+"!/'", e);
+			throw new ConfigurationException("Unable to create jar url 'jar:" + libraryUrl + "!/'", e);
 		}
 	}
 
 	@Override
 	public String[] list(String path) {
-        checkPath(path);
+		checkPath(path);
 		if (path.startsWith(getWebAppMount())) {
 			int diff = path.length() - getWebAppMount().length();
-			if(diff >1
-				|| (diff==1 && !path.endsWith("/")))
+			if (diff > 1 || (diff == 1 && !path.endsWith("/")))
 				return EMPTY_STRING_ARRAY;
-			
-			//Looking for all the files in this Virtual directory
+
+			// Looking for all the files in this Virtual directory
 			return libraryUrls.keySet().toArray(new String[libraryUrls.size()]);
 		} else {
 			return EMPTY_STRING_ARRAY;
@@ -122,15 +121,11 @@ public class AppBaseVirtualDirectoryResourceSet extends AbstractResourceSet {
 
 	@Override
 	public Set<String> listWebAppPaths(String path) {
-        checkPath(path);
-		if (path.startsWith(getWebAppMount())
-				&& Math.abs(getWebAppMount().length()-path.length())==1
+		checkPath(path);
+		if (path.startsWith(getWebAppMount()) && Math.abs(getWebAppMount().length() - path.length()) == 1
 				&& path.endsWith("/")) {
-			//Looking for all the files in this Virtual directory
-			return libraryUrls.keySet()
-					.stream().map((key)->{
-						return path+key;
-					}).collect(Collectors.toSet());
+			// Looking for all the files in this Virtual directory
+			return libraryUrls.keySet().stream().map(key -> path + key).collect(Collectors.toSet());
 		} else {
 			return Collections.emptySet();
 		}
@@ -157,6 +152,7 @@ public class AppBaseVirtualDirectoryResourceSet extends AbstractResourceSet {
 
 	@Override
 	public void setReadOnly(boolean readOnly) {
+		// Do nothing
 	}
 
 	@Override
@@ -171,6 +167,7 @@ public class AppBaseVirtualDirectoryResourceSet extends AbstractResourceSet {
 
 	@Override
 	protected void initInternal() throws LifecycleException {
+		// Do nothing
 	}
 
 }
