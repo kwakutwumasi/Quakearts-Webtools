@@ -21,6 +21,9 @@ import javax.faces.event.AjaxBehaviorListener;
 import javax.faces.event.BehaviorEvent;
 
 import com.quakearts.webapp.facelets.util.ObjectExtractor;
+import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.findClientIds;
+
+import java.io.IOException;
 
 public class AutoCompleteBehavior extends ClientBehaviorBase {
 	
@@ -139,21 +142,27 @@ public class AutoCompleteBehavior extends ClientBehaviorBase {
 		component.queueEvent(new AjaxBehaviorEvent(component, this));
 	}
 	
-	public void loadFromComponent(UIComponent component, FacesContext context){
+	public void loadFromComponent(UIComponent component, FacesContext context) throws IOException {
 		render = ObjectExtractor.extractString(component.getValueExpression("render"), context.getELContext());
-		if(render==null)
+		if(render == null)
 			render = (String) component.getAttributes().get("render");
 		
+		if(render!=null)
+			render = findClientIds(render, component, context);
+		
 		execute = ObjectExtractor.extractString(component.getValueExpression("execute"), context.getELContext());
-		if(execute==null)
+		if(execute == null)
 			execute = (String) component.getAttributes().get("execute");
 
+		if(execute!=null)
+			execute = findClientIds(render, component, context);
+		
 		onerror = ObjectExtractor.extractString(component.getValueExpression("onerror"), context.getELContext());
-		if(onerror==null)
+		if(onerror == null)
 			onerror = (String) component.getAttributes().get("onerror");
 
 		onevent = ObjectExtractor.extractString(component.getValueExpression("onevent"), context.getELContext());
-		if(onevent==null)
+		if(onevent == null)
 			onevent = (String) component.getAttributes().get("onevent");
 		
 		ValueExpression delayExpression;
