@@ -21,8 +21,7 @@ public class SaveOrUpdateObjectTagHandler extends AbstractOrmHandler {
 
 	private TagAttribute messageAttribute = getAttribute("message"),
 	objectAttribute = getRequiredAttribute("object"),
-	actionAttribute = getAttribute("action"),
-	trimstringsAttribute = getAttribute("trimstrings");
+	actionAttribute = getAttribute("action");
 	
 	public SaveOrUpdateObjectTagHandler(TagConfig config) {
 		super(config);
@@ -32,8 +31,7 @@ public class SaveOrUpdateObjectTagHandler extends AbstractOrmHandler {
 	protected OrmListener getOrmListener(FaceletContext ctx) {
 		return new SaveOrUpdateObjectListener(getValueExpression(messageAttribute, ctx, String.class),
 				getValueExpression(objectAttribute, ctx, Object.class),
-				getValueExpression(actionAttribute, ctx, String.class),
-				getValueExpression(trimstringsAttribute, ctx, Boolean.class));
+				getValueExpression(actionAttribute, ctx, String.class));
 	}
 
 }

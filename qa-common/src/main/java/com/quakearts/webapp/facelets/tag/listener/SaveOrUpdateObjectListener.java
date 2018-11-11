@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 import com.quakearts.webapp.facelets.tag.OrmListener;
 import com.quakearts.webapp.facelets.util.ObjectExtractor;
 import com.quakearts.webapp.facelets.util.UtilityMethods;
-import com.quakearts.webapp.orm.stringconcat.OrmStringConcatUtil;
 
 public class SaveOrUpdateObjectListener extends OrmListener {
 
@@ -29,16 +28,13 @@ public class SaveOrUpdateObjectListener extends OrmListener {
 	private static final long serialVersionUID = -6659018184061783495L;
 	private ValueExpression objectExpression;
 	private ValueExpression messageExpression, actionExpression;
-	private ValueExpression trimstringsExpression;
 	private static final Logger log = Logger.getLogger(SaveOrUpdateObjectListener.class.getName());
 
 	public SaveOrUpdateObjectListener(ValueExpression messageExpression,
-			ValueExpression objectExpression, ValueExpression actionExpression, 
-			ValueExpression trimstringsExpression) {
+			ValueExpression objectExpression, ValueExpression actionExpression) {
 		this.messageExpression = messageExpression;
 		this.objectExpression = objectExpression;
 		this.actionExpression = actionExpression;
-		this.trimstringsExpression = trimstringsExpression;
 	}
 
 	@Override
@@ -53,11 +49,6 @@ public class SaveOrUpdateObjectListener extends OrmListener {
 		
 		String message = ObjectExtractor.extractString(messageExpression, ctx.getELContext()),
 		action = ObjectExtractor.extractString(actionExpression, ctx.getELContext());
-		
-		if(trimstringsExpression!=null 
-				&& ObjectExtractor.extractBoolean(trimstringsExpression, ctx.getELContext())){
-			OrmStringConcatUtil.trimStrings(object);
-		}
 		
 		try {
 			if(object!=null){
