@@ -1,4 +1,4 @@
-package com.quakearts.orm.test;
+package com.quakearts.test.hibernate;
 
 import java.io.Serializable;
 

@@ -1,9 +1,10 @@
-package com.quakearts.orm.test;
+package com.quakearts.test;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.*; 
 import org.junit.Test;
 
+import com.quakearts.test.hibernate.TestEntity;
 import com.quakearts.webapp.orm.stringconcat.OrmStringConcatUtil;
 
 public class TestOrmConcat {

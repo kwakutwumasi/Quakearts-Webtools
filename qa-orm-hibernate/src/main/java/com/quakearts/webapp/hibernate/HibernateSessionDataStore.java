@@ -22,6 +22,7 @@ import com.quakearts.webapp.orm.DataStoreConnection;
 import com.quakearts.webapp.orm.DataStoreFunction;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.webapp.orm.query.QueryOrder;
+import com.quakearts.webapp.orm.stringconcat.OrmStringConcatUtil;
 
 public class HibernateSessionDataStore extends HibernateBean implements DataStore {
 
@@ -47,6 +48,7 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 	@Override
 	public void save(Object object) {
 		try {
+			OrmStringConcatUtil.trimStrings(object);
 			session.save(object);			
 		} catch (HibernateException e) {
 			throw new DataStoreException(e);
@@ -71,6 +73,7 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 	@Override
 	public void update(Object object) {
 		try {
+			OrmStringConcatUtil.trimStrings(object);
 			session.update(object);
 		} catch (HibernateException e) {
 			throw new DataStoreException(e);
@@ -107,6 +110,7 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 	@Override
 	public void saveOrUpdate(Object object) {
 		try {
+			OrmStringConcatUtil.trimStrings(object);
 			session.saveOrUpdate(object);
 		} catch (HibernateException e) {
 			throw new DataStoreException(e);
