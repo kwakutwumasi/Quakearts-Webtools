@@ -12,9 +12,9 @@ package com.quakearts.webapp.facelets.bootstrap.components;
 
 import java.util.ArrayList;
 
-import javax.faces.component.html.HtmlSelectManyListbox;
+import javax.faces.component.html.HtmlSelectManyMenu;
 
-public class BootSelectManyListbox extends HtmlSelectManyListbox {
+public class BootSelectManyListbox extends HtmlSelectManyMenu {
 	public static final String COMPONENT_FAMILY="com.quakearts.bootstrap.selectManyListBox";
 	public static final String RENDERER_TYPE="com.quakearts.bootstrap.select.renderer";
 
