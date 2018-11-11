@@ -33,7 +33,7 @@ import com.quakearts.webapp.orm.exception.DataStoreException;
  */
 public class DBJarClassLoader extends ClassLoader {
 
-	private static final ConcurrentHashMap<Long, byte[]> CACHED_JARS = new ConcurrentHashMap<Long, byte[]>();
+	private static final ConcurrentHashMap<Long, byte[]> CACHED_JARS = new ConcurrentHashMap<>();
 	private String domain;
 	
 	/**Constructor that uses the current thread context classloader as it's parent
@@ -80,7 +80,7 @@ public class DBJarClassLoader extends ClassLoader {
 		}
 	}
 
-	private JarFileEntry loadEntry(String entryName) throws DataStoreException, IOException {
+	private JarFileEntry loadEntry(String entryName) {
 		DataStore store;
 		if(domain==null)
 			store = DataStoreFactory.getInstance().getDataStore();
@@ -170,9 +170,12 @@ public class DBJarClassLoader extends ClassLoader {
 			this.bytes = bytes;
 		}
 		
+		@Override
 		public void connect() throws IOException {
+			//Do nothing
 		}
 		
+		@Override
 		public InputStream getInputStream() throws IOException {
 			return new ByteArrayInputStream(bytes);
 		}

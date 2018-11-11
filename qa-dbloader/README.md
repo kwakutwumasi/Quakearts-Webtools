@@ -26,7 +26,7 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-dbloader</artifactId>
-	<version>2.2.1</version>
+	<version>2.2.2</version>
 </dependency>
 
 ```
