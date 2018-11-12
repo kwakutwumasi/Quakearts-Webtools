@@ -25,7 +25,8 @@ public class BootBaseScriptRenderer extends HtmlBasicRenderer {
 		ResponseWriter newWriter = oldWriter.cloneWithWriter(writer);
 		context.setResponseWriter(newWriter);
 		super.encodeChildren(context, component);
-		BootOnLoadComponent.addScriptContent(writer.toString(), context);
+		String content = writer.toString();
+		BootOnLoadComponent.addScriptContent(fctx->content, context);
 		context.setResponseWriter(oldWriter);
 	}
 	

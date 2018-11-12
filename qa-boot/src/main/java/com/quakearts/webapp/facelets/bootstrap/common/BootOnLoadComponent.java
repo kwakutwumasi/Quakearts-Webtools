@@ -12,7 +12,7 @@ package com.quakearts.webapp.facelets.bootstrap.common;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.function.Function;
 import javax.faces.context.FacesContext;
 
 public class BootOnLoadComponent extends BootResourceBase {
@@ -31,8 +31,8 @@ public class BootOnLoadComponent extends BootResourceBase {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static void addScriptContent(String scriptContent, FacesContext ctx){
-		List<String> scriptContentList = (List<String>) ctx.getAttributes()
+	public static void addScriptContent(Function<FacesContext, String> contentSupplier, FacesContext ctx){
+		List<Function<FacesContext, String>> scriptContentList = (List<Function<FacesContext, String>>) ctx.getAttributes()
 				.get(SCRIPTCONTENTLIST);
 
 		if(scriptContentList==null){
@@ -40,6 +40,6 @@ public class BootOnLoadComponent extends BootResourceBase {
 			ctx.getAttributes().put(SCRIPTCONTENTLIST, scriptContentList);
 		}
 		
-		scriptContentList.add(scriptContent);
+		scriptContentList.add(contentSupplier);
 	}
 }

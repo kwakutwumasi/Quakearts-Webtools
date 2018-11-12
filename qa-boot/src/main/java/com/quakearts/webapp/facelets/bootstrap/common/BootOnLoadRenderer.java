@@ -12,6 +12,7 @@ package com.quakearts.webapp.facelets.bootstrap.common;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -77,12 +78,12 @@ public class BootOnLoadRenderer extends HtmlBasicRenderer {
 	@SuppressWarnings("unchecked")
 	private void renderScriptContent(FacesContext context, UIComponent component, ResponseWriter writer)
 			throws IOException {
-		List<String> scriptContentList = (List<String>) context.getAttributes().get(SCRIPTCONTENTLIST);
+		List<Function<FacesContext, String>> scriptContentList = (List<Function<FacesContext, String>>) context.getAttributes().get(SCRIPTCONTENTLIST);
 		if(scriptContentList!=null){
 			writer.startElement("script", component);				
 			writer.write("\n");				
-			for(String scriptContent:scriptContentList)
-				writer.write(scriptContent);
+			for(Function<FacesContext, String> scriptContentSupplier:scriptContentList)
+				writer.write(scriptContentSupplier.apply(context));
 			writer.write("\n");
 			writer.endElement("script");
 		}

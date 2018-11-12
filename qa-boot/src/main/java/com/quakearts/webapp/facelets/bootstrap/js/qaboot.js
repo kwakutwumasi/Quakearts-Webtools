@@ -252,9 +252,7 @@ qab.icbe = function(obj){
 	}
 };
 qab.mons=new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
-qab.dc = function(day,month,year,hour,minute,second,
-		hrstep,mnstep,scstep,is24hr,isAM,
-		idBase,type){
+qab.dc = function(idBase,iddiv){
 	var dsel=idBase+"_day",
 	msel=idBase+"_month",
 	ysel=idBase+"_year",
@@ -265,22 +263,46 @@ qab.dc = function(day,month,year,hour,minute,second,
 	mnsel=idBase+"_min",
 	scsel=idBase+"_sec";
 	return  {
-		"day":day,
-		"month":month,
-		"year":year,
+		"iddiv":iddiv,
+		"init": function(){
+			if(!this.rdy){
+				var div = $(iddiv);
+				this.day = div.data("day").toString();
+				this.month = div.data("month");
+				this.year = div.data("year").toString();
+				this.hour = div.data("hour");
+				this.minute = div.data("min");
+				this.second =div.data("sec");
+				this.hrstep = div.data("hrstep");
+				this.mnstep = div.data("mnstep");
+				this.scstep = div.data("scstep");
+				this.is24hr = div.data("is24hr");
+				this.isAM = div.data("isam");
+				this.type = div.data("datetype");
+				this.minhr = this.is24hr?0:1;
+				this.maxhr = this.is24hr?23:12;
+				this.rdy=true;
+			}
+		},
+		"rdy":false,
+		"day":"1",
+		"month":0,
+		"year":"2000",
 		"dsel":dsel,
 		"msel":msel,
 		"ysel":ysel,
 		"insel":insel,
 		"dbsel":dbsel,
-		"type":type,
+		"type":"",
 		"chngsel":chngsel,
 		"ud" : function(obj) {
+			this.init();
 			this.day = obj.innerHTML;
 			this.uc();
 			$(this.dsel).html($(obj).html());
 		},
 		"um" : function(obj, val) {
+			this.init();
 			this.month = val;
 			var totalDays = qab.mons[val - 1];
 			if (this.day > totalDays) {
@@ -292,6 +314,7 @@ qab.dc = function(day,month,year,hour,minute,second,
 			this.sd();
 		},
 		"uy" : function(obj) {
+			this.init();
 			this.year = obj.innerHTML;
 			$(this.ysel).html(this.year);
 			if(this.month)
@@ -309,7 +332,7 @@ qab.dc = function(day,month,year,hour,minute,second,
 			}
 		},
 		"sd" : function() {
-			if(this.type !="dm" && this.type!="dmy")
+			if(!this.type.startsWith("dm"))
 				return;
 
 			var totalDays = qab.mons[this.month - 1];
@@ -339,12 +362,13 @@ qab.dc = function(day,month,year,hour,minute,second,
 					});
 		},
 		"hrsel":hrsel,
-		"hrstep":hrstep,
-		"hour":hour,
-		"minhr":is24hr?0:1,
-		"maxhr":is24hr?23:12,
-		"is24hr":is24hr,
+		"hrstep":0,
+		"hour":0,
+		"minhr":0,
+		"maxhr":0,
+		"is24hr":true,
 		"hrup":function(){
+			this.init();
 			if(this.hour<this.maxhr && (this.hour+this.hrstep)<=this.maxhr){
 				this.hour+=(this.hrstep - (this.hour % this.hrstep));
 				$(this.hrsel).val(this.hour);
@@ -352,14 +376,16 @@ qab.dc = function(day,month,year,hour,minute,second,
 			}
 		},
 		"hrdown":function(){
+			this.init();
 			if(this.hour>this.minhr && (this.hour-this.hrstep)>=this.minhr){
 				var subtrahand = this.hour % this.hrstep;
-				this.hour-=(subtrahand===0?hrstep:subtrahand);
+				this.hour-=(subtrahand===0?this.hrstep:subtrahand);
 				$(this.hrsel).val(this.hour);
 				this.uc();
 			}
 		},
 		"vhr":function(obj){
+			this.init();
 			if(!this.vn(obj))
 				return;
 				
@@ -373,9 +399,10 @@ qab.dc = function(day,month,year,hour,minute,second,
 			this.uc();
 		},
 		"mnsel":mnsel,
-		"mnstep":mnstep,
-		"minute":minute,
+		"mnstep":0,
+		"minute":0,
 		"mnup":function(){
+			this.init();
 			if(this.minute<60 && (this.minute+this.mnstep)<=59){
 				this.minute+=(this.mnstep - (this.minute % this.mnstep));
 				$(this.mnsel).val(this.minute);
@@ -383,19 +410,21 @@ qab.dc = function(day,month,year,hour,minute,second,
 			}
 		},
 		"mndown":function(){
+			this.init();
 			if(this.minute>0 && (this.minute-this.mnstep)>=0){
 				var subtrahand = this.minute % this.mnstep;
-				this.minute-=(subtrahand === 0?mnstep:subtrahand);
+				this.minute-=(subtrahand === 0?this.mnstep:subtrahand);
 				$(this.mnsel).val(this.minute);
 				this.uc();
 			}
 		},
 		"vmn":function(obj){
+			this.init();
 			if(!this.vn(obj))
 				return;
 				
 			var value = parseInt(obj.value);
-			if(0 > value || value > 60){
+			if(0 > value || value > 59){
 				obj.value = "0";
 				this.minute = 0;
 			} else {
@@ -404,9 +433,10 @@ qab.dc = function(day,month,year,hour,minute,second,
 			this.uc();
 		},
 		"scsel":scsel,
-		"scstep":scstep,
-		"second":second,
+		"scstep":0,
+		"second":0,
 		"scup":function(){
+			this.init();
 			if(this.second<60 && (this.second+this.scstep)<=59){
 				this.second+=(this.scstep - (this.second % this.scstep));
 				$(this.scsel).val(this.second);
@@ -414,19 +444,21 @@ qab.dc = function(day,month,year,hour,minute,second,
 			}
 		},
 		"scdown":function(){
+			this.init();
 			if(this.second>0 && (this.second-this.scstep)>=0){
 				var subtrahand = (this.second % this.scstep);
-				this.second-=(subtrahand === 0?scstep:subtrahand);
+				this.second-=(subtrahand === 0?this.scstep:subtrahand);
 				$(this.scsel).val(this.second);
 				this.uc();
 			}
 		},
 		"vsc":function(obj){
+			this.init();
 			if(!this.vn(obj))
 				return;
 				
 			var value = parseInt(obj.value);
-			if(0 > value || value > 60){
+			if(0 > value || value > 59){
 				obj.value = "0";
 				this.second = 0;
 			} else {
@@ -442,14 +474,16 @@ qab.dc = function(day,month,year,hour,minute,second,
 			}
 			return true;
 		},
-		"isAM":isAM,
+		"isAM":true,
 		"tglampm":function(obj, isAM){
+			this.init();
 			this.isAM = isAM;
 			$(obj).parent().children().removeClass('active');
 			$(obj).addClass('active');
 			this.uc();
 		},
 		"cc" : function() {
+			this.init();
 			$(this.insel).val('');
 			$(this.dsel).html('&nbsp;');
 			$(this.msel).html('&nbsp;');

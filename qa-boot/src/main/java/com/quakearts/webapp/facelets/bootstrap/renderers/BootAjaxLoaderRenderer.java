@@ -72,20 +72,20 @@ public class BootAjaxLoaderRenderer extends HtmlBasicRenderer {
 		
 		if(!context.getPartialViewContext().isPartialRequest()){	
 			
-			String miniimagestyle = loaderComponent.get("miniimagestyle");
-			String startTimeout = loaderComponent.get("startTimeout");
-			String endTimeout = loaderComponent.get("endTimeout");
-			String overlayimagestyle = loaderComponent.get("overlayimagestyle");
+			final String miniimagestyle = loaderComponent.get("miniimagestyle");
+			final String startTimeout = loaderComponent.get("startTimeout");
+			final String endTimeout = loaderComponent.get("endTimeout");
+			final String overlayimagestyle = loaderComponent.get("overlayimagestyle");
 			
-			String script = LOADERSCRIPT.replace("$ajaxdiv", loaderComponent.getClientId(context))
-					.replace("$miniimg", loaderComponent.get("miniloaderimage"))
-					.replace("$miniimagestyle", miniimagestyle!=null?("style=\\\""+miniimagestyle+"\\\" "):"")
-					.replace("$overlayimg", loaderComponent.get("overlayloaderimage"))
-					.replace("$overlayimagestyle", overlayimagestyle!=null?("style=\\\""+overlayimagestyle+"\\\" "):"")
-					.replace("$stime", startTimeout)
-					.replace("$etime", endTimeout);
-			
-			BootOnLoadComponent.addScriptContent(script, context);
+			BootOnLoadComponent.addScriptContent(fctx->
+				LOADERSCRIPT.replace("$ajaxdiv", loaderComponent.getClientId(context))
+						.replace("$miniimg", loaderComponent.get("miniloaderimage"))
+						.replace("$miniimagestyle", miniimagestyle!=null?("style=\\\""+miniimagestyle+"\\\" "):"")
+						.replace("$overlayimg", loaderComponent.get("overlayloaderimage"))
+						.replace("$overlayimagestyle", overlayimagestyle!=null?("style=\\\""+overlayimagestyle+"\\\" "):"")
+						.replace("$stime", startTimeout)
+						.replace("$etime", endTimeout)
+			, context);
 		}
 	}
 	
