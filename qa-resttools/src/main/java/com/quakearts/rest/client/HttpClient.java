@@ -225,7 +225,8 @@ public abstract class HttpClient implements Serializable {
 	private String storeOutput(HttpVerb method, HttpURLConnection con, int responseCode) throws IOException {
 		String output = null;
 		InputStream is = null;
-		if(responseCode==200 
+		if(responseCode>=200 
+				&& responseCode<=299 
 				&& returningInputMethodsInclude(method)){
 			is = con.getInputStream();
 		} else if(responseCode > 399){

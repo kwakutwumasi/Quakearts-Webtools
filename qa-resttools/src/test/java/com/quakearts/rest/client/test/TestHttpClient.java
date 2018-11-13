@@ -274,6 +274,14 @@ public class TestHttpClient {
 								.setResponseCodeAs(204)
 								.thenBuild())
 						.thenBuild();
+		HttpRequest head404Request = HttpMessageBuilder.createNewHttpRequest()
+				.setMethodAs("HEAD")
+				.setResourceAs("/test-head-404")
+				.setId("/test-head-404")
+				.setResponseAs(HttpMessageBuilder.createNewHttpResponse()
+						.setResponseCodeAs(404)
+						.thenBuild())
+				.thenBuild();
 		HttpRequest requestValueRequest = HttpMessageBuilder.createNewHttpRequest()
 						.setMethodAs("POST")
 						.setResourceAs("/test-request-value")
@@ -312,6 +320,50 @@ public class TestHttpClient {
 						.setResponseCodeAs(200)
 						.setContentBytes("Redirect complete".getBytes())
 						.thenBuild())
+				.thenBuild();		
+		HttpRequest post201Content = HttpMessageBuilder
+				.createNewHttpRequest()
+				.setMethodAs("POST")
+				.setResourceAs("/test-post-content")
+				.setId("/test-post-content")
+				.setContentBytes("Test".getBytes())
+				.setResponseAs(HttpMessageBuilder
+						.createNewHttpResponse()
+						.setResponseCodeAs(201)
+						.setContentBytes("Successful".getBytes())
+						.thenBuild())
+				.thenBuild();	
+		HttpRequest put201Content = HttpMessageBuilder
+				.createNewHttpRequest()
+				.setMethodAs("PUT")
+				.setResourceAs("/test-put-content")
+				.setId("/test-put-content")
+				.setContentBytes("Test".getBytes())
+				.setResponseAs(HttpMessageBuilder
+						.createNewHttpResponse()
+						.setResponseCodeAs(201)
+						.setContentBytes("Successful".getBytes())
+						.thenBuild())
+				.thenBuild();
+		HttpRequest post201NoContent = HttpMessageBuilder
+				.createNewHttpRequest()
+				.setMethodAs("POST")
+				.setResourceAs("/test-post-no-content")
+				.setId("/test-post-no-content")
+				.setContentBytes("Test".getBytes())
+				.setResponseAs(HttpMessageBuilder
+						.createNewHttpResponse()
+						.setResponseCodeAs(201).thenBuild())
+				.thenBuild();		
+		HttpRequest put201NoContent = HttpMessageBuilder
+				.createNewHttpRequest()
+				.setMethodAs("PUT")
+				.setResourceAs("/test-put-no-content")
+				.setId("/test-put-no-content")
+				.setContentBytes("Test".getBytes())
+				.setResponseAs(HttpMessageBuilder
+						.createNewHttpResponse()
+						.setResponseCodeAs(201).thenBuild())
 				.thenBuild();
 		
 		MockServer mockServer = MockServerFactory.getInstance()
@@ -357,6 +409,8 @@ public class TestHttpClient {
 					MockActionBuilder.createNewMockAction()
 						.setRequestAs(headRequest).thenBuild(),
 					MockActionBuilder.createNewMockAction()
+						.setRequestAs(head404Request).thenBuild(),
+					MockActionBuilder.createNewMockAction()
 						.setRequestAs(requestValueRequest)
 						.setResponseActionAs((request, response)->{
 							if(request.getContentBytes()!=null
@@ -375,7 +429,20 @@ public class TestHttpClient {
 						.thenBuild(),
 					MockActionBuilder.createNewMockAction()
 						.setRequestAs(redirectingRequestResponse)
+						.thenBuild(),
+					MockActionBuilder.createNewMockAction()
+						.setRequestAs(post201Content)
+						.thenBuild(),
+					MockActionBuilder.createNewMockAction()
+						.setRequestAs(post201NoContent)
+						.thenBuild(),
+					MockActionBuilder.createNewMockAction()
+						.setRequestAs(put201Content)
+						.thenBuild(),
+					MockActionBuilder.createNewMockAction()
+						.setRequestAs(put201NoContent)
 						.thenBuild());
+		
 		mockServer.start();
 		try {
 			MockHttpClient client = MockHttpClientBuilder.getInstance()
@@ -449,11 +516,31 @@ public class TestHttpClient {
 			httpResponse = client.sendRequest(headRequest);
 			assertThat(httpResponse.getHttpCode(), is(204));
 			assertThat(httpResponse.getOutput()==null, is(true));
-			
+
+			httpResponse = client.sendRequest(head404Request);
+			assertThat(httpResponse.getHttpCode(), is(404));
+			assertThat(httpResponse.getOutput()==null, is(true));
+
 			httpResponse = client.sendRequest(requestValueRequest);
 			assertThat(httpResponse.getHttpCode(), is(200));
 			assertThat(httpResponse.getOutput(), is("Request Value Present. This is a long response. This is to ensure that the issues that existed before have been fixed"));
 			
+			httpResponse = client.sendRequest(post201Content);
+			assertThat(httpResponse.getHttpCode(), is(201));
+			assertThat(httpResponse.getOutput(), is("Successful"));
+			
+			httpResponse = client.sendRequest(put201Content);
+			assertThat(httpResponse.getHttpCode(), is(201));
+			assertThat(httpResponse.getOutput(), is("Successful"));
+			
+			httpResponse = client.sendRequest(post201NoContent);
+			assertThat(httpResponse.getHttpCode(), is(201));
+			assertThat(httpResponse.getOutput(), is(""));
+			
+			httpResponse = client.sendRequest(put201NoContent);
+			assertThat(httpResponse.getHttpCode(), is(201));
+			assertThat(httpResponse.getOutput(), is(""));
+
 			requestValueRequest = HttpMessageBuilder.createNewHttpRequest()
 					.setMethodAs("POST")
 					.setResourceAs("/test-request-value")
@@ -574,10 +661,46 @@ public class TestHttpClient {
 		assertThat(client.getPort(), is(80));		
 	}
 	
-	public static class TestHttpRequest implements HttpRequest {
-		public TestHttpRequest() {
+	public static class TestHttpResponse implements com.quakearts.tools.test.mockserver.model.HttpResponse {
+
+		@Override
+		public Collection<HttpHeader> getHeaders() {
+			return Collections.emptyList();
+		}
+
+		@Override
+		public String getHeaderValue(String name) {
+			return null;
+		}
+
+		@Override
+		public List<String> getHeaderValues(String name) {
+			return Collections.emptyList();
+		}
+
+		@Override
+		public String getContentEncoding() {
+			return null;
+		}
+
+		@Override
+		public String getContent() throws UnsupportedEncodingException {
+			return null;
+		}
+
+		@Override
+		public byte[] getContentBytes() {
+			return null;
+		}
+
+		@Override
+		public int getResponseCode() {
+			return 100;
 		}
 		
+	}
+	
+	public static class TestHttpRequest implements HttpRequest {
 		HttpVerb verb;
 		String file;
 		public TestHttpRequest(HttpVerb verb, String file) {
