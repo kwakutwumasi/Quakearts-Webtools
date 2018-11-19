@@ -195,7 +195,7 @@ public class TestJWTLoginModule extends LoginModuleTest {
 		roles.addMember(new NamePrincipal("Kwaku Appiah"));
 		roles.addMember(new EmailPrincipal("kwaku@appiah.com"));
 		roles.addMember(new OtherPrincipal("Admin", "admin-role"));
-		roles.addMember(()->"Test1");
+		roles.addMember(()->"Test3");
 		subject.getPrincipals().add(roles);
 		subject.getPrincipals().add(new DirectoryRoles("OtherRoles"));
 		subject.getPrincipals().add(new OtherPrincipal("Ignored"));
@@ -249,7 +249,9 @@ public class TestJWTLoginModule extends LoginModuleTest {
 		assertThat(claims.getPrivateClaim("name"), is("Kwaku Appiah"));
 		assertThat(claims.getPrivateClaim("mail"), is("kwaku@appiah.com"));
 		assertThat(claims.getPrivateClaim("admin-role"), is("Admin"));
-		assertThat(claims.getPrivateClaim("role1"), is("Test1"));
+		assertThat(claims.getPrivateClaim("test1"), is("value1"));
+		assertThat(claims.getPrivateClaim("test2"), is("value2"));
+		assertThat(claims.getPrivateClaim("test3"), is("Test3"));
 	}
 	
 	@Test

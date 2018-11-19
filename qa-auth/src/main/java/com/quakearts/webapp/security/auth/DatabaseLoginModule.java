@@ -311,7 +311,7 @@ public class DatabaseLoginModule implements LoginModule {
 		if (rs.next()) {
 			int i = 1;
 			do {
-				userprof.put("role" + (i++), rs.getString(rolescolumns));
+				userprof.put(rolescolumns + (i++), rs.getString(rolescolumns));
 			} while (rs.next());
 		}
 	}

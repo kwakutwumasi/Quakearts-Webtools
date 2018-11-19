@@ -297,7 +297,6 @@ public class JWTLoginModule implements LoginModule {
 		List<String[]> foundRoles = new ArrayList<>();
 		Principal principal;
 		Enumeration<? extends Principal> roles = rolesgrp.members();
-		int count = 1;
 		while(roles.hasMoreElements()) {
 			principal = roles.nextElement();
 			
@@ -310,8 +309,11 @@ public class JWTLoginModule implements LoginModule {
 			} else if(principal instanceof EmailPrincipal) {
 				EmailPrincipal emailPrincipal = (EmailPrincipal) principal;
 				foundRoles.add(new String[] {emailPrincipal.getAttribute(),emailPrincipal.getName()});
+			} else if(principal instanceof UserPrincipal) {
+				UserPrincipal userPrincipal = (UserPrincipal) principal;
+				foundRoles.add(new String[] {userPrincipal.getAttribute(),userPrincipal.getName()});
 			} else {
-				foundRoles.add(new String[] {"role"+(count++), principal.getName()});							
+				foundRoles.add(new String[] {principal.getName(), principal.getName()});							
 			}
 		}
 		return foundRoles;
