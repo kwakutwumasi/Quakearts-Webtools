@@ -32,7 +32,7 @@ public class CommandMain {
 					.thenExecute(command);
 			} catch (CommandParameterException e) {
 				System.err.println("Invalid parameter '"+e.getCommandParameterName()
-				+(e.getMessage()!=null?"'. "+e.getMessage():"")+
+				+(e.getMessage()!=null?"'. "+e.getMessage():"'")+
 				(e.getCause()!=null?". Cause: "+e.getCause().getMessage():"")+
 				"\n"+command.printUsage());
 			}
