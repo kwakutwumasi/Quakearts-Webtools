@@ -55,7 +55,8 @@ public class BeanUpdater<T> {
 	private Map<String, UpdaterHandles> cache;
 	private static final Map<Class<?>, BeanEmptyHandler<?>> emptyHandlers = new ConcurrentHashMap<>();
 	
-	private boolean ignoreNullAndEmpty=true, treatZeroAsEmpty=true;
+	private boolean ignoreNullAndEmpty = true;
+	private boolean treatZeroAsEmpty = true;
 	
 	static {
 		registerEmptyHandlers(Collection.class, new CollectionEmptyHandler());
@@ -68,7 +69,7 @@ public class BeanUpdater<T> {
 		try {
 			beanInfo = Introspector.getBeanInfo(clazz);
 		} catch (IntrospectionException e) {
-			throw new BeanUpdaterInitException(e);
+			throw new BeanUpdaterInitException("Error initializing bean",e);
 		}
 		
 		cache = new HashMap<>();
@@ -85,9 +86,9 @@ public class BeanUpdater<T> {
 				
 			try {
 				cache.put(descriptor.getName(), new UpdaterHandles(getMethodHandle(descriptor.getReadMethod()), 
-						getMethodHandle(descriptor.getWriteMethod()), handler));
+						getMethodHandle(descriptor.getWriteMethod()), handler, descriptor.getName()));
 			} catch (IllegalAccessException e) {
-				throw new BeanUpdaterInitException(e);
+				throw new BeanUpdaterInitException("Error initializing bean property "+descriptor.getName(), e);
 			}			
 		}
 		
@@ -108,42 +109,47 @@ public class BeanUpdater<T> {
 		emptyHandlers.put(clazz, handler);
 	}
 		
-	@SuppressWarnings("unchecked")
-	public boolean update(T source, T destination) throws BeanUpdaterException{
-		boolean canUpdate = false;
+	public boolean update(T source, T destination) throws BeanUpdaterException {
+		return !updateAndGetChanges(source, destination).isEmpty();
+	}
+	
+	public Map<String, Object> updateAndGetChanges(T source, T destination) throws BeanUpdaterException {
+		Map<String, Object> changed = new HashMap<>();
 		
 		for(UpdaterHandles handles:cache.values()){
 			try {
 				Object value = handles.get.invoke(source);
 				Object oldValue = handles.get.invoke(destination);
 				
-				if(oldValue!=null && oldValue.equals(value))
-					continue;
-				
-				if(ignoreNullAndEmpty){
-					if(value==null)
-						continue;
-					
-					if(value!=null 
-							&& handles.handler != null 
-							&& handles.handler.isEmpty(value))
-						continue;
-				}
-				
-				if(treatZeroAsEmpty 
-						&& value instanceof Number 
-						&&((Number)value).doubleValue() == 0)
+				if(isTheSame(value, oldValue) 
+					|| isNullAndEmptyAndShouldBeIgnored(handles, value) 
+					|| isANumberAndIsZero(value))
 						continue;
 				
 				handles.set.invoke(destination, value);
-				if(!canUpdate)
-					canUpdate = true;
+				changed.put(handles.property, oldValue);
 			} catch (Throwable e) {
-				throw new BeanUpdaterException(e);
+				throw new BeanUpdaterException("Unable to update bean property "+handles.property, e);
 			}
 		}
 		
-		return canUpdate;
+		return changed;
+	}
+
+	private boolean isTheSame(Object value, Object oldValue) {
+		return oldValue!=null && oldValue.equals(value);
+	}
+
+	@SuppressWarnings("unchecked")
+	private boolean isNullAndEmptyAndShouldBeIgnored(UpdaterHandles handles, Object value) {
+		return ignoreNullAndEmpty && (value==null || (handles.handler != null 
+				&& handles.handler.isEmpty(value)));
+	}
+
+	private boolean isANumberAndIsZero(Object value) {
+		return value instanceof Number 
+			&& treatZeroAsEmpty 
+			&& ((Number)value).doubleValue() == 0;
 	}
 	
 	private MethodHandle getMethodHandle(Method method) throws IllegalAccessException{
@@ -159,11 +165,13 @@ public class BeanUpdater<T> {
 		MethodHandle set;
 		@SuppressWarnings("rawtypes")
 		BeanEmptyHandler handler;
+		String property;
 		
-		public UpdaterHandles(MethodHandle get, MethodHandle set, BeanEmptyHandler<?> handler) {
+		private UpdaterHandles(MethodHandle get, MethodHandle set, BeanEmptyHandler<?> handler, String property) {
 			this.get = get;
 			this.set = set;
 			this.handler = handler;
+			this.property = property;
 		}
 			
 	}

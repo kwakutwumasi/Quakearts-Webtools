@@ -11,6 +11,8 @@
 package com.quakearts.test.hibernate;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 public class Product implements Serializable {
 	/**
@@ -20,6 +22,8 @@ public class Product implements Serializable {
 	private int id;
 	private String name;
 	private String description;
+	private List<String> otherNotes;
+	private Map<String, String> otherDetails;
 
 	public int getId() {
 		return id;
@@ -43,5 +47,21 @@ public class Product implements Serializable {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public List<String> getOtherNotes() {
+		return otherNotes;
+	}
+
+	public void setOtherNotes(List<String> otherDetails) {
+		this.otherNotes = otherDetails;
+	}
+
+	public Map<String, String> getOtherDetails() {
+		return otherDetails;
+	}
+	
+	public void setOtherDetails(Map<String, String> otherDetails) {
+		this.otherDetails = otherDetails;
 	}
 }

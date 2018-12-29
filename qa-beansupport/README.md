@@ -31,7 +31,7 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-beansupport</artifactId>
-	<version>2.3.1</version>
+	<version>2.3.2</version>
 </dependency>
 
 ```
@@ -43,5 +43,7 @@ The updater is started using a constructor method and uses fluid APIs for config
 	
 	updater.update(sourceBean, destinationBean);
 ```
+
+If you need to know which elements have been updated, use the _
 
 The _BeanUpdater_ is thread safe.
