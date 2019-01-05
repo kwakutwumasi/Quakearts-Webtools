@@ -16,7 +16,6 @@ import java.util.Map;
 import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.DataStoreFactory;
 import com.quakearts.webapp.orm.DataStoreFunction;
-import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.webapp.orm.query.QueryOrder;
 
 /**A lazy initialized {@linkplain DataStore}. This is to enable CDI injection of the resource
@@ -27,58 +26,61 @@ import com.quakearts.webapp.orm.query.QueryOrder;
  */
 public class CDIDataStore implements DataStore {
 
-	private DataStore wrappedDataStore;
-	
-	public DataStore getWrappedDataStore() {
-		if(wrappedDataStore == null)
-			wrappedDataStore = DataStoreFactory.getInstance().getDataStore();
+	private ThreadLocal<DataStore> wrappedDataStore =  ThreadLocal
+			.withInitial(DataStoreFactory.getInstance()::getDataStore);
 		
-		return wrappedDataStore;
-	}
-	
-	public void save(Object object) throws DataStoreException {
-		getWrappedDataStore().save(object);
-	}
-
-	public <Entity> Entity get(Class<Entity> clazz, Serializable id) throws DataStoreException {
-		return getWrappedDataStore().get(clazz, id);
-	}
-
-	public void update(Object object) throws DataStoreException {
-		getWrappedDataStore().update(object);
-	}
-
-	public void delete(Object object) throws DataStoreException {
-		getWrappedDataStore().delete(object);
-	}
-
-	public <Entity> List<Entity> list(Class<Entity> clazz, Map<String, Serializable> parameters, QueryOrder... orders)
-			throws DataStoreException {
-		return getWrappedDataStore().list(clazz, parameters, orders);
-	}
-
-	public void saveOrUpdate(Object object) throws DataStoreException {
-		getWrappedDataStore().saveOrUpdate(object);
-	}
-
-	public <Entity> Entity refresh(Entity object) throws DataStoreException {
-		return getWrappedDataStore().refresh(object);
-	}
-
-	public void flushBuffers() throws DataStoreException {
-		getWrappedDataStore().flushBuffers();
-	}
-
-	public void executeFunction(DataStoreFunction function) throws DataStoreException {
-		getWrappedDataStore().executeFunction(function);
-	}
-
-	public String getConfigurationProperty(String propertyName) {
-		return getWrappedDataStore().getConfigurationProperty(propertyName);
+	@Override
+	public void save(Object object) {
+		wrappedDataStore.get().save(object);
 	}
 
 	@Override
-	public void clearBuffers() throws DataStoreException {
-		getWrappedDataStore().clearBuffers();
+	public <Entity> Entity get(Class<Entity> clazz, Serializable id) {
+		return wrappedDataStore.get().get(clazz, id);
+	}
+
+	@Override
+	public void update(Object object) {
+		wrappedDataStore.get().update(object);
+	}
+
+	@Override
+	public void delete(Object object) {
+		wrappedDataStore.get().delete(object);
+	}
+
+	@Override
+	public <Entity> List<Entity> list(Class<Entity> clazz, Map<String, Serializable> parameters, QueryOrder... orders) {
+		return wrappedDataStore.get().list(clazz, parameters, orders);
+	}
+
+	@Override
+	public void saveOrUpdate(Object object) {
+		wrappedDataStore.get().saveOrUpdate(object);
+	}
+
+	@Override
+	public <Entity> Entity refresh(Entity object) {
+		return wrappedDataStore.get().refresh(object);
+	}
+
+	@Override
+	public void flushBuffers() {
+		wrappedDataStore.get().flushBuffers();
+	}
+
+	@Override
+	public void executeFunction(DataStoreFunction function) {
+		wrappedDataStore.get().executeFunction(function);
+	}
+
+	@Override
+	public String getConfigurationProperty(String propertyName) {
+		return wrappedDataStore.get().getConfigurationProperty(propertyName);
+	}
+
+	@Override
+	public void clearBuffers() {
+		wrappedDataStore.get().clearBuffers();
 	}
 }
