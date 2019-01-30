@@ -12,11 +12,11 @@ package com.quakearts.webapp.orm.cdi;
 import javax.enterprise.inject.Produces;
 
 import com.quakearts.webapp.orm.DataStoreFactory;
-import com.quakearts.webapp.orm.cdi.annotation.DataStoreHandle;
+import com.quakearts.webapp.orm.cdi.annotation.DataStoreFactoryHandle;
 
 public class DataStoreFactoryProducer {
 	@Produces
-	public @DataStoreHandle DataStoreFactory getDataStoreHandle() {
+	public @DataStoreFactoryHandle DataStoreFactory getDataStoreHandle() {
 		return DataStoreFactory.getInstance();
 	}
 }
