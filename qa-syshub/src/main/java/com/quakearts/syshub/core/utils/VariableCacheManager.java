@@ -22,18 +22,18 @@ public interface VariableCacheManager {
 	 * @param obj the object to save
 	 * @throws Exception if the manager is unable to store the variable
 	 */
-	void storeVariable(String key, Serializable obj) throws Exception;
+	void storeVariable(String key, Serializable obj);
 	/**Update a variable in persistent storage
 	 * @param key the key to use for retrieval
 	 * @param obj the object to update
 	 * @throws Exception if the manager is unable to update the variable
 	 */
-	void updateVariable(String key, Serializable obj) throws Exception;
+	void updateVariable(String key, Serializable obj);
 	/**Retrieve the variable stored with the key
 	 * @param key the key to use for retrieval
 	 * @param remove indicates that the variable should be removed after retrieval
 	 * @return the object saved by this key if any
 	 * @throws Exception if the manager is unable to retrieve the variable
 	 */
-	Object getVariable(String key, boolean remove) throws Exception;
+	Object getVariable(String key, boolean remove);
 }
