@@ -24,3 +24,4 @@ local.properties
 /derby.log
 /SysHubDS/
 tmlog*
+webservers/default/webapps/webapp/
