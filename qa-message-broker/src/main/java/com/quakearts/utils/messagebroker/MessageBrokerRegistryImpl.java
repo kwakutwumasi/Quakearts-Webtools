@@ -17,31 +17,37 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Singleton
 public class MessageBrokerRegistryImpl implements MessageBrokerRegistry {
 	
 	private static final Map<Serializable, MessageBroker<?>> brokerRegistry = new ConcurrentHashMap<>();
+	private static final Logger log = LoggerFactory.getLogger(MessageBroker.class);
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked"})
 	@Override
 	public synchronized <M> MessageBroker<M> getMessageBroker(Serializable id) {
-		MessageBroker broker =  brokerRegistry.get(id);
-		if(broker == null) {
-			broker = new MessageBroker<>();
-			brokerRegistry.put(id, broker);
-		}
-		
-		return broker;
+		log.trace("Getting MessageBroker with ID {}", id);
+		return (MessageBroker<M>) brokerRegistry.computeIfAbsent(id,this::createMessageBroker);
 	}
 
+	private <M> MessageBroker<M> createMessageBroker(Serializable id){
+		log.trace("Creating MessageBroker with ID {}", id);
+		return new MessageBroker<>();
+	}
+	
 	@Override
 	public synchronized void createMessageBroker(Serializable id, int capacity){
+		log.trace("Creating MessageBroker with ID {} and capacity {}", id, capacity);
 		MessageBroker<?> broker = new MessageBroker<>(capacity);
 		brokerRegistry.put(id, broker);
 	}
 
 	@Override
 	public synchronized void createMessageBroker(Serializable id, int capacity, long timeout, TimeUnit timeUnit){
+		log.trace("Creating MessageBroker with ID {}, capacity {} and timeout of {} {}", id, capacity, timeout, timeUnit);
 		MessageBroker<?> broker = new MessageBroker<>(capacity, timeout, timeUnit);
 		brokerRegistry.put(id, broker);
 	}
@@ -49,6 +55,8 @@ public class MessageBrokerRegistryImpl implements MessageBrokerRegistry {
 	@Override
 	public synchronized void createMessageBroker(Serializable id, int capacity, long timeout, TimeUnit timeUnit,
 			long daemonInterval, TimeUnit daemonIntervalUnit, long maxAge, TimeUnit maxAgeUnit){
+		log.trace("Creating MessageBroker with ID {}, capacity {}, timeout of {} {}, daemon interval {} {} and max age {} {}", 
+				id, capacity, timeout, timeUnit, daemonInterval, daemonIntervalUnit, maxAge, maxAgeUnit);
 		MessageBroker<?> broker = new MessageBroker<>(capacity, timeout, timeUnit, 
 				daemonInterval, daemonIntervalUnit,
 				maxAge, maxAgeUnit);
@@ -57,6 +65,7 @@ public class MessageBrokerRegistryImpl implements MessageBrokerRegistry {
 
 	@Override
 	public void createMessageBroker(Serializable id, long timeout, TimeUnit timeUnit){
+		log.trace("Creating MessageBroker with ID {} and timeout of {} {}", id, timeout, timeUnit);
 		MessageBroker<?> broker = new MessageBroker<>(timeout, timeUnit);
 		brokerRegistry.put(id, broker);
 	}

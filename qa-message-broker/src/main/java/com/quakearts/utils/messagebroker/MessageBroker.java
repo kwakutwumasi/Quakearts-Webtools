@@ -17,11 +17,16 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
+import java.util.concurrent.TimeoutException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.quakearts.utils.messagebroker.exception.MessageBrokerException;
 
@@ -31,28 +36,39 @@ import com.quakearts.utils.messagebroker.exception.MessageBrokerException;
  * @param <M>
  */
 public class MessageBroker<M> {
-	private Map<String, BrokerObject<M>> incomingTickets = new ConcurrentHashMap<>(),
-			outgoingTickets = new ConcurrentHashMap<>();
-	private BlockingQueue<BrokerObject<M>> incoming;
-	private BlockingQueue<BrokerObject<M>> outgoing;
-	private Deque<String> incomingTicketQueueIn, incomingTicketQueueOut, 
-						  outgoingTicketQueueIn, outgoingTicketQueueOut;
+
+	private static final String TIMED_OUT_RESPONSE = "Timed out waiting for response";
+	private static final String RETRIEVING_MESSAGE = "Retrieving message '{}'";
+	private static final String TIMED_OUT_MESSAGE = "Timed out waiting for message";
+	private static final String RETRIEVAL_TIMEOUT = "Retrieval timeout";
+	private static final Logger log = LoggerFactory.getLogger(MessageBroker.class);
+	private Map<String, BrokerObject<M>> incomingTickets = new ConcurrentHashMap<>();
+	private Map<String, BrokerObject<M>> outgoingTickets = new ConcurrentHashMap<>();
+	private Deque<String> incomingTicketQueueIn;
+	private Deque<String> incomingTicketQueueOut; 
+	private Deque<String> outgoingTicketQueueIn;
+	private Deque<String> outgoingTicketQueueOut;
 	private long timeout;
+	private long timeoutInMillis;
 	private TimeUnit timeoutTimeUnit;
 	private Duration maxAge;
+	private ExecutorService retrievalExecutor;
+	
 	private TimerTask cleanUpTask = new TimerTask() {
-		Consumer<BrokerObject<M>> consumer = (object)->{
-			if(object.getAge().compareTo(maxAge)>0) {
-				incomingTickets.remove(object.getBrokerID());
-			}
-		};
-
 		@Override
 		public void run() {	
-			incomingTickets.values().parallelStream()
-			.forEach(consumer);
-			outgoingTickets.values().parallelStream()
-			.forEach(consumer);
+			incomingTickets.entrySet().parallelStream()
+			.forEach(entry->{
+				if(entry.getValue().getAge().compareTo(maxAge)>0) {
+					incomingTickets.remove(entry.getKey());
+				}
+			});
+			outgoingTickets.entrySet().parallelStream()
+			.forEach(entry->{
+				if(entry.getValue().getAge().compareTo(maxAge)>0) {
+					outgoingTickets.remove(entry.getKey());
+				}
+			});
 		}
 	};
 	
@@ -75,18 +91,19 @@ public class MessageBroker<M> {
 	MessageBroker(int capacity, long timeout, TimeUnit timeoutTimeUnit,
 			long deamonInterval, TimeUnit deamonIntervalUnit, long maxAgeLong,
 			TimeUnit maxAgeUnit){
-		incoming = new ArrayBlockingQueue<>(capacity);
-		outgoing = new ArrayBlockingQueue<>(capacity);
+		retrievalExecutor = Executors.newFixedThreadPool(capacity);
 		incomingTicketQueueIn = new ArrayDeque<>();
 		incomingTicketQueueOut = new ArrayDeque<>();
 		outgoingTicketQueueIn = new ArrayDeque<>();
 		outgoingTicketQueueOut = new ArrayDeque<>();
 		this.timeout = timeout;
 		this.timeoutTimeUnit = timeoutTimeUnit;
+		timeoutInMillis = getFrom(timeout, timeoutTimeUnit).toMillis();
 		this.maxAge = getFrom(maxAgeLong, maxAgeUnit);
 		long interval = getFrom(deamonInterval, deamonIntervalUnit).toMillis();
 		Timer timer = new Timer(true);
 		timer.schedule(cleanUpTask, interval, interval);
+		log.trace("MessageBroker created");
 	}
 	
 	Duration getFrom(long time, TimeUnit timeUnit) {
@@ -115,7 +132,19 @@ public class MessageBroker<M> {
 	 * has been reached.
 	 */
 	public void sendForProcessing(M message) throws MessageBrokerException {
-		send(incoming, new BrokerObject<>(message, getIncomingTicketIn()));
+		log.trace("Adding message '{}' to response queue.", returnDescription(message));
+		BrokerObject<M> brokerObject = new BrokerObject<>(message);
+		String ticket = getIncomingTicketIn();
+		log.trace("Putting message '{}' with ticket {} into incomingTickets", returnDescription(message), ticket);
+		incomingTickets.put(ticket, brokerObject);
+		if(!brokerObject.hasBeenPicked(timeoutInMillis)) {
+			incomingTickets.remove(ticket);
+			throw new MessageBrokerException("Message was not picked");
+		}
+	}
+
+	private Object returnDescription(M message) {
+		return message!=null? message.toString():"null";
 	}
 	
 	/**Retrieve a message sent for processing.
@@ -123,31 +152,52 @@ public class MessageBroker<M> {
 	 * @throws MessageBrokerException if the retrieval operation times out
 	 */
 	public M retrieveForProcessing() throws MessageBrokerException {
+		log.trace("Retrieving message...");
 		BrokerObject<M> object;
 		String brokerID = getIncomingTicketOut();
-		processTickets(incomingTickets, incoming);
-		object = incomingTickets.remove(brokerID);
-		if(object!=null) {
+		Future<BrokerObject<M>> future = retrievalExecutor
+				.submit(()->processTicket(incomingTickets, brokerID, "incoming queue"));
+		try {
+			object = future.get(timeout, timeoutTimeUnit);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new MessageBrokerException(TIMED_OUT_MESSAGE, e);
+		} catch(ExecutionException | TimeoutException e) {
+			throw new MessageBrokerException(TIMED_OUT_MESSAGE, e);
+		}
+		
+		if(object!=null && !object.isStale()) {
+			log.trace(RETRIEVING_MESSAGE, returnDescription(object.getMessage()));
 			return object.getMessage();
-		} else
-			return null;
+		} else {
+			log.trace(RETRIEVAL_TIMEOUT);
+			throw new MessageBrokerException(TIMED_OUT_RESPONSE);
+		}
 	}
 	
 	private synchronized String getIncomingTicketIn() {
+		log.trace("Obtaining incomingTicketQueueIn ticket");
 		String ticketId = incomingTicketQueueIn.poll();
 		if(ticketId == null) {
+			log.trace("Generating incomingTicketQueueOut ticket");
 			ticketId = UUID.randomUUID().toString();
 			incomingTicketQueueOut.offer(ticketId);
+			log.trace("Generated incomingTicketQueueOut ticket {}", ticketId);
 		}
+		log.trace("Returning incomingTicket ticket {}", ticketId);
 		return ticketId;
 	}
 	
 	private synchronized String getIncomingTicketOut() {
+		log.trace("Obtaining incomingTicketQueueOut ticket");
 		String ticketId = incomingTicketQueueOut.poll();
 		if(ticketId == null) {
+			log.trace("Generating incomingTicketQueueIn ticket");
 			ticketId = UUID.randomUUID().toString();
 			incomingTicketQueueIn.offer(ticketId);
+			log.trace("Generated incomingTicketQueueIn ticket {}", ticketId);
 		}
+		log.trace("Returning incomingTicket ticket {}", ticketId);
 		return ticketId;
 	}
 	
@@ -156,7 +206,15 @@ public class MessageBroker<M> {
 	 * @throws MessageBrokerException if the broker capacity has been reached
 	 */
 	public void sendResponse(M message) throws MessageBrokerException {
-		send(outgoing, new BrokerObject<>(message, getOutgoingTicketIn()));
+		log.trace("Adding message '{}' to response queue.", returnDescription(message));
+		BrokerObject<M> brokerObject = new BrokerObject<>(message);
+		String ticket = getOutgoingTicketIn();
+		log.trace("Putting message '{}' with ticket {} into incomingTickets", returnDescription(message), ticket);
+		outgoingTickets.put(ticket, brokerObject);
+		if(!brokerObject.hasBeenPicked(timeoutInMillis)) {
+			outgoingTickets.remove(ticket);
+			throw new MessageBrokerException("Message was not picked");
+		}
 	}
 	
 	/**Retrieve a response to the processed message
@@ -164,66 +222,67 @@ public class MessageBroker<M> {
 	 * @throws MessageBrokerException
 	 */
 	public M retrieveResponse() throws MessageBrokerException {
+		log.trace("Retrieving response...");
 		BrokerObject<M> object;
 		String brokerID = getOutgoingTicketOut();
-		processTickets(outgoingTickets, outgoing);
-		object = outgoingTickets.remove(brokerID);		
-		if(object!=null) {
+		Future<BrokerObject<M>> future = retrievalExecutor.submit(()->processTicket(outgoingTickets, brokerID, "outgoing queue"));
+		try {
+			object = future.get(timeout, timeoutTimeUnit);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new MessageBrokerException(TIMED_OUT_RESPONSE, e);
+		} catch (ExecutionException | TimeoutException e) {
+			throw new MessageBrokerException(TIMED_OUT_RESPONSE, e);
+		}		
+		if(object!=null && !object.isStale()) {
+			log.trace(RETRIEVING_MESSAGE, returnDescription(object.getMessage()));
 			return object.getMessage();
 		} else {
-			return null;
+			log.trace(RETRIEVAL_TIMEOUT);
+			throw new MessageBrokerException(TIMED_OUT_RESPONSE);
 		}
 	}
 
 	private synchronized String getOutgoingTicketIn() {
+		log.trace("Obtaining outgoingTicketQueueIn ticket");
 		String ticketId = outgoingTicketQueueIn.poll();
 		if(ticketId == null) {
+			log.trace("Generating outgoingTicketQueueOut ticket");
 			ticketId = UUID.randomUUID().toString();
 			outgoingTicketQueueOut.offer(ticketId);
+			log.trace("Generated outgoingTicketQueueOut ticket {}", ticketId);
 		}
+		log.trace("Returning outgoingTicket ticket {}", ticketId);
 		return ticketId;
 	}
 	
 	private synchronized String getOutgoingTicketOut() {
+		log.trace("Obtaining outgoingTicketQueueOut ticket");
 		String ticketId = outgoingTicketQueueOut.poll();
 		if(ticketId == null) {
+			log.trace("Generating outgoingTicketQueueIn ticket");
 			ticketId = UUID.randomUUID().toString();
 			outgoingTicketQueueIn.offer(ticketId);
+			log.trace("Generated outgoingTicketQueueIn ticket {}", ticketId);
 		}
+		log.trace("Returning outgoingTicket ticket {}", ticketId);
 		return ticketId;
 	}
 	
-	private void send(BlockingQueue<BrokerObject<M>> queue, BrokerObject<M> object) throws MessageBrokerException {
-		try {
-			if(!queue.offer(object, timeout, timeoutTimeUnit))
-				throw new MessageBrokerException("Unable to process the transaction: timeout");
-		} catch (InterruptedException e) {
-			throw new MessageBrokerException("Unable to process the transaction", e);
-		}		
-	}
-
-	private void processTickets(Map<String, BrokerObject<M>> tickets, 
-			BlockingQueue<BrokerObject<M>> queue) throws MessageBrokerException {
+	private BrokerObject<M> processTicket(Map<String, BrokerObject<M>> tickets, 
+			String brokerID, String traceDescription) {
+		log.trace("Processing ticket {} for {}", brokerID, traceDescription);
+		long start = System.currentTimeMillis();
 		BrokerObject<M> object;
-		object = receive(queue);
-		if(object!=null) {
-			tickets.put(object.getBrokerID(), object);
-			if(!queue.isEmpty()) {
-				for(int i=queue.size(); i>0;i--) {
-					object = receive(queue);
-					tickets.put(object.getBrokerID(), object);
-				}
+		do {
+			object = tickets.remove(brokerID);
+			if(object!=null) {
+				object.pick();
+				return object;
 			}
-		}
+		} while (System.currentTimeMillis()-start<timeoutInMillis
+				&& !Thread.interrupted());
+		
+		return null;
 	}
-
-	private BrokerObject<M> receive(BlockingQueue<BrokerObject<M>> queue) throws MessageBrokerException {
-		try {			
-			return queue.poll(timeout, timeoutTimeUnit);
-		} catch (InterruptedException e) {
-			throw new MessageBrokerException("Unable to process the transaction", e);
-		}
-	}
-	
-	
 }

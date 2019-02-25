@@ -13,23 +13,52 @@ import java.time.Instant;
  */
 public class BrokerObject<M> {
 	private M message;
-	private String brokerID;
 	private Instant birthday = Instant.now();
+	private boolean picked;
+	private boolean stale;
 	
-	public BrokerObject(M message, String brokerID) {
+	public BrokerObject(M message) {
 		this.message = message;
-		this.brokerID = brokerID;
 	}
 	
 	public M getMessage() {
 		return message;
 	}
 	
-	public String getBrokerID() {
-		return brokerID;
-	}
-	
 	public Duration getAge() {
 		return Duration.between(birthday, Instant.now());
+	}
+	
+	public boolean hasBeenPicked(long timeout) {
+		if(!picked) {
+			waitTillTimeout(timeout);
+		}
+		return picked;
+	}
+
+	private synchronized void waitTillTimeout(long timeout) {
+		long start = System.currentTimeMillis();
+		do {
+			try {
+				wait(timeout-millisSince(start));
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				break;
+			}
+		} while(!picked && millisSince(start)<timeout);
+		stale = !picked;
+	}
+
+	private long millisSince(long start) {
+		return System.currentTimeMillis()-start;
+	}
+	
+	public synchronized void pick() {
+		picked = true;
+		notifyAll();
+	}
+	
+	public synchronized boolean isStale() {
+		return stale;
 	}
 }

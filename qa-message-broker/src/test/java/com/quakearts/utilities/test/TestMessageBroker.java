@@ -2,9 +2,10 @@ package com.quakearts.utilities.test;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.*;
-import static org.hamcrest.core.IsNull.*;
+import static org.hamcrest.core.IsNot.*;
 
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -13,10 +14,12 @@ import java.util.concurrent.TimeUnit;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import com.quakearts.utils.messagebroker.MessageBroker;
 import com.quakearts.utils.messagebroker.MessageBrokerRegistry;
 import com.quakearts.utils.messagebroker.MessageBrokerRegistryImpl;
+import com.quakearts.utils.messagebroker.exception.MessageBrokerException;
 
 public class TestMessageBroker {
 	
@@ -26,9 +29,10 @@ public class TestMessageBroker {
 	
 	@BeforeClass
 	public static void init() {
+		LoggerFactory.getLogger(TestMessageBroker.class).info("Starting");
 		brokerRegistry = new MessageBrokerRegistryImpl();
 		brokerRegistry.createMessageBroker(REGISTRYID, 2, 1, TimeUnit.SECONDS,
-						1, TimeUnit.SECONDS, 5, TimeUnit.SECONDS);
+						10, TimeUnit.SECONDS, 5, TimeUnit.SECONDS);
 		service = Executors.newFixedThreadPool(4);
 	}
 	
@@ -39,205 +43,167 @@ public class TestMessageBroker {
 
 	@Test
 	public void testSendAndRetrieve() throws Exception {
-		String message1 = UUID.randomUUID().toString(),
-				message2 = UUID.randomUUID().toString();
+		MessageBroker<String> broker = brokerRegistry.getMessageBroker(REGISTRYID);
+		String testMessage = UUID.randomUUID().toString();		
+		Future<String> receiveFuture = service.submit(()->{
+			return broker.retrieveForProcessing();
+		});
+				
+		broker.sendForProcessing(testMessage);
+		assertThat(receiveFuture.get(), is(testMessage));
 		
-		Future<?> future1 = service.submit(()->{
-			try {
-				Thread.sleep(500);
-				MessageBroker<String> broker = brokerRegistry
-						.getMessageBroker(REGISTRYID);
-				broker.sendForProcessing(message1);
-				String retrievedMessage = broker.retrieveResponse();
-				assertThat(retrievedMessage, is(message2));
-			} catch (Exception e) {
-				fail(e.getMessage());
-			}
+		receiveFuture = service.submit(()->{
+			return broker.retrieveResponse();
 		});
 		
-		Future<?> future2 = service.submit(()->{
-			try {
-				Thread.sleep(500);
-				MessageBroker<String> broker = brokerRegistry
-						.getMessageBroker(REGISTRYID);
-				String retrievedMessage = broker.retrieveForProcessing();
-				assertThat(retrievedMessage, is(message1));
-				broker.sendResponse(message2);
-			} catch (Exception e) {
-				fail(e.getMessage());
-			}
+		broker.sendResponse(testMessage);
+		assertThat(receiveFuture.get(), is(testMessage));
+		
+		String testMessage2 = UUID.randomUUID().toString();		
+		
+		receiveFuture = service.submit(()->{
+			return broker.retrieveForProcessing();
 		});
 		
-		future1.get();
-		future2.get();
+		broker.sendForProcessing(testMessage2);
+		assertThat(receiveFuture.get(), is(testMessage2));
+		
+		receiveFuture = service.submit(()->{
+			return broker.retrieveResponse();
+		});
+		
+		broker.sendResponse(testMessage2);
+		assertThat(receiveFuture.get(), is(testMessage2));
 	}
 	
 	@Test
-	public void testSendForProcessingTimeout() throws Exception {
-		String message1 = UUID.randomUUID().toString(),
-				message2 = UUID.randomUUID().toString(),
-				message3 = UUID.randomUUID().toString();
+	public void testSendForProcessingAndRetrieveForProcessingTimeout() throws Exception {
+		String testMessage = UUID.randomUUID().toString();
+		MessageBroker<String> broker = brokerRegistry.getMessageBroker(REGISTRYID);
+		//Test timeout works
+		try {
+			broker.sendForProcessing(testMessage);
+			fail("Did not throw exception after timeout");
+		} catch (MessageBrokerException e) {}
 		
-		Future<?> future1 = service.submit(()->{
-			try {
-				MessageBroker<String> broker = brokerRegistry
-						.getMessageBroker(REGISTRYID);
-				broker.sendForProcessing(message1);
-				broker.sendForProcessing(message2);
-				try {
-					broker.sendForProcessing(message3);
-					fail("Did not timeout");
-				} catch (Exception e) {
-				}
-			} catch (Exception e) {
-				fail(e.getClass()+" "+e.getMessage());
-			}
+		try {
+			broker.retrieveForProcessing();
+			fail("Did not throw exception after timeout");
+		} catch (MessageBrokerException e) {}
+		
+		String testMessage2 = UUID.randomUUID().toString();
+		//Test if retrieve after timeout works, and that next message doesn't pick previous message
+		Future<Boolean> sendFuture = service.submit(()->{
+			broker.sendForProcessing(testMessage2);
+			return true;
 		});
 		
-		Future<?> future2 = service.submit(()->{
-			try {
-				MessageBroker<String> broker = brokerRegistry
-						.getMessageBroker(REGISTRYID);
-				Thread.sleep(1100);
-				String retrievedMessage = broker.retrieveForProcessing();
-				assertThat(retrievedMessage, is(message1));
-				retrievedMessage = broker.retrieveForProcessing();
-				assertThat(retrievedMessage, is(message2));
-				retrievedMessage = broker.retrieveForProcessing();
-				assertThat(retrievedMessage, is(nullValue()));
-			} catch (Exception e) {
-				fail(e.getClass()+" "+e.getMessage());
-			}
+		Future<String> receiveFuture = service.submit(()->{
+			return broker.retrieveForProcessing();
 		});
 		
-		future1.get();
-		future2.get();
+		if(sendFuture.get()) {
+			assertThat(receiveFuture.get(), is(testMessage2));
+			assertThat(testMessage, is(not(testMessage2)));
+		}
 	}
 	
 	@Test
-	public void testRetrieveForProcessingTimeout() throws Exception {
-		String message1 = UUID.randomUUID().toString(),
-				message2 = UUID.randomUUID().toString(),
-				message3 = UUID.randomUUID().toString();
+	public void testSendResponseAndRetrieveResponseTimeout() throws Exception {
+		String testMessage = UUID.randomUUID().toString();
+		MessageBroker<String> broker = brokerRegistry.getMessageBroker(REGISTRYID);
+		//Test timeout works
+		try {
+			broker.sendResponse(testMessage);
+			fail("Did not throw exception after timeout");
+		} catch (MessageBrokerException e) {}
 		
-		Future<?> future1 = service.submit(()->{
-			try {
-				MessageBroker<String> broker = brokerRegistry
-						.getMessageBroker(REGISTRYID);
-				broker.sendForProcessing(message1);
-				Thread.sleep(1100);
-				broker.sendForProcessing(message2);
-				broker.sendForProcessing(message3);
-			} catch (Exception e) {
-				fail(e.getMessage());
-			}
+		try {
+			broker.retrieveResponse();
+			fail("Did not throw exception after timeout");
+		} catch (MessageBrokerException e) {}
+		String testMessage2 = UUID.randomUUID().toString();
+		//Test if retrieve after timeout works, and that next message doesn't pick previous message
+		Future<Boolean> sendFuture = service.submit(()->{
+			broker.sendResponse(testMessage2);
+			return true;
 		});
 		
-		Future<?> future2 = service.submit(()->{
-			try {
-				MessageBroker<String> broker = brokerRegistry
-						.getMessageBroker(REGISTRYID);
-				String retrievedMessage = broker.retrieveForProcessing();
-				assertThat(retrievedMessage, is(message1));
-				retrievedMessage = broker.retrieveForProcessing();
-				assertThat(retrievedMessage, is(nullValue()));
-				retrievedMessage = broker.retrieveForProcessing();
-				assertThat(retrievedMessage, is(message3));
-			} catch (Exception e) {
-				fail(e.getMessage());
-			}
+		Future<String> receiveFuture = service.submit(()->{
+			return broker.retrieveResponse();
 		});
-
-		future1.get();
-		future2.get();
+		
+		if(sendFuture.get()) {
+			assertThat(receiveFuture.get(), is(testMessage2));
+			assertThat(testMessage, is(not(testMessage2)));
+		}
 	}
-	
+
 	@Test
-	public void testSendResponseTimeout() throws Exception {
-		String message1 = UUID.randomUUID().toString(),
-				message2 = UUID.randomUUID().toString(),
-				message3 = UUID.randomUUID().toString();
+	public void testCallOrder() throws Exception {
+		String testMessage = UUID.randomUUID().toString();
+		MessageBroker<String> broker = brokerRegistry.getMessageBroker(REGISTRYID);
 		
-		Future<?> future1 = service.submit(()->{
-			try {
-				MessageBroker<String> broker = brokerRegistry
-						.getMessageBroker(REGISTRYID);
-				broker.sendResponse(message1);
-				broker.sendResponse(message2);
-				try {
-					broker.sendResponse(message3);
-					fail("Did not timeout");
-				} catch (Exception e) {
-				}
-			} catch (Exception e) {
-				fail(e.getClass()+" "+e.getMessage());
-			}
+		//Test timeout works
+		try {
+			broker.sendForProcessing(testMessage);
+			fail("Did not throw exception after timeout");
+		} catch (MessageBrokerException e) {}
+		
+		//Test if retrieve after timeout works, and that next message doesn't pick previous message
+		Future<Boolean> sendFuture = service.submit(()->{
+			broker.sendForProcessing(testMessage);
+			return true;
 		});
 		
-		Future<?> future2 = service.submit(()->{
-			try {
-				MessageBroker<String> broker = brokerRegistry
-						.getMessageBroker(REGISTRYID);
-				Thread.sleep(1100);
-				String retrievedMessage = broker.retrieveResponse();
-				assertThat(retrievedMessage, is(message1));
-				retrievedMessage = broker.retrieveResponse();
-				assertThat(retrievedMessage, is(message2));
-				retrievedMessage = broker.retrieveResponse();
-				assertThat(retrievedMessage, is(nullValue()));
-			} catch (Exception e) {
-				fail(e.getClass()+" "+e.getMessage());
-			}
+		Future<String> receiveFuture = service.submit(()->{
+			return broker.retrieveForProcessing();
 		});
 		
-		future1.get();
-		future2.get();
+		try {
+			sendFuture.get();
+			fail("Send did not timeout");
+		} catch (ExecutionException e) {}
+
+		try {
+			receiveFuture.get();
+			fail("Retrieve did not timeout");
+		} catch (ExecutionException e) {}
+		
+		try {
+			broker.retrieveForProcessing();
+			fail("Did not throw exception after timeout");
+		} catch (MessageBrokerException e) {}
+		
+		//Test timeout works
+		try {
+			broker.sendResponse(testMessage);
+			fail("Did not throw exception after timeout");
+		} catch (MessageBrokerException e) {}
+		//Test if retrieve after timeout works, and that next message doesn't pick previous message
+		sendFuture = service.submit(()->{
+			broker.sendResponse(testMessage);
+			return true;
+		});
+		
+		receiveFuture = service.submit(()->{
+			return broker.retrieveResponse();
+		});
+		
+		try {
+			sendFuture.get();
+			fail("Retrieve did not timeout");
+		} catch (ExecutionException e) {}
+
+		try {
+			receiveFuture.get();
+			fail("Retrieve did not timeout");
+		} catch (ExecutionException e) {}
+		
+		try {
+			broker.retrieveResponse();
+			fail("Did not throw exception after timeout");
+		} catch (MessageBrokerException e) {}
 
 	}
-	
-	@Test
-	public void testRetrieveResponseTimeout() throws Exception {
-		String message1 = UUID.randomUUID().toString(),
-				message2 = UUID.randomUUID().toString(),
-				message3 = UUID.randomUUID().toString();
-		
-		Future<?> future1 = service.submit(()->{
-			try {
-				MessageBroker<String> broker = brokerRegistry
-						.getMessageBroker(REGISTRYID);
-				broker.sendResponse(message1);
-				Thread.sleep(1100);
-				broker.sendResponse(message2);
-				broker.sendResponse(message3);
-			} catch (Exception e) {
-				fail(e.getClass()+" "+e.getMessage());
-			}
-		});
-		
-		Future<?> future2 = service.submit(()->{
-			try {
-				MessageBroker<String> broker = brokerRegistry
-						.getMessageBroker(REGISTRYID);
-				String retrievedMessage = broker.retrieveResponse();
-				assertThat(retrievedMessage, is(message1));
-				retrievedMessage = broker.retrieveResponse();
-				assertThat(retrievedMessage, is(nullValue()));
-				retrievedMessage = broker.retrieveResponse();
-				assertThat(retrievedMessage, is(message3));
-			} catch (Exception e) {
-				fail(e.getClass()+" "+e.getMessage());
-			}
-		});
-		
-		future1.get();
-		future2.get();
-
-	}
-	
-	/*
-	 * test send and retrieve for processing after timeout
-	 * test send and retrieve response after timeout
-	 */
-	
-
 }
