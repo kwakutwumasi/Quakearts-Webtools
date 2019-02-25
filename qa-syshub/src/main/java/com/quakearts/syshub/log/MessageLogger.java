@@ -39,9 +39,8 @@ public interface MessageLogger {
 	ProcessingLog getProcessingLogByMid(String mid);
 	/**Update a {@linkplain ProcessingLog}
 	 * @param notificationLog
-	 * @throws Exception
 	 */
-	void updateLog(ProcessingLog notificationLog) throws Exception;
+	void updateLog(ProcessingLog notificationLog);
 	/**Log the {@linkplain Message}. Messages that are logged are considered complete
 	 * @param agentConfiguration the {@linkplain AgentConfiguration} used to create the module
 	 * @param agentModule the {@linkplain AgentModule} used to send the message

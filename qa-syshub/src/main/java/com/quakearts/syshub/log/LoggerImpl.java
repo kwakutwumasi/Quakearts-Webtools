@@ -260,7 +260,7 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 	 * @see com.quakearts.notification.log.MessageLogger#updateLog(com.quakearts.notification.model.NotificationLog)
 	 */
 	@Override
-	public void updateLog(ProcessingLog notificationLog) throws Exception{
+	public void updateLog(ProcessingLog notificationLog){
 		getUpdateLogCache().put(notificationLog.getMid(), notificationLog);
 	}
 
