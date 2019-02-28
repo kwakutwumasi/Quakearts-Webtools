@@ -122,7 +122,7 @@ public class MockServerServlet extends HttpServlet {
 			} else {
 				responseContent = null;
 			}
-			HttpResponse response = getAndstoreResponse(request, con, responseContent);			
+			HttpResponse response = getAndStoreResponse(request, con, responseContent);			
 			context.sendResponse(response);
 		} catch (IOException e) {
 			throw new MockServerProcessingException("Unable to connect to server", e);
@@ -132,7 +132,6 @@ public class MockServerServlet extends HttpServlet {
 	private HttpURLConnection prepareConnection(HttpRequest request)
 			throws IOException, MockServerProcessingException {
 		HttpURLConnection con = (HttpURLConnection) new URL(configuration.getURLToRecord()
-				+(configuration.getURLToRecord().endsWith("/")?"":"/")
 				+ request.getResource()).openConnection();
 		if(con instanceof HttpsURLConnection 
 				&& (configuration.getURLToRecord().startsWith("https://localhost")
@@ -196,7 +195,7 @@ public class MockServerServlet extends HttpServlet {
 		return responseContent;
 	}
 
-	private HttpResponse getAndstoreResponse(HttpRequest request, HttpURLConnection con, byte[] responseContent)
+	private HttpResponse getAndStoreResponse(HttpRequest request, HttpURLConnection con, byte[] responseContent)
 			throws IOException, HttpMessageStoreException {
 		HttpResponseBuilder builder = HttpMessageBuilder.createNewHttpResponse()
 				.setResponseCodeAs(con.getResponseCode())
