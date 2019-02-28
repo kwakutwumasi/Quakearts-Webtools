@@ -17,6 +17,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -39,7 +40,6 @@ import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentModule;
 import com.quakearts.syshub.model.ProcessingLog;
 import com.quakearts.syshub.model.ResultExceptionLog;
-import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
 import com.quakearts.webapp.orm.stringconcat.OrmStringConcatUtil;
 import com.quakearts.syshub.model.ProcessingLog.LogType;
 
@@ -47,6 +47,7 @@ import org.infinispan.Cache;
 
 @Singleton
 public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
+	private static final String MESSAGE_DUMP = "Message dump: [{}]";
 	@Inject
 	private CacheManager cacheManager;
 	@Inject
@@ -54,33 +55,28 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 	@Inject
 	private SystemDataStoreManager storeManager;
 
-	private Cache<String, ProcessingLog> save_log_cache;
-	private Cache<String, ProcessingLog> update_log_cache;
+	private Cache<String, ProcessingLog> saveLogCache;
+	private Cache<String, ProcessingLog> updateLogCache;
 	private Comparator<ProcessingLog> logComparator = (n1,n2)-> n1.getLogDt().compareTo(n2.getLogDt());
 	private final Logger log = LoggerFactory.getLogger(LoggerImpl.class);
-	private final Timer log_timer = new Timer(true);
-	private Cache<String, ResultExceptionLog> result_exception_log_cache;
+	private final Timer logTimer = new Timer(true);
+	private Cache<String, ResultExceptionLog> resultExceptionLogCache;
 	private boolean shutdown;
 		
 	LoggerImpl() {
-		log_timer.schedule(new TimerTask() {	
+		logTimer.schedule(new TimerTask() {	
 			@Override
 			public void run() {
-				try {
-					if(shutdown)
-						return;
-					
-					getInstance().pushLogsToDB();
-				} catch (Throwable e) {
-					log.error("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()
-							+ ". Exception occured whiles pushing logs to database.");
-				}
+				if(shutdown)
+					return;
+				
+				getInstance().pushLogsToDB();
 			}
 		}, 0, 500);
 		
 		Runtime.getRuntime().addShutdownHook(new Thread(()-> {
 				shutdown = true;
-				log_timer.cancel();
+				logTimer.cancel();
 				for(String key:getSaveLogCache().keySet()){
 					getSaveLogCache().evict(key);
 				}
@@ -105,7 +101,7 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 	}
 
 	@Transactional(TransactionType.SINGLETON)
-	public synchronized void pushLogsToDB() throws Exception {
+	public synchronized void pushLogsToDB() {
 		if(shutdown)
 			return;
 		
@@ -120,7 +116,7 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 				storeManager.getDataStore().save(notificationLog);
 			} catch (Exception e) {
 				log.error("Unable to persist notification log.");
-				log.error("Message dump: ["+notificationLog.toString()+"]");
+				log.error(MESSAGE_DUMP, notificationLog);
 			} finally {
 				getSaveLogCache().remove(notificationLog.getMid());
 			}
@@ -140,7 +136,7 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 				storeManager.getDataStore().update(notificationLog);
 			} catch (Exception e) {
 				log.error("Unable to persist notification log.");
-				log.error("Message dump: ["+notificationLog.toString()+"]");
+				log.error(MESSAGE_DUMP, notificationLog);
 			} finally {
 				getUpdateLogCache().remove(notificationLog.getMid());
 			}
@@ -159,7 +155,7 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 				storeManager.getDataStore().save(exceptionLog);
 			} catch (Exception e) {
 				log.error("Unable to persist result exception log.");
-				log.error("Message dump: ["+exceptionLog.toString()+"]");
+				log.error(MESSAGE_DUMP, exceptionLog);
 			} finally {
 				getResultExceptionLog().remove(exceptionLog.hashCodeAsString());
 			}
@@ -181,7 +177,7 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 	@Override
 	public List<ResultExceptionLog> getUnpersistedResultExceptionLogs() {
 		ArrayList<ResultExceptionLog> unpersistedLogs = 
-				new ArrayList<ResultExceptionLog>(getResultExceptionLog().values());
+				new ArrayList<>(getResultExceptionLog().values());
 		return Collections.unmodifiableList(unpersistedLogs);
 	}
 	
@@ -196,7 +192,7 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 	@Override
 	public List<ProcessingLog> getUnpersistedProcessingLogs(){
 		ArrayList<ProcessingLog> unpersistedLogs = 
-				new ArrayList<ProcessingLog>(getSaveLogCache().values());
+				new ArrayList<>(getSaveLogCache().values());
 		unpersistedLogs.addAll(getUpdateLogCache().values());
 		return Collections.unmodifiableList(unpersistedLogs);
 	}
@@ -241,19 +237,24 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 	@Transactional(TransactionType.SINGLETON)
 	public ProcessingLog getProcessingLogByMid(String mid){
 		
-		ProcessingLog founndlog = getSaveLogCache().get(mid);
-		if(founndlog!=null){
-			return founndlog;
+		ProcessingLog foundLog = getUpdateLogCache().get(mid);
+		if(foundLog!=null){
+			return foundLog;
 		}
 
-		List<ProcessingLog> list = storeManager.getDataStore().list(ProcessingLog.class, ParameterMapBuilder
-				.createParameters().add("mid",mid).build());
+		foundLog = getSaveLogCache().get(mid);
+		if(foundLog!=null){
+			return foundLog;
+		}
+
+		Optional<ProcessingLog> optionalLog = storeManager.getDataStore().find(ProcessingLog.class)
+				.filterBy("mid").withAValueEqualTo(mid).thenGetFirst();
 		
-		if(list.size()>0){
-			Object obj = list.get(list.size()-1);
-			return ((ProcessingLog)obj);
-		} else
+		if(optionalLog.isPresent()){
+			return optionalLog.get();
+		} else {
 			return null;
+		}
 	}
 
 	/* (non-Javadoc)
@@ -267,7 +268,7 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 	private void saveLog(AgentConfiguration agentConfiguration, AgentModule agentModule, 
 			Message<?> mssg, LogType type, String statusMessage, boolean isError){
 		if(log.isTraceEnabled())
-			log.trace("Saving message to queue. Type: "+type+". statusMessage: "+statusMessage);
+			log.trace("Saving message to queue. Type: {}. statusMessage: {}", type, statusMessage);
 		
 		ProcessingLog notelog = new ProcessingLog();
 		
@@ -292,24 +293,24 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 	 * @return the log_cache
 	 */
 	private Cache<String, ProcessingLog> getSaveLogCache() {
-		if(save_log_cache==null){
-			save_log_cache = cacheManager.getCache(ProcessingLog.class,".NEW");
+		if(saveLogCache==null){
+			saveLogCache = cacheManager.getCache(ProcessingLog.class,".NEW");
 		}
-		return save_log_cache;
+		return saveLogCache;
 	}
 
 	private Cache<String, ProcessingLog> getUpdateLogCache() {
-		if(update_log_cache==null){
-			update_log_cache = cacheManager.getCache(ProcessingLog.class,".UPDATE");
+		if(updateLogCache==null){
+			updateLogCache = cacheManager.getCache(ProcessingLog.class,".UPDATE");
 		}
-		return update_log_cache;
+		return updateLogCache;
 	}
 	
 	private Cache<String, ResultExceptionLog> getResultExceptionLog(){
-		if(result_exception_log_cache == null){
-			result_exception_log_cache = cacheManager.getCache(ResultExceptionLog.class, null);
+		if(resultExceptionLogCache == null){
+			resultExceptionLogCache = cacheManager.getCache(ResultExceptionLog.class, null);
 		}
 		
-		return result_exception_log_cache;
+		return resultExceptionLogCache;
 	}
 }
