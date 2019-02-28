@@ -30,7 +30,11 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 	private String domain;
 	
 	public HibernateSessionDataStore() {
-		session = HibernateHelper.getCurrentSession();
+		try {
+			session = HibernateHelper.getCurrentSession();
+		} catch (HibernateException e) {
+			throw new DataStoreException(e);
+		}
 	}
 	
 	public HibernateSessionDataStore(String domain) {
@@ -149,18 +153,20 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 	 */
 	@Override
 	public void flushBuffers() {
-		session.flush();
+		try {
+			session.flush();
+		} catch (HibernateException e) {
+			throw new DataStoreException(e);
+		} 
 	}
 
 	/* (non-Javadoc)
 	 * @see com.quakearts.webapp.orm.DataStore#executeFunction(com.quakearts.webapp.orm.DataStoreFunction)
 	 */
 	@Override
-	public void executeFunction(DataStoreFunction function) throws DataStoreException {
+	public void executeFunction(DataStoreFunction function) {
 		try {
-			session.doWork((connection)->{
-				function.execute(new SessionDataStoreConnection(connection, session));
-			});			
+			session.doWork(connection->function.execute(new SessionDataStoreConnection(connection, session)));			
 		} catch (HibernateException e) {
 			throw new DataStoreException(e);
 		}
@@ -197,7 +203,11 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 	}
 
 	@Override
-	public void clearBuffers() throws DataStoreException {
-		session.getTransaction().markRollbackOnly();
+	public void clearBuffers() {
+		try {
+			session.getTransaction().markRollbackOnly();
+		} catch (HibernateException e) {
+			throw new DataStoreException(e);
+		}
 	}
 }
