@@ -254,6 +254,7 @@ public class ProcessingAgent {
 			try {
 				worker = agentDataSpoolerWorkers.take();
 				worker.dataSpooler = dataSpooler;
+				worker.result = result;
 			} catch (InterruptedException e) {
 				throw new FatalException(e);
 			}
