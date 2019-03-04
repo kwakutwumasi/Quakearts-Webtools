@@ -37,10 +37,11 @@ import com.quakearts.utils.messagebroker.exception.MessageBrokerException;
  */
 public class MessageBroker<M> {
 
+	private static final String SEND_TIMEOUT = "Send timeout. Removed ticket {} from {}";
 	private static final String TIMED_OUT_RESPONSE = "Timed out waiting for response";
 	private static final String RETRIEVING_MESSAGE = "Retrieving message '{}'";
 	private static final String TIMED_OUT_MESSAGE = "Timed out waiting for message";
-	private static final String RETRIEVAL_TIMEOUT = "Retrieval timeout";
+	private static final String RETRIEVAL_TIMEOUT = "Retrieval timeout. Removed ticket {} from {}";
 	private static final Logger log = LoggerFactory.getLogger(MessageBroker.class);
 	private Map<String, BrokerObject<M>> incomingTickets = new ConcurrentHashMap<>();
 	private Map<String, BrokerObject<M>> outgoingTickets = new ConcurrentHashMap<>();
@@ -139,6 +140,8 @@ public class MessageBroker<M> {
 		incomingTickets.put(ticket, brokerObject);
 		if(!brokerObject.hasBeenPicked(timeoutInMillis)) {
 			incomingTickets.remove(ticket);
+			incomingTicketQueueOut.remove(ticket);
+			log.trace(SEND_TIMEOUT, ticket, "incomingTicketQueueOut");
 			throw new MessageBrokerException("Message was not picked");
 		}
 	}
@@ -163,6 +166,7 @@ public class MessageBroker<M> {
 			Thread.currentThread().interrupt();
 			throw new MessageBrokerException(TIMED_OUT_MESSAGE, e);
 		} catch(ExecutionException | TimeoutException e) {
+			incomingTicketQueueIn.remove(brokerID);
 			throw new MessageBrokerException(TIMED_OUT_MESSAGE, e);
 		}
 		
@@ -170,7 +174,8 @@ public class MessageBroker<M> {
 			log.trace(RETRIEVING_MESSAGE, returnDescription(object.getMessage()));
 			return object.getMessage();
 		} else {
-			log.trace(RETRIEVAL_TIMEOUT);
+			incomingTicketQueueIn.remove(brokerID);
+			log.trace(RETRIEVAL_TIMEOUT, brokerID, "incomingTicketQueueIn");
 			throw new MessageBrokerException(TIMED_OUT_RESPONSE);
 		}
 	}
@@ -213,6 +218,8 @@ public class MessageBroker<M> {
 		outgoingTickets.put(ticket, brokerObject);
 		if(!brokerObject.hasBeenPicked(timeoutInMillis)) {
 			outgoingTickets.remove(ticket);
+			outgoingTicketQueueOut.remove(ticket);
+			log.trace(SEND_TIMEOUT, ticket,"outgoingTicketQueueOut");
 			throw new MessageBrokerException("Message was not picked");
 		}
 	}
@@ -232,13 +239,15 @@ public class MessageBroker<M> {
 			Thread.currentThread().interrupt();
 			throw new MessageBrokerException(TIMED_OUT_RESPONSE, e);
 		} catch (ExecutionException | TimeoutException e) {
+			outgoingTicketQueueIn.remove(brokerID);
 			throw new MessageBrokerException(TIMED_OUT_RESPONSE, e);
 		}		
 		if(object!=null && !object.isStale()) {
 			log.trace(RETRIEVING_MESSAGE, returnDescription(object.getMessage()));
 			return object.getMessage();
 		} else {
-			log.trace(RETRIEVAL_TIMEOUT);
+			outgoingTicketQueueIn.remove(brokerID);
+			log.trace(RETRIEVAL_TIMEOUT, brokerID, "outgoingTicketQueueIn");
 			throw new MessageBrokerException(TIMED_OUT_RESPONSE);
 		}
 	}
