@@ -64,7 +64,7 @@ public class MessageBrokerRegistryImpl implements MessageBrokerRegistry {
 	}
 
 	@Override
-	public void createMessageBroker(Serializable id, long timeout, TimeUnit timeUnit){
+	public synchronized void createMessageBroker(Serializable id, long timeout, TimeUnit timeUnit){
 		log.trace("Creating MessageBroker with ID {} and timeout of {} {}", id, timeout, timeUnit);
 		MessageBroker<?> broker = new MessageBroker<>(timeout, timeUnit);
 		brokerRegistry.put(id, broker);
