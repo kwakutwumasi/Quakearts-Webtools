@@ -60,7 +60,7 @@ public class ProcessingLog implements Serializable {
 	private String statusMessage;
 	@Lob
 	@Basic(fetch=FetchType.LAZY)
-	@Column(nullable=false, columnDefinition="blob(5M)")
+	@Column(nullable=false)
 	private byte[] messageData;
 	@Column(nullable=false)
 	private long retries;
