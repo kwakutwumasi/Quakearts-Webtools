@@ -12,15 +12,10 @@ import javax.crypto.spec.SecretKeySpec;
 import com.quakearts.security.cryptography.exception.KeyProviderException;
 import com.quakearts.security.cryptography.provider.KeyProvider;
 
-public class TestKeyProvider implements KeyProvider {
+public class TestBlowfishKeyProvider implements KeyProvider {
 
-	boolean throwError;
-	
 	@Override
 	public Key getKey() throws KeyProviderException {
-		if(throwError)
-			throw new KeyProviderException(new Exception("Throwing"));
-		
 		byte[] key;
 		try {
 			key = "testkey".getBytes("UTF-8");
@@ -36,16 +31,14 @@ public class TestKeyProvider implements KeyProvider {
 		}
 
 		key = sha.digest(key);
-		key = Arrays.copyOf(key, 16); // use only first 128 bit
+		key = Arrays.copyOf(key, 4); // use only first 32 bits
 
-		SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
+		SecretKeySpec secretKeySpec = new SecretKeySpec(key, "Blowfish");
 		return secretKeySpec;
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void setProperties(Map props) {
-		if(props!=null)
-			throwError = props.containsKey("throwError");
 	}
 }

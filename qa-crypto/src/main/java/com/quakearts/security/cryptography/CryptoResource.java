@@ -10,20 +10,18 @@
  ******************************************************************************/
 package com.quakearts.security.cryptography;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
+import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.regex.Pattern;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 
 import com.quakearts.security.cryptography.exception.IllegalCryptoActionException;
-import com.quakearts.security.cryptography.permission.CrytographyOperationPermission;
+import com.quakearts.security.cryptography.permission.CryptographyOperationPermission;
 
 /**A Cryptographic resource that can be used for symetric encryptions.
  * If the algorithm requires an initialization vector, the resource automatically
@@ -35,8 +33,10 @@ import com.quakearts.security.cryptography.permission.CrytographyOperationPermis
  *
  */
 public class CryptoResource {
+	private static final String INVALID_HEXIDECIMAL_STRING = "Invalid hexidecimal string";
 	private Key secretKey;
-	private CrytographyOperationPermission decryptPermission, encryptPermission;
+	private CryptographyOperationPermission decryptPermission;
+	private CryptographyOperationPermission encryptPermission;
 	private boolean generatesIv;
 
 	private static final Pattern ivPatterns = Pattern.compile(".+/((CBC)|(CFB)|(OFB)|(CTR))/?(.*)?");
@@ -47,10 +47,11 @@ public class CryptoResource {
 	 * @param instance
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchPaddingException
+	 * @throws NoSuchProviderException 
 	 */
-	public CryptoResource(Key key, String instance) 
-			throws NoSuchAlgorithmException, NoSuchPaddingException {
-		this(key,instance,null);
+	public CryptoResource(Key key, String instance, String provider) 
+			throws NoSuchAlgorithmException, NoSuchPaddingException, NoSuchProviderException {
+		this(key,instance, provider, null);
 	}
 	
 	/**Constructor for use in environments with a security manager. The profile
@@ -61,16 +62,17 @@ public class CryptoResource {
 	 * @param securityProfile
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchPaddingException
+	 * @throws NoSuchProviderException 
 	 */
-	public CryptoResource(Key key, String instance, String securityProfile)
-			throws NoSuchAlgorithmException, NoSuchPaddingException {
+	public CryptoResource(Key key, String instance, String provider, String securityProfile)
+			throws NoSuchAlgorithmException, NoSuchPaddingException, NoSuchProviderException {
 		secretKey = key;
-		cipher = Cipher.getInstance(instance);
+		cipher = Cipher.getInstance(instance, provider);
 		generatesIv = cipher.getBlockSize()>0 
 				&& ivPatterns.matcher(instance).matches();
 		if (System.getSecurityManager() != null && securityProfile != null) {
-			decryptPermission = new CrytographyOperationPermission(securityProfile, "decrypt");
-			encryptPermission = new CrytographyOperationPermission(securityProfile, "encrypt");
+			decryptPermission = new CryptographyOperationPermission(securityProfile, "decrypt");
+			encryptPermission = new CryptographyOperationPermission(securityProfile, "encrypt");
 		}
 	}
 
@@ -80,9 +82,9 @@ public class CryptoResource {
 	 */
 	public static String byteAsHex(byte[] buf) {
 		if (buf == null)
-			return null;
+			return "";
 
-		StringBuffer strbuf = new StringBuffer(buf.length * 2);
+		StringBuilder strbuf = new StringBuilder(buf.length * 2);
 		int i;
 
 		for (i = 0; i < buf.length; i++) {
@@ -100,11 +102,11 @@ public class CryptoResource {
 	 * @return a byte array
 	 */
 	public static byte[] hexAsByte(String hexstring) throws IllegalCryptoActionException {
-		if (hexstring == null)
-			return null;
+		if (hexstring == null || hexstring.trim().isEmpty())
+			return new byte[0];
 
 		if (hexstring.length() % 2 != 0) {
-			throw new IllegalCryptoActionException("Invalid hexidecimal string.");
+			throw new IllegalCryptoActionException(INVALID_HEXIDECIMAL_STRING);
 		}
 		byte[] results = new byte[hexstring.length() / 2];
 		try {
@@ -112,7 +114,7 @@ public class CryptoResource {
 				results[i / 2] = ((byte) Long.parseLong(hexstring.substring(i, i + 2), 16));
 			}
 		} catch (NumberFormatException e) {
-			System.err.println(e.getMessage());
+			throw new IllegalCryptoActionException(INVALID_HEXIDECIMAL_STRING, e);
 		}
 
 		return results;
@@ -124,17 +126,11 @@ public class CryptoResource {
 	 * @throws IllegalCryptoActionException if decryption failed
 	 */
 	public String doDecrypt(String cipheredtext) throws IllegalCryptoActionException {
-		if (cipheredtext == null)
-			return null;
+		if (cipheredtext == null || cipheredtext.trim().isEmpty())
+			return "";
 
 		String plainString = null;
-		try {
-			plainString = new String(doDecrypt(hexAsByte(cipheredtext)));
-		} catch (NullPointerException e) {
-			throw new IllegalCryptoActionException(
-					"Error decrypting text.\nException " + e.getClass().getName() + ". Message is " + e.getMessage(),
-					e);
-		}
+		plainString = new String(doDecrypt(hexAsByte(cipheredtext)));
 		return plainString;
 	}
 
@@ -144,11 +140,10 @@ public class CryptoResource {
 	 * @throws IllegalCryptoActionException if encryption failed
 	 */
 	public String doEncrypt(String plaintext) throws IllegalCryptoActionException {
-		if (plaintext == null)
-			return null;
+		if (plaintext == null || plaintext.trim().isEmpty())
+			return "";
 
-		String cipheredString = byteAsHex(doEncrypt(plaintext.getBytes()));
-		return cipheredString;
+		return byteAsHex(doEncrypt(plaintext.getBytes()));
 	}
 
 	/**Decrypt the ciphered text
@@ -162,11 +157,12 @@ public class CryptoResource {
 			manager.checkPermission(decryptPermission);
 		}
 
-		if (cipheredtext == null)
-			return null;
+		if (cipheredtext == null || cipheredtext.length == 0)
+			return new byte[0];
 
 		try {
-			byte[] ivPart = null, cipheredPart = null;
+			byte[] ivPart = null;
+			byte[] cipheredPart = null;
 			if(generatesIv) {
 				ivPart = new byte[cipher.getBlockSize()];
 				cipheredPart = new byte[cipheredtext.length - ivPart.length];
@@ -183,7 +179,7 @@ public class CryptoResource {
 					return cipher.doFinal(cipheredtext);
 				}
 			}
-		} catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException e) {
+		} catch (GeneralSecurityException e) {
 			throw new IllegalCryptoActionException(
 					"Error decrypting text.\nException " + e.getClass().getName() + ". Message is " + e.getMessage(),e);
 		}
@@ -200,11 +196,12 @@ public class CryptoResource {
 			manager.checkPermission(encryptPermission);
 		}
 
-		if (plaintext == null)
-			return null;
+		if (plaintext == null || plaintext.length == 0)
+			return new byte[0];
 
 		try {
-			byte[] ciphertext, iv = null;
+			byte[] ciphertext;
+			byte[] iv = null;
 			synchronized(this) {
 				cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 				ciphertext = cipher.doFinal(plaintext);
@@ -221,7 +218,7 @@ public class CryptoResource {
 				return ciphertext;
 			}
 			
-		} catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
+		} catch (GeneralSecurityException e) {
 			throw new IllegalCryptoActionException("Cryptographic service failure.\n" + e.getMessage(), e.getCause());
 		}
 	}

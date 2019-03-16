@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,14 +35,13 @@ import com.quakearts.security.cryptography.provider.KeyProvider;
 public class CryptoServiceImpl implements CryptoService {
 	private static final String CRYPTO_PROPERTIES = ".crypto.properties";
 
-	private CryptoServiceImpl() {
-	}
+	private CryptoServiceImpl(CryptoServiceImpl impl) {}
 
 	private static final Logger log = LoggerFactory.getLogger(CryptoServiceImpl.class);
 
-	private static final CryptoService instance = new CryptoServiceImpl();
+	private static final CryptoService instance = new CryptoServiceImpl(null);
 
-	private static Properties properties;
+	private static Map<String, Properties> properties = new ConcurrentHashMap<>();
 
 	public static CryptoService getInstance() {
 		return instance;
@@ -53,9 +53,9 @@ public class CryptoServiceImpl implements CryptoService {
 	 * @see com.quakearts.security.cryptography.factory.CryptoService#getCryptoResource(java.lang.String, java.lang.String, java.util.Map, java.lang.String)
 	 */
 	@Override
-	public CryptoResource getCryptoResource(String instance, String keyProviderClass, Map<Object, Object> properties,
+	public CryptoResource getCryptoResource(String instance, String providerName, String keyProviderClass, Map<Object, Object> properties,
 			String name) throws ClassNotFoundException, InstantiationException, IllegalAccessException,
-			KeyProviderException, NoSuchAlgorithmException, NoSuchPaddingException {
+			KeyProviderException, NoSuchAlgorithmException, NoSuchPaddingException, NoSuchProviderException {
 		Key key = loadedKeys.get(name);
 		if(key == null) {
 			KeyProvider provider;
@@ -72,7 +72,7 @@ public class CryptoServiceImpl implements CryptoService {
 			loadedKeys.put(name, key);
 		}
 		
-		return new CryptoResource(key, instance, name);
+		return new CryptoResource(key, instance, providerName, name);
 	}
 
 	/* (non-Javadoc)
@@ -81,23 +81,30 @@ public class CryptoServiceImpl implements CryptoService {
 	@Override
 	public CryptoResource getCryptoResource(String name)
 			throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException,
-			NoSuchAlgorithmException, NoSuchPaddingException, KeyProviderException {
-		if(properties == null) {
-			properties = new Properties();
+			NoSuchAlgorithmException, NoSuchPaddingException, KeyProviderException, NoSuchProviderException {
+		Properties instanceProperties = loadPropertiesIfNeccessary(name);
+		
+		String cryptoInstance = instanceProperties.getProperty("crypto.instance");
+		String keyProviderClass = instanceProperties.getProperty("crypto.key.provider.class");
+		String providerName = instanceProperties.getProperty("crypto.provider");
+
+		return getCryptoResource(cryptoInstance, providerName, keyProviderClass, instanceProperties, name);
+	}
+
+	private Properties loadPropertiesIfNeccessary(String name) throws IOException {
+		Properties instanceProperties = properties.get(name);
+		if(instanceProperties == null) {
+			instanceProperties = new Properties();
 	
 			InputStream in = Thread.currentThread().getContextClassLoader()
 					.getResourceAsStream(name + CRYPTO_PROPERTIES);
 			if (in == null)
 				throw new FileNotFoundException("Unable to find " + name + CRYPTO_PROPERTIES);
 	
-			properties.load(in);
+			instanceProperties.load(in);
+			properties.put(name, instanceProperties);
 		}
 		
-		String instance = properties.getProperty("crypto.instance");
-		String keyProviderClass = properties.getProperty("crypto.key.provider.class");
-
-		CryptoResource resource = getCryptoResource(instance, keyProviderClass, properties, name);
-
-		return resource;
+		return instanceProperties;
 	}
 }

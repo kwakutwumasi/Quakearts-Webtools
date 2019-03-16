@@ -2,6 +2,7 @@ package com.quakearts.security.cryptography.test;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.*;
+import static org.hamcrest.core.IsInstanceOf.*;
 
 import java.io.UnsupportedEncodingException;
 import java.security.Key;
@@ -18,7 +19,9 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import com.quakearts.security.cryptography.CryptoResource;
 import com.quakearts.security.cryptography.exception.IllegalCryptoActionException;
@@ -67,7 +70,7 @@ public class CryptoResourceTest {
 	@Test
 	public void testCryptoResourceAESCBCPKCS5Padding() throws Exception {
 		final StringRandomGenerator<String> generator = new StringGenerator().useLength(32);
-		final CryptoResource cryptoResource = new CryptoResource(getAESKey(), "AES/CBC/PKCS5Padding");
+		final CryptoResource cryptoResource = new CryptoResource(getAESKey(), "AES/CBC/PKCS5Padding", "SunJCE");
 		List<Future<TestTriplet>> testTripletFutures = new CopyOnWriteArrayList<>();
 		for(int i=0;i<100;i++) {
 			testTripletFutures.add(executor.submit(()->{
@@ -79,12 +82,23 @@ public class CryptoResourceTest {
 			TestTriplet testTriplet = testTripletFuture.get();
 			assertThat(testTriplet.getDecryptedPlainText(), is(testTriplet.getPlainText()));
 		}
+		
+		String nullString = null;
+		assertThat(cryptoResource.doEncrypt(nullString), is(""));
+		assertThat(cryptoResource.doDecrypt(nullString), is(""));
+		assertThat(cryptoResource.doEncrypt("  "), is(""));
+		assertThat(cryptoResource.doDecrypt("  "), is(""));
+		byte[] nullBytes = null;
+		assertThat(cryptoResource.doEncrypt(nullBytes), is(new byte[0]));
+		assertThat(cryptoResource.doDecrypt(nullBytes), is(new byte[0]));
+		assertThat(cryptoResource.doEncrypt(new byte[0]), is(new byte[0]));
+		assertThat(cryptoResource.doDecrypt(new byte[0]), is(new byte[0]));
 	}
 
 	@Test
 	public void testCryptoResourceAESCFBPKCS5Padding() throws Exception {
 		StringRandomGenerator<String> generator = new StringGenerator().useLength(32);
-		CryptoResource cryptoResource = new CryptoResource(getAESKey(), "AES/CFB/PKCS5Padding");
+		CryptoResource cryptoResource = new CryptoResource(getAESKey(), "AES/CFB/PKCS5Padding", "SunJCE");
 		List<Future<TestTriplet>> testTripletFutures = new CopyOnWriteArrayList<>();
 		for(int i=0;i<100;i++) {
 			testTripletFutures.add(executor.submit(()->{
@@ -101,7 +115,7 @@ public class CryptoResourceTest {
 	@Test
 	public void testCryptoResourceAESOFBPKCS5Padding() throws Exception {
 		StringRandomGenerator<String> generator = new StringGenerator().useLength(32);
-		CryptoResource cryptoResource = new CryptoResource(getAESKey(), "AES/OFB/PKCS5Padding");
+		CryptoResource cryptoResource = new CryptoResource(getAESKey(), "AES/OFB/PKCS5Padding", "SunJCE");
 		List<Future<TestTriplet>> testTripletFutures = new CopyOnWriteArrayList<>();
 		for(int i=0;i<100;i++) {
 			testTripletFutures.add(executor.submit(()->{
@@ -118,7 +132,7 @@ public class CryptoResourceTest {
 	@Test
 	public void testCryptoResourceAESCTRPKCS5Padding() throws Exception {
 		StringRandomGenerator<String> generator = new StringGenerator().useLength(32);
-		CryptoResource cryptoResource = new CryptoResource(getAESKey(), "AES/CTR/PKCS5Padding");
+		CryptoResource cryptoResource = new CryptoResource(getAESKey(), "AES/CTR/PKCS5Padding", "SunJCE");
 		List<Future<TestTriplet>> testTripletFutures = new CopyOnWriteArrayList<>();
 		for(int i=0;i<100;i++) {
 			testTripletFutures.add(executor.submit(()->{
@@ -135,7 +149,7 @@ public class CryptoResourceTest {
 	@Test
 	public void testCryptoResourceAES() throws Exception {
 		StringRandomGenerator<String> generator = new StringGenerator().useLength(32);
-		CryptoResource cryptoResource = new CryptoResource(getAESKey(), "AES");
+		CryptoResource cryptoResource = new CryptoResource(getAESKey(), "AES", "SunJCE");
 		List<Future<TestTriplet>> testTripletFutures = new CopyOnWriteArrayList<>();
 		for(int i=0;i<100;i++) {
 			testTripletFutures.add(executor.submit(()->{
@@ -152,7 +166,7 @@ public class CryptoResourceTest {
 	@Test
 	public void testCryptoResourceBlowfishCBCPKCS5Padding() throws Exception {
 		StringRandomGenerator<String> generator = new StringGenerator().useLength(32);
-		CryptoResource cryptoResource = new CryptoResource(getBlowfishKey(), "Blowfish/CBC/PKCS5Padding");
+		CryptoResource cryptoResource = new CryptoResource(getBlowfishKey(), "Blowfish/CBC/PKCS5Padding", "SunJCE");
 		List<Future<TestTriplet>> testTripletFutures = new CopyOnWriteArrayList<>();
 		for(int i=0;i<100;i++) {
 			testTripletFutures.add(executor.submit(()->{
@@ -169,7 +183,7 @@ public class CryptoResourceTest {
 	@Test
 	public void testCryptoResourceBlowfishCFBPKCS5Padding() throws Exception {
 		StringRandomGenerator<String> generator = new StringGenerator().useLength(32);
-		CryptoResource cryptoResource = new CryptoResource(getBlowfishKey(), "Blowfish/CFB8/PKCS5Padding");
+		CryptoResource cryptoResource = new CryptoResource(getBlowfishKey(), "Blowfish/CFB8/PKCS5Padding", "SunJCE");
 		List<Future<TestTriplet>> testTripletFutures = new CopyOnWriteArrayList<>();
 		for(int i=0;i<100;i++) {
 			testTripletFutures.add(executor.submit(()->{
@@ -186,7 +200,7 @@ public class CryptoResourceTest {
 	@Test
 	public void testCryptoResourceBlowfishOFBPKCS5Padding() throws Exception {
 		StringRandomGenerator<String> generator = new StringGenerator().useLength(32);
-		CryptoResource cryptoResource = new CryptoResource(getBlowfishKey(), "Blowfish/OFB32/PKCS5Padding");
+		CryptoResource cryptoResource = new CryptoResource(getBlowfishKey(), "Blowfish/OFB32/PKCS5Padding", "SunJCE");
 		List<Future<TestTriplet>> testTripletFutures = new CopyOnWriteArrayList<>();
 		for(int i=0;i<100;i++) {
 			testTripletFutures.add(executor.submit(()->{
@@ -203,7 +217,7 @@ public class CryptoResourceTest {
 	@Test
 	public void testCryptoResourceBlowfishCTRPKCS5Padding() throws Exception {
 		StringRandomGenerator<String> generator = new StringGenerator().useLength(32);
-		CryptoResource cryptoResource = new CryptoResource(getBlowfishKey(), "Blowfish/CTR/PKCS5Padding");
+		CryptoResource cryptoResource = new CryptoResource(getBlowfishKey(), "Blowfish/CTR/PKCS5Padding", "SunJCE");
 		List<Future<TestTriplet>> testTripletFutures = new CopyOnWriteArrayList<>();
 		for(int i=0;i<100;i++) {
 			testTripletFutures.add(executor.submit(()->{
@@ -220,7 +234,7 @@ public class CryptoResourceTest {
 	@Test
 	public void testCryptoResourceBlowfish() throws Exception {
 		StringRandomGenerator<String> generator = new StringGenerator().useLength(32);
-		CryptoResource cryptoResource = new CryptoResource(getBlowfishKey(), "Blowfish");
+		CryptoResource cryptoResource = new CryptoResource(getBlowfishKey(), "Blowfish", "SunJCE");
 		List<Future<TestTriplet>> testTripletFutures = new CopyOnWriteArrayList<>();
 		for(int i=0;i<100;i++) {
 			testTripletFutures.add(executor.submit(()->{
@@ -244,6 +258,35 @@ public class CryptoResourceTest {
 		}
 	}
 	
+	@Test
+	public void testByteAsHexWithNullBuf() throws Exception {
+		assertThat(CryptoResource.byteAsHex(null), is(""));
+	}
+	
+	@Test
+	public void testHexAsByteWithNullHexString() throws Exception {
+		assertThat(CryptoResource.hexAsByte(null), is(new byte[0]));
+	}
+	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+	
+	@Test
+	public void testHexAsByteWithInvalidHexString() throws Exception {
+		expectedException.expect(IllegalCryptoActionException.class);
+		expectedException.expectMessage("Invalid hexidecimal string");
+		CryptoResource.hexAsByte("acdab1e4bbbcf359b5a5520d4c1fce8");
+	}
+	
+	
+	@Test
+	public void testHexAsByteWithInvalidNumberInHexString() throws Exception {
+		expectedException.expect(IllegalCryptoActionException.class);
+		expectedException.expectMessage("Invalid hexidecimal string");
+		expectedException.expectCause(is(instanceOf(NumberFormatException.class)));
+		CryptoResource.hexAsByte("zcdab1e4bbbcf359b5a5520d4c1fce88");
+	}
+
 	private Key getBlowfishKey() throws KeyProviderException {
 		byte[] key;
 		try {

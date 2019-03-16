@@ -11,10 +11,9 @@
 package com.quakearts.security.cryptography.jpa;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
+import java.security.GeneralSecurityException;
 import java.util.logging.Logger;
 
-import javax.crypto.NoSuchPaddingException;
 import com.quakearts.security.cryptography.CryptoResource;
 import com.quakearts.security.cryptography.exception.CryptoResourceRuntimeException;
 import com.quakearts.security.cryptography.exception.KeyProviderException;
@@ -23,7 +22,7 @@ import com.quakearts.webapp.orm.DataStoreFactory;
 
 public abstract class EncryptedTypeBase {
 
-	private transient CryptoResource resource;
+	private CryptoResource resource;
 	private static final Logger log = Logger.getLogger(EncryptedStringConverter.class.getName());
 
 	protected CryptoResource getCryptoResource() {
@@ -33,8 +32,8 @@ public abstract class EncryptedTypeBase {
 						.getConfigurationProperty("com.quakearts.cryptoname");
 
 				resource = CryptoServiceImpl.getInstance().getCryptoResource(resourceName);
-			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchAlgorithmException
-					| NoSuchPaddingException | IOException | KeyProviderException e) {
+			} catch (ReflectiveOperationException | GeneralSecurityException
+					| IOException | KeyProviderException e) {
 				log.severe("Cannot perform cryptography: " + e.getMessage() + ". " + e.getClass().getName());
 				throw new CryptoResourceRuntimeException(e);
 			}

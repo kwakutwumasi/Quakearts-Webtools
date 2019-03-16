@@ -12,7 +12,7 @@ package com.quakearts.security.cryptography.permission;
 
 import java.security.Permission;
 
-public final class CrytographyOperationPermission extends Permission {
+public final class CryptographyOperationPermission extends Permission {
 
 	/**
 	 * 
@@ -22,7 +22,7 @@ public final class CrytographyOperationPermission extends Permission {
 	private String actions;
 	private String[] actionsArray;
 	
-	public CrytographyOperationPermission(String name, String actions) {
+	public CryptographyOperationPermission(String name, String actions) {
 		super(name);
 		this.actions = actions;
 		actionsArray = actions.split(",");
@@ -30,13 +30,13 @@ public final class CrytographyOperationPermission extends Permission {
 
 	@Override
 	public boolean implies(Permission permission) {
-		if(!(permission instanceof CrytographyOperationPermission))
+		if(!(permission instanceof CryptographyOperationPermission))
 			return false;
 		
 		if(!permission.getName().equals(this.getName()))
 			return false;
 		
-		if(permission.getActions().equals("all"))
+		if(actions.equals("all"))
 			return true;
 		
 		for(String action:actionsArray){
@@ -55,10 +55,10 @@ public final class CrytographyOperationPermission extends Permission {
 		if(obj==this)
 			return true;
 		
-		if(!(obj instanceof CrytographyOperationPermission))
+		if(!(obj instanceof CryptographyOperationPermission))
 			return false;
 		
-		CrytographyOperationPermission comp = (CrytographyOperationPermission) obj;
+		CryptographyOperationPermission comp = (CryptographyOperationPermission) obj;
 		
 		return this.actions.equals(comp.actions) && this.getName().equals(comp.getName());
 	}

@@ -21,7 +21,8 @@ public class KeyProviderFactory {
         Object obj = fileformatterclass.newInstance();
         if(obj instanceof KeyProvider){
         	return (KeyProvider)obj;
-        }else
+        } else {
         	throw new ClassNotFoundException(keyProviderClass+" is not a valid "+KeyProvider.class.getName());
+        }
 	}
 }

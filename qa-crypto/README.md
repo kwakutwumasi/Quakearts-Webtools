@@ -26,15 +26,15 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-crypto</artifactId>
-	<version>3.0</version>
+	<version>3.1</version>
 </dependency>
 
 ```
 
-The _com.quakearts.security.cryptography.factory.CryptoService_ can be injected using CDI. It must be qualified by _@com.quakearts.security.cryptography.cdi.CryptoServiceHandle_ annotation.
+The _com.quakearts.security.cryptography.factory.CryptoService_ can be injected using CDI.
 
 ```java
-	@Inject @CryptoServiceHandle CryptoService service;
+	@Inject CryptoService service;
 ```
 
 Alternatively in non CDI environments an instance of _CryptoService_ can be obtained using the _getInstance()_ method of _com.quakearts.security.cryptography.factory.CryptoServiceImpl_.
@@ -54,11 +54,19 @@ The name of the resource passed to the _getResource(String)_ is appended to the 
 ```
 crypto.instance - The cryptographic algorithm to use. It must be a valid algorithm supplied by a JCE registered cryptographic service provider.
 
+crypto.provider - The name of the cryptographic provider to use. It must be a valid registered cryptographic service provider.
+
 crypto.key.provider.class - The name of a class implementing the com.quakearts.security.cryptography.provider.KeyProvider interface.
 
 ```
 
 The properties file may contain other parameters used to configure the _KeyProvider_.
+
+The _com.quakearts.security.cryptography.CryptoResource_ can also be injected using CDI. It must be qualified with _@com.quakearts.security.cryptography.cdi.CryptoResourceHandle_ and the instance indicated by setting the name as the value of the _@com.quakearts.security.cryptography.cdi.CryptoInstance_ annotation.
+
+```java
+	@Inject @CryptoResourceHandle @CryptoInstance("myinstance") CryptoResource resource;
+```
 
 ##### The com.quakearts.security.cryptography.provider.impl.KeystoreKeyProvider
 

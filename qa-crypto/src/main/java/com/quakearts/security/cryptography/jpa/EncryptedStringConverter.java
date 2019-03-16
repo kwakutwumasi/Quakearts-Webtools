@@ -28,7 +28,7 @@ public class EncryptedStringConverter extends EncryptedTypeBase implements Attri
 				return null;
 			
 			return getCryptoResource()
-					.doEncrypt(attribute.toString());
+					.doEncrypt(attribute);
 		} catch (IllegalCryptoActionException e) {
 			throw new DataStoreException("Exception " + e.getClass().getName() + ". Message is "
 					+ e.getMessage(),e);

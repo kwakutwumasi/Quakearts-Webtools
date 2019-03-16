@@ -15,12 +15,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -31,12 +29,14 @@ import com.quakearts.security.cryptography.provider.KeyProvider;
 
 public class KeystoreKeyProvider implements KeyProvider {
 
-	String keyStoreFile,keyStoreType,storePass,keyPass,keyAlias;
+	private String keyStoreFile;
+	private String keyStoreType;
+	private String storePass;
+	private String keyPass;
+	private String keyAlias;
+	
 	private static final Logger log = Logger.getLogger(KeystoreKeyProvider.class.getName());
-	
-	public KeystoreKeyProvider(){
-	}
-	
+		
 	@Override
 	public Key getKey() throws KeyProviderException {			
 		if(keyStoreType == null)
@@ -58,14 +58,14 @@ public class KeystoreKeyProvider implements KeyProvider {
 		}
 		
 		File file = new File(keyStoreFile);
-		Key key;;
+		Key key;
 		try(InputStream stream = file.exists()? new FileInputStream(file): Thread.currentThread().getContextClassLoader().getResourceAsStream(keyStoreFile)){
 			if(stream == null)
 				throw new FileNotFoundException("The keystore file "+file+" does not exists");
 		
 			store.load(stream, storePass.toCharArray());
 			key = store.getKey(keyAlias, keyPass.toCharArray());
-		} catch (IOException | NoSuchAlgorithmException | CertificateException | UnrecoverableKeyException | KeyStoreException e) {
+		} catch (IOException | GeneralSecurityException e) {
 			log.log(Level.SEVERE, "Exception " + e.getClass().getName() + ". Message is "+ e.getMessage(),e);
 			throw new KeyProviderException(e);
 		} 
@@ -83,12 +83,6 @@ public class KeystoreKeyProvider implements KeyProvider {
 		storePass = keyProperties.getProperty("store.pass");
 		keyStoreFile = keyProperties.getProperty("store.file");
 		keyAlias = keyProperties.getProperty("key.alias");
-		if(log.isLoggable(Level.FINE)){
-			log.fine("Properties: "+
-		"\nkey.storeType: " +keyStoreType+
-		"\nstore.file: " +keyStoreFile+
-		"\nkey.alias: "+keyAlias);
-		}
 	}
 
 }
