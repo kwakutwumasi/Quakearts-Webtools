@@ -268,6 +268,11 @@ public class CryptoResourceTest {
 		assertThat(CryptoResource.hexAsByte(null), is(new byte[0]));
 	}
 	
+	@Test
+	public void testHexAsByteWithEmptyHexString() throws Exception {
+		assertThat(CryptoResource.hexAsByte(""), is(new byte[0]));
+	}
+	
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 	

@@ -68,8 +68,7 @@ public class CryptoResource {
 			throws NoSuchAlgorithmException, NoSuchPaddingException, NoSuchProviderException {
 		secretKey = key;
 		cipher = Cipher.getInstance(instance, provider);
-		generatesIv = cipher.getBlockSize()>0 
-				&& ivPatterns.matcher(instance).matches();
+		generatesIv = ivPatterns.matcher(instance).matches();
 		if (System.getSecurityManager() != null && securityProfile != null) {
 			decryptPermission = new CryptographyOperationPermission(securityProfile, "decrypt");
 			encryptPermission = new CryptographyOperationPermission(securityProfile, "encrypt");
@@ -102,7 +101,7 @@ public class CryptoResource {
 	 * @return a byte array
 	 */
 	public static byte[] hexAsByte(String hexstring) throws IllegalCryptoActionException {
-		if (hexstring == null || hexstring.trim().isEmpty())
+		if (hexstring == null || hexstring.isEmpty())
 			return new byte[0];
 
 		if (hexstring.length() % 2 != 0) {

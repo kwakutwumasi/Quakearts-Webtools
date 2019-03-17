@@ -83,6 +83,25 @@ public class CryptographyOperationPermissionTest {
 	}
 	
 	@Test
+	public void testDenyEncryptWithNoProfile() throws Exception {
+		try {
+			System.setSecurityManager(new SecurityManager() {
+				@Override
+				public void checkPermission(Permission perm) {
+					if(perm instanceof CryptographyOperationPermission) {
+						assertThat(perm, is(new CryptographyOperationPermission("testProfile", "encrypt")));
+						throw new SecurityException("Not Allowed");
+					}
+				}
+			});
+			CryptoResource cryptoResource = new CryptoResource(getAESKey(), "AES/CBC/PKCS5Padding", "SunJCE", null);
+			cryptoResource.doEncrypt("Test");
+		} finally {
+			System.setSecurityManager(null);
+		}
+	}
+	
+	@Test
 	public void testDenyDecrypt() throws Exception {
 		try {
 			expectedException.expect(SecurityException.class);
@@ -97,6 +116,25 @@ public class CryptographyOperationPermissionTest {
 				}
 			});
 			CryptoResource cryptoResource = new CryptoResource(getAESKey(), "AES/CBC/PKCS5Padding", "SunJCE", "testProfile");
+			cryptoResource.doDecrypt("acdab1e4bbbcf359b5a5520d4c1fce88");
+		} finally {
+			System.setSecurityManager(null);
+		}
+	}
+	
+	@Test
+	public void testDenyDecryptWithNoProfile() throws Exception {
+		try {
+			System.setSecurityManager(new SecurityManager() {
+				@Override
+				public void checkPermission(Permission perm) {
+					if(perm instanceof CryptographyOperationPermission) {
+						assertThat(perm, is(new CryptographyOperationPermission("testProfile", "decrypt")));
+						throw new SecurityException("Not Allowed");
+					}
+				}
+			});
+			CryptoResource cryptoResource = new CryptoResource(getAESKey(), "AES/CBC/PKCS5Padding", "SunJCE", null);
 			cryptoResource.doDecrypt("acdab1e4bbbcf359b5a5520d4c1fce88");
 		} finally {
 			System.setSecurityManager(null);
