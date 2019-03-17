@@ -14,6 +14,7 @@ import com.quakearts.security.cryptography.jpa.EncryptedBytesConverter;
 import com.quakearts.security.cryptography.jpa.EncryptedStringConverter;
 import com.quakearts.security.cryptography.jpa.EncryptedValue;
 import com.quakearts.security.cryptography.jpa.EncryptedValueConverter;
+import com.quakearts.security.cryptography.jpa.EncryptedValueStringConverter;
 import com.quakearts.security.cryptography.test.datasource.MockDataStoreFactory;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 
@@ -275,4 +276,139 @@ public class JPAConverterTests {
 		assertNull(value.getValue());
 		assertNull(value.getStringValue());
 	}
+	
+	@Test
+	public void testEncryptedValueStringConverter() throws Exception {
+		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test");
+		EncryptedValue value = new EncryptedValue();
+		value.setDataStoreName("teststore");
+		value.setStringValue("Test");
+		EncryptedValueStringConverter converter = new EncryptedValueStringConverter();
+		String encrypted = converter.convertToDatabaseColumn(value);
+		EncryptedValue plaintext = converter.convertToEntityAttribute(encrypted);
+		
+		assertThat(plaintext.getStringValue(),is(value.getStringValue()));
+		encrypted = converter.convertToDatabaseColumn(null);
+		assertNull(encrypted);
+		plaintext = converter.convertToEntityAttribute(encrypted);
+		assertNull(plaintext);
+	}
+
+	@Test
+	public void testEncryptedValueStringConverterWithNullDataStoreName() throws Exception {
+		expectedException.expect(DataStoreException.class);
+		expectedException.expectMessage(is("The dataStoreName and value are required for EncryptedValue"));
+		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test");
+		EncryptedValue value = new EncryptedValue();
+		value.setStringValue("Test");
+		EncryptedValueStringConverter converter = new EncryptedValueStringConverter();
+		converter.convertToDatabaseColumn(value);
+	}
+	
+	@Test
+	public void testEncryptedValueStringConverterWithNullValue() throws Exception {
+		expectedException.expect(DataStoreException.class);
+		expectedException.expectMessage(is("The dataStoreName and value are required for EncryptedValue"));
+		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test");
+		EncryptedValue value = new EncryptedValue();
+		value.setDataStoreName("teststore");
+		EncryptedValueStringConverter converter = new EncryptedValueStringConverter();
+		converter.convertToDatabaseColumn(value);
+	}
+	
+	@Test
+	public void testEncryptedValueStringConverterWithEmptyValue() throws Exception {
+		expectedException.expect(DataStoreException.class);
+		expectedException.expectMessage(is("The dataStoreName and value are required for EncryptedValue"));
+		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test");
+		EncryptedValue value = new EncryptedValue();
+		value.setDataStoreName("teststore");
+		value.setStringValue("");
+		EncryptedValueStringConverter converter = new EncryptedValueStringConverter();
+		converter.convertToDatabaseColumn(value);
+	}
+	
+	@Test
+	public void testEncryptedValueStringConverterWithInvalidEncryptedString() throws Exception {
+		expectedException.expect(DataStoreException.class);
+		expectedException.expectMessage(is("The value returned from the database was tampered with. The dataStoreName could not be found"));
+		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test");
+		EncryptedValueStringConverter converter = new EncryptedValueStringConverter();
+		converter.convertToEntityAttribute("398671290190277011c9f055c9359629");
+	}
+	
+	@Test
+	public void testEncryptedValueStringConverterInvalidClassName() {
+		expectedException.expect(CryptoResourceRuntimeException.class);
+		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test-invalid-class");
+		EncryptedValueStringConverter converter = new EncryptedValueStringConverter();
+		EncryptedValue value = new EncryptedValue();
+		value.setDataStoreName("teststore");
+		value.setStringValue("Test");
+		converter.convertToDatabaseColumn(value);		
+	}
+
+	@Test
+	public void testEncryptedValueStringConverterInvalidInstance() {
+		expectedException.expect(CryptoResourceRuntimeException.class);
+		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test-invalid-instance");
+		EncryptedValueStringConverter converter = new EncryptedValueStringConverter();
+		EncryptedValue value = new EncryptedValue();
+		value.setDataStoreName("teststore");
+		value.setStringValue("Test");
+		converter.convertToDatabaseColumn(value);		
+	}
+	
+	@Test
+	public void testEncryptedValueStringConverterInvalidKeyUsingConvertToDatabaseColumn() {
+		expectedException.expect(DataStoreException.class);
+		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test-invalid-key");
+		EncryptedValueStringConverter converter = new EncryptedValueStringConverter();
+		EncryptedValue value = new EncryptedValue();
+		value.setDataStoreName("teststore");
+		value.setStringValue("Test");
+		converter.convertToDatabaseColumn(value);		
+	}
+
+	@Test
+	public void testEncryptedValueStringConverterInvalidKeyUsingConvertToEntityAttribute() throws Exception {
+		expectedException.expect(DataStoreException.class);
+		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test-invalid-key");
+		EncryptedValueStringConverter converter = new EncryptedValueStringConverter();
+		converter.convertToEntityAttribute("teststore|398671290190277011c9f055c9359629");		
+	}
+	
+	@Test
+	public void testEncryptedValueStringConverterInvalidKeyStoreFile() {
+		expectedException.expect(CryptoResourceRuntimeException.class);
+		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test-invalid-keystorefile");
+		EncryptedValueStringConverter converter = new EncryptedValueStringConverter();
+		EncryptedValue value = new EncryptedValue();
+		value.setDataStoreName("teststore");
+		value.setStringValue("Test");
+		converter.convertToDatabaseColumn(value);		
+	}
+	
+	@Test
+	public void testEncryptedValueStringConverterThrowErrorOnGetKey() {
+		expectedException.expect(CryptoResourceRuntimeException.class);
+		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test-throw-error-on-get-key");
+		EncryptedValueStringConverter converter = new EncryptedValueStringConverter();
+		EncryptedValue value = new EncryptedValue();
+		value.setDataStoreName("teststore");
+		value.setStringValue("Test");
+		converter.convertToDatabaseColumn(value);		
+	}
+	
+	@Test
+	public void testEncryptedValueStringConverterNonExistent() {
+		expectedException.expect(CryptoResourceRuntimeException.class);
+		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test-non-existent");
+		EncryptedValueStringConverter converter = new EncryptedValueStringConverter();
+		EncryptedValue value = new EncryptedValue();
+		value.setDataStoreName("teststore");
+		value.setStringValue("Test");
+		converter.convertToDatabaseColumn(value);		
+	}
+
 }

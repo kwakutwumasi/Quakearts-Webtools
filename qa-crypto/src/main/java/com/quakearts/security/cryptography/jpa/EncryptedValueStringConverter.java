@@ -5,9 +5,9 @@ import javax.persistence.AttributeConverter;
 import com.quakearts.security.cryptography.exception.IllegalCryptoActionException;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 
-public class EncryptedValueConverter extends EncryptedValueBase implements AttributeConverter<EncryptedValue, byte[]> {		
+public class EncryptedValueStringConverter extends EncryptedValueBase implements AttributeConverter<EncryptedValue, String> {
 	@Override
-	public byte[] convertToDatabaseColumn(EncryptedValue attribute) {
+	public String convertToDatabaseColumn(EncryptedValue attribute) {
 		try {
 			if(attribute == null)
 				return null;
@@ -16,12 +16,9 @@ public class EncryptedValueConverter extends EncryptedValueBase implements Attri
 					|| attribute.getValue().length==0)
 				throw new DataStoreException("The dataStoreName and value are required for EncryptedValue");
 			
-			byte[] encrypted = getCryptoResource(attribute.getDataStoreName()).doEncrypt(attribute.getValue());
-			byte[] storedValue = new byte[attribute.getDataStoreName().length()+1+encrypted.length];
-			System.arraycopy(attribute.getDataStoreName().getBytes(), 0, storedValue, 0, attribute.getDataStoreName().length());
-			System.arraycopy("|".getBytes(), 0, storedValue, attribute.getDataStoreName().length(), 1);
-			System.arraycopy(encrypted, 0, storedValue, attribute.getDataStoreName().length()+1, encrypted.length);
-			return storedValue;
+			String encrypted = getCryptoResource(attribute.getDataStoreName()).doEncrypt(attribute.getStringValue());
+			
+			return attribute.getDataStoreName()+"|"+encrypted;
 		} catch (IllegalCryptoActionException e) {
 			throw new DataStoreException("Exception " + e.getClass().getName() + ". Message is "
 					+ e.getMessage(),e);
@@ -29,14 +26,15 @@ public class EncryptedValueConverter extends EncryptedValueBase implements Attri
 	}
 
 	@Override
-	public EncryptedValue convertToEntityAttribute(byte[] dbData) {
+	public EncryptedValue convertToEntityAttribute(String dbData) {
 		if(dbData==null)
 			return null;
 		
 		StringBuilder builder = new StringBuilder();
+		byte[] dbDataBytes = dbData.getBytes();
 		int index=0;
-		for(; index<dbData.length-1;index++) {
-			char c = (char) dbData[index];
+		for(; index<dbDataBytes.length-1;index++) {
+			char c = (char) dbDataBytes[index];
 			if(c != '|') {
 				builder.append(c);
 			} else {
@@ -44,16 +42,15 @@ public class EncryptedValueConverter extends EncryptedValueBase implements Attri
 			}
 		}
 		
-		if(index == dbData.length-1) {
+		if(index == dbDataBytes.length-1) {
 			throw new DataStoreException("The value returned from the database was tampered with. The dataStoreName could not be found");
 		}
 		
 		EncryptedValue value = new EncryptedValue();
 		value.setDataStoreName(builder.toString());
-		byte[] encrypted = new byte[dbData.length-index-1];
-		System.arraycopy(dbData, index+1, encrypted, 0, encrypted.length);
+		String encrypted = dbData.substring(index+1);
 		try {
-			value.setValue(getCryptoResource(value.getDataStoreName()).doDecrypt(encrypted));
+			value.setStringValue(getCryptoResource(value.getDataStoreName()).doDecrypt(encrypted));
 			return value;
 		} catch (IllegalCryptoActionException e) {
 			throw new DataStoreException("Exception " + e.getClass().getName() + ". Message is "
