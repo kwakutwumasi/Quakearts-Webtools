@@ -139,7 +139,7 @@ public class JPAConverterTests {
 		byte[] encrypted = converter.convertToDatabaseColumn(value);
 		EncryptedValue plaintext = converter.convertToEntityAttribute(encrypted);
 		
-		assertThat(plaintext.getStringValue(),is(value.getStringValue()));
+		assertThat(plaintext,is(value));
 		encrypted = converter.convertToDatabaseColumn(null);
 		assertNull(encrypted);
 		plaintext = converter.convertToEntityAttribute(encrypted);
@@ -273,7 +273,7 @@ public class JPAConverterTests {
 		String encrypted = converter.convertToDatabaseColumn(value);
 		EncryptedValue plaintext = converter.convertToEntityAttribute(encrypted);
 		
-		assertThat(plaintext.getStringValue(),is(value.getStringValue()));
+		assertThat(plaintext,is(value));
 		encrypted = converter.convertToDatabaseColumn(null);
 		assertNull(encrypted);
 		plaintext = converter.convertToEntityAttribute(encrypted);
