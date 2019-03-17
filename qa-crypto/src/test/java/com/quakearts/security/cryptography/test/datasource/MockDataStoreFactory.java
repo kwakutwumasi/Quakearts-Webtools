@@ -28,7 +28,9 @@ public class MockDataStoreFactory extends DataStoreFactory {
 
 	@Override
 	public DataStore getDataStore(String storename) {
-		return getDataStore();
+		if(storename.equals("teststore"))
+			return getDataStore();
+		throw new DataStoreException("invalid store name");
 	}
 
 	public static Map<String, String> getMap() {

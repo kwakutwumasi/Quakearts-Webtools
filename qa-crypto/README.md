@@ -86,3 +86,11 @@ store.pass - The password for the keystore file
 key.pass - The password for the key
 
 ```
+
+##### The JPA Entity Attribute Converters
+
+The project also includes entity attribute converters designed for JPA. They can also be used integrated with any data storage, with no dependency on JPA specific objects other then the interface that describes them. They depend on QA-ORM library for retrieving configuration information, and must be used with an implementation for the data storage library of choice.
+
+_com.quakearts.security.cryptography.jpa.EncryptedBytesConverter_ and _com.quakearts.security.cryptography.jpa.EncryptedStringConverter_ can be used for the default data store. If there are multiple data stores in use, or if the default store is not used, _com.quakearts.security.cryptography.jpa.EncryptedValueConverter_ must be used for the entity attribute. _com.quakearts.security.cryptography.jpa.EncryptedValue_ should be the entity attribute class. The _setDataStoreName(String)_ method should be used to specify the data store holding the configuration information.
+
+For more information on data store usage and configuration, see the QA-ORM library documentation.

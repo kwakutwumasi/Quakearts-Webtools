@@ -4,7 +4,7 @@
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-crypto</artifactId>
 	<version>3.1</version>
-	<name>Cryptography Tools for Hibernate</name>
+	<name>Cryptography Tools</name>
 	<build>
 		<plugins>
 			<plugin>

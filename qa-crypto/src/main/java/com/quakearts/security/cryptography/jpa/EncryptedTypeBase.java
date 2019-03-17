@@ -23,7 +23,7 @@ import com.quakearts.webapp.orm.DataStoreFactory;
 public abstract class EncryptedTypeBase {
 
 	private CryptoResource resource;
-	private static final Logger log = Logger.getLogger(EncryptedStringConverter.class.getName());
+	private static final Logger log = Logger.getLogger(EncryptedTypeBase.class.getName());
 
 	protected CryptoResource getCryptoResource() {
 		if (resource == null) {
