@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import javax.persistence.AttributeConverter;
-
 import com.quakearts.security.cryptography.CryptoResource;
 import com.quakearts.security.cryptography.exception.CryptoResourceRuntimeException;
 import com.quakearts.security.cryptography.exception.KeyProviderException;

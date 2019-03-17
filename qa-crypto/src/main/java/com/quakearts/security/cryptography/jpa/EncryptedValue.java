@@ -1,6 +1,9 @@
 package com.quakearts.security.cryptography.jpa;
 
 import java.io.Serializable;
+import java.util.Arrays;
+
+import com.quakearts.security.cryptography.CryptoResource;
 
 public class EncryptedValue implements Serializable {
 	/**
@@ -33,5 +36,38 @@ public class EncryptedValue implements Serializable {
 	public String getStringValue() {
 		return value!=null?new String(value):null;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((dataStoreName == null) ? 0 : dataStoreName.hashCode());
+		result = prime * result + Arrays.hashCode(value);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EncryptedValue other = (EncryptedValue) obj;
+		if (dataStoreName == null) {
+			if (other.dataStoreName != null)
+				return false;
+		} else if (!dataStoreName.equals(other.dataStoreName)) {
+			return false;
+		}
+		return Arrays.equals(value, other.value);
+	}
+
+	@Override
+	public String toString() {
+		return "EncryptedValue [dataStoreName=" + dataStoreName + ", value=" + CryptoResource.byteAsHex(value) + "]";
+	}
+	
 	
 }

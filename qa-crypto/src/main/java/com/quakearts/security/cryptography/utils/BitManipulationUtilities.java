@@ -10,8 +10,6 @@
  ******************************************************************************/
 package com.quakearts.security.cryptography.utils;
 
-import org.jboss.weld.exceptions.IllegalArgumentException;
-
 public class BitManipulationUtilities {
 
 	private BitManipulationUtilities() {}

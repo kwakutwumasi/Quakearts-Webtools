@@ -2,6 +2,7 @@ package com.quakearts.security.cryptography.test;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.*;
+import static org.hamcrest.core.IsNot.*;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -263,21 +264,6 @@ public class JPAConverterTests {
 	}
 	
 	@Test
-	public void testEncryptedValue() throws Exception {
-		EncryptedValue value = new EncryptedValue();
-		value.setDataStoreName("teststore");
-		value.setStringValue("Test");
-		assertThat(value.getDataStoreName(), is("teststore"));
-		assertThat(value.getStringValue(), is("Test"));
-		assertThat(value.getValue(), is("Test".getBytes()));
-		
-		value = new EncryptedValue();
-		value.setStringValue(null);
-		assertNull(value.getValue());
-		assertNull(value.getStringValue());
-	}
-	
-	@Test
 	public void testEncryptedValueStringConverter() throws Exception {
 		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test");
 		EncryptedValue value = new EncryptedValue();
@@ -409,6 +395,70 @@ public class JPAConverterTests {
 		value.setDataStoreName("teststore");
 		value.setStringValue("Test");
 		converter.convertToDatabaseColumn(value);		
+	}
+
+	@SuppressWarnings("unlikely-arg-type")
+	@Test
+	public void testEncryptedValue() throws Exception {
+		EncryptedValue value = new EncryptedValue();
+		value.setDataStoreName("teststore");
+		value.setStringValue("Test");
+		assertThat(value.getDataStoreName(), is("teststore"));
+		assertThat(value.getStringValue(), is("Test"));
+		assertThat(value.getValue(), is("Test".getBytes()));
+		
+		value = new EncryptedValue();
+		value.setStringValue(null);
+		assertNull(value.getValue());
+		assertNull(value.getStringValue());
+		
+		value = new EncryptedValue();
+		value.setDataStoreName("teststore");
+		value.setStringValue("Test");
+		
+		EncryptedValue value2 = new EncryptedValue();
+		value2.setDataStoreName("teststore");
+		value2.setStringValue("Test");
+		
+		EncryptedValue value3 = new EncryptedValue();
+		value3.setDataStoreName("teststore1");
+		value3.setStringValue("Test");
+		
+		EncryptedValue value4 = new EncryptedValue();
+		value4.setDataStoreName("teststore");
+		value4.setStringValue("Test1");
+		
+		EncryptedValue value5 = new EncryptedValue();
+		value5.setDataStoreName("teststore");
+
+		EncryptedValue value6 = new EncryptedValue();
+		value6.setStringValue("Test");
+		
+		EncryptedValue value7 = new EncryptedValue();
+		value7.setDataStoreName("teststore1");
+		value7.setStringValue("Test1");
+		
+		assertThat(value, is(value));
+		assertThat(value2, is(value));
+		assertTrue(value.hashCode()==value2.hashCode());
+		assertThat(value3, is(not(value)));
+		assertFalse(value.hashCode()==value3.hashCode());
+		assertThat(value4, is(not(value)));
+		assertFalse(value.hashCode()==value4.hashCode());
+		assertThat(value5, is(not(value)));
+		assertFalse(value.hashCode()==value5.hashCode());
+		assertThat(value6, is(not(value)));
+		assertFalse(value.hashCode()==value6.hashCode());
+		assertThat(value7, is(not(value)));
+		assertFalse(value.hashCode()==value7.hashCode());
+		assertThat(new EncryptedValue(), is(not(value)));
+		assertFalse(value.hashCode()==new EncryptedValue().hashCode());
+		
+		assertFalse(value.equals(""));
+		assertFalse(value.equals(null));
+		
+		assertThat(value.toString(), is("EncryptedValue [dataStoreName="+value.getDataStoreName()
+			+", value="+CryptoResource.byteAsHex(value.getValue())+"]"));
 	}
 
 }

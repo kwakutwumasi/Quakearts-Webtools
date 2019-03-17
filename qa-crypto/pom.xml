@@ -19,6 +19,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
+				<version>3.0.1</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
@@ -43,9 +44,9 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.wildfly</groupId>
-			<artifactId>wildfly-system-jmx</artifactId>
-			<version>9.0.2.Final</version>
+			<groupId>com.quakearts.webtools</groupId>
+			<artifactId>qa-appbase</artifactId>
+			<version>2.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -70,12 +71,6 @@
 			<groupId>com.quakearts.webtools.test</groupId>
 			<artifactId>qa-appbase-test-helper</artifactId>
 			<version>2.0.0</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.quakearts.webtools</groupId>
-			<artifactId>qa-appbase</artifactId>
-			<version>2.0</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
