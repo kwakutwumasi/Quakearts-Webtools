@@ -38,6 +38,7 @@ import com.quakearts.webapp.security.rest.requestwrapper.AuthenticationServletRe
  */
 public class AuthenticationFilter extends JAASAuthenticatorBase implements Filter {
 
+	private static final String AUTHORIZATION_FAILED = "Authorization failed";
 	private static final String BASIC = "Basic";
 	private static final String BEARER = "Bearer";
 	private boolean requireAuthorization;
@@ -71,76 +72,10 @@ public class AuthenticationFilter extends JAASAuthenticatorBase implements Filte
 						
 		try {
 			if(httpRequest.getHeader("Authorization")!=null){
-				String authorization = httpRequest.getHeader("Authorization");
-				String type;
-				if(authorization.indexOf(BEARER)!=-1){
-					type = BEARER;
-				} else if(authorization.indexOf(BASIC)!=-1){
-					type = BASIC;
-				} else {
-					sendError(403,"Authorization parameter not understood:"+authorization, httpResponse);
-					return;
-				}
-				
-				String authenticationToken = authorization.substring(authorization.indexOf(type+":")+7);
-				authenticationToken = authenticationToken.trim();
-				
-				if(type == BEARER){
-					byte[] authData; 
-					if(httpRequest.getCharacterEncoding()!=null)
-						authData = authenticationToken.getBytes(httpRequest.getCharacterEncoding());
-					else
-						authData = authenticationToken.getBytes();
-					
-					init(authData, httpRequest.getRemoteAddr(), httpRequest.getRemotePort(),
-							buildHeaderMap(httpRequest), httpRequest.getLocalAddr(), httpRequest.getLocalPort(),
-							httpRequest.getContextPath(), contextName);
-					try {
-						authenticateViaByteCredentials(contextName);
-					} catch (LoginException e) {
-						sendError(403,"Authorization failed", httpResponse);
-						return;
-					}
-				} else {
-					String[] authData; 
-					try {						
-						authData = new String(Base64.getDecoder().decode(authenticationToken)).split(":",2);
-					} catch (IllegalArgumentException e) {
-						sendError(403, "Auth data was not understood. Must be a valid Base64 encoded character string", httpResponse);
-						return;
-					}
-					
-					if(authData.length!=2){
-						sendError(403, "Auth data was not understood. Must be of the form username:password", httpResponse);
-						return;
-					}
-						
-					init(authData[0], authData[1], httpRequest.getRemoteAddr(), httpRequest.getRemotePort(),
-							buildHeaderMap(httpRequest), httpRequest.getLocalAddr(), httpRequest.getLocalPort(),
-							httpRequest.getContextPath(), contextName);
-					
-					try {
-						authenticateViaUsernameAndPassword(contextName);
-					} catch (LoginException e) {
-						sendError(403,"Authorization failed", httpResponse);
-						return;
-					}
-				}
+				processAuthorization(httpRequest, httpResponse);
 			} else if(httpRequest.getParameterMap().containsKey("qa_username")
 					&& httpRequest.getParameterMap().containsKey("qa_password")) {
-				String username = httpRequest.getParameter("qa_username");
-				String password = httpRequest.getParameter("qa_password");
-				
-				init(username, password, httpRequest.getRemoteAddr(), httpRequest.getRemotePort(),
-						buildHeaderMap(httpRequest), httpRequest.getLocalAddr(), httpRequest.getLocalPort(),
-						httpRequest.getContextPath(), contextName);
-
-				try {
-					authenticateViaUsernameAndPassword(contextName);
-				} catch (LoginException e) {
-					sendError(403,"Authorization failed}", httpResponse);
-					return;
-				}
+				processQueryParamCredentials(httpRequest, httpResponse);
 			} else if(requireAuthorization){
 				sendError(401, "Missing identity/credential parameters. Authorization is required", httpResponse);
 				return;
@@ -155,7 +90,86 @@ public class AuthenticationFilter extends JAASAuthenticatorBase implements Filte
 			SecurityContext.getCurrentSecurityContext().release();				
 		}
 	}
+
+	private void processAuthorization(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+			throws IOException {
+		String authorization = httpRequest.getHeader("Authorization");
+		String type;
+		if(authorization.indexOf(BEARER)!=-1){
+			type = BEARER;
+		} else if(authorization.indexOf(BASIC)!=-1){
+			type = BASIC;
+		} else {
+			throw new RestSecurityException("Authorization parameter not understood:"+authorization);
+		}
+		
+		String authenticationToken = authorization.substring(authorization.indexOf(type+":")+7);
+		authenticationToken = authenticationToken.trim();
+		
+		if(type == BEARER){
+			processBearerAuthorization(httpRequest, httpResponse, authenticationToken);
+		} else {
+			processBasicAuthorization(httpRequest, httpResponse, authenticationToken);
+		}
+	}
+
+	private void processBearerAuthorization(HttpServletRequest httpRequest, HttpServletResponse httpResponse,
+			String authenticationToken) throws IOException {
+		byte[] authData; 
+		if(httpRequest.getCharacterEncoding()!=null)
+			authData = authenticationToken.getBytes(httpRequest.getCharacterEncoding());
+		else
+			authData = authenticationToken.getBytes();
+		
+		init(authData, httpRequest.getRemoteAddr(), httpRequest.getRemotePort(),
+				buildHeaderMap(httpRequest), httpRequest.getLocalAddr(), httpRequest.getLocalPort(),
+				httpRequest.getContextPath(), httpRequest.getPathInfo(), contextName);
+		try {
+			authenticateViaByteCredentials(contextName);
+		} catch (LoginException e) {
+			throw new RestSecurityException(AUTHORIZATION_FAILED);
+		}
+	}
+
+	private void processBasicAuthorization(HttpServletRequest httpRequest, HttpServletResponse httpResponse,
+			String authenticationToken) {
+		String[] authData; 
+		try {						
+			authData = new String(Base64.getDecoder().decode(authenticationToken)).split(":",2);
+		} catch (IllegalArgumentException e) {
+			throw new RestSecurityException("Auth data was not understood. Must be a valid Base64 encoded character string");
+		}
+		
+		if(authData.length!=2){
+			throw new RestSecurityException("Auth data was not understood. Must be of the form username:password");
+		}
+			
+		init(authData[0], authData[1], httpRequest.getRemoteAddr(), httpRequest.getRemotePort(),
+				buildHeaderMap(httpRequest), httpRequest.getLocalAddr(), httpRequest.getLocalPort(),
+				httpRequest.getContextPath(), httpRequest.getPathInfo(), contextName);
+		
+		try {
+			authenticateViaUsernameAndPassword(contextName);
+		} catch (LoginException e) {
+			throw new RestSecurityException(AUTHORIZATION_FAILED);
+		}
+	}
 	
+	private void processQueryParamCredentials(HttpServletRequest httpRequest, HttpServletResponse httpResponse){
+		String username = httpRequest.getParameter("qa_username");
+		String password = httpRequest.getParameter("qa_password");
+		
+		init(username, password, httpRequest.getRemoteAddr(), httpRequest.getRemotePort(),
+				buildHeaderMap(httpRequest), httpRequest.getLocalAddr(), httpRequest.getLocalPort(),
+				httpRequest.getContextPath(), httpRequest.getPathInfo(), contextName);
+	
+		try {
+			authenticateViaUsernameAndPassword(contextName);
+		} catch (LoginException e) {
+			throw new RestSecurityException(AUTHORIZATION_FAILED);
+		}
+	}
+
 	private void sendError(int code, String message, HttpServletResponse httpResponse) throws IOException {
 		errorWriter.sendError(code, message, httpResponse);
 	}
@@ -164,7 +178,7 @@ public class AuthenticationFilter extends JAASAuthenticatorBase implements Filte
 		Map<String, String> headers = new HashMap<>();
 		Enumeration<String> headerNames = httpRequest.getHeaderNames();
 		while (headerNames.hasMoreElements()) {
-			String header = (String) headerNames.nextElement();
+			String header = headerNames.nextElement();
 			headers.put(header, httpRequest.getHeader(header));
 		}
 		
@@ -173,6 +187,7 @@ public class AuthenticationFilter extends JAASAuthenticatorBase implements Filte
 
 	@Override
 	public void destroy() {
+		//Do nothing
 	}
 
 }

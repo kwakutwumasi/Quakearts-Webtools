@@ -23,6 +23,7 @@ public class TestLoginModule implements LoginModule {
 	
 	public static boolean addDenyRole;
 	public static boolean passwordFetched, usernameFetched, tokenFetched;
+	public static boolean throwLoginException;
 	
 	@Override
 	public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
@@ -47,6 +48,11 @@ public class TestLoginModule implements LoginModule {
 		usernameFetched = callback1.getName()!=null;
 		passwordFetched = callback2.getPassword()!=null;
 		tokenFetched = callback3.getTokenData()!=null;	
+		
+		if(throwLoginException) {
+			throwLoginException = false;
+			throw new LoginException("Throwing..");
+		}
 		
 		return true;
 	}

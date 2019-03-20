@@ -46,15 +46,15 @@ public abstract class JAASAuthenticatorBase {
 	}
 	
 	protected void init(String username, String password, String remoteHost, int remotePort,
-			Map<String, String> requestHeaders, String host, int port, String application, String applicationContext) {
+			Map<String, String> requestHeaders, String host, int port, String application, String pathInfo, String applicationContext) {
 		SecurityContext.getCurrentSecurityContext().init(username, password, remoteHost, remotePort, requestHeaders, host,
-				port, application, applicationContext);
+				port, application, pathInfo, applicationContext);
 	}
 	
 	protected void init(byte[] credentials, String remoteHost, int remotePort,
-			Map<String, String> requestHeaders, String host, int port, String application, String applicationContext){
+			Map<String, String> requestHeaders, String host, int port, String application, String pathInfo, String applicationContext){
 		SecurityContext.getCurrentSecurityContext().init(credentials, remoteHost, remotePort, requestHeaders, host,
-				port, application, applicationContext);
+				port, application, pathInfo, applicationContext);
 	}
 	
 	protected void authenticateViaUsernameAndPassword(String contextName) 
@@ -65,7 +65,7 @@ public abstract class JAASAuthenticatorBase {
 		if(tryAuthenticateFromCache(context.getIdentity(), context.getCredentials(), contextName))
 			return;
 			
-		authenticate((c)-> {
+		authenticate(c-> {
 			for(Callback cb:c){
 				if(cb instanceof NameCallback){
 					((NameCallback)cb).setName(context.getIdentity());
@@ -82,7 +82,7 @@ public abstract class JAASAuthenticatorBase {
 	protected void authenticateViaByteCredentials(String contextName) throws LoginException{
 		final SecurityContext context = SecurityContext.getCurrentSecurityContext();
 
-		authenticate((c)->{
+		authenticate(c->{
 			for(Callback cb:c){
 				if(cb instanceof TokenCallback){
 					((TokenCallback)cb).setTokenData(context.getCredentialData());

@@ -110,6 +110,11 @@ public class RestSecurityTest {
 		assertThat(response.getOutput(), is("Ok"));
 		assertTrue(TestLoginModule.tokenFetched);
 		
+		TestLoginModule.throwLoginException = true;
+		response = clientBearer.sendRequest("/test-authentication-filter-required",
+				null, HttpVerb.GET);
+		assertThat(response.getHttpCode(), is(403));
+		
 		TestLoginModule.passwordFetched = false;
 		TestLoginModule.usernameFetched = false;
 		response = clientBasic.sendRequest("/test-authentication-filter-notrequired",
@@ -119,9 +124,11 @@ public class RestSecurityTest {
 		assertTrue(TestLoginModule.passwordFetched);
 		assertTrue(TestLoginModule.usernameFetched);
 		
-		clientBasic.sendRequest("/test-authentication-filter-notrequired",
-				"test=value", HttpVerb.POST);
-		
+		TestLoginModule.throwLoginException = true;
+		response = clientBasic.sendRequest("/test-authentication-filter-required",
+				null, HttpVerb.GET);
+		assertThat(response.getHttpCode(), is(403));
+
 		response = client.sendRequest("/test-authentication-filter-required",
 				"qa_username=testuser&qa_password=password", HttpVerb.POST);
 		assertThat(response.getHttpCode(), is(200));
@@ -132,6 +139,11 @@ public class RestSecurityTest {
 				"qa_username=testuser&qa_password=password", HttpVerb.POST);
 		assertThat(TestAuthenticationCacheService.cacheHit(), is(true));
 		
+		TestLoginModule.throwLoginException = true;
+		response = client.sendRequest("/test-authentication-filter-required",
+				"qa_username=testusernew&qa_password=passwordnew", HttpVerb.POST);
+		assertThat(response.getHttpCode(), is(403));
+
 		response = client.sendRequest("/test-authentication-filter-required",
 				"test=value", HttpVerb.POST);
 		assertThat(response.getHttpCode(), is(401));

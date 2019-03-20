@@ -33,7 +33,7 @@ public final class SecurityContext implements Serializable {
 	private static final long serialVersionUID = 2439562144323581177L;
 	
 	private static class DefaultContextStorageService implements SecurityContextStorageService {
-		private static final ThreadLocal<SecurityContext> securityContext = new InheritableThreadLocal<SecurityContext>();
+		private static final ThreadLocal<SecurityContext> securityContext = new InheritableThreadLocal<>();
 		@Override
 		public void storeContext(SecurityContext context) {
 			securityContext.set(context);
@@ -82,6 +82,7 @@ public final class SecurityContext implements Serializable {
 	private int port;
 	private String application;
 	private String applicationContext;
+	private String pathInfo;
 	private Subject subject;
 
 	void setSubject(Subject subject) {
@@ -97,6 +98,7 @@ public final class SecurityContext implements Serializable {
 			try {
 				identity = subject.getPrincipals(UserPrincipal.class).iterator().next().getName();
 			} catch (NullPointerException e) {
+				//DO nothing
 			}
 		}
 		return identity;
@@ -121,31 +123,32 @@ public final class SecurityContext implements Serializable {
 	}
 
 	void init(byte[] credentialData, String remoteHost,
-			int remotePort, Map<String, String> requestHeaders, String host, int port, String application,
+			int remotePort, Map<String, String> requestHeaders, String host, int port, String application, String pathInfo,
 			String applicationContext) {
 		this.credentialData = credentialData;
-		initCommonFields(remoteHost, remotePort, requestHeaders, host, port, application, applicationContext);
+		initCommonFields(remoteHost, remotePort, requestHeaders, host, port, application, pathInfo, applicationContext);
 	}
 
 	void init(String identity, String credentials, String remoteHost,
-			int remotePort, Map<String, String> requestHeaders, String host, int port, String application,
+			int remotePort, Map<String, String> requestHeaders, String host, int port, String application, String pathInfo,
 			String applicationContext) {
 		if(identity == null)
 			throw new SecurityContextException("Parameter 'identity' is required");
 
 		this.identity = identity;
 		this.credentials = credentials;
-		initCommonFields(remoteHost, remotePort, requestHeaders, host, port, application, applicationContext);
+		initCommonFields(remoteHost, remotePort, requestHeaders, host, port, application, pathInfo, applicationContext);
 	}
 
 	private void initCommonFields(String remoteHost, int remotePort, Map<String, String> requestHeaders, String host,
-			int port, String application, String applicationContext) {
+			int port, String application, String pathInfo, String applicationContext) {
 		this.remoteHost = remoteHost;
 		this.remotePort = remotePort;
 		this.requestHeaders = requestHeaders;
 		this.host = host;
 		this.port = port;
 		this.application = application;
+		this.pathInfo = pathInfo;
 		this.applicationContext = applicationContext;
 	}
 
@@ -177,6 +180,10 @@ public final class SecurityContext implements Serializable {
 		return applicationContext;
 	}
 
+	public String getPathInfo() {
+		return pathInfo;
+	}
+	
 	byte[] getCredentialData() {
 		SecurityManager sm = System.getSecurityManager();
 		if(sm!=null){
