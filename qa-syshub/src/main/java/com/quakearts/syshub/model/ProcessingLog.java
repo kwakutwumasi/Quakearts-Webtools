@@ -18,7 +18,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,7 +27,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -58,9 +56,7 @@ public class ProcessingLog implements Serializable {
 	private AgentModule agentModule;
 	@Column(nullable=false, length=200)
 	private String statusMessage;
-	@Lob
-	@Basic(fetch=FetchType.LAZY)
-	@Column(nullable=false)
+	@Column(length=5120, nullable=false)
 	private byte[] messageData;
 	@Column(nullable=false)
 	private long retries;
@@ -71,7 +67,7 @@ public class ProcessingLog implements Serializable {
 	@OneToMany(mappedBy="processingLog", fetch=FetchType.LAZY, cascade={CascadeType.REMOVE})
 	private Set<TransactionLog> transactionLogs = new HashSet<>();
 
-	public static enum LogType {
+	public enum LogType {
 		INFO,
 		QUEUED,
 		STORED,

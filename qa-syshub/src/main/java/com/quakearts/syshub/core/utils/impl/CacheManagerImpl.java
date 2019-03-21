@@ -29,7 +29,7 @@ import com.quakearts.syshub.core.utils.CacheManager;
 public class CacheManagerImpl implements CacheManager {
 	private static EmbeddedCacheManager cache_container;
 
-	private static CacheContainer getCacheContainer() {
+	private static synchronized CacheContainer getCacheContainer() {
 		if (cache_container == null) {
 
 			cache_container = new DefaultCacheManager(new ConfigurationBuilder()
