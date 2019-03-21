@@ -65,11 +65,6 @@
 			<version>2.3.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.derby</groupId>
-			<artifactId>derby</artifactId>
-			<version>10.13.1.1</version>
-		</dependency>
-		<dependency>
 			<groupId>org.infinispan</groupId>
 			<artifactId>infinispan-embedded</artifactId>
 			<version>8.2.6.Final</version>
@@ -162,6 +157,12 @@
 			<groupId>com.quakearts.webtools.test</groupId>
 			<artifactId>qa-testtools</artifactId>
 			<version>1.0.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derby</artifactId>
+			<version>10.13.1.1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
