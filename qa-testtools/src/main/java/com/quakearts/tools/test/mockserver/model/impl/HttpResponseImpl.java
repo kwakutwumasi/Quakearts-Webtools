@@ -55,12 +55,13 @@ class HttpResponseImpl extends HttpMessageImpl implements HttpResponse {
 
 	@Override
 	public String toString() {
-		String content;
-		try {
-			content = getContent();
-		} catch (UnsupportedEncodingException e) {
-			content = "!UnsupportedEncodingException!";
-		}
+		String content=null;
+		if(contentBytes!=null)
+			try {
+				content = getContent();
+			} catch (UnsupportedEncodingException e) {
+				content = "!UnsupportedEncodingException!";
+			}
 		
 		return "HttpResponseImpl [responseCode=" + responseCode + ", headers=" + headers + ", contentBytes="
 				+ content + ", contentEncoding=" + contentEncoding + "]";

@@ -151,12 +151,13 @@ class HttpRequestImpl extends HttpMessageImpl implements HttpRequest {
 
 	@Override
 	public String toString() {
-		String content;
-		try {
-			content = getContent();
-		} catch (UnsupportedEncodingException e) {
-			content = "!UnsupportedEncodingException!";
-		}
+		String content=null;
+		if(contentBytes!=null)
+			try {
+				content = getContent();
+			} catch (UnsupportedEncodingException e) {
+				content = "!UnsupportedEncodingException!";
+			}
 
 		return "HttpRequestImpl [method=" + method + ", resource=" + resource + ", uriParameters=" + uriParameters
 				+ ", response=" + response + ", id=" + id + ", headers=" + headers + ", contentBytes="
