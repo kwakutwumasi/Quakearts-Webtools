@@ -223,6 +223,17 @@ public class OrmDataStoreTest {
 
 			assertThat("Failed to list disjoint with subcriteria", salesParts.size(), is(3));
 			assertThat(dataStore.getConfigurationProperty("com.quakearts.test"), is("TestValue"));
+			
+			list = dataStore.find(Inventory.class)
+				.filterBy("quantity").withValues().startingFrom(4)
+				.thenList();
+			
+			assertThat("Starting from did not work. Returned "+list.size()+" instead of 3", list.size(), is(3));
+			list = dataStore.find(Inventory.class)
+					.filterBy("quantity").withValues().upTo(4)
+					.thenList();
+				
+			assertThat("Up to did not work. Returned "+list.size()+" instead of 3", list.size(), is(3));
 		} catch (DataStoreException e) {
 			fail("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage());
 		}

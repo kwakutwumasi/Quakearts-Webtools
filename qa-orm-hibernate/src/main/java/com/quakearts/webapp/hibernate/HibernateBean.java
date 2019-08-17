@@ -156,9 +156,9 @@ public abstract class HibernateBean {
 		if (value instanceof Range) {
 			Range range = (Range) value;
 			if (range.getFrom() != null && range.getTo() == null)
-				return Restrictions.gt(key, ((Range) value).getFrom());
+				return Restrictions.ge(key, ((Range) value).getFrom());
 			else if (range.getFrom() == null && range.getTo() != null)
-				return Restrictions.lt(key, ((Range) value).getTo());
+				return Restrictions.le(key, ((Range) value).getTo());
 
 			return Restrictions.between(key, range.getFrom(), range.getTo());
 		} else if (value instanceof VariableString) {
