@@ -25,7 +25,8 @@ class HttpRequestImpl extends HttpMessageImpl implements HttpRequest {
 	 * 
 	 */
 	private static final long serialVersionUID = 8948720128836835212L;
-	String method, resource;
+	String method;
+	String resource;
 	Map<String, List<String>> uriParameters;
 	HttpResponse response;
 	String id;

@@ -3,7 +3,10 @@ package test.junit;
 import static org.junit.Assert.*;
 import static org.hamcrest.core.IsNot.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 import static org.hamcrest.core.Is.*;
 
@@ -15,6 +18,7 @@ import com.quakearts.tools.test.mockserver.model.HttpRequest;
 import com.quakearts.tools.test.mockserver.model.HttpResponse;
 import com.quakearts.tools.test.mockserver.model.impl.HttpHeaderImpl;
 import com.quakearts.tools.test.mockserver.model.impl.HttpMessageBuilder;
+import com.quakearts.tools.test.mockserver.model.impl.HttpMessageBuilder.HttpResponseBuilder;
 
 public class TestHttpMessageBuilder {
 
@@ -350,6 +354,149 @@ public class TestHttpMessageBuilder {
 		assertThat(httpRequest2.getResponse(), is(HttpMessageBuilder.createNewHttpResponse()
 				.setResponseCodeAs(201)
 				.thenBuild()));
+		
+		httpRequest2 = HttpMessageBuilder.use(new HttpRequest() {
+			
+			@Override
+			public Collection<HttpHeader> getHeaders() {
+				return Arrays.asList(new HttpHeaderImpl("Header", "Header-Value"));
+			}
+
+			@Override
+			public String getHeaderValue(String name) {
+				return "Header-Value";
+			}
+
+			@Override
+			public List<String> getHeaderValues(String name) {
+				return Arrays.asList("Header-Value");
+			}
+
+			@Override
+			public String getContentEncoding() {
+				return "UTF-8";
+			}
+
+			@Override
+			public String getContent() throws UnsupportedEncodingException {
+				return "Hello";
+			}
+
+			@Override
+			public byte[] getContentBytes() {
+				return "Hello".getBytes();
+			}
+			
+			@Override
+			public boolean hasParameter(String name) {
+				return true;
+			}
+			
+			@Override
+			public List<String> getURIParameterValue(String name) {
+				return Arrays.asList("Value");
+			}
+			
+			@Override
+			public HttpResponse getResponse() {
+				return HttpResponseBuilder.createNewHttpResponse()
+						.setResponseCodeAs(201)
+						.thenBuild();
+			}
+			
+			@Override
+			public String getResource() {
+				return "/resource";
+			}
+			
+			@Override
+			public String getMethod() {
+				return "GET";
+			}
+			
+			@Override
+			public String getId() {
+				return "ID";
+			}
+		}).thenBuild();
+		
+		assertThat(httpRequest2.getContent(), is("Hello"));
+		assertArrayEquals(httpRequest2.getContentBytes(), "Hello".getBytes());
+		assertThat(httpRequest2.getContentEncoding(), is("UTF-8"));
+		assertThat(httpRequest2.getHeaders(), is(Arrays.asList(new HttpHeaderImpl("Header", "Header-Value"))));
+		assertThat(httpRequest2.getId(), is("ID"));
+		assertThat(httpRequest2.getMethod(), is("GET"));
+		assertThat(httpRequest2.getResource(), is("/resource"));
+		assertThat(httpRequest2.getResponse(), is(HttpResponseBuilder.createNewHttpResponse()
+				.setResponseCodeAs(201)
+				.thenBuild()));
+	}
+	
+	@Test
+	public void testHttpResponseBuilderUse() throws Exception {
+		HttpResponse response = HttpMessageBuilder.createNewHttpResponse()
+				.setContentBytes("Hello!".getBytes())
+				.setResponseCodeAs(200)
+				.addHeaders(new HttpHeaderImpl("Content-Type", "text/plain"))
+				.thenBuild();
+		
+		HttpResponse response2 = HttpMessageBuilder.use(response)
+				.thenBuild();
+		
+		assertThat(response, is(response2));
+		
+		HttpResponse response3 = HttpMessageBuilder.use(response)
+				.setResponseCodeAs(201).thenBuild();
+		
+		assertThat(response3.getResponseCode(), is(201));
+		assertThat(response3.getContent(), is("Hello!"));
+		assertThat(response3.getHeaderValue("Content-Type"), 
+				is("text/plain"));
+		
+		HttpResponse response4 = HttpMessageBuilder.use(new HttpResponse() {
+
+			@Override
+			public Collection<HttpHeader> getHeaders() {
+				return Arrays.asList(new HttpHeaderImpl("Hello", "World"));
+			}
+
+			@Override
+			public String getHeaderValue(String name) {
+				return "";
+			}
+
+			@Override
+			public List<String> getHeaderValues(String name) {
+				return Arrays.asList("Hello");
+			}
+
+			@Override
+			public String getContentEncoding() {
+				return "UTF-8";
+			}
+
+			@Override
+			public String getContent() throws UnsupportedEncodingException {
+				return "Hello";
+			}
+
+			@Override
+			public byte[] getContentBytes() {
+				return "Hello".getBytes();
+			}
+
+			@Override
+			public int getResponseCode() {
+				return 200;
+			}
+			
+		}).thenBuild();
+		
+		assertThat(response4.getContent(), is("Hello"));
+		assertArrayEquals(response4.getContentBytes(), "Hello".getBytes());
+		assertThat(response4.getContentEncoding(), is("UTF-8"));
+		assertThat(response4.getHeaders(), is(Arrays.asList(new HttpHeaderImpl("Hello", "World"))));
+		assertThat(response4.getResponseCode(), is(200));
 	}
 	
 	@Test

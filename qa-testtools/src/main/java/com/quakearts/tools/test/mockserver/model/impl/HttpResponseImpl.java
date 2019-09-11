@@ -12,6 +12,7 @@ package com.quakearts.tools.test.mockserver.model.impl;
 
 import java.io.UnsupportedEncodingException;
 
+import com.quakearts.tools.test.mockserver.model.HttpHeader;
 import com.quakearts.tools.test.mockserver.model.HttpResponse;
 
 class HttpResponseImpl extends HttpMessageImpl implements HttpResponse {
@@ -23,6 +24,20 @@ class HttpResponseImpl extends HttpMessageImpl implements HttpResponse {
 
 	int responseCode;
 	
+	HttpResponseImpl(HttpResponse response) {
+		contentBytes = response.getContentBytes();
+		contentEncoding = response.getContentEncoding();
+		if(response.getHeaders() != null) {
+			for(HttpHeader header:response.getHeaders()) {
+				headers.put(header.getName(), header);
+			}
+		}
+		responseCode = response.getResponseCode();
+	}
+	
+	HttpResponseImpl() {
+	}
+
 	/* (non-Javadoc)
 	 * @see com.quakearts.tools.test.mockserver.model.impl.HttpResponse#getResponseCode()
 	 */

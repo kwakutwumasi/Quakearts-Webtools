@@ -43,6 +43,14 @@ public class HttpMessageBuilder {
 		return new HttpRequestBuilder(request);
 	}
 	
+	/**Create a new {@linkplain HttpResponse} using the HTTP response as the base
+	 * @param response the {@linkplain HttpResponse}
+	 * @return a {@linkplain HttpResponseBuilder} object for method chaining
+	 */
+	public static HttpResponseBuilder use(HttpResponse response) {
+		return new HttpResponseBuilder(response);
+	}
+	
 	/**Builder for {@linkplain HttpRequest} 
 	 * @author kwakutwumasi-afriyie
 	 *
@@ -147,7 +155,7 @@ public class HttpMessageBuilder {
 			}
 			
 			return request;
-		}
+		}		
 	}
 	
 	/**Create a new {@linkplain HttpResponse}
@@ -164,6 +172,13 @@ public class HttpMessageBuilder {
 	public static class HttpResponseBuilder extends HttpMessageBuilder {
 		HttpResponseBuilder() {
 			message = new HttpResponseImpl();
+		}
+		
+		HttpResponseBuilder(HttpResponse message){
+			if(message instanceof HttpResponseImpl)
+				this.message = message;
+			else
+				this.message = new HttpResponseImpl(message);
 		}
 		
 		/**Set the HTTP response code
