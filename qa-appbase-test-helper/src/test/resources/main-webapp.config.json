@@ -1,6 +1,6 @@
 {
 	"webapp.libraries":{
-		"set":["tomcat-embed-el-9.0.12.jar"]
+		"set":["tomcat-embed-el-9.0.27.jar"]
 	},
 	"webapp.directories":{
 		"set":["target/test-classes"]
