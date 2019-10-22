@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-appbase</artifactId>
-	<version>2.1.1</version>
+	<version>2.1.2</version>
 	<name>Quakearts App Base</name>
 	<description>A configuration of Context Dependency Injection, Java Transaction Management with a DataSource provider and an embedded webserver. This serves as a base for standalone 'application serverless' systems, such as the Quakearts MXHub system</description>
 	<build>
@@ -40,19 +40,20 @@
 		</plugins>
 	</build>
 	<properties>
-		<weld.se.version>3.0.4.Final</weld.se.version>
-		<weld.spi.version>3.0.SP3</weld.spi.version>
-		<slf4j.version>1.7.25</slf4j.version>
-		<tomcat.version>9.0.12</tomcat.version>
+		<weld.se.version>3.1.2.Final</weld.se.version>
+		<weld.spi.version>3.1.SP1</weld.spi.version>
+		<slf4j.version>1.7.28</slf4j.version>
+		<tomcat.version>9.0.27</tomcat.version>
 		<tomcat.juli.version>9.0.0.M6</tomcat.juli.version>
 		<atomikos.version>4.0.6</atomikos.version>
 		<junit.version>4.12</junit.version>
 		<jee.version>8.0</jee.version>
 		<geronimo.version>1.1.1</geronimo.version>
 		<derby.version>10.13.1.1</derby.version>
-		<jspapi.version>2.3.1</jspapi.version>
+		<jspapi.version>2.3.3</jspapi.version>
 		<jstl.version>1.2.1</jstl.version>
-		<awaitility.version>3.1.2</awaitility.version>
+		<awaitility.version>3.1.6</awaitility.version>
+		<quakearts.test.version>1.0.3</quakearts.test.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -206,6 +207,12 @@
 			<groupId>org.awaitility</groupId>
 			<artifactId>awaitility</artifactId>
 			<version>${awaitility.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.quakearts.webtools.test</groupId>
+			<artifactId>qa-testtools</artifactId>
+			<version>${quakearts.test.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

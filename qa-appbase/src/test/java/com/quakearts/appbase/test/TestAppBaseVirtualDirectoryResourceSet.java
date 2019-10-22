@@ -43,31 +43,31 @@ public class TestAppBaseVirtualDirectoryResourceSet {
 		impl.loadClassPath();
 		StandardRoot root = new StandardRoot();
 		AppBaseVirtualDirectoryResourceSet resourceSet = new AppBaseVirtualDirectoryResourceSet(root, "/WEB-INF/lib", "/repo", "/");
-		resourceSet.addUrl("tomcat-embed-el-9.0.12.jar", impl.getLibraryPath("tomcat-embed-el-9.0.12.jar"));
-		resourceSet.addUrl("tomcat-embed-websocket-9.0.12.jar", impl.getLibraryPath("tomcat-embed-websocket-9.0.12.jar"));
+		resourceSet.addUrl("tomcat-embed-el-9.0.27.jar", impl.getLibraryPath("tomcat-embed-el-9.0.27.jar"));
+		resourceSet.addUrl("tomcat-embed-websocket-9.0.27.jar", impl.getLibraryPath("tomcat-embed-websocket-9.0.27.jar"));
 		resourceSet.start();
 		
 		assertThat(resourceSet.getLibraryUrls().size(), is(2));
-		assertThat(resourceSet.getLibraryUrls().contains(impl.getLibraryPath("tomcat-embed-el-9.0.12.jar")), is(true));
-		assertThat(resourceSet.getLibraryUrls().contains(impl.getLibraryPath("tomcat-embed-websocket-9.0.12.jar")), is(true));
+		assertThat(resourceSet.getLibraryUrls().contains(impl.getLibraryPath("tomcat-embed-el-9.0.27.jar")), is(true));
+		assertThat(resourceSet.getLibraryUrls().contains(impl.getLibraryPath("tomcat-embed-websocket-9.0.27.jar")), is(true));
 		
-		WebResource resource = resourceSet.getResource("/WEB-INF/lib/tomcat-embed-websocket-9.0.12.jar");
+		WebResource resource = resourceSet.getResource("/WEB-INF/lib/tomcat-embed-websocket-9.0.27.jar");
 		assertThat(resource, is(notNullValue()));
 		assertThat(resource, is(instanceOf(FileResource.class)));
 		assertThat(resource.canRead(), is(true));
 		assertThat(resource.isFile(), is(true));
-		assertThat(resource.getURL(), is(impl.getLibraryPath("tomcat-embed-websocket-9.0.12.jar")));
+		assertThat(resource.getURL(), is(impl.getLibraryPath("tomcat-embed-websocket-9.0.27.jar")));
 		
 		List<String> list = Arrays.asList(resourceSet.list("/WEB-INF/lib/"));
 		assertThat(list.size(), is(2));
-		assertThat(list.contains("tomcat-embed-el-9.0.12.jar"), is(true));
-		assertThat(list.contains("tomcat-embed-websocket-9.0.12.jar"), is(true));
+		assertThat(list.contains("tomcat-embed-el-9.0.27.jar"), is(true));
+		assertThat(list.contains("tomcat-embed-websocket-9.0.27.jar"), is(true));
 		
 		assertThat(resourceSet.list("/WEB-INF/lib/resource").length, is(0));
 		
 		Set<String> set = resourceSet.listWebAppPaths("/WEB-INF/lib/");
 		assertThat(set.size(), is(2));
-		assertThat(set.contains("/WEB-INF/lib/tomcat-embed-el-9.0.12.jar"), is(true));
-		assertThat(set.contains("/WEB-INF/lib/tomcat-embed-websocket-9.0.12.jar"), is(true));		
+		assertThat(set.contains("/WEB-INF/lib/tomcat-embed-el-9.0.27.jar"), is(true));
+		assertThat(set.contains("/WEB-INF/lib/tomcat-embed-websocket-9.0.27.jar"), is(true));		
 	}
 }

@@ -4,45 +4,75 @@ import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.*;
 import static org.hamcrest.core.IsNull.*;
 
+import java.io.File;
 import java.net.URL;
 import java.util.Enumeration;
 import javax.servlet.ServletContainerInitializer;
+
+import org.apache.catalina.Context;
 import org.apache.catalina.WebResourceRoot;
+import org.apache.catalina.core.StandardHost;
 import org.junit.Test;
 
 import com.quakearts.appbase.classpath.impl.ClasspathResourcesImpl;
 import com.quakearts.appbase.spi.impl.tomcat.AppBaseVirtualDirectoryResourceSet;
 import com.quakearts.appbase.spi.impl.tomcat.AppBaseWebappClassLoader;
-import com.quakearts.appbase.test.helpers.TestContext;
+import com.quakearts.appbase.test.helpers.TestResourceRoot;
+import com.quakearts.tools.test.mocking.proxy.MockingProxyBuilder;
 
 public class TestAppBaseWebappClassLoader {
 
+	
+	
 	@Test(expected=ClassNotFoundException.class)
 	public void runTestWithoutStarting() throws Exception {
 		ClasspathResourcesImpl impl = new ClasspathResourcesImpl();
 		impl.loadClassPath();
-		TestContext context = new TestContext();
+
+		Context context = createContext();
+		
 		WebResourceRoot root = context.getResources();
 		AppBaseVirtualDirectoryResourceSet resourceSet = new AppBaseVirtualDirectoryResourceSet(root, "/WEB-INF/lib", "/repo", "/");
-		resourceSet.addUrl("tomcat-embed-el-9.0.12.jar", impl.getLibraryPath("tomcat-embed-el-9.0.12.jar"));
-		resourceSet.addUrl("tomcat-embed-websocket-9.0.12.jar", impl.getLibraryPath("tomcat-embed-websocket-9.0.12.jar"));
+		resourceSet.addUrl("tomcat-embed-el-9.0.27.jar", impl.getLibraryPath("tomcat-embed-el-9.0.27.jar"));
+		resourceSet.addUrl("tomcat-embed-websocket-9.0.27.jar", impl.getLibraryPath("tomcat-embed-websocket-9.0.27.jar"));
 		root.addJarResources(resourceSet);
 				
 		try(AppBaseWebappClassLoader classLoader = new AppBaseWebappClassLoader(context);){
 			classLoader.loadClass("com.acme.rest.TestObject");
 		}
 	}
+
+	private Context createContext() {
+		final StandardHost container = new StandardHost() {
+			@Override
+			public File getAppBaseFile() {
+				return new File("webservers/testhttpserver/webapps").getAbsoluteFile();
+			}
+		};
+		final TestResourceRoot resourceRoot = new TestResourceRoot();
+		final Context context = MockingProxyBuilder
+				.createMockingInvocationHandlerFor(Context.class)
+				.mock("getParent").withEmptyMethod(()->container)
+				.mock("getDocBase").withEmptyMethod(()->container.getAppBaseFile().toString()+"/test.war")
+				.mock("getResources").withEmptyMethod(()->{
+						return resourceRoot;
+					})
+				.mock("getAddWebinfClassesResources").withEmptyMethod(()->false)
+				.thenBuild();
+		resourceRoot.setContext(context);
+		return context;
+	}
 	
 	@Test
 	public void runTest() throws Exception {
 		ClasspathResourcesImpl impl = new ClasspathResourcesImpl();
 		impl.loadClassPath();
-		TestContext context = new TestContext();
+		Context context = createContext();
 		
 		WebResourceRoot root = context.getResources();
 		AppBaseVirtualDirectoryResourceSet resourceSet = new AppBaseVirtualDirectoryResourceSet(root, "/WEB-INF/lib", "/repo", "/");
-		resourceSet.addUrl("tomcat-embed-el-9.0.12.jar", impl.getLibraryPath("tomcat-embed-el-9.0.12.jar"));
-		resourceSet.addUrl("tomcat-embed-websocket-9.0.12.jar", impl.getLibraryPath("tomcat-embed-websocket-9.0.12.jar"));
+		resourceSet.addUrl("tomcat-embed-el-9.0.27.jar", impl.getLibraryPath("tomcat-embed-el-9.0.27.jar"));
+		resourceSet.addUrl("tomcat-embed-websocket-9.0.27.jar", impl.getLibraryPath("tomcat-embed-websocket-9.0.27.jar"));
 		root.addJarResources(resourceSet);
 		root.start();
 		try(AppBaseWebappClassLoader classLoader = new AppBaseWebappClassLoader(context);){
