@@ -74,7 +74,7 @@ public class AppBaseWeldCdiInjectorFactory implements InjectorFactory {
 		ConstructorInjector injector = cdiConstructor(clazz);
 		if (injector != null)
 			return injector;
-		log.debug("No CDI Beans found for " + clazz);
+		log.debug("No CDI Beans found for {}",clazz);
 		return delegate.createConstructor(constructor, providerFactory);
 	}
 
@@ -85,7 +85,7 @@ public class AppBaseWeldCdiInjectorFactory implements InjectorFactory {
 		ConstructorInjector injector = cdiConstructor(clazz);
 		if (injector != null)
 			return injector;
-		log.debug("No CDI Beans found for " + clazz);
+		log.debug("No CDI Beans found for {}", clazz);
 		return delegate.createConstructor(constructor, factory);
 	}
 
@@ -107,12 +107,22 @@ public class AppBaseWeldCdiInjectorFactory implements InjectorFactory {
 				resourceClass, sessionBeanInterface, manager);
 	}
 
+	
+	/**
+	 * @deprecated Removed from delegate since 3.5.1
+	 *
+	 */
+	@Deprecated()
 	public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type,
 			Type genericType, Annotation[] annotations, ResteasyProviderFactory factory) {
 		return delegate.createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations,
 				factory);
 	}
 
+	/**
+	 * @deprecated Removed from delegate since 3.5.1
+	 */
+	@Deprecated
 	public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget, Class type,
 			Type genericType, Annotation[] annotations, boolean useDefault, ResteasyProviderFactory factory) {
 		return delegate.createParameterExtractor(injectTargetClass, injectTarget, type, genericType, annotations,
@@ -131,7 +141,7 @@ public class AppBaseWeldCdiInjectorFactory implements InjectorFactory {
 			return beanManager;
 		}
 
-		throw new RuntimeException("Unable to lookup bean manager");
+		throw new ConfigurationException("Unable to lookup bean manager");
 	}
 
 	private AppBaseResteasyCdiExtension lookupResteasyCdiExtension() {
@@ -142,5 +152,19 @@ public class AppBaseWeldCdiInjectorFactory implements InjectorFactory {
 		}
 		CreationalContext<?> context = manager.createCreationalContext(bean);
 		return (AppBaseResteasyCdiExtension) manager.getReference(bean, AppBaseResteasyCdiExtension.class, context);
+	}
+
+	@Override
+	public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget,
+			String defaultName, Class type, Type genericType, Annotation[] annotations,
+			ResteasyProviderFactory factory) {
+		return delegate.createParameterExtractor(injectTargetClass, injectTarget, defaultName, type, genericType, annotations, factory);
+	}
+
+	@Override
+	public ValueInjector createParameterExtractor(Class injectTargetClass, AccessibleObject injectTarget,
+			String defaultName, Class type, Type genericType, Annotation[] annotations, boolean useDefault,
+			ResteasyProviderFactory factory) {
+		return delegate.createParameterExtractor(injectTargetClass, injectTarget, defaultName, type, genericType, annotations, useDefault, factory);
 	}
 }
