@@ -26,7 +26,7 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-resteasy-validation-11</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 </dependency>
 
 ```
