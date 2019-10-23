@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-resteasy-validation-11</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<name>QA RestEasy Validation Provider</name>
 	<packaging>jar</packaging>
 	<build>
@@ -31,25 +31,25 @@
 		</plugins>
 	</build>
 	<properties>
-		<resteasy-version>3.5.0.Final</resteasy-version>
+		<resteasy-version>3.9.0.Final</resteasy-version>
+		<hibernate.validator-version>6.0.17.Final</hibernate.validator-version>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-resteasy-cdi</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.hibernate</groupId>
 		    <artifactId>hibernate-validator</artifactId>
-		    <version>5.4.2.Final</version>
+		    <version>${hibernate.validator-version}</version>
 		</dependency>		
 		<dependency>
 		    <groupId>org.hibernate</groupId>
 		    <artifactId>hibernate-validator-cdi</artifactId>
-		    <version>5.4.2.Final</version>
-		</dependency>		
-
+		    <version>${hibernate.validator-version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jaxrs</artifactId>
