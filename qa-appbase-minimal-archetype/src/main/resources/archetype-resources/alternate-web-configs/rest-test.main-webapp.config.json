@@ -8,9 +8,9 @@
 			"jackson-jaxrs-json-provider-2.9.9.jar",
 			"jackson-module-jaxb-annotations-2.9.9.jar",
 			"qa-resteasy-cdi-1.0.2.jar",
-			"${artifactId}-${version}.jar"]
+			"resteasy-jaxrs-3.9.0.Final.jar"]
 	},
 	"webapp.directories":{
-		"set":["etc"]
+		"set":["target/classes","target/test-classes"]
 	}
 }

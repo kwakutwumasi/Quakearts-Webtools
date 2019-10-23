@@ -1,6 +1,6 @@
 package ${package};
 
-public class Main 
+public class AppInit
 {
     public void init() {
     		//TODO: Startup logic

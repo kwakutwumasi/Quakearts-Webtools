@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-appbase-archetype</artifactId>
-	<version>1.0.3</version>
+	<version>1.0.4</version>
 	<name>QA Appbase Archetype</name>
 	<url>http://maven.apache.org</url>
 </project>

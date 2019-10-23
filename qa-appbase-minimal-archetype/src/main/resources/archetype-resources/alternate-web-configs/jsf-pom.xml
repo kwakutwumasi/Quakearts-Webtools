@@ -23,7 +23,7 @@
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>repo</classpathPrefix>
 							<classpathLayoutType>repository</classpathLayoutType>
-							<mainClass>${package}.Main</mainClass>
+							<mainClass>${package}.Startup</mainClass>
 						</manifest>
 						<manifestEntries>
 							<Class-Path>etc/</Class-Path>
@@ -40,11 +40,11 @@
 					<programs>
 						<program>
 							<id>webapp</id>
-							<mainClass>${package}.Main</mainClass>
+							<mainClass>${package}.Startup</mainClass>
 						</program>
 						<program>
 							<id>webapptest</id>
-							<mainClass>${package}.Main</mainClass>
+							<mainClass>${package}.Startup</mainClass>
 							<jvmSettings>
 								<extraArgument>-agentlib:jdwp=transport=dt_socket,address=localhost:4000,server=y,suspend=y</extraArgument>
 							</jvmSettings>
@@ -77,6 +77,13 @@
 								<copy todir="target/webservers/default/webapps/webapp" overwrite="true">
 									<fileset dir="WebContent" />
 								</copy>
+								<copy todir="webservers/default/webapps/webapp" overwrite="true">
+									<fileset dir="WebContent" />
+								</copy>
+								<copy file="alternate-web-configs/jsf-live.main-webapp.config.json" 
+									tofile="target/webservers/default/webapps/webapp/META-INF/webapp.config.json" overwrite="true" />
+								<copy file="alternate-web-configs/jsf-test.main-webapp.config.json" 
+									tofile="webservers/default/webapps/webapp/META-INF/webapp.config.json" overwrite="true" />
 							</target>
 						</configuration>
 					</execution>
@@ -86,19 +93,20 @@
 	</build>
 	<properties>
 		<jsf-version>2.2.14</jsf-version>
+		<hibernate-validator-version>6.0.17.Final</hibernate-validator-version>
 	</properties>
 	<dependencies>
 	<!-- QA Appbase -->
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-appbase</artifactId>
-			<version>2.1.1</version>
+			<version>2.1.2</version>
 		</dependency>
 	<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-jdk14</artifactId>
-			<version>1.7.25</version>
+			<version>1.7.28</version>
 		</dependency>
 	<!-- JSF -->
 		<dependency>
@@ -130,12 +138,12 @@
 		<dependency>
 		    <groupId>org.hibernate</groupId>
 		    <artifactId>hibernate-validator</artifactId>
-		    <version>5.4.2.Final</version>
+		    <version>${hibernate-validator-version}</version>
 		</dependency>		
 		<dependency>
 		    <groupId>org.hibernate</groupId>
 		    <artifactId>hibernate-validator-cdi</artifactId>
-		    <version>5.4.2.Final</version>
+		    <version>${hibernate-validator-version}</version>
 		</dependency>
 	</dependencies>
 	<repositories>

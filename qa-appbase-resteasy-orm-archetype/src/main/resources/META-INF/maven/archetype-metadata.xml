@@ -10,6 +10,12 @@
 		<fileSet>
 			<directory>src/main/resources/</directory>
 		</fileSet>
+		<fileSet packaged="true" filtered="true">
+			<directory>src/test/java/</directory>
+		</fileSet>
+		<fileSet>
+			<directory>src/test/resources/</directory>
+		</fileSet>
 		<fileSet filtered="true">
 			<directory>conf</directory>
 		</fileSet>

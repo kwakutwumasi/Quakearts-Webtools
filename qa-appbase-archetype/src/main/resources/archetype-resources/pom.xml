@@ -23,7 +23,7 @@
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>repo</classpathPrefix>							
 							<classpathLayoutType>repository</classpathLayoutType>
-							<mainClass>com.quakearts.appbase.Main</mainClass>
+							<mainClass>${package}.Startup</mainClass>
 						</manifest>
 						<manifestEntries>
 							<Class-Path>etc/</Class-Path>
@@ -42,7 +42,7 @@
 							<id>webapp</id>
 							<mainClass>com.quakearts.appbase.Main</mainClass>
 							<commandLineArguments>
-								<commandLineArgument>${package}.Main</commandLineArgument>
+								<commandLineArgument>${package}.AppInit</commandLineArgument>
 							</commandLineArguments>
 						</program>
 						<program>
@@ -52,7 +52,7 @@
 								<extraArgument>-agentlib:jdwp=transport=dt_socket,address=localhost:4000,server=y,suspend=y</extraArgument>
 							</jvmSettings>
 							<commandLineArguments>
-								<commandLineArgument>${package}.Main</commandLineArgument>
+								<commandLineArgument>${package}.AppInit</commandLineArgument>
 							</commandLineArguments>
 						</program>
 					</programs>
@@ -91,12 +91,12 @@
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-appbase</artifactId>
-			<version>2.1.1</version>
+			<version>2.1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-jdk14</artifactId>
-			<version>1.7.25</version>
+			<version>1.7.28</version>
 		</dependency>
 	</dependencies>
 	<repositories>

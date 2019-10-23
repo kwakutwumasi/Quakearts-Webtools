@@ -4,14 +4,23 @@
 	xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0 http://maven.apache.org/xsd/archetype-descriptor-1.0.0.xsd"
 	name="qa-appbase-reasteasy-orm-archetype" partial="false">
 	<fileSets>
-		<fileSet packaged="true" filtered="true">
+		<fileSet packaged="true" filtered="true" encoding="UTF-8">
 			<directory>src/main/java/</directory>
 		</fileSet>
-		<fileSet>
+		<fileSet encoding="UTF-8">
 			<directory>src/main/resources/</directory>
 		</fileSet>
-		<fileSet>
+		<fileSet packaged="true" filtered="true" encoding="UTF-8">
+			<directory>src/test/java/</directory>
+		</fileSet>
+		<fileSet encoding="UTF-8">
+			<directory>src/test/resources/</directory>
+		</fileSet>
+		<fileSet encoding="UTF-8">
 			<directory>conf</directory>
+		</fileSet>
+		<fileSet encoding="UTF-8">
+			<directory>test-webapp-config</directory>
 		</fileSet>
 		<fileSet filtered="true">
 			<directory>WebContent</directory>

@@ -23,7 +23,7 @@
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>repo</classpathPrefix>
 							<classpathLayoutType>repository</classpathLayoutType>
-							<mainClass>com.quakearts.appbase.Main</mainClass>
+							<mainClass>${package}.Startup</mainClass>
 						</manifest>
 						<manifestEntries>
 							<Class-Path>etc/</Class-Path>
@@ -42,7 +42,7 @@
 							<id>webapp</id>
 							<mainClass>com.quakearts.appbase.Main</mainClass>
 							<commandLineArguments>
-								<commandLineArgument>${package}.Main</commandLineArgument>
+								<commandLineArgument>${package}.AppInit</commandLineArgument>
 							</commandLineArguments>
 						</program>
 						<program>
@@ -52,7 +52,7 @@
 								<extraArgument>-agentlib:jdwp=transport=dt_socket,address=localhost:4000,server=y,suspend=y</extraArgument>
 							</jvmSettings>
 							<commandLineArguments>
-								<commandLineArgument>${package}.Main</commandLineArgument>
+								<commandLineArgument>${package}.AppInit</commandLineArgument>
 							</commandLineArguments>
 						</program>
 					</programs>
@@ -91,20 +91,21 @@
 		</plugins>
 	</build>
 	<properties>
-		<resteasy-version>3.5.1.Final</resteasy-version>
+		<resteasy-version>3.9.0.Final</resteasy-version>
+		<hibernate-validator-version>6.0.17.Final</hibernate-validator-version>
 	</properties>
 	<dependencies>
 	<!-- QA Appbase -->
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-appbase</artifactId>
-			<version>2.1</version>
+			<version>2.1.2</version>
 		</dependency>
 	<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-jdk14</artifactId>
-			<version>1.7.25</version>
+			<version>1.7.28</version>
 		</dependency>
 	<!-- REST EASY -->
 		<dependency>
@@ -136,7 +137,7 @@
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-resteasy-cdi</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2</version>
 		</dependency>
 	<!-- ORM  -->
 		<dependency>
@@ -158,17 +159,17 @@
 		<dependency>
 		    <groupId>org.hibernate</groupId>
 		    <artifactId>hibernate-validator</artifactId>
-		    <version>5.4.2.Final</version>
+		    <version>${hibernate-validator-version}</version>
 		</dependency>		
 		<dependency>
 		    <groupId>org.hibernate</groupId>
 		    <artifactId>hibernate-validator-cdi</artifactId>
-		    <version>5.4.2.Final</version>
+		    <version>${hibernate-validator-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-resteasy-validation-11</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2</version>
 		</dependency>
 	</dependencies>
 	<repositories>

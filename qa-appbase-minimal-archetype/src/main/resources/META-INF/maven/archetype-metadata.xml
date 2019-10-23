@@ -10,6 +10,12 @@
 		<fileSet filtered="true" encoding="UTF-8">
 			<directory>src/main/resources/</directory>
 		</fileSet>
+		<fileSet packaged="true" filtered="true" encoding="UTF-8">
+			<directory>src/test/java/</directory>
+		</fileSet>
+		<fileSet filtered="true" encoding="UTF-8">
+			<directory>src/test/resources/</directory>
+		</fileSet>
 		<fileSet filtered="true" encoding="UTF-8">
 			<directory>alternate-web-configs</directory>
 		</fileSet>
