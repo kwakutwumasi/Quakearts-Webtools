@@ -25,6 +25,10 @@ public abstract class HttpClientBuilder<T extends HttpClient> {
 	private static final String HTTPS = "https";
 	protected T httpClient;
 		
+	/**Set the URL of the target server
+	 * @param url the target server URL in HTTP format
+	 * @return this object for method chaining
+	 */
 	public HttpClientBuilder<T> setURLAs(String url){
 		try {
 			return setURLAs(new URL(url));
@@ -33,6 +37,10 @@ public abstract class HttpClientBuilder<T extends HttpClient> {
 		}
 	}
 	
+	/**Set the URL of the target server
+	 * @param url the target server URL. Must have a protocol type of HTTP or HTTPS
+	 * @return this object for method chaining
+	 */
 	public HttpClientBuilder<T> setURLAs(URL url){
 		if(!url.getProtocol().equals(HTTP)
 				&& !url.getProtocol().equals(HTTPS))
@@ -52,50 +60,107 @@ public abstract class HttpClientBuilder<T extends HttpClient> {
 		return url.getPort();
 	}
 
+	/**Set the HTTP port
+	 * @param port the HTTP port
+	 * @return this object for method chaining
+	 */
 	public HttpClientBuilder<T> setPortAs(int port) {
 		httpClient.port = port;
 		return this;
 	}
 
+	/**Set the HTTP host
+	 * @param host the HTTP host
+	 * @return this object for method chaining
+	 */
 	public HttpClientBuilder<T> setHostAs(String host) {
 		httpClient.host = host;
 		return this;
 	}
 
+	/**Set the default {@link HttpCookie}
+	 * @param cookie the cookie
+	 * @return this object for method chaining
+	 */
 	public HttpClientBuilder<T> setDefaultCookieAs(HttpCookie cookie) {
 		httpClient.defaultCookie = cookie;
 		return this;
 	}
 
+	/**Set the client to secured mode
+	 * @param secured true if the client connects using HTTPS
+	 * @return this object for method chaining
+	 */
 	public HttpClientBuilder<T> setSecuredAs(boolean secured) {
 		httpClient.secured = secured;
 		return this;
 	}
 
+	/**Set the Basic Authentication username
+	 * @param username the username
+	 * @return this object for method chaining
+	 */
 	public HttpClientBuilder<T> setUsernameAs(String username) {
 		httpClient.username = username;
 		return this;
 	}
 
+	/**Set the Basic Authentication password
+	 * @param password the password
+	 * @return this object for method chaining
+	 */
 	public HttpClientBuilder<T> setPasswordAs(String password) {
 		httpClient.password = password;
 		return this;
 	}
 
+	/**Set the User-Agent string
+	 * @param userAgent the User-Agent string
+	 * @return this object for method chaining
+	 */
 	public HttpClientBuilder<T> setUserAgentAs(String userAgent) {
 		httpClient.userAgent = userAgent;
 		return this;
 	}
 
+	/**Set the 'matches hostnames property'
+	 * @param matchHostname true if the client will by pass client certificate validation for localhost and 127.0.0.10
+	 * @return this object for method chaining
+	 */
 	public HttpClientBuilder<T> setMatchesHostnameAs(boolean matchHostname){
 		httpClient.matchHostname = matchHostname;
 		return this;
 	}
 	
+	/**Set the follow redirects property of the {@link java.net.HttpURLConnection}
+	 * @param followRedirects true if this client should follow redirects
+	 * @return this object for method chaining
+	 */
 	public HttpClientBuilder<T> setFollowRedirectAs(boolean followRedirects){
 		httpClient.followRedirects = followRedirects;
 		return this;
 	}
 	
+	/**Set the connect timeout property of the {@link java.net.HttpURLConnection}
+	 * @param connectTimeout the connect timeout as a decimal. The value is in seconds
+	 * @return this object for method chaining
+	 */
+	public HttpClientBuilder<T> setConnectTimeoutAs(double connectTimeout){
+		httpClient.connectTimeout = (int) (connectTimeout*1000);
+		return this;
+	}
+	
+	/**Set the read timeout property of the {@link java.net.HttpURLConnection}
+	 * @param readTimeout the read timeout as a decimal. The value is in seconds
+	 * @return this object for method chaining
+	 */
+	public HttpClientBuilder<T> setReadTimeoutAs(double readTimeout){
+		httpClient.readTimeout = (int) (readTimeout*1000);
+		return this;
+	}
+	
+	/**Implement this method to return the configured {@link HttpClient}
+	 * @return the configured client
+	 */
 	public abstract T thenBuild();
 }

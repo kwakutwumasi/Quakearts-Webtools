@@ -30,8 +30,7 @@ public class MockHttpClient extends HttpClient {
 	 */
 	private static final long serialVersionUID = -97084266199855889L;
 
-	MockHttpClient() {
-	}
+	MockHttpClient() {}
 	
 	public HttpResponse sendRequest(HttpRequest request) 
 			throws MalformedURLException, UnsupportedEncodingException, 

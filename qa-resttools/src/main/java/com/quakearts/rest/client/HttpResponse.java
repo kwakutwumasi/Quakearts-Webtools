@@ -23,14 +23,14 @@ public class HttpResponse implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -573510179858452031L;
-	private String output;
+	private byte[] output;
 	private String message;
 	private int httpCode;
 	private Map<String, List<String>> headers = new HashMap<>();
 	
-	public HttpResponse(String output, String message,
+	public HttpResponse(byte[] output, String message,
 			int httpCode, Map<String, List<String>> headers) {
-		this.output = output;
+		this.output = output != null? output:new byte[0];
 		this.message = message;
 		this.httpCode = httpCode;
 		if(headers!=null)
@@ -41,9 +41,13 @@ public class HttpResponse implements Serializable {
 	 * @return the output
 	 */
 	public String getOutput() {
-		return output;
+		return new String(getOutputBytes());
 	}
 
+	public byte[] getOutputBytes(){
+		return output;
+	}
+	
 	/**getter for the HTTP message
 	 * @return the HTTP message
 	 */

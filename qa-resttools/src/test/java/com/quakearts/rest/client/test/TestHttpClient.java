@@ -12,10 +12,13 @@ package com.quakearts.rest.client.test;
 import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.*;
 import static org.hamcrest.core.IsNull.*;
-
+import static org.awaitility.Awaitility.*;
+import static com.quakearts.tools.test.mockserver.model.impl.MockActionBuilder.*;
+import static com.quakearts.tools.test.mockserver.model.impl.HttpMessageBuilder.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.HttpCookie;
+import java.net.SocketTimeoutException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -27,6 +30,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -45,6 +49,9 @@ import com.quakearts.rest.client.exception.HttpClientException;
 import com.quakearts.rest.client.exception.HttpClientRuntimeException;
 import com.quakearts.rest.client.test.helpers.MockHttpClient;
 import com.quakearts.rest.client.test.helpers.MockHttpClientBuilder;
+import com.quakearts.rest.client.test.helpers.MockHttpObjectClient;
+import com.quakearts.rest.client.test.helpers.MockHttpObjectClientBuilder;
+import com.quakearts.rest.client.test.helpers.MockResponse;
 import com.quakearts.tools.test.mockserver.MockServer;
 import com.quakearts.tools.test.mockserver.MockServerFactory;
 import com.quakearts.tools.test.mockserver.configuration.Configuration.MockingMode;
@@ -52,8 +59,6 @@ import com.quakearts.tools.test.mockserver.configuration.impl.ConfigurationBuild
 import com.quakearts.tools.test.mockserver.model.HttpHeader;
 import com.quakearts.tools.test.mockserver.model.HttpRequest;
 import com.quakearts.tools.test.mockserver.model.impl.HttpHeaderImpl;
-import com.quakearts.tools.test.mockserver.model.impl.HttpMessageBuilder;
-import com.quakearts.tools.test.mockserver.model.impl.MockActionBuilder;
 
 public class TestHttpClient {
 
@@ -84,13 +89,11 @@ public class TestHttpClient {
 	
 	@Test
 	public void testHttpsLocalHostAnd127001() throws Exception {
-		HttpRequest httpRequest = HttpMessageBuilder
-				.createNewHttpRequest()
+		HttpRequest httpRequest = createNewHttpRequest()
 				.setMethodAs("GET")
 				.setResourceAs("/tlstest")
 				.setId("/tlstest")
-				.setResponseAs(HttpMessageBuilder
-						.createNewHttpResponse()
+				.setResponseAs(createNewHttpResponse()
 						.setResponseCodeAs(200)
 						.setContentBytes("Successful".getBytes())
 						.thenBuild())
@@ -107,7 +110,7 @@ public class TestHttpClient {
 						.setKeyStoreTypeAs("JCEKS")
 						.setKeyStorePasswordAs("password1")
 						.thenBuild())
-				.add(MockActionBuilder.createNewMockAction()
+				.add(createNewMockAction()
 						.setRequestAs(httpRequest)
 								.thenBuild())
 				.addDefaultActions((context)->{
@@ -232,138 +235,134 @@ public class TestHttpClient {
 		cookie.setMaxAge(360);
 		cookieHeaders.add(cookieProcessor.generateHeader(cookie));
 		
-		HttpRequest basicAuthenticationRequest = HttpMessageBuilder
-				.createNewHttpRequest()
+		HttpRequest basicAuthenticationRequest = createNewHttpRequest()
 				.setMethodAs("GET")
 				.setResourceAs("/test-basic-authentication")
 				.setId("/test-basic-authentication")
-				.setResponseAs(HttpMessageBuilder.
+				.setResponseAs(
 						createNewHttpResponse()
 						.setResponseCodeAs(200)
 						.setContentBytes("Authenticated".getBytes())
 						.thenBuild())
 				.thenBuild();
-		HttpRequest defaultCookieRequest = HttpMessageBuilder
-					.createNewHttpRequest()
+		HttpRequest defaultCookieRequest = createNewHttpRequest()
 					.setMethodAs("GET")
 					.setResourceAs("/test-default-cookie")
 					.setId("/test-default-cookie")
-					.setResponseAs(HttpMessageBuilder
-							.createNewHttpResponse()
+					.setResponseAs(createNewHttpResponse()
 							.setResponseCodeAs(200)
 							.setContentBytes("Authenticated".getBytes())
 							.addHeaders(new HttpHeaderImpl("Set-Cookie",cookieHeaders))
 							.thenBuild())
 					.thenBuild();
-		HttpRequest additionalHeadersRequest = HttpMessageBuilder
-						.createNewHttpRequest()
+		HttpRequest additionalHeadersRequest = createNewHttpRequest()
 						.setMethodAs("GET")
 						.setResourceAs("/test-additional-headers")
 						.setId("/test-additional-headers")
 						.addHeaders(new HttpHeaderImpl("X-Additional-Header", "additional"))
-						.setResponseAs(HttpMessageBuilder.createNewHttpResponse()
+						.setResponseAs(createNewHttpResponse()
 								.setResponseCodeAs(200)
 								.setContentBytes("Header Present".getBytes())
 								.thenBuild())
 						.thenBuild();
-		HttpRequest headRequest = HttpMessageBuilder.createNewHttpRequest()
+		HttpRequest headRequest = createNewHttpRequest()
 						.setMethodAs("HEAD")
 						.setResourceAs("/test-head")
 						.setId("/test-head")
-						.setResponseAs(HttpMessageBuilder.createNewHttpResponse()
+						.setResponseAs(createNewHttpResponse()
 								.setResponseCodeAs(204)
 								.thenBuild())
 						.thenBuild();
-		HttpRequest head404Request = HttpMessageBuilder.createNewHttpRequest()
+		HttpRequest head404Request = createNewHttpRequest()
 				.setMethodAs("HEAD")
 				.setResourceAs("/test-head-404")
 				.setId("/test-head-404")
-				.setResponseAs(HttpMessageBuilder.createNewHttpResponse()
+				.setResponseAs(createNewHttpResponse()
 						.setResponseCodeAs(404)
 						.thenBuild())
 				.thenBuild();
-		HttpRequest requestValueRequest = HttpMessageBuilder.createNewHttpRequest()
+		HttpRequest requestValueRequest = createNewHttpRequest()
 						.setMethodAs("POST")
 						.setResourceAs("/test-request-value")
 						.setId("/test-request-value")
 						.setContentBytes("test=true&post=true".getBytes())
-						.setResponseAs(HttpMessageBuilder.createNewHttpResponse()
+						.setResponseAs(createNewHttpResponse()
 								.setResponseCodeAs(200)
 								.setContentBytes("Request Value Present. This is a long response. This is to ensure that the issues that existed before have been fixed".getBytes())
 								.thenBuild())
 						.thenBuild();
-		HttpRequest errorReturningRequest = HttpMessageBuilder.createNewHttpRequest()
+		HttpRequest errorReturningRequest = createNewHttpRequest()
 						.setMethodAs("PUT")
 						.setResourceAs("/test-error-returning")
 						.setId("/test-error-returning")
 						.setContentBytes("test=true&post=true".getBytes())
-						.setResponseAs(HttpMessageBuilder.createNewHttpResponse()
+						.setResponseAs(createNewHttpResponse()
 								.setResponseCodeAs(401)
 								.setContentBytes("Error Response Present".getBytes())
 								.thenBuild())
 						.thenBuild();
-		HttpRequest redirectingRequest = HttpMessageBuilder.createNewHttpRequest()
+		HttpRequest redirectingRequest = createNewHttpRequest()
 						.setMethodAs("POST")
 						.setResourceAs("/test-redirecting-request")
 						.setId("/test-redirecting-request")
 						.setContentBytes("test=true&post=true".getBytes())
-						.setResponseAs(HttpMessageBuilder.createNewHttpResponse()
+						.setResponseAs(createNewHttpResponse()
 								.setResponseCodeAs(301)
 								.addHeaders(new HttpHeaderImpl("Location", "http://localhost:8080/test-redirecting-response"))
 								.thenBuild())
 						.thenBuild();
-		HttpRequest redirectingRequestResponse = HttpMessageBuilder.createNewHttpRequest()
+		HttpRequest redirectingRequestResponse = createNewHttpRequest()
 				.setMethodAs("GET")
 				.setResourceAs("/test-redirecting-response")
 				.setId("/test-redirecting-response")
-				.setResponseAs(HttpMessageBuilder.createNewHttpResponse()
+				.setResponseAs(createNewHttpResponse()
 						.setResponseCodeAs(200)
 						.setContentBytes("Redirect complete".getBytes())
 						.thenBuild())
 				.thenBuild();		
-		HttpRequest post201Content = HttpMessageBuilder
-				.createNewHttpRequest()
+		HttpRequest post201Content = createNewHttpRequest()
 				.setMethodAs("POST")
 				.setResourceAs("/test-post-content")
 				.setId("/test-post-content")
 				.setContentBytes("Test".getBytes())
-				.setResponseAs(HttpMessageBuilder
-						.createNewHttpResponse()
+				.setResponseAs(createNewHttpResponse()
 						.setResponseCodeAs(201)
 						.setContentBytes("Successful".getBytes())
 						.thenBuild())
 				.thenBuild();	
-		HttpRequest put201Content = HttpMessageBuilder
-				.createNewHttpRequest()
+		HttpRequest put201Content = createNewHttpRequest()
 				.setMethodAs("PUT")
 				.setResourceAs("/test-put-content")
 				.setId("/test-put-content")
 				.setContentBytes("Test".getBytes())
-				.setResponseAs(HttpMessageBuilder
-						.createNewHttpResponse()
+				.setResponseAs(createNewHttpResponse()
 						.setResponseCodeAs(201)
 						.setContentBytes("Successful".getBytes())
 						.thenBuild())
 				.thenBuild();
-		HttpRequest post201NoContent = HttpMessageBuilder
-				.createNewHttpRequest()
+		HttpRequest post201NoContent = createNewHttpRequest()
 				.setMethodAs("POST")
 				.setResourceAs("/test-post-no-content")
 				.setId("/test-post-no-content")
 				.setContentBytes("Test".getBytes())
-				.setResponseAs(HttpMessageBuilder
-						.createNewHttpResponse()
+				.setResponseAs(createNewHttpResponse()
 						.setResponseCodeAs(201).thenBuild())
 				.thenBuild();		
-		HttpRequest put201NoContent = HttpMessageBuilder
-				.createNewHttpRequest()
+		HttpRequest put201NoContent = createNewHttpRequest()
 				.setMethodAs("PUT")
 				.setResourceAs("/test-put-no-content")
 				.setId("/test-put-no-content")
 				.setContentBytes("Test".getBytes())
-				.setResponseAs(HttpMessageBuilder
-						.createNewHttpResponse()
+				.setResponseAs(createNewHttpResponse()
 						.setResponseCodeAs(201).thenBuild())
+				.thenBuild();
+		HttpRequest get200Timeout = createNewHttpRequest()
+				.setMethodAs("GET")
+				.setResourceAs("/test-request-timeout")
+				.setId("/test-request-timeout")
+				.setResponseAs(createNewHttpResponse()
+						.setResponseCodeAs(200)
+						.setContentBytes("Did not timeout".getBytes()).thenBuild())
 				.thenBuild();
 		
 		MockServer mockServer = MockServerFactory.getInstance()
@@ -372,7 +371,7 @@ public class TestHttpClient {
 						.newConfiguration()
 						.setMockingModeAs(MockingMode.MOCK)
 						.thenBuild())
-				.add(MockActionBuilder.createNewMockAction()
+				.add(createNewMockAction()
 						.setRequestAs(basicAuthenticationRequest)
 						.setResponseActionAs((request, response)->{
 							if(("Basic "+Base64.getEncoder().encodeToString("test:password".getBytes()))
@@ -380,67 +379,75 @@ public class TestHttpClient {
 									&& "Custom Agent".equals(request.getHeaderValue("user-agent")))
 								return null;
 														
-							return HttpMessageBuilder.createNewHttpResponse()
+							return createNewHttpResponse()
 									.setResponseCodeAs(401)
 									.setContentBytes("Not authorized".getBytes())
 									.thenBuild();
 						}).thenBuild(),
-					MockActionBuilder.createNewMockAction()
+					createNewMockAction()
 						.setRequestAs(defaultCookieRequest)
 						.setResponseActionAs((context, response)->{
 							if(context.getHeaderValue("cookie").contains("testCookie"))
 								return null;
-							return HttpMessageBuilder.createNewHttpResponse()
+							return createNewHttpResponse()
 									.setResponseCodeAs(401)
 									.setContentBytes("Not authorized".getBytes())
 									.thenBuild();
 						}).thenBuild(),
-					MockActionBuilder.createNewMockAction()
+					createNewMockAction()
 						.setRequestAs(additionalHeadersRequest)
 						.setResponseActionAs((request, response)->{
 							if(request.getHeaderValue("x-additional-header")!=null)
 								return null;
 							else
-								return HttpMessageBuilder.createNewHttpResponse()
+								return createNewHttpResponse()
 										.setResponseCodeAs(400)
 										.setContentBytes("Bad Message".getBytes())
 										.thenBuild();
 						}).thenBuild(),
-					MockActionBuilder.createNewMockAction()
+					createNewMockAction()
 						.setRequestAs(headRequest).thenBuild(),
-					MockActionBuilder.createNewMockAction()
+					createNewMockAction()
 						.setRequestAs(head404Request).thenBuild(),
-					MockActionBuilder.createNewMockAction()
+					createNewMockAction()
 						.setRequestAs(requestValueRequest)
 						.setResponseActionAs((request, response)->{
 							if(request.getContentBytes()!=null
 									&& Arrays.equals("test=true&post=true".getBytes(),request.getContentBytes()))
 								return null;
 							
-							return HttpMessageBuilder.createNewHttpResponse()
+							return createNewHttpResponse()
 									.setResponseCodeAs(400)
 									.setContentBytes("Bad Message".getBytes()).thenBuild();
 						}).thenBuild(),
-					MockActionBuilder.createNewMockAction()
+					createNewMockAction()
 						.setRequestAs(errorReturningRequest)
 						.thenBuild(),
-					MockActionBuilder.createNewMockAction()
+					createNewMockAction()
 						.setRequestAs(redirectingRequest)
 						.thenBuild(),
-					MockActionBuilder.createNewMockAction()
+					createNewMockAction()
 						.setRequestAs(redirectingRequestResponse)
 						.thenBuild(),
-					MockActionBuilder.createNewMockAction()
+					createNewMockAction()
 						.setRequestAs(post201Content)
 						.thenBuild(),
-					MockActionBuilder.createNewMockAction()
+					createNewMockAction()
 						.setRequestAs(post201NoContent)
 						.thenBuild(),
-					MockActionBuilder.createNewMockAction()
+					createNewMockAction()
 						.setRequestAs(put201Content)
 						.thenBuild(),
-					MockActionBuilder.createNewMockAction()
+					createNewMockAction()
 						.setRequestAs(put201NoContent)
+						.thenBuild(),
+					createNewMockAction()
+						.setRequestAs(get200Timeout)
+						.setResponseActionAs((request, response)->{
+							long start = System.currentTimeMillis();
+							await().atLeast(1, TimeUnit.SECONDS).until(()-> System.currentTimeMillis()-start>1000);							
+							return response;
+						})
 						.thenBuild());
 		
 		mockServer.start();
@@ -515,11 +522,13 @@ public class TestHttpClient {
 			
 			httpResponse = client.sendRequest(headRequest);
 			assertThat(httpResponse.getHttpCode(), is(204));
-			assertThat(httpResponse.getOutput()==null, is(true));
+			assertThat(httpResponse.getOutput(), is(notNullValue()));
+			assertThat(httpResponse.getOutput().isEmpty(), is(true));
 
 			httpResponse = client.sendRequest(head404Request);
 			assertThat(httpResponse.getHttpCode(), is(404));
-			assertThat(httpResponse.getOutput()==null, is(true));
+			assertThat(httpResponse.getOutput(), is(notNullValue()));
+			assertThat(httpResponse.getOutput().isEmpty(), is(true));
 
 			httpResponse = client.sendRequest(requestValueRequest);
 			assertThat(httpResponse.getHttpCode(), is(200));
@@ -541,7 +550,7 @@ public class TestHttpClient {
 			assertThat(httpResponse.getHttpCode(), is(201));
 			assertThat(httpResponse.getOutput(), is(""));
 
-			requestValueRequest = HttpMessageBuilder.createNewHttpRequest()
+			requestValueRequest = createNewHttpRequest()
 					.setMethodAs("POST")
 					.setResourceAs("/test-request-value")
 					.setId("/test-request-value")
@@ -576,7 +585,156 @@ public class TestHttpClient {
 			
 			httpResponse = client.sendRequest(redirectingRequest);
 			assertThat(httpResponse.getHttpCode(), is(301));
-			assertThat(httpResponse.getOutput(), is(nullValue()));
+			assertThat(httpResponse.getOutput(), is(notNullValue()));
+			assertThat(httpResponse.getOutput().isEmpty(), is(true));
+			
+			client = MockHttpClientBuilder.getInstance()
+					.createNewHttpClient()
+					.setHostAs("localhost")
+					.setPortAs(8081)
+					.setConnectTimeoutAs(0.5)
+					.thenBuild();
+			final MockHttpClient lambdaClient = client;
+			await().atMost(1, TimeUnit.SECONDS)
+				.until(()->{
+						try {
+							lambdaClient.sendRequest(additionalHeadersRequest);
+						} catch (SocketTimeoutException e) {
+							return true;
+						}
+						return false;
+					}
+				);
+			
+			client = MockHttpClientBuilder.getInstance()
+					.createNewHttpClient()
+					.setHostAs("localhost")
+					.setPortAs(8080)
+					.setReadTimeoutAs(0.5)
+					.thenBuild();
+			
+			final MockHttpClient lambdaClient2 = client;
+			await().atMost(1, TimeUnit.SECONDS)
+				.until(()->{
+					try {
+						lambdaClient2.sendRequest(get200Timeout);
+					} catch (SocketTimeoutException e) {
+						return true;
+					}
+					return false;
+				});
+			
+		} finally {
+			mockServer.stop();
+		}
+	}
+	
+	@Test
+	public void testMockHttpObject() throws Exception {
+		HttpRequest post200WithContent = createNewHttpRequest()
+				.setMethodAs("POST")
+				.setResourceAs("/test-mock-object?return=200")
+				.setId("/test-mock-object?return=200")
+				.setContentBytes("Test".getBytes())
+				.setResponseAs(createNewHttpResponse()
+						.setResponseCodeAs(200)
+						.setContentBytes("Test Response".getBytes())
+						.thenBuild())
+				.thenBuild();
+
+		HttpRequest post200WithoutContent = createNewHttpRequest()
+				.setMethodAs("POST")
+				.setResourceAs("/test-mock-object")
+				.setId("POST-/test-mock-object")
+				.setContentBytes("Test".getBytes())
+				.setResponseAs(createNewHttpResponse()
+						.setResponseCodeAs(200)
+						.setContentBytes("Test Response".getBytes())
+						.thenBuild())
+				.thenBuild();
+
+		HttpRequest post400 = createNewHttpRequest()
+				.setMethodAs("POST")
+				.setResourceAs("/test-mock-object?return=400")
+				.setId("/test-mock-object?return=400")
+				.setContentBytes("Test".getBytes())
+				.setResponseAs(createNewHttpResponse()
+						.setResponseCodeAs(400)
+						.setContentBytes("Test Response".getBytes())
+						.thenBuild())
+				.thenBuild();
+		
+		HttpRequest getEmpty200 = createNewHttpRequest()
+				.setMethodAs("GET")
+				.setResourceAs("/test-mock-object")
+				.setId("GET-/test-mock-object")
+				.setContentBytes("Test".getBytes())
+				.setResponseAs(createNewHttpResponse()
+						.setResponseCodeAs(200)
+						.setContentBytes("Test Response".getBytes())
+						.thenBuild())
+				.thenBuild();
+		
+		MockServer mockServer = MockServerFactory.getInstance()
+				.getMockServer()
+				.configure(ConfigurationBuilder
+						.newConfiguration()
+						.setMockingModeAs(MockingMode.MOCK)
+						.setPortAs(8082)
+						.thenBuild())
+				.add(createNewMockAction()
+						.setRequestAs(post200WithContent)
+						.thenBuild(),
+					createNewMockAction()
+						.setRequestAs(post200WithoutContent)
+						.thenBuild(),
+					createNewMockAction()
+						.setRequestAs(post400)
+						.thenBuild(),
+					createNewMockAction()
+						.setRequestAs(getEmpty200)
+						.thenBuild());
+		mockServer.start();
+		try {
+			MockHttpObjectClient client = new MockHttpObjectClientBuilder()
+					.setURLAs("http://localhost:8082")
+					.thenBuild();
+			
+			MockResponse response = client.sendRequest(post200WithContent, "200");
+			assertThat(response.getData(), is(post200WithContent.getResponse().getContent()));
+			assertThat(response.getReturnCode(), is(post200WithContent.getResponse().getResponseCode()));
+
+			try {				
+				response = client.sendRequest(post400, "400");
+				fail("Exception was not thrown");
+			} catch (HttpClientException e) {
+				assertThat(e.getMessage(), is(post400.getResponse().getContent()));
+			}
+
+			response = client.sendRequest(post200WithoutContent);
+			assertThat(response.getData(), is(post200WithoutContent.getResponse().getContent()));
+			assertThat(response.getReturnCode(), is(post200WithoutContent.getResponse().getResponseCode()));
+
+			response = client.sendRequest();
+			assertThat(response.getData(), is(getEmpty200.getResponse().getContent()));
+			assertThat(response.getReturnCode(), is(getEmpty200.getResponse().getResponseCode()));
+			
+			try {
+				client.setReturn100(true);
+				response = client.sendRequest(post200WithoutContent);
+				fail("Exception was not thrown");
+			} catch (HttpClientException e) {
+				assertThat(e.getMessage(), is("Test Response"));
+			}
+			
+			try {
+				client.setReturn100(false);
+				client.throwHttpClientException();
+				fail("Exception was not thrown");
+			} catch (HttpClientException e) {
+				assertTrue(e.getCause() instanceof NoSuchMethodException);
+				assertThat(e.getMessage(), is("Unable to coerce HTTP response to java.lang.String"));
+			}
 		} finally {
 			mockServer.stop();
 		}
@@ -590,8 +748,7 @@ public class TestHttpClient {
 				.setPortAs(8080)
 				.thenBuild();
 		
-		client.sendRequest(HttpMessageBuilder
-				.createNewHttpRequest()
+		client.sendRequest(createNewHttpRequest()
 				.setMethodAs("POST")
 				.setResourceAs("/test-post-with-no-request-value")
 				.setId("testVerbRequiringRequestValueWithNoRequestValue")
@@ -606,8 +763,7 @@ public class TestHttpClient {
 				.setPortAs(8080)
 				.thenBuild();
 		
-		client.sendRequest(HttpMessageBuilder
-				.createNewHttpRequest()
+		client.sendRequest(createNewHttpRequest()
 				.setMethodAs("TRACE")
 				.setResourceAs("/test-post-with-no-request-value")
 				.setContentBytes("/test-post-with-no-request-value".getBytes())
@@ -635,7 +791,7 @@ public class TestHttpClient {
 		headers.put("header-with-values", Arrays.asList("Test"));
 		headers.put("empty-header", Collections.emptyList());
 		
-		HttpResponse httpResponse = new HttpResponse("Test output", 
+		HttpResponse httpResponse = new HttpResponse("Test output".getBytes(), 
 				"test message", 200, headers);
 		assertThat(httpResponse.getOutput(), is("Test output"));
 		assertThat(httpResponse.getMessage(), is("test message"));
@@ -646,6 +802,9 @@ public class TestHttpClient {
 		assertThat(httpResponse.getHeader("header-with-values"), is("Test"));
 		assertThat(httpResponse.getHeader("empty-header"), is(nullValue()));
 		assertThat(httpResponse.getHeader("non-existent-header"), is(nullValue()));
+		
+		httpResponse = new HttpResponse(null, null, 0, null);
+		assertThat(httpResponse.getOutput(), is(""));
 	}
 	
 	@Test
@@ -735,7 +894,7 @@ public class TestHttpClient {
 		
 		@Override
 		public com.quakearts.tools.test.mockserver.model.HttpResponse getResponse() {
-			return null;
+			return new TestHttpResponse();
 		}
 		
 		@Override

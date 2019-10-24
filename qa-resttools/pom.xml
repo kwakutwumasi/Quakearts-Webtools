@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-resttools</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 	<name>QuakeArts REST Client</name>
 	<build>
 		<plugins>
@@ -43,7 +43,13 @@
 		<dependency>
 			<groupId>com.quakearts.webtools.test</groupId>
 			<artifactId>qa-testtools</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.3</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.awaitility</groupId>
+			<artifactId>awaitility</artifactId>
+			<version>3.1.6</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

@@ -56,62 +56,116 @@ public abstract class HttpClient implements Serializable {
 	boolean followRedirects;
 	boolean matchHostname;
 	transient CookieManager cookieManager = new CookieManager();
+	int connectTimeout;
+	int readTimeout;
 	
+	/**
+	 * @return the configured port
+	 */
 	public int getPort() {
 		return port;
 	}
 
+	/**
+	 * @return the configured host
+	 */
 	public String getHost() {
 		return host;
 	}
 
+	/**
+	 * @return the default cookie to send during HTTP request processing or the first cookie returned during response processing
+	 */
 	public HttpCookie getDefaultCookie() {
 		return defaultCookie;
 	}
 
+	/**
+	 * @return true if the HTTP request is secure
+	 */
 	public boolean isSecured() {
 		return secured;
 	}
 
+	/**
+	 * @return the Basic user name
+	 */
 	public String getUsername() {
 		return username;
 	}
 
+	/**
+	 * @return the Basic password
+	 */
 	public String getPassword() {
 		return password;
 	}
 
+	/**
+	 * @return the configured user agent string
+	 */
 	public String getUserAgent() {
 		return userAgent;
 	}
 	
+	/**
+	 * @return true if the client will follow redirects
+	 */
 	public boolean followsRedirects() {
 		return followRedirects;
 	}
 	
+	/**
+	 * @return true if hostnames must match certificate names. Used only if secured HTTP is in use
+	 */
 	public boolean matchesHostnames() {
 		return matchHostname;
 	}
 
+	/**
+	 * @return the list of cookies returned during processing
+	 */
 	public List<HttpCookie> getCookies(){
 		return cookieManager.getCookieStore().getCookies();
 	}
 	
+	/**
+	 * @return the configured Cookie Manager
+	 */
 	public CookieManager getCookieManager() {
 		return cookieManager;
 	}
 	
+	/** Implementers can call this method to send an HTTP request
+	 * @param file the HTTP file element
+	 * @param requestValue the HTTP body
+	 * @param method the HTTP verb to use (GET, POST, etc)
+	 * @param contentType a shortcut for adding an HTTP Content-Type header for content (if present)
+	 * @return {@link HttpResponse} the HTTP response
+	 * @throws IOException if there is an error during communication
+	 * @throws HttpClientException if a parameter or process fails
+	 */
 	protected HttpResponse sendRequest(String file, String requestValue, HttpVerb method, String contentType) 
 			throws IOException, HttpClientException {
 		return sendRequest(file, requestValue, method, contentType, null);
 	}
 		
+	/** Implementers can call this method to send an HTTP request
+	 * @param file the HTTP file element
+	 * @param requestValue the HTTP body
+	 * @param method the HTTP verb to use (GET, POST, etc)
+	 * @param contentType a shortcut for adding an HTTP Content-Type header for content (if present)
+	 * @param additionalHeaders a {@link Map} of a {@link List} of {@link String}s of additional header elements to pass to the request
+	 * @return {@link HttpResponse} the HTTP response
+	 * @throws IOException if there is an error during communication
+	 * @throws HttpClientException if a parameter or process fails
+	 */
 	protected HttpResponse sendRequest(String file, String requestValue, HttpVerb method, String contentType,
 			Map<String, List<String>> additionalHeaders) throws IOException, HttpClientException {
 		runValidations(file, requestValue, method);
 		HttpURLConnection con = prepareConnection(file, requestValue, method, contentType, additionalHeaders);
 		int responseCode = connect(con);
-		String output = storeOutput(method, con, responseCode);
+		byte[] output = storeOutput(method, con, responseCode);
 		storeCookies(con, responseCode);		
 		return new HttpResponse(output, con.getResponseMessage(), responseCode, con.getHeaderFields());
 	}
@@ -167,6 +221,8 @@ public abstract class HttpClient implements Serializable {
 		con.setRequestMethod(method.name());
 		con.setDoInput(true);
 		con.setInstanceFollowRedirects(followRedirects);
+		con.setConnectTimeout(connectTimeout);
+		con.setReadTimeout(readTimeout);
 	}
 
 	private void addUsernameAndPassword(HttpURLConnection con) {
@@ -222,8 +278,8 @@ public abstract class HttpClient implements Serializable {
 		return responseCode;
 	}
 
-	private String storeOutput(HttpVerb method, HttpURLConnection con, int responseCode) throws IOException {
-		String output = null;
+	private byte[] storeOutput(HttpVerb method, HttpURLConnection con, int responseCode) throws IOException {
+		byte[] output = null;
 		InputStream is = null;
 		if(responseCode>=200 
 				&& responseCode<=299 
@@ -234,13 +290,25 @@ public abstract class HttpClient implements Serializable {
 		}
 		
 		if(is!=null){
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			int read;
-			while ((read = is.read())!=-1) {
-				bos.write(read);
-			}
-			output = new String(bos.toByteArray());
+			output = processStream(is);
 		}
+		return output;
+	}
+
+	/** Implementers may override this method to intercept {@linkplain InputStream} processing
+	 * This is useful for large response processing, to prevent loading of all bytes into memory
+	 * @param is
+	 * @return
+	 * @throws IOException
+	 */
+	protected byte[] processStream(InputStream is) throws IOException {
+		byte[] output;
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		int read;
+		while ((read = is.read())!=-1) {
+			bos.write(read);
+		}
+		output = bos.toByteArray();
 		return output;
 	}
 
