@@ -30,6 +30,8 @@ public class ListBuilder<T> {
 	private ParameterMapBuilder mapBuilder;
 	private Class<T> entityClazz;
 	private List<QueryOrder> order = new ArrayList<>();
+	private ParameterBuilder parameterBuilder;
+	private RangeBuilder rangeBuilder;
 
 	public ListBuilder(DataStore dataStore, Class<T> entityClazz) {
 		this.dataStore = dataStore;
@@ -65,7 +67,10 @@ public class ListBuilder<T> {
 	 * @return a {@link ParameterBuilder}
 	 */
 	public ParameterBuilder filterBy(String propertyName){
-		return new ParameterBuilder(propertyName);
+		if(parameterBuilder == null)
+			parameterBuilder = new ParameterBuilder();
+		
+		return parameterBuilder.setPropertyName(propertyName);
 	}
 	
 	/**Used to specify the order of the returned items
@@ -93,8 +98,9 @@ public class ListBuilder<T> {
 	public class ParameterBuilder{
 		String parameter;
 
-		ParameterBuilder(String parameter) {
+		ParameterBuilder setPropertyName(String parameter) {
 			this.parameter = parameter;
+			return this;
 		}
 		
 		/**Select objects that have values equal to the specified value
@@ -119,7 +125,10 @@ public class ListBuilder<T> {
 		 * @return the @{link RangeBuilder}
 		 */
 		public RangeBuilder withValues(){
-			return new RangeBuilder(parameter);
+			if(rangeBuilder == null)
+				rangeBuilder = new RangeBuilder();
+			
+			return rangeBuilder.setParameter(parameter);
 		}
 		
 		/**A list of values either one of which to match
@@ -140,8 +149,9 @@ public class ListBuilder<T> {
 		Range range;
 		String parameter;
 		
-		RangeBuilder(String parameter) {
+		RangeBuilder setParameter(String parameter) {
 			this.parameter = parameter;
+			return this;
 		}
 
 		/**The entry method for the fluid API for specifying a range
