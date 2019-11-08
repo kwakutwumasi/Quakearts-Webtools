@@ -3,6 +3,7 @@ package com.quakearts.test.hibernate;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Transient;
+import javax.validation.constraints.Size;
 
 public class TestEntity extends TestParentEntity {
 	/**
@@ -19,6 +20,10 @@ public class TestEntity extends TestParentEntity {
 	@Transient
 	private String stringColumn5;
 	private String stringColumn6;
+	@Size(max = 10)
+	private String stringColumn10;
+	@Size
+	private String stringColumn11;
 
 	public int getId() {
 		return id;
@@ -71,4 +76,19 @@ public class TestEntity extends TestParentEntity {
 		this.stringColumn6 = stringColumn6;
 	}
 
+	public String getStringColumn10() {
+		return stringColumn10;
+	}
+	
+	public void setStringColumn10(String stringColumn10) {
+		this.stringColumn10 = stringColumn10;
+	}
+	
+	public String getStringColumn11() {
+		return stringColumn11;
+	}
+	
+	public void setStringColumn11(String stringColumn11) {
+		this.stringColumn11 = stringColumn11;
+	}
 }

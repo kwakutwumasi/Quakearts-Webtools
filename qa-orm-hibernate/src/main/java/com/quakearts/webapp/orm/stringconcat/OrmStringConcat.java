@@ -14,10 +14,12 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.lang.invoke.ConstantCallSite;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -105,10 +107,48 @@ class OrmStringConcat {
 			if(column!=null)
 				return column.length();
 			else
-				return 255;
+				return getMaxLengthSize(descriptor, field, beanClass);
 		}
 	}
 	
+	int getMaxLengthSize(PropertyDescriptor descriptor, Field field, Class<?> beanClass2) {
+		try{
+			@SuppressWarnings("unchecked")
+			Class<? extends Annotation> sizeAnnotation = (Class<? extends Annotation>) 
+					Class.forName("javax.validation.constraints.Size");
+			Object sizeObject = null;
+			if(field!=null)
+				sizeObject = field.getAnnotation(sizeAnnotation);
+			
+			if(sizeObject != null){
+				return getSizeMax(sizeObject, sizeAnnotation);
+			} else {
+				sizeObject = descriptor.getWriteMethod().getAnnotation(sizeAnnotation);
+				if(sizeObject==null){
+					sizeObject = descriptor.getReadMethod().getAnnotation(sizeAnnotation);
+				}
+				
+				if(sizeObject!=null)
+					return getSizeMax(sizeObject, sizeAnnotation);
+			}
+		} catch (ClassNotFoundException e) {
+			// Do nothing
+		}
+		
+		return 255;
+	}
+	
+	int getSizeMax(Object sizeObject, Class<?> sizeAnnotation){
+		try {
+			Method maxMethod = sizeAnnotation.getMethod("max");
+			return (int) maxMethod.invoke(sizeObject);
+		} catch (NoSuchMethodException | SecurityException | 
+				IllegalAccessException | IllegalArgumentException | 
+				InvocationTargetException e) {
+			return 255;
+		}
+	}
+
 	Field getField(String fieldName, Class<?> superClass) throws NoSuchFieldException {
 		if(superClass == Object.class)
 			throw new NoSuchFieldException("Field '"+fieldName+"' could not be found.");

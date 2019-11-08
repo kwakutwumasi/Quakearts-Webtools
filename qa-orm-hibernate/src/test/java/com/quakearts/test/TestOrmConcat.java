@@ -33,6 +33,10 @@ public class TestOrmConcat {
 		entity.setStringColumn8(TEST);
 		//Ignore
 		entity.setStringColumn9(TEST);
+		//Length 10
+		entity.setStringColumn10(TEST);
+		//Length Integer Max
+		entity.setStringColumn11(TEST);
 		
 		OrmStringConcatUtil.trimStrings(entity);
 		assertThat(entity.getStringColumn1().length(), is(10));
@@ -53,6 +57,10 @@ public class TestOrmConcat {
 		assertThat(entity.getStringColumn8(), is(TEST));
 		assertThat(entity.getStringColumn9().length(), is(128));
 		assertThat(entity.getStringColumn9(), is(TEST));
+		assertThat(entity.getStringColumn10().length(), is(10));
+		assertThat(entity.getStringColumn10(), is("PnFJyaWSqE"));
+		assertThat(entity.getStringColumn11().length(), is(128));
+		assertThat(entity.getStringColumn11(), is(TEST));
 	}
 
 }
