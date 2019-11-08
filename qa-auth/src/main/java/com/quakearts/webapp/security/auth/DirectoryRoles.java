@@ -12,12 +12,13 @@ package com.quakearts.webapp.security.auth;
 
 import java.security.Principal;
 import java.security.acl.Group;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 
 public class DirectoryRoles implements Group{
-    private ArrayList<Principal> userroles = new ArrayList<>();
+    private Set<Principal> userroles = new HashSet<>();
     private String name;
     public DirectoryRoles(String groupname) {
         name = groupname ==null? "Roles" :groupname;
@@ -25,10 +26,7 @@ public class DirectoryRoles implements Group{
 
     @Override
     public boolean addMember(Principal roles) {
-    	if(!userroles.contains(roles))
-    		return userroles.add(roles);
-    	else
-    		return false;
+    	return userroles.add(roles);
     }
 
     @Override
@@ -53,13 +51,11 @@ public class DirectoryRoles implements Group{
 
 	@Override
 	public int hashCode() {
-		int code=0;
-		
-		for(Principal principal:userroles)
-			if(Integer.MAX_VALUE - code > principal.hashCode())
-				code+=principal.hashCode();
-		
-		return code;
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + name.hashCode();
+		result = prime * result + userroles.hashCode();
+		return result;
 	}
 
 	@Override
@@ -73,14 +69,21 @@ public class DirectoryRoles implements Group{
 		if(!(obj instanceof DirectoryRoles))
 			return false;
 				
-		if(this.userroles.size() != ((DirectoryRoles)obj).userroles.size())
+		DirectoryRoles other = (DirectoryRoles)obj;
+		if(this.userroles.size() != other.userroles.size())
 			return false;
 		
+		if(!name.equals(other.name)){
+			return false;
+		}
+		
 		boolean match = true;
-		for(Principal principal:userroles)
-			match = match && ((DirectoryRoles)obj).userroles.contains(principal);
+		for(Principal principal:userroles){
+			match = other.userroles.contains(principal) && match;
+			if(!match)
+				break;
+		}
 		
 		return match;
-	}
-    
+	}    
 }

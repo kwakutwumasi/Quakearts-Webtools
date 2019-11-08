@@ -23,7 +23,7 @@ public abstract class DirectoryPrincipal implements Principal{
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((getAttribute() == null) ? 0 : getAttribute().hashCode());
-		result = prime * result + ((value == null) ? 0 : value.hashCode());
+		result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
 		return result;
 	}
 
@@ -44,10 +44,10 @@ public abstract class DirectoryPrincipal implements Principal{
 			return false;
 		}
 		
-		if (value == null) {
-			if (other.value != null)
+		if (getName() == null) {
+			if (other.getName() != null)
 				return false;
-		} else if (!value.equals(other.value)) {
+		} else if (!getName().equals(other.getName())) {
 			return false;
 		}
 		return true;

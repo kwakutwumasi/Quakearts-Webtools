@@ -10,27 +10,20 @@
  ******************************************************************************/
 package com.quakearts.webapp.security.auth;
 
-import java.security.Principal;
-
-public class OtherPrincipal implements Principal{
-    private String name;
+public class OtherPrincipal extends DirectoryPrincipal {
     private String attribute = "other";
     
     public OtherPrincipal(String name) {
-        this.name = name;
+    	super(name);
     }
 
     public OtherPrincipal(String name,String attribute) {
-        this.name = name;
+    	super(name);
         this.attribute=attribute;
     }
 
+    @Override
     public String getAttribute() {
         return attribute;
-    }
-    
-    @Override
-    public String getName() {
-        return name;
-    }
+    }    
 }
