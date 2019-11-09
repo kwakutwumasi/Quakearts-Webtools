@@ -16,7 +16,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +33,7 @@ import org.apache.catalina.WebResourceRoot;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.startup.CatalinaBaseConfigurationSource;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.webresources.DirResourceSet;
 import org.apache.catalina.webresources.StandardRoot;
@@ -209,8 +209,9 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 
 	@Override
 	public void initiateEmbeddedWebServer() {
+		ConfigFileLoader.setSource(new CatalinaBaseConfigurationSource(new File("."), null));
         File webserversDirLocation = new File(rootLocation);
-        
+                
         if(!webserversDirLocation.exists()){
         	if(!createWebserverFromClasspath(webserversDirLocation))
         		return;
@@ -297,7 +298,6 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
         File webappDirLocation = new File(webserverLocation,"webapps");
         if(webappDirLocation.exists() && webappDirLocation.isDirectory()) {
 	        final Tomcat tomcat = new Tomcat();
-	        clearConfigFileLoader();
 	        
 	        tomcat.setBaseDir(webserverLocation.getPath());
 	        tomcat.getHost().setConfigClass(AppBaseContextConfig.class.getName());        
@@ -324,19 +324,6 @@ public class TomcatEmbeddedServerSpiImpl implements EmbeddedWebServerSpi {
 	        tomcatInstances.add(tomcat);
 		} else if(webappDirLocation.exists() && webappDirLocation.isFile()) {
         	throw new ConfigurationException("Invalid file in /"+webserverLocation+". webapps is not a directory.");
-		}
-	}
-
-	private void clearConfigFileLoader() {
-		// BUG FIX!!! ConfigFileLoader uses the first base as its main location
-		// causing file not found errors when loading multiple tomcat instances
-		// this is a temporary fix.
-		try {
-			Field sourceField = ConfigFileLoader.class.getDeclaredField("source");
-			sourceField.setAccessible(true);
-			sourceField.set(null, null);
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-        	throw new ConfigurationException(e);
 		}
 	}
 

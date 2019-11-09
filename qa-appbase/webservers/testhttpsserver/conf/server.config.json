@@ -5,7 +5,7 @@
 	"sslHostConfig.certificateVerification":"false",
 	"sslHostConfig.certificateKeystoreType":"JCEKS",
 	"sslHostConfig.certificateKeystorePassword":"password1",
-	"sslHostConfig.certificateKeystoreFile":"conf/tomcat.keystore",
+	"sslHostConfig.certificateKeystoreFile":"webservers/testhttpsserver/conf/tomcat.keystore",
 	"addunsecured":true,
 	"unsecuredPort":8190,
 	"unsecuredConnectorProtocol.server":"Test Server",
