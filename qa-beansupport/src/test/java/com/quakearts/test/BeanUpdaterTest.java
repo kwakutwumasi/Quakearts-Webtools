@@ -25,7 +25,6 @@ import com.quakearts.test.hibernate.Inventory;
 import com.quakearts.test.hibernate.Product;
 import com.quakearts.webapp.beansupport.BeanUpdater;
 import com.quakearts.webapp.beansupport.exception.BeanUpdaterException;
-import com.quakearts.webapp.beansupport.exception.BeanUpdaterInitException;
 
 public class BeanUpdaterTest {
 
@@ -96,7 +95,7 @@ public class BeanUpdaterTest {
 		BeanUpdater<Inventory> inventoryUpdater;
 		try {
 			inventoryUpdater = new BeanUpdater<>(Inventory.class);
-		} catch (BeanUpdaterInitException e) {
+		} catch (BeanUpdaterException e) {
 			fail("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage());
 			return;
 		}
@@ -135,7 +134,7 @@ public class BeanUpdaterTest {
 		BeanUpdater<Product> productUpdater;
 		try {
 			productUpdater = new BeanUpdater<>(Product.class);
-		} catch (BeanUpdaterInitException e) {
+		} catch (BeanUpdaterException e) {
 			fail("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage());
 			return;
 		}
@@ -175,7 +174,7 @@ public class BeanUpdaterTest {
 		BeanUpdater<Inventory> inventoryUpdater;
 		try {
 			inventoryUpdater = new BeanUpdater<>(Inventory.class);
-		} catch (BeanUpdaterInitException e) {
+		} catch (BeanUpdaterException e) {
 			fail("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage());
 			return;
 		}
@@ -211,7 +210,7 @@ public class BeanUpdaterTest {
 		BeanUpdater<Inventory> inventoryUpdater;
 		try {
 			inventoryUpdater = new BeanUpdater<>(Inventory.class).dontIgnoreNullAndEmpty();
-		} catch (BeanUpdaterInitException e) {
+		} catch (BeanUpdaterException e) {
 			fail("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage());
 			return;
 		}
@@ -249,7 +248,7 @@ public class BeanUpdaterTest {
 		BeanUpdater<Product> productUpdater;
 		try {
 			productUpdater = new BeanUpdater<>(Product.class);
-		} catch (BeanUpdaterInitException e) {
+		} catch (BeanUpdaterException e) {
 			fail("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage());
 			return;
 		}
@@ -276,7 +275,7 @@ public class BeanUpdaterTest {
 		BeanUpdater<Inventory> inventoryUpdater;
 		try {
 			inventoryUpdater = new BeanUpdater<>(Inventory.class).dontTreatZeroAsEmpty();
-		} catch (BeanUpdaterInitException e) {
+		} catch (BeanUpdaterException e) {
 			fail("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage());
 			return;
 		}

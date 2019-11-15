@@ -10,7 +10,7 @@
  ******************************************************************************/
 package com.quakearts.webapp.beansupport.exception;
 
-public class BeanUpdaterException extends Exception {
+public class BeanUpdaterException extends RuntimeException {
 
 	/**
 	 * 

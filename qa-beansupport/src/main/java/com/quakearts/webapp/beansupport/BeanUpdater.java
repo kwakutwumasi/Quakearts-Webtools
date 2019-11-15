@@ -30,7 +30,6 @@ import com.quakearts.webapp.beansupport.emtpyhandlerimpl.CollectionEmptyHandler;
 import com.quakearts.webapp.beansupport.emtpyhandlerimpl.MapEmptyHandler;
 import com.quakearts.webapp.beansupport.emtpyhandlerimpl.StringEmptyHandler;
 import com.quakearts.webapp.beansupport.exception.BeanUpdaterException;
-import com.quakearts.webapp.beansupport.exception.BeanUpdaterInitException;
 
 /**A class for updating a Java Bean with another bean (of the same class) 
  * using the properties of the latter. The updater operates in two modes:
@@ -69,7 +68,7 @@ public class BeanUpdater<T> {
 		try {
 			beanInfo = Introspector.getBeanInfo(clazz);
 		} catch (IntrospectionException e) {
-			throw new BeanUpdaterInitException("Error initializing bean",e);
+			throw new BeanUpdaterException("Error initializing bean",e);
 		}
 		
 		cache = new HashMap<>();
@@ -88,7 +87,7 @@ public class BeanUpdater<T> {
 				cache.put(descriptor.getName(), new UpdaterHandles(getMethodHandle(descriptor.getReadMethod()), 
 						getMethodHandle(descriptor.getWriteMethod()), handler, descriptor.getName()));
 			} catch (IllegalAccessException e) {
-				throw new BeanUpdaterInitException("Error initializing bean property "+descriptor.getName(), e);
+				throw new BeanUpdaterException("Error initializing bean property "+descriptor.getName(), e);
 			}			
 		}
 		
@@ -109,11 +108,11 @@ public class BeanUpdater<T> {
 		emptyHandlers.put(clazz, handler);
 	}
 		
-	public boolean update(T source, T destination) throws BeanUpdaterException {
+	public boolean update(T source, T destination) {
 		return !updateAndGetChanges(source, destination).isEmpty();
 	}
 	
-	public Map<String, Object> updateAndGetChanges(T source, T destination) throws BeanUpdaterException {
+	public Map<String, Object> updateAndGetChanges(T source, T destination) {
 		Map<String, Object> changed = new HashMap<>();
 		
 		for(UpdaterHandles handles:cache.values()){
