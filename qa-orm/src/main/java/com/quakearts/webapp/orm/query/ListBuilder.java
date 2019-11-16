@@ -203,13 +203,15 @@ public class ListBuilder<T> {
 		boolean not;
 		
 		RangeBuilder setParameter(String parameter) {
+			not = false;
 			this.parameter = parameter;
 			return this;
 		}
 
 		public RangeBuilder setParameterNot(String parameter) {
 			not = true;
-			return setParameter(parameter);
+			this.parameter = parameter;
+			return this;
 		}
 
 		/**The entry method for the fluid API for specifying a range
