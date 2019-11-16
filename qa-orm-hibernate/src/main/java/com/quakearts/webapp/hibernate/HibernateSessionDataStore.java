@@ -189,7 +189,7 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 			else if(expectedConnection.isAssignableFrom(session.getClass()))
 				return expectedConnection.cast(session);
 			else
-				throw new DataStoreException("Unsupported connection class: "+expectedConnection);
+				throw new DataStoreException("Unsupported connection class: "+expectedConnection.getName());
 		}
 	}
 	

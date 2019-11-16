@@ -1,116 +1,85 @@
-/*******************************************************************************
-* Copyright (C) 2016 Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com>.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors:
- *     Kwaku Twumasi-Afriyie <kwaku.twumasi@quakearts.com> - initial API and implementation
- ******************************************************************************/
 package com.quakearts.test;
 
 import static org.junit.Assert.*;
-
-import javax.persistence.Column;
-import javax.persistence.Transient;
+import static org.hamcrest.core.Is.*; 
 import org.junit.Test;
 
+import com.quakearts.test.hibernate.TestEntity;
 import com.quakearts.webapp.orm.stringconcat.OrmStringConcatUtil;
-
-import static org.hamcrest.core.Is.*;
 
 public class OrmStringConcatTest {
 
+	private static final String TEST = "PnFJyaWSqE3UCX2dJeWt522aKUWW5syPDAusA85xkvcwRnKqqdgnT4WBM2LvjNW9k7QWfMvGQp3AFE9VHrFWJVT899f7GzQsTtYP7qm88cKjpc6dxBjdYFgtm57GjN7B";
+
 	@Test
-	public void testStringConcat() {
-		TestBean bean = new TestBean();
-		bean.setAnnotatedField("12345678901234567890");
-		bean.setNonAnnotatedField("12345678901234567890");
-		bean.setNonStringField(300);
-		bean.setTransientField("12345678901234567890");
+	public void testOrmConcat() throws Exception {
+		TestEntity entity = new TestEntity();
+		entity.setId(1);
+		//length 10
+		entity.setStringColumn1(TEST);
+		//length 20
+		entity.setStringColumn2(TEST);
+		//length 30
+		entity.setStringColumn3(TEST);
+		//length 255
+		entity.setStringColumn4(TEST);
+		//Ignore
+		entity.setStringColumn5(TEST);
+		//Ignore
+		entity.setStringColumn6(TEST);
+		//Length 40
+		entity.setStringColumn7(TEST);
+		//Ignore
+		entity.setStringColumn8(TEST);
+		//Ignore
+		entity.setStringColumn9(TEST);
+		//Length 10
+		entity.setStringColumn10(TEST);
+		//Length Integer Max
+		entity.setStringColumn11(TEST);
+		//Ignore
+		entity.setStringColumn12(TEST);
+		//Length 10
+		entity.setStringColumn13(TEST);
+		//Length 10
+		entity.setStringColumn14(TEST);
+		//Length 10
+		entity.setStringColumn15(TEST);
+		//Length 10
+		entity.setStringColumn16(TEST);
 		
-		TestBeanChild beanChild = new TestBeanChild();
-		beanChild.setAnnotatedField("12345678901234567890");
-		beanChild.setNonAnnotatedField("12345678901234567890");
-		beanChild.setNonStringField(300);
-		beanChild.setTransientField("12345678901234567890");
-		beanChild.setYastring("12345678901234567890");		
-		
-		try {
-			OrmStringConcatUtil.trimStrings(bean);
-			OrmStringConcatUtil.trimStrings(beanChild);
-			
-			assertThat(bean.getAnnotatedField(), is("1234567890"));
-			assertThat(bean.getNonAnnotatedField(), is("12345"));
-			assertThat(bean.getNonStringField(), is(300));
-			assertThat(bean.getTransientField(), is("12345678901234567890"));
-
-			assertThat(beanChild.getAnnotatedField(), is("1234567890"));
-			assertThat(beanChild.getYastring(), is("1234567890"));
-			assertThat(beanChild.getNonAnnotatedField(), is("12345"));
-			assertThat(beanChild.getNonStringField(), is(300));
-			assertThat(beanChild.getTransientField(), is("12345678901234567890"));
-		} catch (Throwable e) {
-			fail(e.getMessage());
-		}
+		OrmStringConcatUtil.trimStrings(entity);
+		assertThat(entity.getStringColumn1().length(), is(10));
+		assertThat(entity.getStringColumn1(), is("PnFJyaWSqE"));
+		assertThat(entity.getStringColumn2().length(), is(20));
+		assertThat(entity.getStringColumn2(), is("PnFJyaWSqE3UCX2dJeWt"));
+		assertThat(entity.getStringColumn3().length(), is(30));
+		assertThat(entity.getStringColumn3(), is("PnFJyaWSqE3UCX2dJeWt522aKUWW5s"));
+		assertThat(entity.getStringColumn4().length(), is(128));
+		assertThat(entity.getStringColumn4(), is(TEST));
+		assertThat(entity.getStringColumn5().length(), is(128));
+		assertThat(entity.getStringColumn5(), is(TEST));
+		assertThat(entity.getStringColumn6().length(), is(128));
+		assertThat(entity.getStringColumn6(), is(TEST));
+		assertThat(entity.getStringColumn7().length(), is(40));
+		assertThat(entity.getStringColumn7(), is("PnFJyaWSqE3UCX2dJeWt522aKUWW5syPDAusA85x"));
+		assertThat(entity.getStringColumn8().length(), is(128));
+		assertThat(entity.getStringColumn8(), is(TEST));
+		assertThat(entity.getStringColumn9().length(), is(128));
+		assertThat(entity.getStringColumn9(), is(TEST));
+		assertThat(entity.getStringColumn10().length(), is(10));
+		assertThat(entity.getStringColumn10(), is("PnFJyaWSqE"));
+		assertThat(entity.getStringColumn11().length(), is(128));
+		assertThat(entity.getStringColumn11(), is(TEST));
+		assertThat(entity.getStringColumn12(), is(TEST));
+		assertThat(entity.getStringColumn13().length(), is(10));
+		assertThat(entity.getStringColumn13(), is("PnFJyaWSqE"));
+		assertThat(entity.getStringColumn14().length(), is(10));
+		assertThat(entity.getStringColumn14(), is("PnFJyaWSqE"));
+		assertThat(entity.getStringColumn15().length(), is(10));
+		assertThat(entity.getStringColumn15(), is("PnFJyaWSqE"));
+		assertThat(entity.getStringColumn16().length(), is(10));
+		assertThat(entity.getStringColumn16(), is("PnFJyaWSqE"));
 	}
 
-	public class TestBean {
-		@Column(length = 10)
-		private String annotatedField;
-		private String nonAnnotatedField;
-		@Column(length = 1)
-		private int nonStringField;
-		@Transient
-		private String transientField;
-
-		public String getAnnotatedField() {
-			return annotatedField;
-		}
-
-		public void setAnnotatedField(String annotatedField) {
-			this.annotatedField = annotatedField;
-		}
-
-		@Column(length = 5)
-		public String getNonAnnotatedField() {
-			return nonAnnotatedField;
-		}
-
-		public void setNonAnnotatedField(String nonAnnotatedField) {
-			this.nonAnnotatedField = nonAnnotatedField;
-		}
-
-		public int getNonStringField() {
-			return nonStringField;
-		}
-
-		public void setNonStringField(int nonStringField) {
-			this.nonStringField = nonStringField;
-		}
-
-		public String getTransientField() {
-			return transientField;
-		}
-
-		public void setTransientField(String transientField) {
-			this.transientField = transientField;
-		}
-	}
-	
-	public class TestBeanChild extends TestBean {
-		@Column(length=10)
-		private String yastring;
-		
-		public String getYastring() {
-			return yastring;
-		}
-		
-		public void setYastring(String yastring) {
-			this.yastring = yastring;
-		}
-	}
 }
-
-

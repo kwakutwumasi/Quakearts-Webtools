@@ -22,6 +22,7 @@ public class SalesPart {
 	private SalesOrder salesOrder;
 	@ManyToOne
 	private Product product;
+	private String currency;
 	private double price;
 
 	public int getId() {
@@ -46,6 +47,14 @@ public class SalesPart {
 
 	public void setProduct(Product product) {
 		this.product = product;
+	}
+
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
 	}
 
 	public double getPrice() {

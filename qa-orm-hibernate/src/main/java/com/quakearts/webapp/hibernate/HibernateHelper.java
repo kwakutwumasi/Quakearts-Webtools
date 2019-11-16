@@ -12,7 +12,6 @@ package com.quakearts.webapp.hibernate;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -21,14 +20,15 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
 public class HibernateHelper {
-	private static final Map<String, HelperStore> store = new HashMap<String, HelperStore>();
+	private static final Map<String, HelperStore> store = new HashMap<>();
 	private static SessionFactory factory;
 	private static ServiceRegistry registry;
 	private static StandardServiceRegistryBuilder registryBuilder;
 	private static Configuration configuration;
-	private static final Logger log = Logger.getLogger(HibernateHelper.class.getName());
 
-	public synchronized static SessionFactory getCurrentSessionFactory() {
+	private HibernateHelper() {}
+	
+	public static synchronized SessionFactory getCurrentSessionFactory() {
 		if(factory == null){
 			factory = getCurrentConfiguration().buildSessionFactory(getRegistry());
 		}
@@ -36,7 +36,7 @@ public class HibernateHelper {
 		return factory;
 	}
 	
-	public synchronized static ServiceRegistry getRegistry() {
+	public static synchronized ServiceRegistry getRegistry() {
 		if(registry==null) {
 			registry = getRegistryBuilder().build();
 		}
@@ -44,7 +44,7 @@ public class HibernateHelper {
 		return registry;
 	}
 	
-	public synchronized static Configuration getCurrentConfiguration(){
+	public static synchronized Configuration getCurrentConfiguration(){
 		if (configuration== null){
 			configuration = new Configuration();
 		}
@@ -52,24 +52,19 @@ public class HibernateHelper {
 		return configuration;
 	}
 	
-	public synchronized static Session getCurrentSession(){
+	public static synchronized Session getCurrentSession(){
 		return getCurrentSessionFactory().getCurrentSession();
 	}
 	
-	public synchronized static StandardServiceRegistryBuilder getRegistryBuilder() {
+	public static synchronized StandardServiceRegistryBuilder getRegistryBuilder() {
 		if(registryBuilder == null)
 			registryBuilder = new StandardServiceRegistryBuilder().configure();
 		
 		return registryBuilder;
 	}
 	
-	public synchronized static Configuration getConfiguration(String domain) throws HibernateException {
-		if(store.containsKey(domain)){
-			return store.get(domain).configuration;
-		} else {
-			configureDomain(domain);
-			return store.get(domain).configuration;
-		}
+	public static synchronized Configuration getConfiguration(String domain) throws HibernateException {
+		return getStore(domain).configuration;
 	}
 	
 	private static void configureDomain(String domain) throws HibernateException{
@@ -86,26 +81,26 @@ public class HibernateHelper {
 		store.put(domain, helperStore);
 	}
 	
-	public synchronized static SessionFactory getSessionFactory(String domain) throws HibernateException {
-		if(store.containsKey(domain)){
-			return store.get(domain).factory;
-		} else {
-			configureDomain(domain);
-			return store.get(domain).factory;
-		}
+	public static synchronized SessionFactory getSessionFactory(String domain) throws HibernateException {
+		return getStore(domain).factory;
 	}
+
 	
 	public static Session getSession(String domain) throws HibernateException{
 		return getSessionFactory(domain).getCurrentSession();
 	}
 	
 	public static StandardServiceRegistryBuilder getRegistryBuilder(String domain) {
-		if(store.containsKey(domain)){
-			return store.get(domain).registryBuilder;
-		} else {
+		return getStore(domain).registryBuilder;
+	}
+
+	
+	private static HelperStore getStore(String domain){
+		if(!store.containsKey(domain)){
 			configureDomain(domain);
-			return store.get(domain).registryBuilder;
-		}
+		} 			
+		
+		return store.get(domain);
 	}
 	
 	private static class HelperStore {
@@ -114,18 +109,4 @@ public class HibernateHelper {
 		ServiceRegistry registry;
 		StandardServiceRegistryBuilder registryBuilder;
 	}
-	
-	public static Object refresh(Object object, String domain){
-		if(domain==null)
-			return getCurrentSession().merge(object);
-		else
-			try {
-				return getSession(domain).merge(object);
-			} catch (Exception e) {
-				log.severe("Exception of type " + e.getClass().getName()
-						+ " was thrown. Message is " + e.getMessage());
-				return null;
-			}
-	}
-
 }

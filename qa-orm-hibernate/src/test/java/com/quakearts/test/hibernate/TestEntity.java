@@ -1,5 +1,7 @@
 package com.quakearts.test.hibernate;
 
+import java.util.HashMap;
+
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Transient;
@@ -19,7 +21,7 @@ public class TestEntity extends TestParentEntity {
 
 	@Transient
 	private String stringColumn5;
-	private String stringColumn6;
+
 	@Size(max = 10)
 	private String stringColumn10;
 	@Size
@@ -67,13 +69,60 @@ public class TestEntity extends TestParentEntity {
 		this.stringColumn5 = stringColumn5;
 	}
 
+	private HashMap<String, String> cache = new HashMap<>();
+
 	@Transient
 	public String getStringColumn6() {
-		return stringColumn6;
+		return cache.get("6");
+	}
+	
+	public void setStringColumn6(String string) {
+		cache.put("6", string);
+	}
+	
+	public String getStringColumn12(){
+		return cache.get("12");
+	}
+	
+	@Transient
+	public void setStringColumn12(String value){
+		cache.put("12", value);
+	}
+	
+	@Column(length = 10)
+	public String getStringColumn13(){
+		return cache.get("13");
+	}
+	
+	public void setStringColumn13(String value){
+		cache.put("13", value);
+	}
+	
+	public String getStringColumn14(){
+		return cache.get("14");
+	}
+	
+	@Column(length = 10)
+	public void setStringColumn14(String value){
+		cache.put("14", value);
 	}
 
-	public void setStringColumn6(String stringColumn6) {
-		this.stringColumn6 = stringColumn6;
+	public String getStringColumn15(){
+		return cache.get("15");
+	}
+	
+	@Size(max = 10)
+	public void setStringColumn15(String value){
+		cache.put("15", value);
+	}
+
+	@Size(max = 10)
+	public String getStringColumn16(){
+		return cache.get("15");
+	}
+	
+	public void setStringColumn16(String value){
+		cache.put("15", value);
 	}
 
 	public String getStringColumn10() {

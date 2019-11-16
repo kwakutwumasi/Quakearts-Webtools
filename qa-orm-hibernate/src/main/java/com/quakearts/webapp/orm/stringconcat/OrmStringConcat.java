@@ -23,9 +23,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Transient;
+
+import com.quakearts.webapp.orm.exception.DataStoreException;
 
 /**Internal method for concatenating strings
  * @author kwakutwumasi-afriyie
@@ -35,7 +38,7 @@ class OrmStringConcat {
 	private Map<String, ConcatenatorEntry> fieldMap;
 	private Class<?> beanClass;
 	
-	final static Logger log = Logger.getLogger(OrmStringConcat.class.getName());
+	static final Logger log = Logger.getLogger(OrmStringConcat.class.getName());
 	
 	OrmStringConcat(Class<?> beanClass) {
 		fieldMap = new HashMap<>();
@@ -175,14 +178,14 @@ class OrmStringConcat {
 				try {
 					value = entry.getMethodHandle.invoke(object);
 				} catch (Throwable e) {
-					throw new RuntimeException("Unable to get string to concat", e);
+					throw new DataStoreException("Unable to get string to concat", e);
 				}
 				if(value==null)
 					continue;
 				
 				Object trimedValue = concatenate(value.toString(), entry.fieldLength);
 				if(value != trimedValue){
-					log.warning("Value "+value
+					log.log(Level.WARNING,()-> "Value "+value
 							+" is too long for field "
 							+entry.fieldName
 							+". Max field size is "
@@ -194,7 +197,7 @@ class OrmStringConcat {
 					try {
 						entry.writeMethodHandle.invoke(object, trimedValue);
 					} catch (Throwable e) {
-						throw new RuntimeException("Unable to concat string", e);
+						throw new DataStoreException("Unable to concat string", e);
 					}
 				}
 			}

@@ -25,6 +25,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import com.quakearts.webapp.orm.query.Choice;
+import com.quakearts.webapp.orm.query.Not;
 import com.quakearts.webapp.orm.query.QueryOrder;
 import com.quakearts.webapp.orm.query.Range;
 import com.quakearts.webapp.orm.query.VariableString;
@@ -40,13 +41,11 @@ public abstract class HibernateBean {
 		if(parameters != null)
 			handleParameters(parameters, context);
 		
-		if (orders != null) {
-			for (QueryOrder order : orders) {
-				if (order.isAscending())
-					query.addOrder(Order.asc(order.getProperty()));
-				else
-					query.addOrder(Order.desc(order.getProperty()));
-			}
+		for (QueryOrder order : orders) {
+			if (order.isAscending())
+				query.addOrder(Order.asc(order.getProperty()));
+			else
+				query.addOrder(Order.desc(order.getProperty()));
 		}
 
 		return (List<T>) context.getQuery().list();
@@ -73,8 +72,8 @@ public abstract class HibernateBean {
 			criterion = handleJunction(disjoinedParameters, ParameterMapBuilder.DISJUNCTION, context);
 		} else if (value instanceof Choice) {
 			Choice choice = (Choice) value;
-			if (choice.getChoices().size() == 0)
-				throw new HibernateException("Invalid choice list for parameter"+key
+			if (choice.getChoices().isEmpty())
+				throw new HibernateException("Invalid choice list for parameter "+key
 						+". Choice list must be greater than zero.");
 
 			if (choice.getChoices().size() == 1)
@@ -89,6 +88,8 @@ public abstract class HibernateBean {
 				}
 				criterion = Restrictions.or(choiceCriteria);
 			}
+		} else if (value instanceof Not) {
+			criterion = Restrictions.not(handleParameter(key,((Not) value).getValue(), context));
 		} else {
 			criterion = createCriterion(key, value, context);
 		}
@@ -145,10 +146,8 @@ public abstract class HibernateBean {
 		Criterion[] criteriaArray = criteria.toArray(new Criterion[criteria.size()]);
 		if (type == ParameterMapBuilder.CONJUNCTION)
 			return (Restrictions.and(criteriaArray));
-		else if (type == ParameterMapBuilder.DISJUNCTION)
-			return (Restrictions.or(criteriaArray));
 		else
-			throw new HibernateException("Invalid conjuction type:" + type);
+			return (Restrictions.or(criteriaArray));
 	}
 
 	private Criterion createCriterion(String key, Serializable value, QueryContext context) {

@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import com.quakearts.webapp.orm.query.Choice;
+import com.quakearts.webapp.orm.query.Not;
 import com.quakearts.webapp.orm.query.Range;
 import com.quakearts.webapp.orm.query.VariableString;
 
@@ -63,6 +64,10 @@ public class ParameterMapBuilder {
 		}
 		
 		return add(propertyName, choice);
+	}
+	
+	public ParameterMapBuilder not(String propertyName, Serializable value){
+		return add(propertyName, new Not(value));
 	}
 	
 	public ParameterMapBuilder disjoin(){

@@ -42,7 +42,7 @@ public class ListBuilder<T> {
 	/**A terminal method. Returns the list using the selection criteria specified
 	 * @return The list, if any
 	 */
-	public List<T> thenList(){
+	public List<T> thenList() {
 		return dataStore.list(entityClazz, mapBuilder.build(), getOrder());
 	}
 	
@@ -62,11 +62,21 @@ public class ListBuilder<T> {
 		return order.toArray(new QueryOrder[order.size()]);
 	}
 
+	/**Change the mode of search from requiring all filters
+	 * to using any one filter. This must be called BEFORE
+	 * any filters are declared to take effect
+	 * @return This builder to chain methods
+	 */
+	public ListBuilder<T> usingAnyMatchingFilter(){
+		mapBuilder.disjoin();
+		return this;
+	}
+	
 	/**The initial method in the fluid API. Create a filter for the supplied property name
 	 * @param propertyName the name of the property to use in the filter
 	 * @return a {@link ParameterBuilder}
 	 */
-	public ParameterBuilder filterBy(String propertyName){
+	public ParameterBuilder filterBy(String propertyName) {
 		if(parameterBuilder == null)
 			parameterBuilder = new ParameterBuilder();
 		
@@ -77,7 +87,7 @@ public class ListBuilder<T> {
 	 * @param order {@link QueryOrder} to define the ordering
 	 * @return This builder to chain methods
 	 */
-	public ListBuilder<T> orderBy(QueryOrder order){
+	public ListBuilder<T> orderBy(QueryOrder order) {
 		this.order.add(order);
 		return this;
 	}
@@ -86,7 +96,7 @@ public class ListBuilder<T> {
 	 * @param limit The maximum amount of objects to return
 	 * @return This builder to chain methods
 	 */
-	public ListBuilder<T> useAResultLimitOf(int limit){
+	public ListBuilder<T> useAResultLimitOf(int limit) {
 		mapBuilder.setMaxResults(limit);
 		return ListBuilder.this;
 	}
@@ -95,7 +105,7 @@ public class ListBuilder<T> {
 	 * @author kwakutwumasi-afriyie
 	 *
 	 */
-	public class ParameterBuilder{
+	public class ParameterBuilder {
 		String parameter;
 
 		ParameterBuilder setPropertyName(String parameter) {
@@ -107,8 +117,17 @@ public class ListBuilder<T> {
 		 * @param value a serializable value to compare
 		 * @return The @{link ListBuilder} to chain methods
 		 */
-		public ListBuilder<T> withAValueEqualTo(Serializable value){
+		public ListBuilder<T> withAValueEqualTo(Serializable value) {
 			mapBuilder.add(parameter, value);
+			return ListBuilder.this;
+		}
+		
+		/**Select objects that do not have values equal to the specified value
+		 * @param value a serializable value to compare
+		 * @return The @{link ListBuilder} to chain methods
+		 */
+		public ListBuilder<T> withAValueNotEqualTo(Serializable value) {
+			mapBuilder.not(parameter, value);
 			return ListBuilder.this;
 		}
 		
@@ -121,22 +140,55 @@ public class ListBuilder<T> {
 			return ListBuilder.this;
 		}
 		
+		/**Select objects that do not have string values like the specified value
+		 * @param value the String to match
+		 * @return The @{link ListBuilder} to chain methods
+		 */
+		public ListBuilder<T> withAValueNotLike(String value){
+			mapBuilder.not(parameter, new VariableString(value));
+			return ListBuilder.this;
+		}
+		
 		/**Entry method for the fluid API for specifying a range of values
 		 * @return the @{link RangeBuilder}
 		 */
-		public RangeBuilder withValues(){
+		public RangeBuilder withValues() {
 			if(rangeBuilder == null)
 				rangeBuilder = new RangeBuilder();
 			
 			return rangeBuilder.setParameter(parameter);
 		}
 		
+		/**Entry method for the fluid API for specifying a range of values
+		 * that should not be contained in the result objects
+		 * @return the @{link RangeBuilder}
+		 */
+		public RangeBuilder withValuesNot() {
+			if(rangeBuilder == null)
+				rangeBuilder = new RangeBuilder();
+			
+			return rangeBuilder.setParameterNot(parameter);
+		}
+		
 		/**A list of values either one of which to match
 		 * @param parameters
 		 * @return The @{link ListBuilder} to chain methods
 		 */
-		public ListBuilder<T> withAValueEqualToOneOf(Serializable... parameters){
+		public ListBuilder<T> withAValueEqualToOneOf(Serializable... parameters) {
 			mapBuilder.addChoices(parameter, parameters);
+			return ListBuilder.this;
+		}
+		
+		/**A list of values none of which to match
+		 * @param parameters
+		 * @return The @{link ListBuilder} to chain methods
+		 */
+		public ListBuilder<T> withAValueNotEqualToOneOf(Serializable... parameters) {
+			Choice choice = new Choice();
+			for(Serializable choiceParameter:parameters){
+				choice.or(choiceParameter);
+			}
+			mapBuilder.add(parameter, new Not(choice));
 			return ListBuilder.this;
 		}
 	}
@@ -148,10 +200,16 @@ public class ListBuilder<T> {
 	public class RangeBuilder {
 		Range range;
 		String parameter;
+		boolean not;
 		
 		RangeBuilder setParameter(String parameter) {
 			this.parameter = parameter;
 			return this;
+		}
+
+		public RangeBuilder setParameterNot(String parameter) {
+			not = true;
+			return setParameter(parameter);
 		}
 
 		/**The entry method for the fluid API for specifying a range
@@ -172,7 +230,11 @@ public class ListBuilder<T> {
 			if(range==null)
 				throw new UnsupportedOperationException("Call between() before calling and()");
 			range.to(value);
-			mapBuilder.add(parameter, range);
+			if(not){
+				mapBuilder.not(parameter, range);
+			} else {
+				mapBuilder.add(parameter, range);
+			}
 			return ListBuilder.this;
 		}
 		
@@ -181,7 +243,11 @@ public class ListBuilder<T> {
 		 * @return The @{link ListBuilder} to chain methods
 		 */
 		public ListBuilder<T> startingFrom(Serializable value){
-			mapBuilder.addRange(parameter, value, null);
+			if(not){
+				mapBuilder.not(parameter, new Range().from(value));
+			} else {
+				mapBuilder.add(parameter, new Range().from(value));
+			}
 			return ListBuilder.this;
 		}
 
@@ -190,7 +256,11 @@ public class ListBuilder<T> {
 		 * @return The @{link ListBuilder} to chain methods
 		 */
 		public ListBuilder<T> upTo(Serializable value){
-			mapBuilder.addRange(parameter, null, value);
+			if(not){
+				mapBuilder.not(parameter, new Range().to(value));
+			} else {				
+				mapBuilder.add(parameter, new Range().to(value));
+			}
 			return ListBuilder.this;
 		}
 	}
