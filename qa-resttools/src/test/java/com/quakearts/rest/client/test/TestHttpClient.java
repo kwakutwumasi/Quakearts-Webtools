@@ -675,6 +675,17 @@ public class TestHttpClient {
 						.thenBuild())
 				.thenBuild();
 		
+		HttpRequest getEmpty = createNewHttpRequest()
+				.setMethodAs("GET")
+				.setResourceAs("/test-mock-object?return=")
+				.setId("/test-mock-object?return=")
+				.setContentBytes("Test".getBytes())
+				.setResponseAs(createNewHttpResponse()
+						.setResponseCodeAs(200)
+						.setContentBytes("Test Response".getBytes())
+						.thenBuild())
+				.thenBuild();
+		
 		MockServer mockServer = MockServerFactory.getInstance()
 				.getMockServer()
 				.configure(ConfigurationBuilder
@@ -693,6 +704,9 @@ public class TestHttpClient {
 						.thenBuild(),
 					createNewMockAction()
 						.setRequestAs(getEmpty200)
+						.thenBuild(),
+					createNewMockAction()
+						.setRequestAs(getEmpty)
 						.thenBuild());
 		mockServer.start();
 		try {
@@ -719,6 +733,10 @@ public class TestHttpClient {
 			assertThat(response.getData(), is(getEmpty200.getResponse().getContent()));
 			assertThat(response.getReturnCode(), is(getEmpty200.getResponse().getResponseCode()));
 			
+			response = client.sendRequestWithNull(null);
+			assertThat(response.getData(), is(getEmpty.getResponse().getContent()));
+			assertThat(response.getReturnCode(), is(getEmpty.getResponse().getResponseCode()));
+
 			try {
 				client.setReturn100(true);
 				response = client.sendRequest(post200WithoutContent);

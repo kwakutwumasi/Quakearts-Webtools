@@ -118,7 +118,7 @@ public abstract class HttpObjectClient extends HttpClient {
 	}
 
 	protected String encode(String parameter) throws UnsupportedEncodingException {
-		return URLEncoder.encode(parameter, "UTF-8");
+		return parameter!=null?URLEncoder.encode(parameter, "UTF-8"):"";
 	}
 
 	/**Implement this method to throw an appropriate {@link HttpClientException} or a subclass

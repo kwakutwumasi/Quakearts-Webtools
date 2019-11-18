@@ -40,7 +40,12 @@ public class MockHttpObjectClient extends HttpObjectClient {
 			throws IOException, HttpClientException {
 		return executeGet("/test-mock-object", MockResponse.class);
 	}
-	
+
+	public MockResponse sendRequestWithNull(String string) 
+			throws IOException, HttpClientException {
+		return executeGet("/test-mock-object?return={0}", MockResponse.class, encode(string));
+	}
+
 	public String throwHttpClientException() 
 			throws IOException, HttpClientException {
 		return executeGet("/test-mock-object", String.class);
