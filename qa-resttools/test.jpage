@@ -1,0 +1,4 @@
+System.out.println(java.util.Arrays.toString("Encoded Response".getBytes("UTF-16")));
+System.out.println(java.util.Arrays.toString("Encoded Response".getBytes()));
+
+System.out.println(new String("Encoded Response".getBytes("UTF-16")));

@@ -58,6 +58,7 @@ public abstract class HttpClient implements Serializable {
 	transient CookieManager cookieManager = new CookieManager();
 	int connectTimeout;
 	int readTimeout;
+	String charset = "UTF-8";
 	
 	/**
 	 * @return the configured port
@@ -265,9 +266,9 @@ public abstract class HttpClient implements Serializable {
 			}
 			con.addRequestProperty("Content-Length",
 					Integer.toString((requestValue.length() / 8)));
-			con.addRequestProperty("Content-Type", contentType);
+			con.addRequestProperty("Content-Type", contentType+"; charset="+charset.toLowerCase());
 			con.setDoOutput(true);
-			con.getOutputStream().write(requestValue.getBytes());
+			con.getOutputStream().write(requestValue.getBytes(charset));
 		}
 	}
 

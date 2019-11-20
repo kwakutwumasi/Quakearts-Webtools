@@ -365,6 +365,17 @@ public class TestHttpClient {
 						.setContentBytes("Did not timeout".getBytes()).thenBuild())
 				.thenBuild();
 		
+		HttpRequest post200UTF16 = createNewHttpRequest()
+				.setMethodAs("POST")
+				.setResourceAs("/test-request-utf-16")
+				.setId("/test-request-utf-16")
+				.setContentBytes("UTF-16 Encoding".getBytes("UTF-16"))
+				.setResponseAs(createNewHttpResponse()
+						.setResponseCodeAs(200)
+						.addHeaders(new HttpHeaderImpl("Content-Type","text/plain; charset=utf-16"))
+						.setContentBytes("Encoded Response".getBytes("UTF-16")).thenBuild())
+				.thenBuild();
+		
 		MockServer mockServer = MockServerFactory.getInstance()
 				.getMockServer()
 				.configure(ConfigurationBuilder
@@ -448,7 +459,10 @@ public class TestHttpClient {
 							await().atLeast(1, TimeUnit.SECONDS).until(()-> System.currentTimeMillis()-start>1000);							
 							return response;
 						})
-						.thenBuild());
+						.thenBuild(),
+						createNewMockAction()
+							.setRequestAs(post200UTF16)
+							.thenBuild());
 		
 		mockServer.start();
 		try {
@@ -587,6 +601,18 @@ public class TestHttpClient {
 			assertThat(httpResponse.getHttpCode(), is(301));
 			assertThat(httpResponse.getOutput(), is(notNullValue()));
 			assertThat(httpResponse.getOutput().isEmpty(), is(true));
+			
+			client = MockHttpClientBuilder.getInstance()
+					.createNewHttpClient()
+					.setHostAs("localhost")
+					.setPortAs(8080)
+					.setCharacterSetAs("US-ASCII")
+					.thenBuild();
+
+			httpResponse = client.sendRequest(post200UTF16);
+			assertThat(httpResponse.getHttpCode(), is(200));
+			assertThat(new String(httpResponse.getOutputBytes(), "UTF-16"), 
+					is("Encoded Response"));
 			
 			client = MockHttpClientBuilder.getInstance()
 					.createNewHttpClient()

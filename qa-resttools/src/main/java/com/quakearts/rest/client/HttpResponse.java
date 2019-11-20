@@ -38,6 +38,9 @@ public class HttpResponse implements Serializable {
 	}
 
 	/**Getter for the output read from the http call
+	 * <br /><b>Warning</b> this is a convenience method to convert the bytes to a
+	 * platform specific character set String. Do not assume the output is in
+	 * the default platform unless you control the source
 	 * @return the output
 	 */
 	public String getOutput() {

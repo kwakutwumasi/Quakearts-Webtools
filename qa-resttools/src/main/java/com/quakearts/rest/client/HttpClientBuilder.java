@@ -159,6 +159,15 @@ public abstract class HttpClientBuilder<T extends HttpClient> {
 		return this;
 	}
 	
+	/**Set the character set for reading and writing content to the connection streams
+	 * @param charset the name of the registered character set. Defaults to UTF-8
+	 * @return this object for method chaining
+	 */
+	public HttpClientBuilder<T> setCharacterSetAs(String charset){
+		httpClient.charset = charset;
+		return this;
+	}
+	
 	/**Implement this method to return the configured {@link HttpClient}
 	 * @return the configured client
 	 */
