@@ -23,6 +23,8 @@ import org.hibernate.context.spi.CurrentSessionContext;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.resource.transaction.spi.TransactionStatus;
 
+import com.quakearts.webapp.orm.exception.DataStoreException;
+
 /**Base class for implementations of {@linkplain CurrentSessionContext}. This provides support for
  * {@link org.hibernate.SessionFactory SessionFactory}'s {@link org.hibernate.SessionFactory#getCurrentSession() getCurrentSession()}
  * method in non-JTA environments
@@ -104,7 +106,6 @@ public abstract class CurrentSessionContextHelper implements CurrentSessionConte
 				
 		for(CurrentSessionContextHelper helper:sessionHelperCache.values()){
 			Session session = helper.getCurrentSessionFromContextAttributes();
-			
 			if(session==null)
 				return;
 			
@@ -136,12 +137,12 @@ public abstract class CurrentSessionContextHelper implements CurrentSessionConte
 			}
 		}
 		
-		if(exceptions.size()>0){
+		if(!exceptions.isEmpty()){
 			for(Exception e:exceptions){
 				log.log(Level.SEVERE, e.getMessage(), e);
 			}
 			
-			throw new IllegalStateException("Error during session cleanup");
+			throw new DataStoreException("Error during session cleanup");
 		}
 	}
 

@@ -1,11 +1,20 @@
 package com.quakearts.test;
 
 import static org.junit.Assert.*;
+
+import org.junit.Rule;
+
 import static org.hamcrest.core.Is.*; 
 import static org.hamcrest.core.IsNull.*; 
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
+import com.quakearts.test.hibernate.Brand;
 import com.quakearts.test.hibernate.TestEntity;
+import com.quakearts.webapp.hibernate.CurrentSessionContextHelper;
+import com.quakearts.webapp.orm.DataStore;
+import com.quakearts.webapp.orm.DataStoreFactory;
+import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.webapp.orm.stringconcat.ConcatenationListener;
 import com.quakearts.webapp.orm.stringconcat.OrmStringConcatUtil;
 
@@ -114,4 +123,34 @@ public class OrmStringConcatTest {
 		assertThat(args[3], is(nullValue()));
 	}
 
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+	
+	@Test
+	public void testConcatNoConcat() throws Exception {
+		Brand brand = new Brand();
+		brand.setName(TEST+TEST+TEST);
+		
+		try {
+			DataStore dataStore = DataStoreFactory.getInstance().getDataStore();
+			dataStore.save(brand);
+			dataStore.flushBuffers();
+			
+			assertThat(brand.getName(), is((TEST+TEST+TEST).substring(0,255)));
+		} finally {
+			CurrentSessionContextHelper.closeOpenSessions();
+		}
+
+		expectedException.expect(DataStoreException.class);
+		brand.setName(TEST+TEST+TEST);
+		try {
+			DataStore dataStore = DataStoreFactory.getInstance()
+				.getDataStore("testdomain");
+			dataStore.save(brand);
+			dataStore.flushBuffers();
+		} finally {
+			CurrentSessionContextHelper.closeOpenSessions();
+		}
+	}
+	
 }

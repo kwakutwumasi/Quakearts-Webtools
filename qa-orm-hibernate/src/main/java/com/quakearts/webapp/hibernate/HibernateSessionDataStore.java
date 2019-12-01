@@ -29,6 +29,16 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 	private Session session;
 	private String domain;
 	
+	private Boolean skipConcatenation;
+	
+	private boolean shouldSkipConcatenation(){
+		if(skipConcatenation==null){
+			skipConcatenation = Boolean.parseBoolean(getConfigurationProperty("com.quakearts.orm.skip.string.concatenation"));
+		}
+		
+		return skipConcatenation;
+	}
+	
 	public HibernateSessionDataStore() {
 		try {
 			session = HibernateHelper.getCurrentSession();
@@ -52,7 +62,8 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 	@Override
 	public void save(Object object) {
 		try {
-			OrmStringConcatUtil.trimStrings(object);
+			if(!shouldSkipConcatenation())
+				OrmStringConcatUtil.trimStrings(object);
 			session.save(object);			
 		} catch (HibernateException e) {
 			throw new DataStoreException(e);
@@ -77,7 +88,8 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 	@Override
 	public void update(Object object) {
 		try {
-			OrmStringConcatUtil.trimStrings(object);
+			if(!shouldSkipConcatenation())
+				OrmStringConcatUtil.trimStrings(object);
 			session.update(object);
 		} catch (HibernateException e) {
 			throw new DataStoreException(e);
@@ -114,7 +126,8 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 	@Override
 	public void saveOrUpdate(Object object) {
 		try {
-			OrmStringConcatUtil.trimStrings(object);
+			if(!shouldSkipConcatenation())
+				OrmStringConcatUtil.trimStrings(object);
 			session.saveOrUpdate(object);
 		} catch (HibernateException e) {
 			throw new DataStoreException(e);

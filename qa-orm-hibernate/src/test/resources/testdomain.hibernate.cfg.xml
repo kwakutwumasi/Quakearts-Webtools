@@ -10,6 +10,7 @@
 		<property name="hibernate.show_sql">true</property>
 		<property name="hibernate.format_sql">true</property>
 		<property name="hibernate.default_schema">TEST</property>
+		<property name="com.quakearts.orm.skip.string.concatenation">true</property>
 		<property name="hibernate.current_session_context_class">com.quakearts.webapp.hibernate.threadcontext.ThreadSessionHelper</property>
 		<property name="com.quakearts.test">TestValue</property>
 		<mapping class="com.quakearts.test.hibernate.Brand" />

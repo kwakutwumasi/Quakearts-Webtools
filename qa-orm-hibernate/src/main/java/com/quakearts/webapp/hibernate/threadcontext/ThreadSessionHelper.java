@@ -37,9 +37,10 @@ public class ThreadSessionHelper extends MapBasedCurrentSessionContextHelper {
 	}
 
 	private static final ThreadLocal<Map<Object, Object>> threadLocalContext = new InheritableThreadLocal<Map<Object, Object>>(){
+		@Override
 		protected Map<Object,Object> initialValue() {
 			return new HashMap<>();
-		};
+		}
 	};
 	
 	protected Map<Object, Object> getContextAttributes(){
