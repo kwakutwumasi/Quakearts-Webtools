@@ -11,7 +11,9 @@
 package com.quakearts.webapp.orm.stringconcat;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**Utility method for concatenating String properties of JPA objects. This is to prevent
  * String concatenation exceptions thrown by the database when the string is to long to fit into a column
@@ -20,9 +22,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class OrmStringConcatUtil {
 	private static Map<Class<?>, OrmStringConcat> cache = new ConcurrentHashMap<>();
+	private static Set<ConcatenationListener> concatenationListeners = new CopyOnWriteArraySet<>();
 	
-	private OrmStringConcatUtil() {
-	}
+	private OrmStringConcatUtil() {}
 	
 	/**Trim string properties in the object
 	 * @param object
@@ -35,5 +37,17 @@ public class OrmStringConcatUtil {
 		}
 		
 		concat.trimStrings(object);
+	}
+	
+	public static void addConcatenationListener(ConcatenationListener listener) {
+		concatenationListeners.add(listener);
+	}
+	
+	public static void removeConcatenationListener(ConcatenationListener listener) {
+		concatenationListeners.remove(listener);
+	}
+	
+	static void notify(Class<?> beanClass, Object instance, String value, String trimmed){
+		concatenationListeners.stream().forEach(listener->listener.notify(beanClass, instance, value, trimmed));
 	}
 }

@@ -23,8 +23,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.Column;
 import javax.persistence.Transient;
 
@@ -37,9 +35,7 @@ import com.quakearts.webapp.orm.exception.DataStoreException;
 class OrmStringConcat {	
 	private Map<String, ConcatenatorEntry> fieldMap;
 	private Class<?> beanClass;
-	
-	static final Logger log = Logger.getLogger(OrmStringConcat.class.getName());
-	
+		
 	OrmStringConcat(Class<?> beanClass) {
 		fieldMap = new HashMap<>();
 		
@@ -81,10 +77,7 @@ class OrmStringConcat {
 				}
 			}
 		} catch (IntrospectionException | IllegalAccessException e) {
-			log.warning("Unable to introspect " + beanClass.getName() 
-					+ " for use with " 
-					+ getClass().getName() + ": "
-					+ e.getMessage());
+			throw new DataStoreException("Unable to introspect bean "+beanClass.getName(),e);
 		}
 		
 		this.beanClass = beanClass;
@@ -110,11 +103,11 @@ class OrmStringConcat {
 			if(column!=null)
 				return column.length();
 			else
-				return getMaxLengthSize(descriptor, field, beanClass);
+				return getMaxLengthSize(descriptor, field);
 		}
 	}
 	
-	int getMaxLengthSize(PropertyDescriptor descriptor, Field field, Class<?> beanClass2) {
+	int getMaxLengthSize(PropertyDescriptor descriptor, Field field) {
 		try{
 			@SuppressWarnings("unchecked")
 			Class<? extends Annotation> sizeAnnotation = (Class<? extends Annotation>) 
@@ -174,25 +167,20 @@ class OrmStringConcat {
 				return;
 			
 			for(ConcatenatorEntry entry: fieldMap.values()){
-				Object value;
+				Object valueObject;
 				try {
-					value = entry.getMethodHandle.invoke(object);
+					valueObject = entry.getMethodHandle.invoke(object);
 				} catch (Throwable e) {
 					throw new DataStoreException("Unable to get string to concat", e);
 				}
-				if(value==null)
+				if(valueObject==null)
 					continue;
 				
-				Object trimedValue = concatenate(value.toString(), entry.fieldLength);
+				String value = valueObject.toString();
+				
+				String trimedValue = concatenate(value, entry.fieldLength);
 				if(value != trimedValue){
-					log.log(Level.WARNING,()-> "Value "+value
-							+" is too long for field "
-							+entry.fieldName
-							+". Max field size is "
-							+entry.fieldLength
-							+" for objects of type "
-							+entry.className
-							+". The value has been trimmed");
+					OrmStringConcatUtil.notify(beanClass, object, value, trimedValue);
 
 					try {
 						entry.writeMethodHandle.invoke(object, trimedValue);
