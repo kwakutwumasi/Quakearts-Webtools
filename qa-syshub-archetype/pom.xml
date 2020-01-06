@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.quakearts.syshub</groupId>
 	<artifactId>qa-syshub-archetype</artifactId>
-	<version>1.0.3</version>
+	<version>1.0.4</version>
 	<name>SysHub Archetype</name>
 	<url>http://maven.apache.org</url>
 </project>

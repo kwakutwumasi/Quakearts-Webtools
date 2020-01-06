@@ -95,29 +95,29 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-jdk14</artifactId>
-			<version>1.7.25</version>
+			<version>1.7.28</version>
 		</dependency>
 	<!-- Hibernate Validation -->
 		<dependency>
 		    <groupId>org.hibernate</groupId>
 		    <artifactId>hibernate-validator</artifactId>
-		    <version>5.4.2.Final</version>
+		    <version>6.0.17.Final</version>
 		</dependency>		
 		<dependency>
 		    <groupId>org.hibernate</groupId>
 		    <artifactId>hibernate-validator-cdi</artifactId>
-		    <version>5.4.2.Final</version>
+		    <version>6.0.17.Final</version>
 		</dependency>
 	<!-- Sysyhub  -->
 		<dependency>
 			<groupId>com.quakearts.syshub</groupId>
 			<artifactId>qa-syshub</artifactId>
-			<version>1.0.3</version>
+			<version>1.0.4</version>
 		</dependency>
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-syshub-webapp</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.3</version>
 			<classifier>deploy</classifier>
 		</dependency>
 	<!-- Testing -->	

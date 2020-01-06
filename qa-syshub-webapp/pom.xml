@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-syshub-webapp</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 	<name>Quake Arts SysHub Web Interface</name>
 	<description>Web Interface for managing SysHub</description>
 	<packaging>war</packaging>
@@ -82,7 +82,7 @@
 		<dependency>
 			<groupId>com.quakearts.syshub</groupId>
 			<artifactId>qa-syshub</artifactId>
-			<version>1.0.3</version>
+			<version>1.0.4</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -135,7 +135,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-jdk14</artifactId>
-			<version>1.7.25</version>
+			<version>1.7.28</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
