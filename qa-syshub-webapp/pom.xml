@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-syshub-webapp</artifactId>
-	<version>1.0.3</version>
+	<version>1.0.4</version>
 	<name>Quake Arts SysHub Web Interface</name>
 	<description>Web Interface for managing SysHub</description>
 	<packaging>war</packaging>
