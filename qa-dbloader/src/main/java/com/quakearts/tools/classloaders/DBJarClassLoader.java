@@ -40,7 +40,14 @@ public class DBJarClassLoader extends ClassLoader {
 	 * 
 	 */
 	public DBJarClassLoader() {
-		super(Thread.currentThread().getContextClassLoader());
+		this(null, Thread.currentThread().getContextClassLoader());
+	}
+		
+	/**Constructor that uses the supplied classloader as it's parent
+	 * @param parent the Classloader to use as parent
+	 */
+	public DBJarClassLoader(ClassLoader parent){
+		this(null, parent);
 	}
 	
 	/**Constructor that uses the current thread context classloader as it's parent
@@ -48,9 +55,19 @@ public class DBJarClassLoader extends ClassLoader {
 	 * @param domain the name of the domain to load
 	 */
 	public DBJarClassLoader(String domain) {
-		super(Thread.currentThread().getContextClassLoader());
+		this(domain, Thread.currentThread().getContextClassLoader());
+	}
+
+	/**Constructor that uses the supplied classloader as it's parent
+	 * and passes the domain to the underlying {@linkplain DataStore}
+	 * @param domain the name of the domain to load
+	 * @param parent the Classloader to use as parent
+	 */
+	public DBJarClassLoader(String domain, ClassLoader parent) {
+		super(parent);
 		this.domain = domain;
 	}
+
 	
 	/**Get a class from storage using the passed in name
 	 * @param name the name of the class in persistent storage
