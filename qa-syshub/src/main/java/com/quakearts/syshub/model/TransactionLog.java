@@ -23,7 +23,7 @@ import javax.persistence.Table;
 
 
 @Entity
-@Table(name="transaction_log", schema="dbo")
+@Table(name="transaction_log")
 public class TransactionLog implements java.io.Serializable {
 
 	/**

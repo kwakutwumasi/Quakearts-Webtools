@@ -17,7 +17,7 @@ import javax.persistence.Table;
 
 
 @Entity
-@Table(name="variable_cache", schema="dbo")
+@Table(name="variable_cache")
 public class VariableCache implements java.io.Serializable {
 
 	/**

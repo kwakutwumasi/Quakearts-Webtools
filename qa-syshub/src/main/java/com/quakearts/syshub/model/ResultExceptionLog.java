@@ -23,7 +23,7 @@ import javax.persistence.Table;
 
 
 @Entity
-@Table(name="result_exception_log", schema="dbo")
+@Table(name="result_exception_log")
 public class ResultExceptionLog implements java.io.Serializable {
 
 	/**

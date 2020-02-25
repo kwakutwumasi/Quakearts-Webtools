@@ -34,7 +34,7 @@ import javax.persistence.Transient;
  *
  */
 @Entity
-@Table(name = "agent_configuration", schema = "dbo")
+@Table(name = "agent_configuration")
 public class AgentConfiguration implements Serializable {
 
 	/**

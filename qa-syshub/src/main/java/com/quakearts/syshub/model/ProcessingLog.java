@@ -33,7 +33,7 @@ import javax.persistence.Table;
 
 
 @Entity
-@Table(name="processing_log", schema="dbo")
+@Table(name="processing_log")
 public class ProcessingLog implements Serializable {
 
 	/**

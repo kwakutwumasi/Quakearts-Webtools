@@ -30,7 +30,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 @Entity
-@Table(name="agent_module", schema="dbo")
+@Table(name="agent_module")
 public class AgentModule implements Serializable {
 	/**
 	 * 

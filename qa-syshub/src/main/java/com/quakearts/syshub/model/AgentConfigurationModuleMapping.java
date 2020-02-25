@@ -14,7 +14,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "agent_configuration_module_mapping", schema = "dbo")
+@Table(name = "agent_configuration_module_mapping")
 public class AgentConfigurationModuleMapping implements Serializable {
 
 	/**

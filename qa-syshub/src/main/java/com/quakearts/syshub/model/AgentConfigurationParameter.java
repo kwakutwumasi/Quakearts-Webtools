@@ -26,7 +26,7 @@ import javax.persistence.Transient;
 import com.quakearts.syshub.exception.ConfigurationException;
 
 @Entity
-@Table(name="agent_configuration_parameters", schema="dbo")
+@Table(name="agent_configuration_parameters")
 public class AgentConfigurationParameter implements Serializable {
 
 	/**

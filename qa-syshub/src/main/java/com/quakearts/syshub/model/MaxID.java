@@ -18,7 +18,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="max_id", schema="dbo")
+@Table(name="max_id")
 public class MaxID implements java.io.Serializable {
 
 	/**
