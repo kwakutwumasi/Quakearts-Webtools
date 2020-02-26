@@ -10,6 +10,7 @@
 package com.quakearts.rest.client.test.helpers;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.HashMap;
@@ -49,5 +50,13 @@ public class MockHttpClient extends HttpClient {
 					HttpVerb.valueOf(request.getMethod()), "application/json",
 					additionalHeaders);
 		}
+	}
+	
+	@Override
+	protected byte[] processStream(InputStream is) throws IOException {
+		byte[] output = super.processStream(is);
+		log.trace("Response Content:\n{}\n", output!=null?new String(output):"");
+		
+		return output;
 	}
 }

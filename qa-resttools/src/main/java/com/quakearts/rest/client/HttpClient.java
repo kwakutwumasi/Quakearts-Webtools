@@ -30,6 +30,9 @@ import java.util.Map.Entry;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.quakearts.rest.client.exception.HttpClientException;
 
 /**Base class for creating HTTP clients
@@ -38,12 +41,13 @@ import com.quakearts.rest.client.exception.HttpClientException;
  */
 public abstract class HttpClient implements Serializable {
 
-	private static final String LOCALHOST = "localhost";
-	private static final String LOOPBACK = "127.0.0.1";
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 4822817405423965774L;
+	private static final String LOCALHOST = "localhost";
+	private static final String LOOPBACK = "127.0.0.1";
+	protected static final Logger log = LoggerFactory.getLogger(HttpClient.class);
 	int port;
 	String host;
 	String username;
@@ -59,6 +63,7 @@ public abstract class HttpClient implements Serializable {
 	int connectTimeout;
 	int readTimeout;
 	String charset = "UTF-8";
+	String acceptLanguage = "en-US";
 	
 	/**
 	 * @return the configured port
@@ -187,6 +192,15 @@ public abstract class HttpClient implements Serializable {
 		if(requiringOutputMethodsInclude(method) && requestValue == null) {
 			throw new HttpClientException("Http Verb "+method+" requires requestValue");
 		}
+		log.trace("Sending request to:\n"
+				+ "HOST:{}\n"
+				+ "PORT:{}\n"
+				+ "FILE:{}\n"
+				+ "METHOD:{}", 
+				host,
+				port,
+				file,
+				method);
 	}
 
 	private HttpURLConnection prepareConnection(String file, String requestValue, HttpVerb method, String contentType,
@@ -236,7 +250,7 @@ public abstract class HttpClient implements Serializable {
 		con.addRequestProperty("Accept", "application/json, text/*, application/xml");
 		con.addRequestProperty("User-Agent", userAgent==null? "Generic REST Client":userAgent);
 		con.addRequestProperty("Date", dateFormat.format(new Date()) + " GMT");
-		con.addRequestProperty("Accept-Language", "en-US");
+		con.addRequestProperty("Accept-Language", acceptLanguage);
 	}
 
 	private void addCookies(HttpURLConnection con) {
@@ -264,11 +278,18 @@ public abstract class HttpClient implements Serializable {
 					&& !optionalOutputMethodsInlude(method)) {
 				throw new HttpClientException("Http Verb "+method+" cannot have a requestValue");
 			}
-			con.addRequestProperty("Content-Length",
-					Integer.toString((requestValue.length() / 8)));
+			String contentLength = Integer.toString((requestValue.length() / 8));
+			con.addRequestProperty("Content-Length", contentLength);
 			con.addRequestProperty("Content-Type", contentType+"; charset="+charset.toLowerCase());
 			con.setDoOutput(true);
 			con.getOutputStream().write(requestValue.getBytes(charset));
+			log.trace("Request Body:\n"
+					+ "Content-Type:{}\n"
+					+ "Content-Length:{}\n"
+					+ "Content:\n{}\n",
+					contentType,
+					contentLength,
+					requestValue);
 		}
 	}
 
@@ -276,6 +297,7 @@ public abstract class HttpClient implements Serializable {
 		int responseCode=0;
 		con.connect();
 		responseCode = con.getResponseCode();
+		log.trace("Response Code:{}", responseCode);
 		return responseCode;
 	}
 
@@ -292,7 +314,7 @@ public abstract class HttpClient implements Serializable {
 		
 		if(is!=null){
 			output = processStream(is);
-		}
+		}		
 		return output;
 	}
 
@@ -318,8 +340,10 @@ public abstract class HttpClient implements Serializable {
 				&& responseCode<300 
 				&& con.getHeaderField("Set-Cookie")!=null){
 			for(String value:con.getHeaderFields().get("Set-Cookie"))
-				for(HttpCookie cookie: HttpCookie.parse(value))
+				for(HttpCookie cookie: HttpCookie.parse(value)){
+					log.trace("Storing Cookie:\n{}\n", cookie);
 					cookieManager.getCookieStore().add(null, cookie);
+				}
 		}
 	}
 }

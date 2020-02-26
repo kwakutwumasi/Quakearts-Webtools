@@ -167,7 +167,16 @@ public abstract class HttpClientBuilder<T extends HttpClient> {
 		httpClient.charset = charset;
 		return this;
 	}
-	
+
+	/**Set the acceptLanguage for locale and formatting information
+	 * @param acceptLanguage the name of the ISO language code. Defaults to en-US
+	 * @return this object for method chaining
+	 */
+	public HttpClientBuilder<T> setAcceptLanguageAs(String acceptLanguage){
+		httpClient.acceptLanguage = acceptLanguage;
+		return this;
+	}
+
 	/**Implement this method to return the configured {@link HttpClient}
 	 * @return the configured client
 	 */

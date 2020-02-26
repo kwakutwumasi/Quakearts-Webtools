@@ -26,7 +26,7 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-resttools</artifactId>
-	<version>1.0.3</version>
+	<version>1.0.4</version>
 </dependency>
 
 ```
@@ -71,6 +71,10 @@ The HTTP client has several properties:
 Configuration of the _HTTPClient_ is done by an implementation of _com.quakearts.rest.client.HttpClientBuilder_. This is to separate the creation of the client from it's operation.
 <br /><br />
 Implementers should abstract away the http calls by providing simple methods that handle the conversion of inputs into HTTP calls and converting the responses back to the required output.
+
+##### _com.quakearts.rest.client.HttpClient#processStream()_
+
+Implementers have the option of plugging in their own input stream handler. This it done by overriding the _com.quakearts.rest.client.HttpClient#processStream()_ method. The _java.io.InputStream_ instance is passed to the method untouched and can be read in a manner that is memory efficient.
 
 ##### _com.quakearts.rest.client.HttpObjectClient_
 

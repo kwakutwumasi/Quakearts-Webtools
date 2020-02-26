@@ -387,9 +387,10 @@ public class TestHttpClient {
 						.setResponseActionAs((request, response)->{
 							if(("Basic "+Base64.getEncoder().encodeToString("test:password".getBytes()))
 									.equalsIgnoreCase(request.getHeaderValue("authorization"))
-									&& "Custom Agent".equals(request.getHeaderValue("user-agent")))
+									&& "Custom Agent".equals(request.getHeaderValue("user-agent"))
+									&& "en-UK".equals(request.getHeaderValue("accept-language")))
 								return null;
-														
+							
 							return createNewHttpResponse()
 									.setResponseCodeAs(401)
 									.setContentBytes("Not authorized".getBytes())
@@ -473,6 +474,7 @@ public class TestHttpClient {
 					.setUsernameAs("test")
 					.setPasswordAs("password")
 					.setUserAgentAs("Custom Agent")
+					.setAcceptLanguageAs("en-UK")
 					.thenBuild();
 		
 			assertThat(client.isSecured(), is(false));
