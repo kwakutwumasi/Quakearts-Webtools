@@ -13,15 +13,13 @@ package com.quakearts.webapp.hibernate;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.util.List;
-import java.util.Map;
-import org.hibernate.HibernateException;
+import javax.persistence.PersistenceException;
 import org.hibernate.Session;
-
 import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.DataStoreConnection;
 import com.quakearts.webapp.orm.DataStoreFunction;
 import com.quakearts.webapp.orm.exception.DataStoreException;
-import com.quakearts.webapp.orm.query.QueryOrder;
+import com.quakearts.webapp.orm.query.criteria.CriteriaMap;
 import com.quakearts.webapp.orm.stringconcat.OrmStringConcatUtil;
 
 public class HibernateSessionDataStore extends HibernateBean implements DataStore {
@@ -42,7 +40,7 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 	public HibernateSessionDataStore() {
 		try {
 			session = HibernateHelper.getCurrentSession();
-		} catch (HibernateException e) {
+		} catch (PersistenceException e) {
 			throw new DataStoreException(e);
 		}
 	}
@@ -51,7 +49,29 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 		try {
 			this.domain = domain;
 			session = HibernateHelper.getSession(domain);
-		} catch (HibernateException e) {
+		} catch (PersistenceException e) {
+			throw new DataStoreException(e);
+		}
+	}
+	
+	@Override
+	public <E> List<E> list(Class<E> clazz) {
+		try {
+			return findObjects(clazz, null, session);
+		} catch (PersistenceException e) {
+			throw new DataStoreException(e);
+		}
+	}
+
+	@Override
+	public <E> ListBuilder<E> find(Class<E> clazz) {
+		return new ListBuilder<>(clazz, this::findObjectsFunction);
+	}
+	
+	private <E> List<E> findObjectsFunction(Class<E> clazz, CriteriaMap criteriaMap){
+		try {
+			return findObjects(clazz, criteriaMap, session);
+		} catch (PersistenceException e) {
 			throw new DataStoreException(e);
 		}
 	}
@@ -65,7 +85,7 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 			if(!shouldSkipConcatenation())
 				OrmStringConcatUtil.trimStrings(object);
 			session.save(object);			
-		} catch (HibernateException e) {
+		} catch (PersistenceException e) {
 			throw new DataStoreException(e);
 		}
 	}
@@ -77,7 +97,7 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 	public <T> T get(Class<T> clazz, Serializable id) {
 		try {
 			return session.get(clazz, id);
-		} catch (HibernateException e) {
+		} catch (PersistenceException e) {
 			throw new DataStoreException(e);
 		}
 	}
@@ -91,7 +111,7 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 			if(!shouldSkipConcatenation())
 				OrmStringConcatUtil.trimStrings(object);
 			session.update(object);
-		} catch (HibernateException e) {
+		} catch (PersistenceException e) {
 			throw new DataStoreException(e);
 		}
 	}
@@ -103,19 +123,7 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 	public void delete(Object object) {
 		try {
 			session.delete(object);
-		} catch (HibernateException e) {
-			throw new DataStoreException(e);
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see com.quakearts.webapp.orm.DataStore#list(java.lang.Class, java.util.Map, com.quakearts.webapp.orm.query.QueryOrder[])
-	 */
-	@Override
-	public <T> List<T> list(Class<T> clazz, Map<String, Serializable> parameters, QueryOrder...orders) {
-		try {
-			return findObjects(clazz, parameters, session, orders);
-		} catch (HibernateException e) {
+		} catch (PersistenceException e) {
 			throw new DataStoreException(e);
 		}
 	}
@@ -129,7 +137,7 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 			if(!shouldSkipConcatenation())
 				OrmStringConcatUtil.trimStrings(object);
 			session.saveOrUpdate(object);
-		} catch (HibernateException e) {
+		} catch (PersistenceException e) {
 			throw new DataStoreException(e);
 		}
 	}
@@ -142,7 +150,7 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 	public <T> T refresh(T object) {
 		try {
 			return (T) session.merge(object);
-		} catch (HibernateException e) {
+		} catch (PersistenceException e) {
 			throw new DataStoreException(e);
 		}
 	}
@@ -168,7 +176,7 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 	public void flushBuffers() {
 		try {
 			session.flush();
-		} catch (HibernateException e) {
+		} catch (PersistenceException e) {
 			throw new DataStoreException(e);
 		} 
 	}
@@ -180,7 +188,7 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 	public void executeFunction(DataStoreFunction function) {
 		try {
 			session.doWork(connection->function.execute(new SessionDataStoreConnection(connection, session)));			
-		} catch (HibernateException e) {
+		} catch (PersistenceException e) {
 			throw new DataStoreException(e);
 		}
 	}
@@ -206,20 +214,19 @@ public class HibernateSessionDataStore extends HibernateBean implements DataStor
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public String getConfigurationProperty(String propertyName) {
 		if(domain!=null)
-			return (String) HibernateHelper.getRegistryBuilder(domain).getSettings().get(propertyName);
+			return HibernateHelper.getConfiguration(domain).getProperty(propertyName);
 		else
-			return (String) HibernateHelper.getRegistryBuilder().getSettings().get(propertyName);			
+			return HibernateHelper.getCurrentConfiguration().getProperty(propertyName);			
 	}
 
 	@Override
 	public void clearBuffers() {
 		try {
 			session.getTransaction().markRollbackOnly();
-		} catch (HibernateException e) {
+		} catch (PersistenceException e) {
 			throw new DataStoreException(e);
 		}
 	}

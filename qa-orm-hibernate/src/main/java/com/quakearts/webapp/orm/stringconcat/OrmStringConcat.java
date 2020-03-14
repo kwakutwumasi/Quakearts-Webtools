@@ -47,26 +47,10 @@ class OrmStringConcat {
 						&& descriptor.getWriteMethod()!=null
 						&& descriptor.getReadMethod()!=null){
 
-					Field field = null;
-					try {
-						field = beanClass.getDeclaredField(descriptor.getName());
-					} catch (NoSuchFieldException | SecurityException e) {
-						try {
-							field = getField(descriptor.getName(), beanClass.getSuperclass());
-						} catch (NoSuchFieldException e1) {
-						}
-					}
+					Field field = getField(beanClass, descriptor);
 					
-					if(field!=null){
-						if(field.getAnnotation(Transient.class)!=null)
-							continue;
-					} else {
-						if(descriptor.getReadMethod().getAnnotation(Transient.class)!=null)
-							continue;
-						
-						if(descriptor.getWriteMethod().getAnnotation(Transient.class)!=null)
-							continue;
-					}
+					if(isTransient(field, descriptor))
+						continue;
 					
 					fieldMap.put(descriptor.getName(),
 							new ConcatenatorEntry(beanClass.getName(), 
@@ -81,6 +65,29 @@ class OrmStringConcat {
 		}
 		
 		this.beanClass = beanClass;
+	}
+
+	private boolean isTransient(Field field, PropertyDescriptor descriptor) {
+		if(field != null){
+			return field.getAnnotation(Transient.class) != null;
+		} else {
+			return descriptor.getReadMethod().getAnnotation(Transient.class) != null
+					|| descriptor.getWriteMethod().getAnnotation(Transient.class) != null;
+		}
+	}
+
+	protected Field getField(Class<?> beanClass, PropertyDescriptor descriptor) {
+		Field field = null;
+		try {
+			field = beanClass.getDeclaredField(descriptor.getName());
+		} catch (NoSuchFieldException | SecurityException e) {
+			try {
+				field = getField(descriptor.getName(), beanClass.getSuperclass());
+			} catch (NoSuchFieldException e1) {
+				//Do nothing
+			}
+		}
+		return field;
 	}
 	
 	String concatenate(String value, int maxLength){
@@ -167,30 +174,39 @@ class OrmStringConcat {
 				return;
 			
 			for(ConcatenatorEntry entry: fieldMap.values()){
-				Object valueObject;
-				try {
-					valueObject = entry.getMethodHandle.invoke(object);
-				} catch (Throwable e) {
-					throw new DataStoreException("Unable to get string to concat", e);
-				}
-				if(valueObject==null)
-					continue;
-				
-				String value = valueObject.toString();
-				
-				String trimedValue = concatenate(value, entry.fieldLength);
-				if(value != trimedValue){
-					OrmStringConcatUtil.notify(beanClass, object, value, trimedValue);
-
-					try {
-						entry.writeMethodHandle.invoke(object, trimedValue);
-					} catch (Throwable e) {
-						throw new DataStoreException("Unable to concat string", e);
-					}
-				}
+				Object valueObject = getValue(object, entry);
+				trim(object, entry, valueObject);
 			}
 		} else {
 			throw new IllegalArgumentException("Object is not a subtype of "+beanClass.getName());
+		}
+	}
+
+	protected Object getValue(Object object, ConcatenatorEntry entry) {
+		Object valueObject;
+		try {
+			valueObject = entry.getMethodHandle.invoke(object);
+		} catch (Throwable e) {
+			throw new DataStoreException("Unable to get string to concat", e);
+		}
+		return valueObject;
+	}
+
+	protected void trim(Object object, ConcatenatorEntry entry, Object valueObject) {
+		if (valueObject == null)
+			return;
+
+		String value = valueObject.toString();
+
+		String trimedValue = concatenate(value, entry.fieldLength);
+		if (!value.equals(trimedValue)) {
+			OrmStringConcatUtil.notify(beanClass, object, value, trimedValue);
+
+			try {
+				entry.writeMethodHandle.invoke(object, trimedValue);
+			} catch (Throwable e) {
+				throw new DataStoreException("Unable to concat string", e);
+			}
 		}
 	}
 }

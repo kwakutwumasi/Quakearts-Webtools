@@ -2,7 +2,7 @@ package com.quakearts.orm.test;
 
 import java.io.Serializable;
 
-public class ORMTest implements Serializable {
+public class ORMTestObject implements Serializable {
 
 	/**
 	 * 
@@ -10,7 +10,7 @@ public class ORMTest implements Serializable {
 	private static final long serialVersionUID = 6571015626508207L;
 	private String id;
 	
-	public ORMTest(String id) {
+	public ORMTestObject(String id) {
 		this.id = id;
 	}
 	
@@ -34,7 +34,7 @@ public class ORMTest implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ORMTest other = (ORMTest) obj;
+		ORMTestObject other = (ORMTestObject) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;

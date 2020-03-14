@@ -26,7 +26,7 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-orm</artifactId>
-	<version>2.3.1</version>
+	<version>2.4.0</version>
 </dependency>
 
 ```
@@ -93,21 +93,48 @@ The _find()_ method is a fluid API for searching the data store. Parameters are 
 			.thenList();
 ```
 
-For these API methods every search parameter must match the data. This is analogous to using the 'and' operator to join each search term in SQL. The fluid API can also be terminated with _thenGetFirst()_ which returns a java.util.Optional. It may or may not contain the first element of the list from the search, depending on the result of the search.
-<br /><br />
-_list()_ comes in two methods: one to list all objects of a certain class, and another to list data matching the parameters passed to it. The latter is a more advanced than the _find()_ method. It makes it possible to create complex 'and'/'or' search paramters. This is done using the _com.quakearts.webapp.orm.query.helper.ParameterMapBuilder_ 
+For these API methods every search parameter must match the data. This is analogous to using the 'and' operator to join each search term in SQL. 
+In order to return items matching any of the filters the _usingAnyMatchingFilter()_ method is can be called.
 
 ```java
-	List<SalesPart> salesParts = dataStore.list(SalesPart.class, 	
-		ParameterMapBuilder.createParameters().disjoin().add("product.name", "Altima")
-					.add("product.id", 2).conjoin()
-					.add("product.brand.name", "Audi")
-					.add("product.brand.id", 1).build());
+	List<ORMTest> list = dataStore.find(ORMTest.class)
+			.usingAnyMatchingFilter()
+			.filterBy("testValue").withAValueEqualTo("Test Value")
+			.filterBy("testVariable").withAValueLike("Test Variable")
+			.filterBy("testRangeBetween").withValues().between(0).and(1)
+			.filterBy("testRangeFrom").withValues().startingFrom(0)
+			.filterBy("testRangeTo").withValues().upTo(1)
+			.filterBy("testChoices").withAValueEqualToOneOf("Choice1","Choice2","Choice3")
+			.useAResultLimitOf(3)
+			.orderBy(new QueryOrder("testOrder1", false))
+			.orderBy(new QueryOrder("testOrder2", true))
+			.thenList();
 ```
 
-The _ParameterMapBuilder_ is a fluid api for building a _java.util.Map_ of search parameters. The _disjoin()_ method creates a disjoint set of parameters, i.e. return data that matches one or more the parameters. This is analogous to using the 'or' operator to join each search term in SQL. The _conjoin()_ method creates a conjoined set of parameters, i.e. every search parameter must match the data, just like using the 'and' operator to join each search term in SQL. This is the default behavior.
+The fluid API can also be terminated with _thenGetFirst()_ which returns a java.util.Optional. It may or may not contain the first element of the list from the search, depending on the result of the search.
+The _find()_ provides a more advanced method of creating search criteria. This is done by passing a _com.quakearts.webapp.orm.query.criteria.CriteriaMap_ instance to the _using(CriteriaMap)_ method of the _com.quakearts.webapp.orm.DataStore.ListBuilder<T>_. The _com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder_ is used to create the _CriteriaMap_ instance.  It makes it possible to create complex 'and'/'or' search paramters:
+
+```java
+	CriteriaMap criteria = CriteriaMapBuilder.createCriteria()
+					.requireAnyOfTheFollowing()
+						.property("quantity").mustBeEqualToOneOf(6)
+						.or()
+							.requireAllOfTheFollowing()
+								.property("quantity").mustBeEqualTo(3)
+								.and()
+								.property("product").mustBeEqualTo(product)
+							.closeSet()
+						.finish()
+
+	List<SalesPart> salesParts = dataStore.find(SalesPart.class).using(criteria)
+		.thenList();
+```
+
+The _requireAnyOfTheFollowing()_ method creates a disjoint set of search criteria, i.e. any data that matches one or more of the criteria will be returned. This is analogous to using the 'or' operator to join each search term in SQL. The _requireAllOfTheFollowing()_ method creates a conjoined set of parameters, i.e. every search parameter must match the data, just like using the 'and' operator to join each search term in SQL. This is the default behavior.
 <br /><br />
-The rest of the methods deal with data store related tasks. _refresh()_ can be used to fetch the latest version of data from the data store. This is useful for usage instances where the data object may get out of sync with the data in the data store. _flushBuffers()_ is useful for forcing the data store to push its cached data to the underlying storage. _getConfigurationProperty()_ returns configuration parameters. _executeFunction()_ exposes data store specific API to users.
+_list()_ returns all instances of the given class.
+<br /><br />
+The rest of the methods deal with data store related tasks. _refresh()_ can be used to fetch the latest version of data from the data store. This is useful for usage instances where the data object may get out of sync with the data in the data store. _flushBuffers()_ is useful for forcing the data store to push its cached data to the underlying storage. _getConfigurationProperty()_ returns configuration parameters. _executeFunction()_ exposes data store specific API to users. 
 
 ```java
 	dataStore.executeFunction((connector)->{
@@ -116,3 +143,5 @@ The rest of the methods deal with data store related tasks. _refresh()_ can be u
 		...
 	})
 ```
+
+_clearBuffers()_ undoes any action. If there were any updates, saves or deletes, they will be reversed; the _DataStore_ is expected to be in the same state it was before any of the actions before _clearBuffers()_ was called. The actions that are undone depend on the semantics of a transaction as defined by the underlying _DataStore_ implementation. A transaction here represents a unit of work; each action within the unit of work guaranteed to have completed without errors. Once a transaction is complete (what is termed as a 'commit'), the transaction is determined to be irreversible. Calls to _clearBuffers()_ will have no effect.

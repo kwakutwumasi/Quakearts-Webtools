@@ -24,5 +24,5 @@ public interface DataStoreFunction {
 	 * @param con The interface wrapper
 	 * @throws DataStoreException
 	 */
-	public void execute(DataStoreConnection con) throws DataStoreException;
+	public void execute(DataStoreConnection con);
 }

@@ -30,7 +30,6 @@ import org.hamcrest.Matcher;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,12 +47,11 @@ import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.DataStoreFactory;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.webapp.orm.query.Choice;
-import com.quakearts.webapp.orm.query.QueryOrder;
-import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
+import com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder;
 
-import static com.quakearts.webapp.orm.query.helper.ParameterMapBuilder.createParameters;
 import static com.quakearts.test.ErrorThrowingSessionBuilder.*;
-
+import static com.quakearts.webapp.orm.query.QueryOrder.property;
+import static com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder.createCriteria;
 
 public class OrmDataStoreTest {
 
@@ -158,14 +156,21 @@ public class OrmDataStoreTest {
 		printInventory(list);
 		
 		// SELECT FROM Inventory WHERE product = Product(5,A6)
-		list = dataStore.list(Inventory.class, createParameters().add("product", product).build());
+		list = dataStore.find(Inventory.class)
+				.using(createCriteria().property("product").mustBeEqualTo(product)
+				.finish())
+			.thenList();
 
 		assertThat("Invalid number of items returned:" + list.size(), list.size(), is(1));
 		printInventory(list);
 
 		// SELECT FROM Inventory WHERE quantity = 2 or quantity = 6
-		list = dataStore.list(Inventory.class, createParameters().addChoices("quantity", 2, 6).build(),
-				new QueryOrder("id", false));
+		list = dataStore.find(Inventory.class).using(
+					createCriteria()
+						.property("quantity").mustBeEqualToOneOf(2, 6)
+					.orderBy(property("id").descending())
+					.finish())
+				.thenList();
 
 		assertTrue("Nothing returned", list != null);
 		assertThat("Invalid number of items returned:" + list.size(), list.size(), is(2));
@@ -176,9 +181,13 @@ public class OrmDataStoreTest {
 
 		// SELECT FROM Inventory WHERE quantity = 4 or product =
 		// product(5,A6)
-		list = dataStore.list(Inventory.class,
-				createParameters().disjoin().add("quantity", 4).add("product", product).build(),
-				new QueryOrder("quantity", true));
+		list = dataStore.find(Inventory.class).using(createCriteria()
+					.requireAnyOfTheFollowing()
+						.property("quantity").mustBeEqualTo(4)
+						.property("product").mustBeEqualTo(product)
+					.orderBy(property("quantity").ascending())
+					.finish())
+			.thenList();
 
 		assertTrue("Nothing returned", list != null);
 		assertThat("Invalid number of items returned:" + list.size(), list.size(), is(2));
@@ -188,8 +197,11 @@ public class OrmDataStoreTest {
 
 		// SELECT FROM Inventory WHERE quantity = 3 and product =
 		// product(5,A6)
-		list = dataStore.list(Inventory.class,
-				createParameters().conjoin().add("quantity", 3).add("product", product).build());
+		list = dataStore.find(Inventory.class).using(createCriteria()
+				.requireAllOfTheFollowing()
+					.property("quantity").mustBeEqualTo(3)
+					.property("product").mustBeEqualTo(product).finish())
+			.thenList();
 
 		assertTrue("Nothing returned", list != null);
 		assertThat("Invalid number of items returned:" + list.size(), list.size(), is(1));
@@ -197,22 +209,39 @@ public class OrmDataStoreTest {
 
 		// SELECT FROM Inventory WHERE (quantity = 3 and product =
 		// product(5,A6)) or (quantity = 6)
-		list = dataStore.list(Inventory.class, createParameters().disjoin().conjoin().add("quantity", 3)
-				.add("product", product).endjoin().addChoices("quantity", 6).build());
+		list = dataStore.find(Inventory.class)
+				.using(createCriteria()
+					.requireAnyOfTheFollowing()
+						.property("quantity").mustBeEqualToOneOf(6)
+						.or()
+							.requireAllOfTheFollowing()
+								.property("quantity").mustBeEqualTo(3)
+								.and()
+								.property("product").mustBeEqualTo(product)
+							.closeSet()
+						.finish())
+				.thenList();
 
 		assertTrue("Nothing returned", list != null);
 		assertThat("Invalid number of items returned:" + list.size(), list.size(), is(2));
 		printInventory(list);
 
 		// SELECT FROM Inventory WHERE (quantity between 3 and 6)
-		list = dataStore.list(Inventory.class, createParameters().addRange("quantity", 3, 6).build());
+		list = dataStore.find(Inventory.class)
+				.using(createCriteria().requireThat()
+						.property("quantity").mustBeBetween(3).and(6)
+					.finish())
+				.thenList();
 		assertTrue("Nothing returned", list != null);
 		assertThat("Invalid number of items returned:" + list.size(), list.size(), is(4));
 		printInventory(list);
 
 		// SELECT FROM Product WHERE (description like %Salon)
-		List<Product> products = dataStore.list(Product.class,
-				createParameters().addVariableString("description", "%Salon").build());
+		List<Product> products = dataStore.find(Product.class)
+				.using(createCriteria()
+						.require().property("description").mustBeLike("%Salon")
+					.finish())
+				.thenList();
 
 		assertTrue(products != null);
 		assertThat("Invalid number of items returned:" + products.size(), products.size(), is(3));
@@ -225,14 +254,20 @@ public class OrmDataStoreTest {
 					foundProduct.getDescription()));
 		}
 
-		list = dataStore.list(Inventory.class, createParameters().setMaxResults(3).build());
+		list = dataStore.find(Inventory.class)
+				.using(createCriteria().setMaxResultsAs(3)
+			.finish()).thenList();
 		assertThat("Max results did not work. Returned "+list.size()+" instead of 3", list.size(), is(3));
 		printInventory(list);
 
-		list = dataStore.list(Inventory.class, createParameters().disjoin()
-				.addRange("quantity", 0, 3)
-				.addRange("quantity", 4, 6)
-				.setMaxResults(3).build());
+		list = dataStore.find(Inventory.class)
+				.using(createCriteria()
+						.requireAnyOfTheFollowing()
+						.property("quantity").mustBeBetween(0).and(3)
+						.property("quantity").mustBeBetween(4).and(6)
+						.setMaxResultsAs(3)
+					.finish())
+				.thenList();
 		assertThat("Max results did not work. Returned "+list.size()+" instead of 3", list.size(), is(3));
 		printInventory(list);
 		
@@ -248,19 +283,31 @@ public class OrmDataStoreTest {
 		
 		dataStore.flushBuffers();
 		//SELECT FROM SalesPart WHERE product.brand.name = "Nissan"
-		List<SalesPart> salesParts = dataStore.list(SalesPart.class, createParameters().add("product.brand.name", "Nissan").build());
+		List<SalesPart> salesParts = dataStore.find(SalesPart.class)
+				.using(createCriteria()
+						.property("product.brand.name").mustBeEqualTo("Nissan")
+			.finish()).thenList();
 		assertThat("Failed to list with subcriteria",salesParts.size(), is(2));
 		printSalesPart(salesParts);
-		salesParts = dataStore.list(SalesPart.class, createParameters().disjoin().add("product.name", "Altima")
-				.add("product.brand.name", "Audi").build());
+		
+		salesParts = dataStore.find(SalesPart.class)
+				.using(createCriteria().requireAnyOfTheFollowing()
+						.property("product.name").mustBeEqualTo("Altima")
+						.property("product.brand.name").mustBeEqualTo("Audi")
+					.finish())
+				.thenList();
 
 		assertThat("Failed to list disjoint with subcriteria", salesParts.size(), is(2));
 		printSalesPart(salesParts);
 
-		salesParts = dataStore.list(SalesPart.class, createParameters().disjoin().add("product.name", "Altima")
-				.add("product.id", 2)
-				.add("product.brand.name", "Audi")
-				.add("product.brand.id", 1).build());
+		salesParts = dataStore.find(SalesPart.class)
+				.using(createCriteria().requireAnyOfTheFollowing()
+						.property("product.name").mustBeEqualTo("Altima")
+						.property("product.id").mustBeEqualTo(2)
+						.property("product.brand.name").mustBeEqualTo("Audi")
+						.property("product.brand.id").mustBeEqualTo(1)
+					.finish())
+				.thenList();
 
 		assertThat("Failed to list disjoint with subcriteria", salesParts.size(), is(3));
 		printSalesPart(salesParts);
@@ -330,15 +377,16 @@ public class OrmDataStoreTest {
 	public ExpectedException expectedException = ExpectedException.none();
 	
 	@Test
-	public void testInvalidCoice() throws Exception {
+	public void testInvalidChoice() throws Exception {
 		expectedException.expect(DataStoreException.class);
 		expectedException.expectCause(isCause(
 				new HibernateException("Invalid choice list for parameter id. "
 						+ "Choice list must be greater than zero.")));
 		DataStore dataStore = DataStoreFactory.getInstance().getDataStore();
-		dataStore.list(Inventory.class, ParameterMapBuilder
-				.createParameters().add("id", new Choice())
-				.build());
+		dataStore.find(Inventory.class).using(CriteriaMapBuilder
+				.createCriteria().property("id").mustBeEqualTo(new Choice())
+				.finish())
+			.thenList();
 	}
 	
 	
@@ -419,14 +467,17 @@ public class OrmDataStoreTest {
 	public void testOtherHibernateORMMethods() throws Exception {
 		Configuration configuration = HibernateHelper.getCurrentConfiguration();
 		assertTrue(configuration == HibernateHelper.getCurrentConfiguration());
-		
-		ServiceRegistry serviceRegistry = HibernateHelper.getRegistry();
-		assertTrue(serviceRegistry == HibernateHelper.getRegistry());
-		
+				
 		configuration = HibernateHelper.getConfiguration("testdomain");
 		assertTrue(configuration == HibernateHelper.getConfiguration("testdomain"));
 		
 		HibernateSessionDataStore dataStore = (HibernateSessionDataStore) DataStoreFactory
+				.getInstance().getDataStore();
+		
+		assertThat(dataStore.getSession(), is(notNullValue()));
+		assertThat(dataStore.getDomain(), is(nullValue()));
+
+		dataStore = (HibernateSessionDataStore) DataStoreFactory
 				.getInstance().getDataStore("testdomain");
 		
 		assertThat(dataStore.getSession(), is(notNullValue()));

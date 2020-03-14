@@ -12,89 +12,85 @@ package com.quakearts.webapp.hibernate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.hibernate.Criteria;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
 
 import com.quakearts.webapp.orm.query.Choice;
 import com.quakearts.webapp.orm.query.Not;
 import com.quakearts.webapp.orm.query.QueryOrder;
 import com.quakearts.webapp.orm.query.Range;
 import com.quakearts.webapp.orm.query.VariableString;
-import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
+import com.quakearts.webapp.orm.query.criteria.CriteriaMap;
 
 public abstract class HibernateBean {
 
-	@SuppressWarnings("unchecked")
-	protected <T> List<T> findObjects(Class<T> clazz, Map<String, Serializable> parameters, Session session,
-			QueryOrder... orders) throws HibernateException {
-		Criteria query = session.createCriteria(clazz);
-		QueryContext context = new QueryContext(query);
-		if(parameters != null)
-			handleParameters(parameters, context);
+	protected <T> List<T> findObjects(Class<T> clazz, CriteriaMap parameters, Session session){
+		CriteriaBuilder builder = session.getCriteriaBuilder();
+		CriteriaQuery<T> query = builder.createQuery(clazz);
+		Root<T> queryRoot = query.from(clazz);
+		query.select(queryRoot);
+		QueryContext<T> context = new QueryContext<>(builder, query, queryRoot);
 		
-		for (QueryOrder order : orders) {
-			if (order.isAscending())
-				query.addOrder(Order.asc(order.getProperty()));
-			else
-				query.addOrder(Order.desc(order.getProperty()));
+		if(parameters != null){
+			handleParameters(parameters, context);
+			
+			if(parameters.getOrder() != null && parameters.getOrder().length>0){
+				List<Order> orderList = new ArrayList<>();
+				for (QueryOrder order : parameters.getOrder()) {
+					if (order.isAscending())
+						orderList.add(builder.asc(queryRoot.get(order.getProperty())));
+					else
+						orderList.add(builder.desc(queryRoot.get(order.getProperty())));
+				}
+				query.orderBy(orderList);
+			}
 		}
-
-		return (List<T>) context.getQuery().list();
+		
+		if(context.getMaxResults()>0)
+			return session.createQuery(context.getQuery())
+					.setMaxResults(context.getMaxResults()).getResultList();
+		else
+			return session.createQuery(context.getQuery()).getResultList();
 	}
 
-	private void handleParameters(Map<String, Serializable> parameters, QueryContext context) {
+	private <T> void handleParameters(Map<String, Serializable> parameters, QueryContext<T> context) {
 		for (Entry<String, Serializable> entry : parameters.entrySet()) {
-			if (entry.getKey() == ParameterMapBuilder.MAXRESULTS) {
-				context.getQuery().setMaxResults((int) entry.getValue());
+			if (CriteriaMap.MAXRESULTS.equals(entry.getKey())) {
+				context.setMaxResults((int) entry.getValue());
 			} else {
-				context.getQuery().add(handleParameter(entry.getKey(), entry.getValue(), context));
+				context.getQuery().where(handleParameter(entry.getKey(), entry.getValue(), context));
 			}
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private Criterion handleParameter(String key, Serializable value, QueryContext context) {
-		Criterion criterion;
-		if (key == ParameterMapBuilder.CONJUNCTION && value instanceof Map) {
+	private<T> Predicate[] handleParameter(String key, Serializable value, QueryContext<T> context) {
+		List<Predicate> criterion = new ArrayList<>();
+		if (CriteriaMap.CONJUNCTION.equals(key) && value instanceof Map) {
 			Map<String, Serializable> conjoinedParameters = (Map<String, Serializable>) value;
-			criterion = handleJunction(conjoinedParameters, ParameterMapBuilder.CONJUNCTION, context);
-		} else if (key == ParameterMapBuilder.DISJUNCTION && value instanceof Map) {
+			handleJunction(conjoinedParameters, CriteriaMap.CONJUNCTION, context, criterion);
+		} else if (CriteriaMap.DISJUNCTION.equals(key) && value instanceof Map) {
 			Map<String, Serializable> disjoinedParameters = (Map<String, Serializable>) value;
-			criterion = handleJunction(disjoinedParameters, ParameterMapBuilder.DISJUNCTION, context);
-		} else if (value instanceof Choice) {
-			Choice choice = (Choice) value;
-			if (choice.getChoices().isEmpty())
-				throw new HibernateException("Invalid choice list for parameter "+key
-						+". Choice list must be greater than zero.");
-
-			if (choice.getChoices().size() == 1)
-				criterion = createCriterion(key, choice.getChoices().get(0), context);
-			else if (choice.getChoices().size() == 2)
-				criterion = Restrictions.or(createCriterion(key, choice.getChoices().get(0), context),
-						createCriterion(key, choice.getChoices().get(1), context));
-			else {
-				Criterion[] choiceCriteria = new Criterion[choice.getChoices().size()];
-				for (int i = 0; i < choice.getChoices().size(); i++) {
-					choiceCriteria[i] = createCriterion(key, choice.getChoices().get(i), context);
-				}
-				criterion = Restrictions.or(choiceCriteria);
-			}
-		} else if (value instanceof Not) {
-			criterion = Restrictions.not(handleParameter(key,((Not) value).getValue(), context));
+			handleJunction(disjoinedParameters, CriteriaMap.DISJUNCTION, context, criterion);
 		} else {
-			criterion = createCriterion(key, value, context);
+			criterion.add(createCriterion(key, value, context));
 		}
 
-		return criterion;
+		return criterion.toArray(new Predicate[criterion.size()]);
 	}
 	
 	/*Algorithm:
@@ -109,78 +105,127 @@ public abstract class HibernateBean {
 	 * 
 	 */
 	
-	private String handleKey(String key, QueryContext context){
-		if(key.indexOf(".")!=-1){
+	@SuppressWarnings("rawtypes")
+	private<T> Path handleKey(String key, QueryContext<T> context){
+		if(key.indexOf('.')!=-1){
 			String[] keyParts = key.split("\\.");
-			StringBuilder aliasBuilder = new StringBuilder();
 
-			aliasBuilder.append(keyParts[0]);
+			Path path= context.getRoot().get(keyParts[0]);
 			
-			for(int index=1;index < keyParts.length-1; index++)
-				aliasBuilder.append(".").append(keyParts[index]);
-			
-			if(!context.getKeys().contains(aliasBuilder.toString())){
-				StringBuilder associationPathBuilder = new StringBuilder(keyParts[0]);
-				for(int index=1;index<keyParts.length-1; index++){
-					associationPathBuilder.append(".").append(keyParts[index]);
-				}
-				context.getQuery().createCriteria(associationPathBuilder.toString(), 
-						keyParts[keyParts.length-2]);
-				context.getKeys().add(aliasBuilder.toString());
-			}
-			
-			return keyParts[keyParts.length-2]+"."+keyParts[keyParts.length-1];
+			for(int index=1;index < keyParts.length; index++)
+				path = path.get(keyParts[index]);
+						
+			return path;
 		} else {
-			return key;
+			return context.getRoot().get(key);
 		}
 	}
 
-	private Criterion handleJunction(Map<String, Serializable> junctionParameters, String type, QueryContext context) {
-		ArrayList<Criterion> criteria = null;
-		criteria = new ArrayList<>();
+	private <T> void handleJunction(Map<String, Serializable> junctionParameters, String type, 
+			QueryContext<T> context, List<Predicate> criterion) {
+		ArrayList<Predicate> criteria = new ArrayList<>();
 
 		for (Entry<String, Serializable> entry : junctionParameters.entrySet()) {
-			criteria.add(handleParameter(entry.getKey(), entry.getValue(), context));
+			criteria.addAll(Arrays.asList(handleParameter(entry.getKey(), entry.getValue(), context)));
 		}
 
-		Criterion[] criteriaArray = criteria.toArray(new Criterion[criteria.size()]);
-		if (type == ParameterMapBuilder.CONJUNCTION)
-			return (Restrictions.and(criteriaArray));
+		Predicate[] criteriaArray = criteria.toArray(new Predicate[criteria.size()]);
+		if (CriteriaMap.CONJUNCTION.equals(type)) //Only recognize exact mapping
+			criterion.add(context.getBuilder().and(criteriaArray));
 		else
-			return (Restrictions.or(criteriaArray));
+			criterion.add(context.getBuilder().or(criteriaArray));
 	}
 
-	private Criterion createCriterion(String key, Serializable value, QueryContext context) {
-		key = handleKey(key, context);
-		if (value instanceof Range) {
-			Range range = (Range) value;
-			if (range.getFrom() != null && range.getTo() == null)
-				return Restrictions.ge(key, ((Range) value).getFrom());
-			else if (range.getFrom() == null && range.getTo() != null)
-				return Restrictions.le(key, ((Range) value).getTo());
-
-			return Restrictions.between(key, range.getFrom(), range.getTo());
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private<T> Predicate createCriterion(String key, Serializable value, QueryContext<T> context) {
+		Path path = handleKey(key, context);
+		if (value instanceof Choice) {
+			return handleChoice(key, value, context);
+		} else if (value instanceof Not) {
+			return context.getBuilder().not(createCriterion(key,((Not) value).getValue(), context));
+		} else if (value instanceof Range) {
+			return handleRange(path, value, context);
 		} else if (value instanceof VariableString) {
-			return Restrictions.ilike(key, ((VariableString) value).getValue());
+			return context.getBuilder().like(path, ((VariableString) value).getValue());
 		} else {
-			return Restrictions.eq(key, value);
+			return context.getBuilder().equal(path, value);
 		}
+	}
+
+	protected <T> Predicate handleChoice(String key, Serializable value, QueryContext<T> context) {
+		Choice choice = (Choice) value;
+		if (choice.getChoices().isEmpty())
+			throw new HibernateException("Invalid choice list for parameter "+key
+					+". Choice list must be greater than zero.");
+
+		if (choice.getChoices().size() == 1) {
+			return createCriterion(key, choice.getChoices().get(0), context);
+		} else if (choice.getChoices().size() == 2){
+			return context.getBuilder().or(createCriterion(key, choice.getChoices().get(0), context),
+					createCriterion(key, choice.getChoices().get(1), context));
+		} else {
+			Predicate[] choiceCriteria = new Predicate[choice.getChoices().size()];
+			for (int i = 0; i < choice.getChoices().size(); i++) {
+				choiceCriteria[i] = createCriterion(key, choice.getChoices().get(i), context);
+			}
+			return context.getBuilder().or(choiceCriteria);
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	protected <T> Predicate handleRange(Path path, Serializable value, QueryContext<T> context) {
+		Range range = (Range) value;
+		if (range.getFrom() != null && range.getTo() == null)
+			return context.getBuilder().greaterThanOrEqualTo(path, 
+					convert(((Range) value).getFrom()));
+		else if (range.getFrom() == null && range.getTo() != null)
+			return context.getBuilder().lessThanOrEqualTo(path, 
+					convert(((Range) value).getTo()));
+
+		return context.getBuilder().between(path, 
+				convert(range.getFrom()), convert(range.getTo()));
+	}
+
+	@SuppressWarnings("unchecked")
+	private<T> Comparable<T> convert(Serializable value) {
+		return (Comparable<T>) value;
 	}
 }
 
-class QueryContext {
-	private Criteria query;
+class QueryContext<T> {
+	private CriteriaBuilder builder;
+	private CriteriaQuery<T> query;
+	private Root<T> root;
 	private Set<String> keys = new HashSet<>();
+	private int maxResults;
 	
-	public QueryContext(Criteria query) {
+	public QueryContext(CriteriaBuilder builder, CriteriaQuery<T> query, Root<T> queryRoot) {
+		this.builder = builder;
 		this.query = query;
+		this.root = queryRoot;
 	}
 
-	public Criteria getQuery() {
+	public CriteriaBuilder getBuilder() {
+		return builder;
+	}
+	
+	public CriteriaQuery<T> getQuery() {
 		return query;
+	}
+	
+	public Root<T> getRoot() {
+		return root;
 	}
 
 	public Set<String> getKeys() {
 		return keys;
+	}
+
+	public int getMaxResults() {
+		return maxResults;
+	}
+
+	public void setMaxResults(int maxResults) {
+		this.maxResults = maxResults;
 	}
 }

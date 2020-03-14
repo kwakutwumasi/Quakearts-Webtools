@@ -23,26 +23,35 @@ public class QueryOrder implements Serializable {
 	 */
 	private static final long serialVersionUID = 7468698834542995985L;
 	private String property;
-	private boolean ascending;
-	
-	public QueryOrder(String property, boolean ascending) {
+	private boolean ascending = true;
+
+	public static QueryOrder property(String property){
+		return new QueryOrder(property);
+	}
+		
+	private QueryOrder(String property) {
 		this.property = property;
-		this.ascending = ascending;
 	}
 
 	public String getProperty() {
 		return property;
 	}
 	
-	public void setProperty(String property) {
-		this.property = property;
+	public QueryOrder ascending(){
+		ascending = true;
+		return this;
 	}
 	
+	public QueryOrder descending() {
+		ascending = false;
+		return this;
+	}
+
 	public boolean isAscending() {
 		return ascending;
 	}
-	
-	public void setAscending(boolean ascending) {
-		this.ascending = ascending;
+
+	public boolean isDescending(){
+		return !ascending;
 	}
 }

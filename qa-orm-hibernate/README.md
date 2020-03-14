@@ -26,7 +26,7 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.webtools</groupId>
 	<artifactId>qa-orm-hibernate</artifactId>
-	<version>2.3.1</version>
+	<version>2.4.0</version>
 </dependency>
 
 ```

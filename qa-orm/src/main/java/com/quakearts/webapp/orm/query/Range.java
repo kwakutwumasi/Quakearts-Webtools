@@ -16,12 +16,13 @@ import java.io.Serializable;
  * @author kwakutwumasi-afriyie
  *
  */
-public class Range implements Serializable{
+public class Range implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -7151788060480527063L;
-	private Serializable from, to;
+	private Serializable from;
+	private Serializable to;
 
 	public Serializable getFrom() {
 		return from;

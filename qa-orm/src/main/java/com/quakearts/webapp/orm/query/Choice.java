@@ -25,8 +25,7 @@ public class Choice implements Serializable{
 	private static final long serialVersionUID = 388266923206203510L;
 	private List<Serializable> choices = new ArrayList<>();
 	
-	public Choice() {
-	}
+	public Choice() {}
 
 	public Choice(Serializable value){
 		choices.add(value);		

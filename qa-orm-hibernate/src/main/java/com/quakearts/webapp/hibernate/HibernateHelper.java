@@ -12,41 +12,31 @@ package com.quakearts.webapp.hibernate;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
 
 public class HibernateHelper {
 	private static final Map<String, HelperStore> store = new HashMap<>();
 	private static SessionFactory factory;
-	private static ServiceRegistry registry;
-	private static StandardServiceRegistryBuilder registryBuilder;
 	private static Configuration configuration;
 
 	private HibernateHelper() {}
 	
 	public static synchronized SessionFactory getCurrentSessionFactory() {
 		if(factory == null){
-			factory = getCurrentConfiguration().buildSessionFactory(getRegistry());
+			factory = getCurrentConfiguration().buildSessionFactory();
 		}
 		
 		return factory;
 	}
-	
-	public static synchronized ServiceRegistry getRegistry() {
-		if(registry==null) {
-			registry = getRegistryBuilder().build();
-		}
 		
-		return registry;
-	}
-	
 	public static synchronized Configuration getCurrentConfiguration(){
 		if (configuration== null){
-			configuration = new Configuration();
+			configuration = new Configuration().configure(
+					Thread.currentThread().getContextClassLoader()
+					.getResource(StandardServiceRegistryBuilder.DEFAULT_CFG_RESOURCE_NAME));
 		}
 		
 		return configuration;
@@ -56,44 +46,32 @@ public class HibernateHelper {
 		return getCurrentSessionFactory().getCurrentSession();
 	}
 	
-	public static synchronized StandardServiceRegistryBuilder getRegistryBuilder() {
-		if(registryBuilder == null)
-			registryBuilder = new StandardServiceRegistryBuilder().configure();
-		
-		return registryBuilder;
-	}
-	
-	public static synchronized Configuration getConfiguration(String domain) throws HibernateException {
+	public static synchronized Configuration getConfiguration(String domain) {
 		return getStore(domain).configuration;
 	}
 	
-	private static void configureDomain(String domain) throws HibernateException{
-		Configuration configuration = new Configuration();
-		HelperStore helperStore = new HelperStore();
-		helperStore.registryBuilder = new StandardServiceRegistryBuilder().configure(new StringBuilder(domain)
+	private static void configureDomain(String domain) {
+		Configuration configuration = new Configuration().configure(
+				Thread.currentThread().getContextClassLoader()
+				.getResource(new StringBuilder(domain)
 					.append(".")
 					.append(StandardServiceRegistryBuilder.DEFAULT_CFG_RESOURCE_NAME)
-					.toString()).applySetting(CurrentSessionContextHelper.DOMAIN, domain);
-				
-		helperStore.registry = helperStore.registryBuilder.build();
+					.toString()));
+		configuration.getProperties().put(CurrentSessionContextHelper.DOMAIN_KEY, domain);
+		HelperStore helperStore = new HelperStore();
 		helperStore.configuration = configuration;
-		helperStore.factory = configuration.buildSessionFactory(helperStore.registry);
+		helperStore.factory = configuration.buildSessionFactory();
 		store.put(domain, helperStore);
 	}
 	
-	public static synchronized SessionFactory getSessionFactory(String domain) throws HibernateException {
+	public static synchronized SessionFactory getSessionFactory(String domain) {
 		return getStore(domain).factory;
 	}
 
 	
-	public static Session getSession(String domain) throws HibernateException{
+	public static Session getSession(String domain) {
 		return getSessionFactory(domain).getCurrentSession();
 	}
-	
-	public static StandardServiceRegistryBuilder getRegistryBuilder(String domain) {
-		return getStore(domain).registryBuilder;
-	}
-
 	
 	private static HelperStore getStore(String domain){
 		if(!store.containsKey(domain)){
@@ -106,7 +84,5 @@ public class HibernateHelper {
 	private static class HelperStore {
 		SessionFactory factory;
 		Configuration configuration;
-		ServiceRegistry registry;
-		StandardServiceRegistryBuilder registryBuilder;
 	}
 }

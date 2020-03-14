@@ -23,5 +23,5 @@ public interface DataStoreConnection {
 	 * @return an instance of the expected connection, if any
 	 * @throws DataStoreException
 	 */
-	<Connection> Connection getConnection(Class<Connection> expectedConnection) throws DataStoreException;
+	<C> C getConnection(Class<C> expectedConnection);
 }

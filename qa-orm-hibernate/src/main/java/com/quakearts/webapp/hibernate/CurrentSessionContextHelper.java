@@ -38,8 +38,8 @@ public abstract class CurrentSessionContextHelper implements CurrentSessionConte
 	 */
 	private static final long serialVersionUID = 3927106770407518460L;
 	private static final Logger log = Logger.getLogger(CurrentSessionContextHelper.class.getName());
-	public static final String CURRENTSESSION = "com.quakearts.webapp.hibernate.SESSION";
-	public static final String DOMAIN = "com.quakearts.webapp.hibernate.DOMAIN";
+	public static final String CURRENTSESSION_KEY = "com.quakearts.webapp.hibernate.SESSION";
+	public static final String DOMAIN_KEY = "com.quakearts.webapp.hibernate.DOMAIN";
 	
 	private static final Map<String, CurrentSessionContextHelper> sessionHelperCache = new ConcurrentHashMap<>(3);
 	protected static final String EMPTY = "";
@@ -49,7 +49,7 @@ public abstract class CurrentSessionContextHelper implements CurrentSessionConte
 	
 	public CurrentSessionContextHelper(SessionFactoryImplementor implementor) {
 		this.implementor = implementor;
-		domain = (String) implementor.getProperties().get(DOMAIN);
+		domain = (String) implementor.getProperties().get(DOMAIN_KEY);
 		if(domain==null)
 			domain = EMPTY;
 			
@@ -68,7 +68,7 @@ public abstract class CurrentSessionContextHelper implements CurrentSessionConte
 	}
 
 	@Override
-	public Session currentSession() throws HibernateException {
+	public Session currentSession() {
 		Session session = getCurrentSessionFromContextAttributes();
 		
 		if(session==null)
@@ -84,20 +84,16 @@ public abstract class CurrentSessionContextHelper implements CurrentSessionConte
 	protected abstract void removeCurrentSessionFromContextAttributes();
 
 	protected String getKey(){
-		return CURRENTSESSION+(domain!=null?":"+domain:EMPTY);
+		return CURRENTSESSION_KEY+(domain!=null?":"+domain:EMPTY);
 	}
 	
 	private Session createCurrentSession(){							
-		try {
-			Session session = implementor.openSession();
-			session.beginTransaction();
+		Session session = implementor.openSession();
+		session.beginTransaction();
 
-			putCurrentSessionInContextAttributes(session);
+		putCurrentSessionInContextAttributes(session);
 
-			return session;
-		} catch (HibernateException e) {
-			throw new IllegalStateException(e);
-		}
+		return session;
 	}
 	
 	public static void closeOpenSessions(){
@@ -127,13 +123,7 @@ public abstract class CurrentSessionContextHelper implements CurrentSessionConte
 			} catch (HibernateException e) {
 				exceptions.add(new Exception("Exception thrown whiles cleaning up domain: "+helper.domain, e));
 			} finally {
-				try {//Reclose just in case
-					session.close();
-				} catch (SessionException e) {
-					//Ignore
-				} catch (Exception e) {
-					exceptions.add(new Exception("Exception thrown whiles cleaning up domain: "+helper.domain, e));
-				}
+				doFinal(exceptions, helper, session);
 			}
 		}
 		
@@ -143,6 +133,17 @@ public abstract class CurrentSessionContextHelper implements CurrentSessionConte
 			}
 			
 			throw new DataStoreException("Error during session cleanup");
+		}
+	}
+
+	protected static void doFinal(ArrayList<Exception> exceptions, CurrentSessionContextHelper helper,
+			Session session) {
+		try {//Reclose just in case
+			session.close();
+		} catch (SessionException e) {
+			//Ignore
+		} catch (Exception e) {
+			exceptions.add(new Exception("Exception thrown whiles cleaning up domain: "+helper.domain, e));
 		}
 	}
 
