@@ -15,7 +15,7 @@ public class TestClasspathResourcesSpiImpl {
 		try {
 			ClasspathResources spi = new ClasspathResourcesImpl();
 			spi.loadClassPath();
-			spi.getLibraryPath("tomcat-embed-el-9.0.27.jar");
+			spi.getLibraryPath("tomcat-embed-el-9.0.33.jar");
 		} catch (ConfigurationException e) {
 			fail("Configuration exception: "+e.getMessage());
 		}
@@ -26,7 +26,7 @@ public class TestClasspathResourcesSpiImpl {
 		try {
 			ClasspathResourcesImpl spi = new ClasspathResourcesImpl();
 			spi.loadFromSystemProperty();
-			spi.getLibraryPath("tomcat-embed-el-9.0.27.jar");
+			spi.getLibraryPath("tomcat-embed-el-9.0.33.jar");
 		} catch (ConfigurationException e) {
 			fail("Configuration exception: "+e.getMessage());
 		}
