@@ -11,9 +11,17 @@ package com.quakearts.webapp.orm.cdi.annotation;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
+
+import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
 
+/**Decorates an injection point that requires a {@link com.quakearts.webapp.orm.DataStore} instance
+ * produced by a {@link com.quakearts.webapp.orm.DataStoreFactory} factory method
+ * @author kwaku
+ *
+ */
 @Qualifier
 @Retention(RUNTIME)
 public @interface DataStoreHandle {
+	@Nonbinding String value() default "";
 }

@@ -12,3 +12,4 @@
 /test-*
 /testinternaldb/
 /.DS_Store
+/testDB/

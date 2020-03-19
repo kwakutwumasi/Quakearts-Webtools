@@ -13,12 +13,25 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import javax.inject.Qualifier;
 
-/**Decorates an injection point that needs an instance of 
- * {@link com.quakearts.webapp.orm.DataStoreFactory}
+/**Decorates an injection point that requires a {@link com.quakearts.webapp.orm.DataStore DataStore} instance
+ * dependent on a {@link javax.transaction.Transaction Transaction}. Must be used with
+ * {@link com.quakearts.webapp.orm.cdi.annotation.DataStoreHandle DataStoreHandle}
+ * <br />
+ * Example:
+ <br />
+ <code>
+ 	public class Test {
+ <br /> @Inject @DataStoreHandle @RequiresTransaction
+ <br /> private DataStore dataStore;
+ <br /> ....
+ <br />
+	}
+ </code>
+ * 
  * @author kwaku
  *
  */
 @Qualifier
 @Retention(RUNTIME)
-public @interface DataStoreFactoryHandle {
+public @interface RequiresTransaction {
 }

@@ -10,11 +10,20 @@
 package com.quakearts.webapp.orm.cdi;
 
 import javax.enterprise.inject.Produces;
+import javax.inject.Singleton;
 
 import com.quakearts.webapp.orm.DataStoreFactory;
 import com.quakearts.webapp.orm.cdi.annotation.DataStoreFactoryHandle;
 
+/**Producer class for {@link DataStoreFactory} instances
+ * @author kwaku
+ *
+ */
+@Singleton
 public class DataStoreFactoryProducer {
+	/**Produce a {@link DataStoreFactory} instance
+	 * @return the instance
+	 */
 	@Produces
 	public @DataStoreFactoryHandle DataStoreFactory getDataStoreHandle() {
 		return DataStoreFactory.getInstance();
