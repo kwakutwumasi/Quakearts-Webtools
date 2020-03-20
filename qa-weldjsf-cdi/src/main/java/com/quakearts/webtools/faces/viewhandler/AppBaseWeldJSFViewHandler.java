@@ -33,13 +33,13 @@ public class AppBaseWeldJSFViewHandler extends ViewHandlerWrapper {
 	private static final String PARAMETER_PAIR_DELIMITER = "&";
 	private static final String PARAMETER_ASSIGNMENT_OPERATOR = "=";
 
-	private static enum Source {
+	private enum Source {
 		ACTION, BOOKMARKABLE, REDIRECT, RESOURCE
 	}
 
 	private final ViewHandler delegate;
-	private volatile ConversationContext conversationContext;
-	private static final ThreadLocal<Source> source = new ThreadLocal<Source>();
+	private ConversationContext conversationContext;
+	private static final ThreadLocal<Source> source = new ThreadLocal<>();
 	private String contextId;
 
 	public AppBaseWeldJSFViewHandler(ViewHandler delegate) {
@@ -51,20 +51,17 @@ public class AppBaseWeldJSFViewHandler extends ViewHandlerWrapper {
 	 *
 	 * @return the conversation context
 	 */
-	private ConversationContext getConversationContext(String id, FacesContext context) {
+	private synchronized ConversationContext getConversationContext(String id, FacesContext context) {
 		if (conversationContext == null) {
-			synchronized (this) {
-				if (conversationContext == null) {
-					Container container = Container.instance(id);
-					conversationContext = container.deploymentManager().instance().select(HttpConversationContext.class)
-							.get();
+			Container container = Container.instance(id);
+			ConversationContext conversationContextTmp = container.deploymentManager().instance().select(HttpConversationContext.class)
+					.get();
 
-					String parameterName = context.getExternalContext()
-							.getInitParameter("com.quakearts.conversation.parameterName");
-					if (parameterName != null)
-						conversationContext.setParameterName(parameterName);
-				}
-			}
+			String parameterName = context.getExternalContext()
+					.getInitParameter("com.quakearts.conversation.parameterName");
+			if (parameterName != null)
+				conversationContextTmp.setParameterName(parameterName);
+			conversationContext = conversationContextTmp;
 		}
 		return conversationContext;
 	}
@@ -103,9 +100,10 @@ public class AppBaseWeldJSFViewHandler extends ViewHandlerWrapper {
 
 	public String appendExistingQueryString(String actionUrl, String queryString) {
 		int queryStringIndex = actionUrl.indexOf(QUERY_STRING_DELIMITER);
-		String delimiter = queryStringIndex != actionUrl.length()-1?
-				(queryStringIndex < 0 ? QUERY_STRING_DELIMITER : PARAMETER_PAIR_DELIMITER)
-				:"";
+		String delimiter = "";
+		if(queryStringIndex != actionUrl.length()-1)
+			delimiter = queryStringIndex < 0 ? QUERY_STRING_DELIMITER : PARAMETER_PAIR_DELIMITER;
+		
 		return new StringBuilder(actionUrl)
 				.append(delimiter)
 				.append(queryString).toString();
@@ -116,9 +114,10 @@ public class AppBaseWeldJSFViewHandler extends ViewHandlerWrapper {
 		int queryStringIndex = actionUrl.indexOf(QUERY_STRING_DELIMITER);
 		if(queryStringIndex < 0
 					|| actionUrl.indexOf(parameterName + PARAMETER_ASSIGNMENT_OPERATOR, queryStringIndex) < 0) {
-			String delimiter = queryStringIndex != actionUrl.length()-1?
-					(queryStringIndex < 0 ? QUERY_STRING_DELIMITER : PARAMETER_PAIR_DELIMITER)
-					:"";
+			String delimiter = "";
+			if(queryStringIndex != actionUrl.length()-1)
+				delimiter = queryStringIndex < 0 ? QUERY_STRING_DELIMITER : PARAMETER_PAIR_DELIMITER;
+			
 			return new StringBuilder(actionUrl)
 					.append(delimiter)
 					.append(parameterName)

@@ -48,15 +48,15 @@ public class AppBasHttpContextActivationFilter implements HttpContextActivationF
 	
 	@Override
 	public void cleanup() {
+		//Do nothing
 	}
 
 	@Override
 	public boolean accepts(HttpServletRequest request) {
 		if(request.getRequestURI() !=null) {
-			return !resourceExtensions.stream().parallel().anyMatch((extension)->{
-				return request.getRequestURI()
-						.trim().endsWith(extension);
-			});
+			return resourceExtensions.stream().parallel().noneMatch(extension->
+				request.getRequestURI()
+						.trim().endsWith(extension));
 		}
 		return false;
 	}

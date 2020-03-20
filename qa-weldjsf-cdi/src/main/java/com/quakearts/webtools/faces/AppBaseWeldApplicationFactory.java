@@ -15,7 +15,7 @@ import javax.faces.application.ApplicationFactory;
 public class AppBaseWeldApplicationFactory extends ApplicationFactory {
     private final ApplicationFactory applicationFactory;
 
-    private volatile Application application;
+    private Application application;
 
     public AppBaseWeldApplicationFactory(ApplicationFactory applicationFactory) {
         this.applicationFactory = applicationFactory;
@@ -26,15 +26,11 @@ public class AppBaseWeldApplicationFactory extends ApplicationFactory {
     }
 
     @Override
-    public Application getApplication() {
-        if (application == null) {
-            synchronized (this) {
-                if (application == null) {
-                    application = new AppBaseWeldApplication(delegate().getApplication());
-                }
-            }
-        }
-        return application;
+    public synchronized Application getApplication() {
+		if (application == null) {
+			application = new AppBaseWeldApplication(delegate().getApplication());
+		}
+		return application;
     }
 
     @Override
