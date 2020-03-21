@@ -52,9 +52,9 @@ public abstract class HibernateBean {
 				List<Order> orderList = new ArrayList<>();
 				for (QueryOrder order : parameters.getOrder()) {
 					if (order.isAscending())
-						orderList.add(builder.asc(queryRoot.get(order.getProperty())));
+						orderList.add(builder.asc(handleKey(order.getProperty(), context)));
 					else
-						orderList.add(builder.desc(queryRoot.get(order.getProperty())));
+						orderList.add(builder.desc(handleKey(order.getProperty(), context)));
 				}
 				query.orderBy(orderList);
 			}

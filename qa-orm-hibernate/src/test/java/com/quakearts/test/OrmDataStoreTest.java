@@ -47,6 +47,7 @@ import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.DataStoreFactory;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.webapp.orm.query.Choice;
+import com.quakearts.webapp.orm.query.QueryOrder;
 import com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder;
 
 import static com.quakearts.test.ErrorThrowingSessionBuilder.*;
@@ -306,12 +307,14 @@ public class OrmDataStoreTest {
 						.property("product.id").mustBeEqualTo(2)
 						.property("product.brand.name").mustBeEqualTo("Audi")
 						.property("product.brand.id").mustBeEqualTo(1)
+						.orderBy(QueryOrder.property("product.id").descending())
 					.finish())
 				.thenList();
 
 		assertThat("Failed to list disjoint with subcriteria", salesParts.size(), is(3));
 		printSalesPart(salesParts);
-
+		assertThat("Did not sort by product id", salesParts.get(0).getProduct().getId(), is(5));
+		
 		assertThat(dataStore.getConfigurationProperty("com.quakearts.test"), is("TestValue"));
 		
 		list = dataStore.find(Inventory.class)
