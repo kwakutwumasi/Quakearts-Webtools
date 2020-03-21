@@ -374,6 +374,12 @@ public class OrmDataStoreTest {
 			.thenList();
 		assertThat("Failed to list products not named 'A6' or 'A4' or 'Qashqai'", list.size(), is(2));
 		printInventory(list);
+		
+		list = dataStore.find(Inventory.class)
+				.filterBy("product.brand.name").withAValueEqualTo("Nissan")
+				.filterBy("product.description").withAValueLike("A classy%")
+				.thenList();
+		printInventory(list);
 	}
 
 	@Rule

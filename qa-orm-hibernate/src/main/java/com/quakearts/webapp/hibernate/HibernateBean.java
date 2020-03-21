@@ -12,7 +12,6 @@ package com.quakearts.webapp.hibernate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -68,18 +67,19 @@ public abstract class HibernateBean {
 	}
 
 	private <T> void handleParameters(Map<String, Serializable> parameters, QueryContext<T> context) {
+		List<Predicate> criterion = new ArrayList<>();
 		for (Entry<String, Serializable> entry : parameters.entrySet()) {
 			if (CriteriaMap.MAXRESULTS.equals(entry.getKey())) {
 				context.setMaxResults((int) entry.getValue());
 			} else {
-				context.getQuery().where(handleParameter(entry.getKey(), entry.getValue(), context));
+				handleParameter(entry.getKey(), entry.getValue(), context, criterion);
 			}
 		}
+		context.getQuery().where(criterion.toArray(new Predicate[criterion.size()]));
 	}
 
 	@SuppressWarnings("unchecked")
-	private<T> Predicate[] handleParameter(String key, Serializable value, QueryContext<T> context) {
-		List<Predicate> criterion = new ArrayList<>();
+	private<T> void handleParameter(String key, Serializable value, QueryContext<T> context, List<Predicate> criterion) {
 		if (CriteriaMap.CONJUNCTION.equals(key) && value instanceof Map) {
 			Map<String, Serializable> conjoinedParameters = (Map<String, Serializable>) value;
 			handleJunction(conjoinedParameters, CriteriaMap.CONJUNCTION, context, criterion);
@@ -89,8 +89,6 @@ public abstract class HibernateBean {
 		} else {
 			criterion.add(createCriterion(key, value, context));
 		}
-
-		return criterion.toArray(new Predicate[criterion.size()]);
 	}
 	
 	/*Algorithm:
@@ -123,13 +121,13 @@ public abstract class HibernateBean {
 
 	private <T> void handleJunction(Map<String, Serializable> junctionParameters, String type, 
 			QueryContext<T> context, List<Predicate> criterion) {
-		ArrayList<Predicate> criteria = new ArrayList<>();
+		ArrayList<Predicate> junctionCriterion = new ArrayList<>();
 
 		for (Entry<String, Serializable> entry : junctionParameters.entrySet()) {
-			criteria.addAll(Arrays.asList(handleParameter(entry.getKey(), entry.getValue(), context)));
+			handleParameter(entry.getKey(), entry.getValue(), context, junctionCriterion);
 		}
 
-		Predicate[] criteriaArray = criteria.toArray(new Predicate[criteria.size()]);
+		Predicate[] criteriaArray = junctionCriterion.toArray(new Predicate[junctionCriterion.size()]);
 		if (CriteriaMap.CONJUNCTION.equals(type)) //Only recognize exact mapping
 			criterion.add(context.getBuilder().and(criteriaArray));
 		else
