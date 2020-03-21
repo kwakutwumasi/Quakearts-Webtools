@@ -10,32 +10,31 @@
  ******************************************************************************/
 package com.quakearts.syshub.webapp.beans;
 
-import java.io.Serializable;
-import java.util.Map;
 import java.util.List;
-import com.quakearts.webapp.orm.query.QueryOrder;
+import com.quakearts.webapp.orm.query.criteria.CriteriaMap;
 import com.quakearts.syshub.model.ProcessingLog;
-import static com.quakearts.webapp.orm.query.helper.ParameterMapBuilder.createParameters;
+import static com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder.createCriteria;
 
 public class ProcessingLogFinder extends AbstractSysHubFinder {
-	public ProcessingLogFinder(){
-		super();
-	}
 
-	public List<ProcessingLog> findObjects(Map<String, Serializable> parameters,QueryOrder...queryOrders){
-		return getDataStore().list(ProcessingLog.class, parameters, queryOrders);
+	public List<ProcessingLog> findObjects(CriteriaMap criteria){
+		return getDataStore().find(ProcessingLog.class).using(criteria)
+				.thenList();
 	}
+	
 	public ProcessingLog getById(long id){
 		return getDataStore().get(ProcessingLog.class,id);
 	}
+	
 	public List<ProcessingLog> filterByText(String searchString){
-		return getDataStore().list(ProcessingLog.class, createParameters()
-					.disjoin()
-					.addVariableString("agentConfiguration.agentName", searchString)
-					.addVariableString("agentModule.moduleName", searchString)
-					.addVariableString("agentModule.agentClassName", searchString)
-					.addVariableString("mid", searchString)
-					.addVariableString("recipient", searchString)
-					.addVariableString("statusMessage", searchString)
-					.build());	}
+		return getDataStore().find(ProcessingLog.class).using(createCriteria()
+					.requireAnyOfTheFollowing()
+					.property("agentConfiguration.agentName").mustBeLike(searchString)
+					.property("agentModule.moduleName").mustBeLike(searchString)
+					.property("agentModule.agentClassName").mustBeLike(searchString)
+					.property("mid").mustBeLike(searchString)
+					.property("recipient").mustBeLike(searchString)
+					.property("statusMessage").mustBeLike(searchString)
+					.finish()).thenList();	
+		}
 }

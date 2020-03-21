@@ -10,27 +10,27 @@
  ******************************************************************************/
 package com.quakearts.syshub.webapp.beans;
 
-import java.io.Serializable;
-import java.util.Map;
 import java.util.List;
-import com.quakearts.webapp.orm.query.QueryOrder;
+import com.quakearts.webapp.orm.query.criteria.CriteriaMap;
 import com.quakearts.syshub.model.TransactionLog;
-import static com.quakearts.webapp.orm.query.helper.ParameterMapBuilder.createParameters;
+import static com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder.createCriteria;
 
 public class TransactionLogFinder extends AbstractSysHubFinder {
-	public TransactionLogFinder(){
-		super();
-	}
 
-	public List<TransactionLog> findObjects(Map<String, Serializable> parameters,QueryOrder...queryOrders){
-		return getDataStore().list(TransactionLog.class, parameters, queryOrders);
+	public List<TransactionLog> findObjects(CriteriaMap criteria){
+		return getDataStore().find(TransactionLog.class).using(criteria)
+				.thenList();
 	}
+	
 	public TransactionLog getById(long id){
 		return getDataStore().get(TransactionLog.class,id);
 	}
+	
 	public List<TransactionLog> filterByText(String searchString){
-		return getDataStore().list(TransactionLog.class, createParameters().disjoin()
-					.addVariableString("action", searchString)
-					.addVariableString("username", searchString)
-					.build());	}
+		return getDataStore().find(TransactionLog.class).using(createCriteria()
+				.requireAnyOfTheFollowing()
+					.property("action").mustBeLike(searchString)
+					.property("username").mustBeLike(searchString)
+					.finish()).thenList();
+	}
 }

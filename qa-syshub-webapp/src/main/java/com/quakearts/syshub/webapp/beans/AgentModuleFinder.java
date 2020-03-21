@@ -10,40 +10,39 @@
  ******************************************************************************/
 package com.quakearts.syshub.webapp.beans;
 
-import java.io.Serializable;
-import java.util.Map;
 import java.util.List;
-import com.quakearts.webapp.orm.query.QueryOrder;
+import com.quakearts.webapp.orm.query.criteria.CriteriaMap;
 import com.quakearts.syshub.model.AgentModule;
 import com.quakearts.syshub.model.AgentModule.ModuleType;
 
-import static com.quakearts.webapp.orm.query.helper.ParameterMapBuilder.createParameters;
+import static com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder.createCriteria;
 
 public class AgentModuleFinder extends AbstractSysHubFinder {
-	public AgentModuleFinder(){
-		super();
-	}
 
-	public List<AgentModule> findObjects(Map<String, Serializable> parameters,QueryOrder...queryOrders){
-		return getDataStore().list(AgentModule.class, parameters, queryOrders);
+	public List<AgentModule> findObjects(CriteriaMap criteria){
+		return getDataStore().find(AgentModule.class).using(criteria).thenList();
 	}
+	
 	public AgentModule getById(int id){
 		return getDataStore().get(AgentModule.class,id);
 	}
+	
 	public List<AgentModule> filterByText(String searchString){
-		return getDataStore().list(AgentModule.class, createParameters().disjoin()
-					.addVariableString("agentClassName", searchString)
-					.addVariableString("mappedModuleName", searchString)
-					.addVariableString("moduleName", searchString)
-					.build());	
+		return getDataStore().find(AgentModule.class).using(createCriteria().
+				requireAnyOfTheFollowing()
+					.property("agentClassName").mustBeLike(searchString)
+					.property("mappedModuleName").mustBeLike(searchString)
+					.property("moduleName").mustBeLike(searchString)
+				.finish()).thenList();
 	}
 
 	public List<AgentModule> filterMessageFormattersByText(String searchString) {
-		return getDataStore().list(AgentModule.class, createParameters().disjoin()
-				.addVariableString("agentClassName", searchString)
-				.addVariableString("mappedModuleName", searchString)
-				.addVariableString("moduleName", searchString)
-				.add("moduleType", ModuleType.FORMATTER)
-				.build());
+		return getDataStore().find(AgentModule.class).using(createCriteria().
+				requireAnyOfTheFollowing()
+				.property("agentClassName").mustBeLike(searchString)
+				.property("mappedModuleName").mustBeLike(searchString)
+				.property("moduleName").mustBeLike(searchString)
+				.property("moduleType").mustBeEqualTo(ModuleType.FORMATTER)
+			.finish()).thenList();
 	}
 }

@@ -10,27 +10,26 @@
  ******************************************************************************/
 package com.quakearts.syshub.webapp.beans;
 
-import java.io.Serializable;
-import java.util.Map;
 import java.util.List;
-import com.quakearts.webapp.orm.query.QueryOrder;
+import com.quakearts.webapp.orm.query.criteria.CriteriaMap;
 import com.quakearts.syshub.model.ResultExceptionLog;
-import static com.quakearts.webapp.orm.query.helper.ParameterMapBuilder.createParameters;
+import static com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder.createCriteria;
 
 public class ResultExceptionLogFinder extends AbstractSysHubFinder {	
-	public ResultExceptionLogFinder(){
-		super();
+	public List<ResultExceptionLog> findObjects(CriteriaMap criteria){
+		return getDataStore().find(ResultExceptionLog.class).using(criteria)
+				.thenList();
 	}
-
-	public List<ResultExceptionLog> findObjects(Map<String, Serializable> parameters,QueryOrder...queryOrders){
-		return getDataStore().list(ResultExceptionLog.class, parameters, queryOrders);
-	}
+	
 	public ResultExceptionLog getById(long id){
 		return getDataStore().get(ResultExceptionLog.class,id);
 	}
+	
 	public List<ResultExceptionLog> filterByText(String searchString){
-		return getDataStore().list(ResultExceptionLog.class, createParameters().disjoin()
-					.addVariableString("exceptionType", searchString)
-					.addVariableString("spoolerType", searchString)
-					.build());	}
+		return getDataStore().find(ResultExceptionLog.class).using(createCriteria().
+				requireAnyOfTheFollowing()
+					.property("exceptionType").mustBeLike(searchString)
+					.property("spoolerType").mustBeLike(searchString)
+					.finish()).thenList();	
+	}
 }

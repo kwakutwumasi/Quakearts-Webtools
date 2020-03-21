@@ -12,18 +12,20 @@ package com.quakearts.syshub.webapp.beans;
 
 import java.util.List;
 import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import com.quakearts.webapp.facelets.base.BaseBean;
 import com.quakearts.webapp.orm.query.Range;
-import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
+import com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.syshub.model.TransactionLog;
 import com.quakearts.syshub.model.ProcessingLog;
 
-@ManagedBean(name="transactionLogPage")
+@Named("transactionLogPage")
 @ViewScoped
 public class TransactionLogPage extends BaseBean {
 
@@ -35,13 +37,10 @@ public class TransactionLogPage extends BaseBean {
 	private static Logger log = Logger.getLogger(TransactionLogPage.class.getName());
 
 	private TransactionLog transactionLog;
+	@Inject @Named("webappmain")
 	private WebApplicationMain webappmain;
 	private transient TransactionLogFinder finder = new TransactionLogFinder();
-		
-	public TransactionLogPage(){
-		webappmain = new WebApplicationMain();
-	}
-	
+			
 	public WebApplicationMain getWebappmain(){
 		return webappmain;
 	}
@@ -91,22 +90,25 @@ public class TransactionLogPage extends BaseBean {
 	}
 	
 	public void findTransactionLog(ActionEvent event){
-		ParameterMapBuilder parameterBuilder = new ParameterMapBuilder();
+		CriteriaMapBuilder criteriaMapBuilder = CriteriaMapBuilder.createCriteria();
 		if(transactionLog.getAction() != null && ! transactionLog.getAction().trim().isEmpty()){
-			parameterBuilder.addVariableString("action", transactionLog.getAction());
+			criteriaMapBuilder.property("action").mustBeEqualTo(transactionLog.getAction());
 		}
+		
 		if(transactionLog.getProcessingLog() != null){
-			parameterBuilder.add("processingLog", transactionLog.getProcessingLog());
+			criteriaMapBuilder.property("processingLog").mustBeEqualTo(transactionLog.getProcessingLog());
 		}
+		
 		if(!tranDtRange.isEmpty()){
-			parameterBuilder.add("tranDt", tranDtRange);
+			criteriaMapBuilder.property("tranDt").mustBeEqualTo(tranDtRange);
 		}
+		
 		if(transactionLog.getUsername() != null && ! transactionLog.getUsername().trim().isEmpty()){
-			parameterBuilder.addVariableString("username", transactionLog.getUsername());
+			criteriaMapBuilder.property("username").mustBeLike(transactionLog.getUsername());
 		}
     		
 		try {
-			transactionLogList = finder.findObjects(parameterBuilder.build());
+			transactionLogList = finder.findObjects(criteriaMapBuilder.finish());
 		} catch (DataStoreException e) {
 			addError("Search error", "An error occured while searching for Transaction Log", FacesContext.getCurrentInstance());
 			log.severe("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()

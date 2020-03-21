@@ -1,5 +1,6 @@
 package com.quakearts.syshub;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import com.quakearts.syshub.core.runner.AgentRunner;
@@ -10,7 +11,7 @@ import com.quakearts.syshub.model.AgentConfiguration;
  * @author kwakutwumasi-afriyie
  *
  */
-public interface SysHub {
+public interface SysHub extends Serializable {
 
 	/**Lists all {@link AgentRunner}'s deployed on the system
 	 * @return the list of agent runners

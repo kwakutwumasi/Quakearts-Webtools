@@ -10,26 +10,26 @@
  ******************************************************************************/
 package com.quakearts.syshub.webapp.beans;
 
-import java.io.Serializable;
-import java.util.Map;
 import java.util.List;
-import com.quakearts.webapp.orm.query.QueryOrder;
+import com.quakearts.webapp.orm.query.criteria.CriteriaMap;
 import com.quakearts.syshub.model.VariableCache;
-import static com.quakearts.webapp.orm.query.helper.ParameterMapBuilder.createParameters;
+import static com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder.createCriteria;
 
 public class VariableCacheFinder extends AbstractSysHubFinder {	
-	public VariableCacheFinder(){
-		super();
-	}
 
-	public List<VariableCache> findObjects(Map<String, Serializable> parameters,QueryOrder...queryOrders){
-		return getDataStore().list(VariableCache.class, parameters, queryOrders);
+	public List<VariableCache> findObjects(CriteriaMap criteria){
+		return getDataStore().find(VariableCache.class).using(criteria)
+				.thenList();
 	}
+	
 	public VariableCache getById(String id){
 		return getDataStore().get(VariableCache.class,id);
 	}
+	
 	public List<VariableCache> filterByText(String searchString){
-		return getDataStore().list(VariableCache.class, createParameters()
-					.addVariableString("appKey", searchString)
-					.build());	}
+		return getDataStore().find(VariableCache.class).using(createCriteria()
+					.property("appKey").mustBeLike(searchString)
+					.finish())
+				.thenList();	
+	}
 }

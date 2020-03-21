@@ -2,19 +2,20 @@ package com.quakearts.syshub.webapp.beans;
 
 import java.util.List;
 import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import com.quakearts.webapp.facelets.base.BaseBean;
-import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
+import com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.syshub.model.AgentConfigurationModuleMapping;
 import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentModule;
 
-@ManagedBean(name="agentConfigurationModuleMappingPage")
+@Named("agentConfigurationModuleMappingPage")
 @ViewScoped
 public class AgentConfigurationModuleMappingPage extends BaseBean {
 
@@ -27,23 +28,17 @@ public class AgentConfigurationModuleMappingPage extends BaseBean {
 
 	private AgentConfigurationModuleMapping agentConfigurationModuleMapping;
 	
-	@ManagedProperty("#{webappmain}")
+	@Inject @Named("webappmain")
 	private WebApplicationMain webappmain;
 	private transient AgentConfigurationModuleMappingFinder finder = new AgentConfigurationModuleMappingFinder();
 			
-	public WebApplicationMain getWebappmain(){
-		if(webappmain == null)
-			webappmain = new WebApplicationMain();
-			
+	public WebApplicationMain getWebappmain(){			
 		return webappmain;
 	}
-	
-	public void setWebappmain(WebApplicationMain webappmain){
-		this.webappmain = webappmain;
-	}
-	
+		
 	public AgentConfigurationModuleMapping getAgentConfigurationModuleMapping() {
-		if(agentConfigurationModuleMapping==null){    			agentConfigurationModuleMapping = new AgentConfigurationModuleMapping();
+		if(agentConfigurationModuleMapping==null){    			
+			agentConfigurationModuleMapping = new AgentConfigurationModuleMapping();
 		}
 		
 		return agentConfigurationModuleMapping;
@@ -87,22 +82,25 @@ public class AgentConfigurationModuleMappingPage extends BaseBean {
 	}
 	
 	public void findAgentConfigurationModuleMapping(ActionEvent event){
-		ParameterMapBuilder parameterBuilder = new ParameterMapBuilder();
+		CriteriaMapBuilder criteriaMapBuilder = CriteriaMapBuilder.createCriteria();
 		if(agentConfigurationModuleMapping.getAcid() != 0){
-			parameterBuilder.add("acid", agentConfigurationModuleMapping.getAcid());
+			criteriaMapBuilder.property("acid").mustBeEqualTo(agentConfigurationModuleMapping.getAcid());
 		}
+		
 		if(agentConfigurationModuleMapping.getAgentConfiguration() != null){
-			parameterBuilder.add("agentConfiguration", agentConfigurationModuleMapping.getAgentConfiguration());
+			criteriaMapBuilder.property("agentConfiguration").mustBeEqualTo(agentConfigurationModuleMapping.getAgentConfiguration());
 		}
+		
 		if(agentConfigurationModuleMapping.getAgentModule() != null){
-			parameterBuilder.add("agentModule", agentConfigurationModuleMapping.getAgentModule());
+			criteriaMapBuilder.property("agentModule").mustBeEqualTo(agentConfigurationModuleMapping.getAgentModule());
 		}
+		
 		if(agentConfigurationModuleMapping.getAmid() != 0){
-			parameterBuilder.add("amid", agentConfigurationModuleMapping.getAmid());
+			criteriaMapBuilder.property("amid").mustBeEqualTo(agentConfigurationModuleMapping.getAmid());
 		}
     		
 		try {
-			agentConfigurationModuleMappingList = finder.findObjects(parameterBuilder.build());
+			agentConfigurationModuleMappingList = finder.findObjects(criteriaMapBuilder.finish());
 		} catch (DataStoreException e) {
 			addError("Search error", "An error occured while searching for Agent Configuration Module Mapping", FacesContext.getCurrentInstance());
 			log.severe("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()

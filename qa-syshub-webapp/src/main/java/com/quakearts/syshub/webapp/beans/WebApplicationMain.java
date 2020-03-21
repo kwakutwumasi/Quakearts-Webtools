@@ -21,17 +21,17 @@ import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.CDI;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.DateTimeConverter;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import com.quakearts.syshub.SysHub;
-import com.quakearts.syshub.SysHubMain;
 import com.quakearts.syshub.core.runner.AgentRunner;
 import com.quakearts.syshub.core.runner.ScheduledStateReporter;
 import com.quakearts.syshub.core.runner.TriggeredStateReporter;
@@ -43,7 +43,7 @@ import com.quakearts.syshub.model.ProcessingLog.LogType;
 import com.quakearts.syshub.webapp.helpers.utils.HtmlUtils;
 import com.quakearts.webapp.facelets.util.Base64;
 
-@ManagedBean(name="webappmain")
+@Named("webappmain")
 @ViewScoped
 public class WebApplicationMain implements Serializable {
 
@@ -53,9 +53,10 @@ public class WebApplicationMain implements Serializable {
 	private static final long serialVersionUID = 1658826860062260843L;
 	private static Logger log = Logger.getLogger(WebApplicationMain.class.getName());
 	private String mode;
-	private Converter converter;
-	
-	private SysHub sysHub = SysHubMain.getInstance();
+	private transient Converter converter;
+
+	@Inject
+	private SysHub sysHub;
 	
 	public String getMode() {
 		return mode;
@@ -147,7 +148,7 @@ public class WebApplicationMain implements Serializable {
 		
 	}
 	
-	private Converter base64Converter = new Base64Converter();
+	private transient Converter base64Converter = new Base64Converter();
 
 	public Converter getBase64Converter() {
 		return base64Converter;
@@ -186,7 +187,7 @@ public class WebApplicationMain implements Serializable {
 		}
 	}
 	
-	private SerializedObjectConverter serializedObjectConverter = new SerializedObjectConverter();
+	private transient SerializedObjectConverter serializedObjectConverter = new SerializedObjectConverter();
 	
 	public SerializedObjectConverter getSerializedObjectConverter() {
 		return serializedObjectConverter;
@@ -198,7 +199,7 @@ public class WebApplicationMain implements Serializable {
 				&& (mode == null || mode.trim().isEmpty());
 	}
 	
-	private AgentRunner agentRunner;
+	private transient AgentRunner agentRunner;
 		
 	public AgentRunner getAgentRunner() {
 		return agentRunner;

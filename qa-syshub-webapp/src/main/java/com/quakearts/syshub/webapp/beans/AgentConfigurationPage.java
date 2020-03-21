@@ -16,19 +16,19 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.validator.ValidatorException;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import com.quakearts.webapp.facelets.base.BaseBean;
-import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
+import com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.syshub.SysHub;
-import com.quakearts.syshub.SysHubMain;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentConfiguration.RunType;
@@ -37,7 +37,7 @@ import com.quakearts.syshub.model.AgentConfigurationParameter.ParameterType;
 import com.quakearts.syshub.webapp.helpers.parameter.AgentConfigurationParameterHelper;
 import com.quakearts.syshub.webapp.helpers.parameter.AgentModuleDatabase;
 
-@ManagedBean(name="agentConfigurationPage")
+@Named("agentConfigurationPage")
 @ViewScoped
 public class AgentConfigurationPage extends BaseBean {
 
@@ -45,26 +45,30 @@ public class AgentConfigurationPage extends BaseBean {
 	 * 
 	 */
 	private static final long serialVersionUID = -3139201520089427229L;
+	private static final String INVALID_OPERATION = "Invalid Operation";
+	private static final String TRIGGER_CLASS = "trigger.class";
 
 	private static Logger log = Logger.getLogger(AgentConfigurationPage.class.getName());
 
-	private SysHub sysHub = SysHubMain.getInstance();
+	@Inject @Named("webappmain")
+	private WebApplicationMain webappmain;
+
+	@Inject
+	private SysHub sysHub;
 	
 	private AgentConfiguration agentConfiguration;
-	private WebApplicationMain webappmain;
 	private transient AgentConfigurationFinder finder = new AgentConfigurationFinder();
-	private AgentConfigurationParameterWrapper queueSize, 
-			keepAliveTime, 
-			corePoolSize, 
-			maxFormatterWorkers, 
-			maxDataSpoolerWorkers, 
-			maximumPoolSize,
-			schedulerCron,
-			triggerClass,
-			isResendCapable;
+	private transient AgentConfigurationParameterWrapper queueSize; 
+	private transient AgentConfigurationParameterWrapper keepAliveTime;
+	private transient AgentConfigurationParameterWrapper corePoolSize;
+	private transient AgentConfigurationParameterWrapper maxFormatterWorkers; 
+	private transient AgentConfigurationParameterWrapper maxDataSpoolerWorkers; 
+	private transient AgentConfigurationParameterWrapper maximumPoolSize;
+	private transient AgentConfigurationParameterWrapper schedulerCron;
+	private transient AgentConfigurationParameterWrapper triggerClass;
+	private transient AgentConfigurationParameterWrapper isResendCapable;
 	
 	public AgentConfigurationPage(){
-		webappmain = new WebApplicationMain();
 		setupParameters();
 	}
 	
@@ -77,7 +81,7 @@ public class AgentConfigurationPage extends BaseBean {
 		maximumPoolSize = new AgentConfigurationParameterWrapper("maximumPoolSize", ParameterType.NUMERIC);
 		isResendCapable = new AgentConfigurationParameterWrapper("isResendCapable", ParameterType.NUMERIC);
 		schedulerCron = new AgentConfigurationParameterWrapper("schedule.cron", ParameterType.CRONCONFIGURATION);
-		triggerClass = new AgentConfigurationParameterWrapper("trigger.class", ParameterType.CLASS); 
+		triggerClass = new AgentConfigurationParameterWrapper(TRIGGER_CLASS, ParameterType.CLASS); 
 	}
 	
 	public class AgentConfigurationParameterWrapper {
@@ -140,64 +144,68 @@ public class AgentConfigurationPage extends BaseBean {
 		this.agentConfiguration = agentConfiguration;
 		if(agentConfiguration!=null){
 			try {
-				agentConfiguration.getAgentConfigurationMap();
+				lazyLoadAgentConfigurationMap(agentConfiguration);
 			} catch (Exception e) {
 				agentConfiguration = finder.getDataStore()
 						.refresh(agentConfiguration);
 				this.agentConfiguration = agentConfiguration;
 			}
 			
-			AgentConfigurationParameter parameter;
-
-			parameter = agentConfiguration.getAgentConfigurationParameter("queueSize");
-			if (parameter != null) {
-				queueSize.configurationParameter = parameter;
-			}
-			
-			parameter = agentConfiguration.getAgentConfigurationParameter("keepAliveTime");
-			if (parameter != null) {
-				keepAliveTime.configurationParameter = parameter;
-			}
-			
-			parameter = agentConfiguration.getAgentConfigurationParameter("corePoolSize");
-			if (parameter != null) {
-				corePoolSize.configurationParameter = parameter;
-			}
-			
-			parameter = agentConfiguration.getAgentConfigurationParameter("maxFormatterWorkers");
-			if (parameter != null) {
-				maxFormatterWorkers.configurationParameter = parameter;
-			}
-			
-			parameter = agentConfiguration.getAgentConfigurationParameter("maxDataSpoolerWorkers");
-			if (parameter != null) {
-				maxDataSpoolerWorkers.configurationParameter = parameter;
-			}
-			
-			parameter = agentConfiguration.getAgentConfigurationParameter("maximumPoolSize");
-			if (parameter != null) {
-				maximumPoolSize.configurationParameter = parameter;
-			}
-			
-			parameter = agentConfiguration.getAgentConfigurationParameter("isResendCapable");
-			if (parameter != null) {
-				isResendCapable.configurationParameter = parameter;
-			}
-			
-			parameter = agentConfiguration.getAgentConfigurationParameter("schedule.cron");
-			if (parameter != null) {
-				schedulerCron.configurationParameter = parameter;
-			}
-			
-			parameter = agentConfiguration.getAgentConfigurationParameter("trigger.class");
-			if (parameter != null) {
-				triggerClass.configurationParameter = parameter;
-				foundClassNames = new ArrayList<>();
-				foundClassNames.add(parameter.getStringValue());
-				populateTriggeredAgentRunnerParameters();
-			}
+			setParameters(agentConfiguration);
 		} else {
 			setupParameters();
+		}
+	}
+
+	protected void setParameters(AgentConfiguration agentConfiguration) {
+		AgentConfigurationParameter parameter;
+
+		parameter = agentConfiguration.getAgentConfigurationParameter("queueSize");
+		if (parameter != null) {
+			queueSize.configurationParameter = parameter;
+		}
+		
+		parameter = agentConfiguration.getAgentConfigurationParameter("keepAliveTime");
+		if (parameter != null) {
+			keepAliveTime.configurationParameter = parameter;
+		}
+		
+		parameter = agentConfiguration.getAgentConfigurationParameter("corePoolSize");
+		if (parameter != null) {
+			corePoolSize.configurationParameter = parameter;
+		}
+		
+		parameter = agentConfiguration.getAgentConfigurationParameter("maxFormatterWorkers");
+		if (parameter != null) {
+			maxFormatterWorkers.configurationParameter = parameter;
+		}
+		
+		parameter = agentConfiguration.getAgentConfigurationParameter("maxDataSpoolerWorkers");
+		if (parameter != null) {
+			maxDataSpoolerWorkers.configurationParameter = parameter;
+		}
+		
+		parameter = agentConfiguration.getAgentConfigurationParameter("maximumPoolSize");
+		if (parameter != null) {
+			maximumPoolSize.configurationParameter = parameter;
+		}
+		
+		parameter = agentConfiguration.getAgentConfigurationParameter("isResendCapable");
+		if (parameter != null) {
+			isResendCapable.configurationParameter = parameter;
+		}
+		
+		parameter = agentConfiguration.getAgentConfigurationParameter("schedule.cron");
+		if (parameter != null) {
+			schedulerCron.configurationParameter = parameter;
+		}
+		
+		parameter = agentConfiguration.getAgentConfigurationParameter(TRIGGER_CLASS);
+		if (parameter != null) {
+			triggerClass.configurationParameter = parameter;
+			foundClassNames = new ArrayList<>();
+			foundClassNames.add(parameter.getStringValue());
+			populateTriggeredAgentRunnerParameters();
 		}
 	}
 	
@@ -208,27 +216,29 @@ public class AgentConfigurationPage extends BaseBean {
 	}
 	
 	public void findAgentConfiguration(ActionEvent event){
-		ParameterMapBuilder parameterBuilder = new ParameterMapBuilder();
+		CriteriaMapBuilder criteriaMapBuilder = CriteriaMapBuilder.createCriteria();
 		if(agentConfiguration.isActive()){
-			parameterBuilder.add("active", agentConfiguration.isActive());
+			criteriaMapBuilder.property("active").mustBeEqualTo(agentConfiguration.isActive());
 		}
 		if(agentConfiguration.getAgentName() != null && ! agentConfiguration.getAgentName().trim().isEmpty()){
-			parameterBuilder.addVariableString("agentName", agentConfiguration.getAgentName());
+			criteriaMapBuilder.property("agentName").mustBeEqualTo(agentConfiguration.getAgentName());
 		}
 		if(agentConfiguration.getType() != null){
-			parameterBuilder.add("type", agentConfiguration.getType());
+			criteriaMapBuilder.property("type").mustBeEqualTo(agentConfiguration.getType());
 		}
     		
 		try {
-			agentConfigurationList = finder.findObjects(parameterBuilder.build());
-			agentConfigurationList.forEach((agentConfiguration)->{
-				agentConfiguration.getAgentConfigurationMap();
-			});
+			agentConfigurationList = finder.findObjects(criteriaMapBuilder.finish());
+			agentConfigurationList.forEach(this::lazyLoadAgentConfigurationMap);
 		} catch (DataStoreException e) {
 			addError("Search error", "An error occured while searching for Agent Configuration", FacesContext.getCurrentInstance());
 			log.severe("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()
 					+ ". Exception occured whiles searching for AgentConfiguration");
 		}		
+	}
+
+	protected void lazyLoadAgentConfigurationMap(AgentConfiguration agentConfigurationItem) {
+		agentConfigurationItem.getAgentConfigurationMap();
 	}
     	
 	public void removeAgentConfiguration(ActionEvent event){
@@ -255,12 +265,12 @@ public class AgentConfigurationPage extends BaseBean {
 	
 	public void deployThisAgent(AjaxBehaviorEvent event) {
 		if(agentConfiguration==null || agentConfiguration.getId()==0){
-			addError("Invalid Operation", "Save the agent before deployment", FacesContext.getCurrentInstance());
+			addError(INVALID_OPERATION, "Save the agent before deployment", FacesContext.getCurrentInstance());
 			return;
 		}
 
 		if(!agentConfiguration.isActive()){
-			addError("Invalid Operation", "Activate the agent before deployment", FacesContext.getCurrentInstance());
+			addError(INVALID_OPERATION, "Activate the agent before deployment", FacesContext.getCurrentInstance());
 			return;
 		}
 
@@ -272,7 +282,7 @@ public class AgentConfigurationPage extends BaseBean {
 		try {
 			agentConfiguration.getAgentConfigurationMap(); //Test for lazy loaded parameter access
 			agentConfiguration.getAgentModules().size();
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			setAgentConfiguration(finder.getDataStore().refresh(agentConfiguration));
 		}
 		
@@ -284,7 +294,7 @@ public class AgentConfigurationPage extends BaseBean {
 		try {
 			deploy();
 			addMessage("Success", "Agent has been deployed", FacesContext.getCurrentInstance());
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			addError("Error", "Agent could not be deployed: "+e.getMessage(), 
 					FacesContext.getCurrentInstance());
 		}
@@ -302,7 +312,7 @@ public class AgentConfigurationPage extends BaseBean {
 	
 	public void unDeployThisAgent(AjaxBehaviorEvent event){
 		if(agentConfiguration == null || agentConfiguration.getId()==0){
-			addError("Invalid Operation", "Save the agent before deployment", FacesContext.getCurrentInstance());
+			addError(INVALID_OPERATION, "Save the agent before deployment", FacesContext.getCurrentInstance());
 			return;
 		}
 		
@@ -366,7 +376,7 @@ public class AgentConfigurationPage extends BaseBean {
 		return schedulerCron;
 	}
 	
-	private AgentConfigurationParameterHelper configurationHelper;
+	private transient AgentConfigurationParameterHelper configurationHelper;
 	
 	public AgentConfigurationParameterHelper getConfigurationHelper() {
 		return configurationHelper;
@@ -403,7 +413,7 @@ public class AgentConfigurationPage extends BaseBean {
 	public void clearTriggeredAgentRunnerParameters(AjaxBehaviorEvent event) {
 		if (triggerClass.configurationParameter.getId() !=0 ) {
 			finder.getDataStore().delete(triggerClass.configurationParameter);
-			triggerClass = new AgentConfigurationParameterWrapper("trigger.class", ParameterType.CLASS);
+			triggerClass = new AgentConfigurationParameterWrapper(TRIGGER_CLASS, ParameterType.CLASS);
 			configurationHelper = null;
 		}
 	}
@@ -453,11 +463,10 @@ public class AgentConfigurationPage extends BaseBean {
 			foundClassNames = AgentModuleDatabase.getInstance().getAgentTriggers();
 		else
 			foundClassNames = AgentModuleDatabase.getInstance().getAgentTriggers()
-				.stream().filter((c)-> c.contains(classNameFilter)).collect(Collectors.toList());
+				.stream().filter(c-> c.contains(classNameFilter)).collect(Collectors.toList());
 	}
 		
-	public void validateAgentName(FacesContext context, UIComponent component, Object value)
-			throws ValidatorException {
+	public void validateAgentName(FacesContext context, UIComponent component, Object value) {
 		if(value == null)
 			return;
 		

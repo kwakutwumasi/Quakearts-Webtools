@@ -12,16 +12,18 @@ package com.quakearts.syshub.webapp.beans;
 
 import java.util.List;
 import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import com.quakearts.webapp.facelets.base.BaseBean;
-import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
+import com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.syshub.model.VariableCache;
 
-@ManagedBean(name="variableCachePage")
+@Named("variableCachePage")
 @ViewScoped
 public class VariableCachePage extends BaseBean {
 
@@ -33,13 +35,10 @@ public class VariableCachePage extends BaseBean {
 	private static Logger log = Logger.getLogger(VariableCachePage.class.getName());
 
 	private VariableCache variableCache;
+	@Inject @Named("webappmain")
 	private WebApplicationMain webappmain;
 	private transient VariableCacheFinder finder = new VariableCacheFinder();
-		
-	public VariableCachePage(){
-		webappmain = new WebApplicationMain();
-	}
-	
+			
 	public WebApplicationMain getWebappmain(){
 		return webappmain;
 	}
@@ -59,8 +58,6 @@ public class VariableCachePage extends BaseBean {
     	
 	public void setVariableCache(VariableCache variableCache) {
 		this.variableCache = variableCache;
-		if(variableCache!=null){
-		}
 	}
 	
 	
@@ -71,14 +68,14 @@ public class VariableCachePage extends BaseBean {
 	}
 	
 	public void findVariableCache(ActionEvent event){
-		ParameterMapBuilder parameterBuilder = new ParameterMapBuilder();
+		CriteriaMapBuilder criteriaMapBuilder = CriteriaMapBuilder.createCriteria();
 		
 		if(variableCache.getAppKey() != null && ! variableCache.getAppKey().trim().isEmpty()){
-			parameterBuilder.addVariableString("appKey", variableCache.getAppKey());
+			criteriaMapBuilder.property("appKey").mustBeLike(variableCache.getAppKey());
 		}
     		
 		try {
-			variableCacheList = finder.findObjects(parameterBuilder.build());
+			variableCacheList = finder.findObjects(criteriaMapBuilder.finish());
 		} catch (DataStoreException e) {
 			addError("Search error", "An error occured while searching for Variable Cache", FacesContext.getCurrentInstance());
 			log.severe("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()

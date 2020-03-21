@@ -10,26 +10,25 @@
  ******************************************************************************/
 package com.quakearts.syshub.webapp.beans;
 
-import java.io.Serializable;
-import java.util.Map;
 import java.util.List;
-import com.quakearts.webapp.orm.query.QueryOrder;
+import com.quakearts.webapp.orm.query.criteria.CriteriaMap;
 import com.quakearts.syshub.model.MaxID;
-import static com.quakearts.webapp.orm.query.helper.ParameterMapBuilder.createParameters;
+import static com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder.createCriteria;
 
 public class MaxIDFinder extends AbstractSysHubFinder {
-	public MaxIDFinder(){
-		super();
-	}
 
-	public List<MaxID> findObjects(Map<String, Serializable> parameters,QueryOrder...queryOrders){
-		return getDataStore().list(MaxID.class, parameters, queryOrders);
+	public List<MaxID> findObjects(CriteriaMap criteria){
+		return getDataStore().find(MaxID.class).using(criteria).thenList();
 	}
+	
 	public MaxID getById(int id){
 		return getDataStore().get(MaxID.class,id);
 	}
+	
 	public List<MaxID> filterByText(String searchString){
-		return getDataStore().list(MaxID.class, createParameters()
-					.addVariableString("maxIDName", searchString)
-					.build());	}
+		return getDataStore().find(MaxID.class).using(createCriteria()
+					.property("maxIDName").mustBeLike(searchString)
+					.finish())
+				.thenList();	
+	}
 }

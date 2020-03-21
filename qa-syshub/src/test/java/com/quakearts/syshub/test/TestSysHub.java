@@ -84,13 +84,17 @@ public class TestSysHub {
 	
 	@Test
 	public void testStartingSysHubMainTwice() throws Exception {
-		SysHubMain sysHubMain = new SysHubMain();
-		sysHubMain.init();//If not blocked will result in nullpointer exception
+		try {
+			SysHubMain sysHubMain = new SysHubMain();
+			sysHubMain.init();//If not blocked will result in nullpointer exception
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 	}
 	
 	@Test
 	public void testAgentsDeployed() throws Exception {
-		SysHub sysHubMain = SysHubMain.getInstance();
+		SysHub sysHubMain = CDI.current().select(SysHub.class).get();
 		assertThat(sysHubMain, is(notNullValue()));
 		assertThat(sysHubMain.listAgentRunners().size(), is(3));
 
@@ -115,7 +119,7 @@ public class TestSysHub {
 			Trigger1 trigger = CDI.current().select(Trigger1.class).get();
 			trigger.fire();
 			
-			Thread.sleep(2000);//give Looped and Scheduled Agents some time to run
+			pause(2000);//give Looped and Scheduled Agents some time to run
 			
 			int countDeployed=0;
 			for(AgentConfiguration agentConfiguration:agentConfigurations) {
@@ -277,65 +281,65 @@ public class TestSysHub {
 		agentConfiguration.setAgentName("Test Agent 4");
 		agentConfiguration.setType(RunType.LOOPED);
 		
-		SysHub sysHub = SysHubMain.getInstance();
+		SysHub sysHub = CDI.current().select(SysHub.class).get();
 		assertThat(sysHub, is(notNullValue()));
 		assertThat(sysHub.isDeployed(agentConfiguration), is(false));
 	}
 	
 	@Test
 	public void testUndeployAgent() throws Exception {
-		SysHub sysHubMain = SysHubMain.getInstance();
-		assertThat(sysHubMain, is(notNullValue()));
+		SysHub sysHub = CDI.current().select(SysHub.class).get();
+		assertThat(sysHub, is(notNullValue()));
 		AgentConfiguration agentConfiguration = createAgentConfiguration(RunType.LOOPED, "Test Agent 5");
 		
-		sysHubMain.deployAgent(agentConfiguration);
-		Thread.sleep(600); //give it a chance to run
-		AgentRunner agentRunner = sysHubMain.fetchAgentRunner(agentConfiguration);
+		sysHub.deployAgent(agentConfiguration);
+		pause(600); //give it a chance to run
+		AgentRunner agentRunner = sysHub.fetchAgentRunner(agentConfiguration);
 		ProcessingAgent agent = agentRunner.getProcessingAgent();
-		sysHubMain.undeployAgent(agentConfiguration);
-		assertThat(sysHubMain.isDeployed(agentConfiguration), is(false));
-		Thread.sleep(100); //give it a chance to die
+		sysHub.undeployAgent(agentConfiguration);
+		assertThat(sysHub.isDeployed(agentConfiguration), is(false));
+		pause(100); //give it a chance to die
 		assertThat(agent.getLastRunTime(), is(notNullValue()));
 		Date lastrun = agent.getLastRunTime();
-		Thread.sleep(600); //give it a chance to run
+		pause(600); //give it a chance to run
 		assertThat(agent.getLastRunTime(), is(lastrun));
 		assertThat(agentRunner.isRunning(), is(false));
 		assertThat(agentRunner.isShutDown(), is(true));
 		
 		agentConfiguration = createAgentConfiguration(RunType.SCHEDULED, "Test Agent 6");
-		sysHubMain.deployAgent(agentConfiguration);
-		agentRunner = sysHubMain.fetchAgentRunner(agentConfiguration);
+		sysHub.deployAgent(agentConfiguration);
+		agentRunner = sysHub.fetchAgentRunner(agentConfiguration);
 		agent = agentRunner.getProcessingAgent();
-		Thread.sleep(1000); //give it a chance to run
-		sysHubMain.undeployAgent(agentConfiguration);
-		assertThat(sysHubMain.isDeployed(agentConfiguration), is(false));
-		Thread.sleep(1000); //give it a chance to die
+		pause(1000); //give it a chance to run
+		sysHub.undeployAgent(agentConfiguration);
+		assertThat(sysHub.isDeployed(agentConfiguration), is(false));
+		pause(1000); //give it a chance to die
 		assertThat(agent.getLastRunTime(), is(notNullValue()));
 		lastrun = agent.getLastRunTime();
-		Thread.sleep(1000); //give it a chance to run again
+		pause(1000); //give it a chance to run again
 		assertThat(agent.getLastRunTime().getTime(), is(lastrun.getTime()));
 		assertThat(agentRunner.isRunning(), is(false));
 		assertThat(agentRunner.isShutDown(), is(true));
 		
 		agentConfiguration = createAgentConfiguration(RunType.TRIGGERED, "Test Agent 7");
-		sysHubMain.deployAgent(agentConfiguration);
-		Thread.sleep(500);//allow agent to startup
+		sysHub.deployAgent(agentConfiguration);
+		pause(500);//allow agent to startup
 		Trigger2 trigger = CDI.current().select(Trigger2.class).get();
 		trigger.fire();
-		Thread.sleep(500);//allow processing to complete
-		agentRunner = sysHubMain.fetchAgentRunner(agentConfiguration);
+		pause(500);//allow processing to complete
+		agentRunner = sysHub.fetchAgentRunner(agentConfiguration);
 		agent = agentRunner.getProcessingAgent();
-		sysHubMain.undeployAgent(agentConfiguration);
-		assertThat(sysHubMain.isDeployed(agentConfiguration), is(false));
+		sysHub.undeployAgent(agentConfiguration);
+		assertThat(sysHub.isDeployed(agentConfiguration), is(false));
 		assertThat(agent.getLastRunTime(), is(notNullValue()));
 		lastrun = agent.getLastRunTime();
-		Thread.sleep(1000);//allow processing to die
+		pause(1000);//allow processing to die
 		trigger.fire();
 		assertThat(agent.getLastRunTime(), is(lastrun));
 		assertThat(agentRunner.isRunning(), is(false));
 		assertThat(agentRunner.isShutDown(), is(true));
 		
-		sysHubMain.undeployAgent(agentConfiguration);
+		sysHub.undeployAgent(agentConfiguration);
 	}
 
 	private AgentConfiguration createAgentConfiguration(RunType runType, String agentName) {
@@ -1074,7 +1078,7 @@ public class TestSysHub {
 				message3, "Test Store");
 
 		if (loggerImpl.getUnpersistedProcessingLogs().size()>0) {
-			Thread.sleep(1000);
+			pause(1000);
 			if (loggerImpl.getUnpersistedProcessingLogs().size()>0) {
 				loggerImpl.pushLogsToDB();
 			}
@@ -1136,5 +1140,10 @@ public class TestSysHub {
 		} finally {
 			transaction.commit();
 		}
+	}
+	
+	private void pause(long time){
+		long start = System.currentTimeMillis();
+		while (System.currentTimeMillis() - start < time);
 	}
 }

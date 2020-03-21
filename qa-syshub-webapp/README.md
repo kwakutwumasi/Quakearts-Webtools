@@ -5,7 +5,7 @@ This project provides the web interface for the _qa-syshub_ library. It can be d
 ##### Requirements
 * Java 8+
 * Maven
-* qa-syshub 2.0+
+* qa-appbase 2.0+
 
 ##### Quick Start
 
@@ -15,14 +15,14 @@ The project can also be downloaded and built.
 
 ##### Deploying a ProcessingAgent
 
-1. Select 'Create → Create AgentConfiguration'
+1. Select 'Create -> Create AgentConfiguration'
 
     1. Enter the desired "Agent Name"
     2. Configure other values as required.
     3. Ensure that the module is not marked as valid.
     4. Save the Agent Configuration. Correct any errors when prompted.
 
-2. Select 'Create → Create AgentModule'.
+2. Select 'Create -> Create AgentModule'.
 
     1. Under "Agent Configuration" enter the name of the Agent Configuration created under 1.1. Wait for the search to complete and select the Agent Name in the drop down
     2. Enter the desired name for the MessageSpooler Module under 'Module Name'.
@@ -49,7 +49,7 @@ The project can also be downloaded and built.
     5. Configure other values as required.
 	6. Save the agent module
 
-5. Select 'View → View Agent Configuration'
+5. Select 'View -> View Agent Configuration'
     
     1. Under 'Agent Name' enter the name of the Agent Configuration created under 1.1 and click on 'Search'
     2. Select 'View' to the right of the Agent Configuration result returned

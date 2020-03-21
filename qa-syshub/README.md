@@ -26,7 +26,7 @@ then add the dependency
 <dependency>
 	<groupId>com.quakearts.syshub</groupId>
 	<artifactId>qa-syshub</artifactId>
-	<version>1.0.2</version>
+	<version>1.1.0</version>
 </dependency>
 
 ```

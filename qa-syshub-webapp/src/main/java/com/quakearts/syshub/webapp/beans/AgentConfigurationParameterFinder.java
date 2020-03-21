@@ -10,24 +10,27 @@
  ******************************************************************************/
 package com.quakearts.syshub.webapp.beans;
 
-import java.io.Serializable;
-import java.util.Map;
 import java.util.List;
-import com.quakearts.webapp.orm.query.QueryOrder;
+import com.quakearts.webapp.orm.query.criteria.CriteriaMap;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
-import static com.quakearts.webapp.orm.query.helper.ParameterMapBuilder.createParameters;
+import static com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder.createCriteria;
 
 public class AgentConfigurationParameterFinder extends AbstractSysHubFinder {
 
-	public List<AgentConfigurationParameter> findObjects(Map<String, Serializable> parameters,QueryOrder...queryOrders){
-		return getDataStore().list(AgentConfigurationParameter.class, parameters, queryOrders);
+	public List<AgentConfigurationParameter> findObjects(CriteriaMap criteria){
+		return getDataStore().find(AgentConfigurationParameter.class)
+				.using(criteria).thenList();
 	}
+	
 	public AgentConfigurationParameter getById(int id){
 		return getDataStore().get(AgentConfigurationParameter.class,id);
 	}
+	
 	public List<AgentConfigurationParameter> filterByText(String searchString){
-		return getDataStore().list(AgentConfigurationParameter.class, createParameters().disjoin()
-					.addVariableString("name", searchString)
-					.addVariableString("stringValue", searchString)
-					.build());	}
+		return getDataStore().find(AgentConfigurationParameter.class).using(createCriteria()
+					.requireAnyOfTheFollowing()
+					.property("name").mustBeLike(searchString)
+					.property("stringValue").mustBeLike(searchString)
+					.finish()).thenList();
+	}
 }

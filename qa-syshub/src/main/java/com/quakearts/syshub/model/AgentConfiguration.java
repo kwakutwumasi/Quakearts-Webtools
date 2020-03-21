@@ -57,7 +57,7 @@ public class AgentConfiguration implements Serializable {
 	@OneToMany(mappedBy="agentConfiguration", fetch=FetchType.LAZY, cascade={CascadeType.ALL})
 	private Set<AgentConfigurationModuleMapping> agentConfigurationModuleMappings = new HashSet<>();
 	
-	public static enum RunType{
+	public enum RunType{
 		SCHEDULED,
 		LOOPED,
 		TRIGGERED
@@ -127,39 +127,49 @@ public class AgentConfiguration implements Serializable {
 	private void createConfigurationMaps() {
 		agentConfigurationMap = new HashMap<>();
 		moduleConfigurationMaps = new HashMap<>();
-		if(getParameters().size()>0){
-			for(AgentConfigurationParameter agentConfigurationParameter: getParameters()) {
-				if(agentConfigurationParameter.getAgentModule()!=null){
-					Map<String, AgentConfigurationParameter> agentModuleConfigurationMap = 
-							moduleConfigurationMaps.get(agentConfigurationParameter.getAgentModule().getId());
-					
-					if(agentModuleConfigurationMap == null){
-						agentModuleConfigurationMap = new HashMap<>();
-						moduleConfigurationMaps.put(agentConfigurationParameter.getAgentModule().getId(), agentModuleConfigurationMap);
-					}
-					
-					agentModuleConfigurationMap.put(agentConfigurationParameter.getName(), agentConfigurationParameter);
-					if(agentConfigurationParameter.isGlobal())
-						agentConfigurationMap.put(agentConfigurationParameter.getName(), agentConfigurationParameter);
-
-				} else {
-					agentConfigurationMap.put(agentConfigurationParameter.getName(), agentConfigurationParameter);
-				}
-			}
-						
-			for(Entry<Integer, Map<String, AgentConfigurationParameter>> entry:moduleConfigurationMaps.entrySet()){
-				entry.getValue().putAll(agentConfigurationMap);
-				entry.setValue(Collections.unmodifiableMap(entry.getValue()));
-			}
-			
-			for(AgentConfigurationModuleMapping configurationModuleMapping:getAgentConfigurationModuleMappings()) {
-				moduleConfigurationMaps.put(configurationModuleMapping.getAgentModule().getId()
-						, configurationModuleMapping.getAgentModule().getModuleConfigurationMap());
-			}
-
-			agentConfigurationMap = Collections.unmodifiableMap(agentConfigurationMap);
-			moduleConfigurationMaps = Collections.unmodifiableMap(moduleConfigurationMaps);
+		if(getParameters().isEmpty()){
+			loadParameters();			
+			setEntries();			
+			createMaps();
 		}
+	}
+
+	protected void loadParameters() {
+		for(AgentConfigurationParameter agentConfigurationParameter: getParameters()) {
+			if(agentConfigurationParameter.getAgentModule()!=null){
+				Map<String, AgentConfigurationParameter> agentModuleConfigurationMap = 
+						moduleConfigurationMaps.get(agentConfigurationParameter.getAgentModule().getId());
+				
+				if(agentModuleConfigurationMap == null){
+					agentModuleConfigurationMap = new HashMap<>();
+					moduleConfigurationMaps.put(agentConfigurationParameter.getAgentModule().getId(), agentModuleConfigurationMap);
+				}
+				
+				agentModuleConfigurationMap.put(agentConfigurationParameter.getName(), agentConfigurationParameter);
+				if(agentConfigurationParameter.isGlobal())
+					agentConfigurationMap.put(agentConfigurationParameter.getName(), agentConfigurationParameter);
+
+			} else {
+				agentConfigurationMap.put(agentConfigurationParameter.getName(), agentConfigurationParameter);
+			}
+		}
+	}
+
+	protected void setEntries() {
+		for(Entry<Integer, Map<String, AgentConfigurationParameter>> entry:moduleConfigurationMaps.entrySet()){
+			entry.getValue().putAll(agentConfigurationMap);
+			entry.setValue(Collections.unmodifiableMap(entry.getValue()));
+		}
+	}
+
+	protected void createMaps() {
+		for(AgentConfigurationModuleMapping configurationModuleMapping:getAgentConfigurationModuleMappings()) {
+			moduleConfigurationMaps.put(configurationModuleMapping.getAgentModule().getId()
+					, configurationModuleMapping.getAgentModule().getModuleConfigurationMap());
+		}
+
+		agentConfigurationMap = Collections.unmodifiableMap(agentConfigurationMap);
+		moduleConfigurationMaps = Collections.unmodifiableMap(moduleConfigurationMaps);
 	}
 	
 	@Transient
@@ -189,6 +199,6 @@ public class AgentConfiguration implements Serializable {
 	
 	@Override
 	public String toString() {
-		return Integer.toHexString(this.hashCode()+(int)(id>0?id:0));
+		return Integer.toHexString(this.hashCode()+id>0?id:0);
 	}
 }

@@ -41,22 +41,17 @@ import com.quakearts.syshub.model.AgentModule;
 @Singleton
 public class SysHubMain implements SysHub {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 9017418510878915431L;
 	@Inject
-	private SystemDataStoreManager storeManager;
-	
+	private transient SystemDataStoreManager storeManager;
 	private static Map<String, AgentRunner> agentRunners = new ConcurrentHashMap<>();
-		
 	private static boolean hasRun = false;
-	
-	private static SysHub instance;
-	
-	public static SysHub getInstance() {
-		return instance;
-	}
-	
 	@Transactional(TransactionType.SINGLETON)
 	public void init() {
-		if(!hasRun){//Run only once per application
+		if(!hasRun()){//Run only once per application
 			List<AgentConfiguration> agentConfigurations = storeManager
 					.getDataStore()
 					.find(AgentConfiguration.class)
@@ -73,13 +68,14 @@ public class SysHubMain implements SysHub {
 							+ ". Exception occured whiles deploying "+agentConfiguration.getAgentName());
 				}
 			}
-			instance = this;
-			hasRun = true;
+
+			setRun(true);
 			
 			Runtime.getRuntime().addShutdownHook(new Thread(()->{
 				try {
 					DriverManager.getConnection("jdbc:derby:;shutdown=true");
 				} catch (SQLException e) {
+					//Do nothing
 				}
 			}));
 		}
@@ -167,5 +163,13 @@ public class SysHubMain implements SysHub {
 	@Override
 	public AgentRunner fetchAgentRunner(AgentConfiguration agentConfiguration) {
 		return agentRunners.get(agentConfiguration.getAgentName());
+	}
+
+	private static boolean hasRun() {
+		return hasRun;
+	}
+
+	private static void setRun(boolean hasRun) {
+		SysHubMain.hasRun = hasRun;
 	}
 }

@@ -13,16 +13,16 @@ package com.quakearts.syshub.webapp.beans;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import com.quakearts.webapp.facelets.base.BaseBean;
 import com.quakearts.webapp.orm.query.Range;
-import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
+import com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.syshub.model.ProcessingLog;
 import com.quakearts.syshub.SysHub;
@@ -30,7 +30,7 @@ import com.quakearts.syshub.core.runner.AgentRunner;
 import com.quakearts.syshub.exception.ProcessingException;
 import com.quakearts.syshub.model.AgentConfiguration;
 
-@ManagedBean(name="processingLogPage")
+@Named("processingLogPage")
 @ViewScoped
 public class ProcessingLogPage extends BaseBean {
 
@@ -39,18 +39,16 @@ public class ProcessingLogPage extends BaseBean {
 	 */
 	private static final long serialVersionUID = 1849694857204230644L;
 
-	@Inject SysHub sysHub;
+	@Inject 
+	private SysHub sysHub;
 	
 	private static Logger log = Logger.getLogger(ProcessingLogPage.class.getName());
 
 	private ProcessingLog processingLog;
+	@Inject @Named("webappmain")
 	private WebApplicationMain webappmain;
 	private transient ProcessingLogFinder finder = new ProcessingLogFinder();
 		
-	public ProcessingLogPage(){
-		webappmain = new WebApplicationMain();
-	}
-	
 	public WebApplicationMain getWebappmain(){
 		return webappmain;
 	}
@@ -109,40 +107,49 @@ public class ProcessingLogPage extends BaseBean {
 	}
 	
 	public void findProcessingLog(ActionEvent event){
-		ParameterMapBuilder parameterBuilder = new ParameterMapBuilder();
+		CriteriaMapBuilder criteriaMapBuilder = CriteriaMapBuilder.createCriteria();
 		if(processingLog.getAgentConfiguration() != null){
-			parameterBuilder.add("agentConfiguration", processingLog.getAgentConfiguration());
+			criteriaMapBuilder.property("agentConfiguration").mustBeEqualTo(processingLog.getAgentConfiguration());
 		}
+		
 		if(processingLog.getAgentModule() != null){
-			parameterBuilder.add("agentModule", processingLog.getAgentModule());
+			criteriaMapBuilder.property("agentModule").mustBeEqualTo(processingLog.getAgentModule());
 		}
+		
 		if(processingLog.isError()){
-			parameterBuilder.add("error", processingLog.isError());
+			criteriaMapBuilder.property("error").mustBeEqualTo(processingLog.isError());
 		}
+		
 		if(!logDtRange.isEmpty()){
-			parameterBuilder.add("logDt", logDtRange);
+			criteriaMapBuilder.property("logDt").mustBeEqualTo(logDtRange);
 		}
+		
 		if(processingLog.getMessageData() != null){
-			parameterBuilder.add("messageData", processingLog.getMessageData());
+			criteriaMapBuilder.property("messageData").mustBeEqualTo(processingLog.getMessageData());
 		}
+		
 		if(processingLog.getMid() != null && ! processingLog.getMid().trim().isEmpty()){
-			parameterBuilder.addVariableString("mid", processingLog.getMid());
+			criteriaMapBuilder.property("mid").mustBeLike(processingLog.getMid());
 		}
+		
 		if(processingLog.getRecipient() != null && ! processingLog.getRecipient().trim().isEmpty()){
-			parameterBuilder.addVariableString("recipient", processingLog.getRecipient());
+			criteriaMapBuilder.property("recipient").mustBeLike(processingLog.getRecipient());
 		}
+		
 		if(processingLog.getRetries() != 0){
-			parameterBuilder.add("retries", processingLog.getRetries());
+			criteriaMapBuilder.property("retries").mustBeEqualTo(processingLog.getRetries());
 		}
+		
 		if(processingLog.getStatusMessage() != null && ! processingLog.getStatusMessage().trim().isEmpty()){
-			parameterBuilder.addVariableString("statusMessage", processingLog.getStatusMessage());
+			criteriaMapBuilder.property("statusMessage").mustBeLike(processingLog.getStatusMessage());
 		}
+		
 		if(processingLog.getType() != null){
-			parameterBuilder.add("type", processingLog.getType());
+			criteriaMapBuilder.property("type").mustBeEqualTo(processingLog.getType());
 		}
     		
 		try {
-			processingLogList = finder.findObjects(parameterBuilder.build());
+			processingLogList = finder.findObjects(criteriaMapBuilder.finish());
 		} catch (DataStoreException e) {
 			addError("Search error", "An error occured while searching for Processing Log", FacesContext.getCurrentInstance());
 			log.severe("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()

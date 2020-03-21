@@ -10,29 +10,30 @@
  ******************************************************************************/
 package com.quakearts.syshub.webapp.beans;
 
-import java.io.Serializable;
-import java.util.Map;
 import java.util.List;
-import com.quakearts.webapp.orm.query.QueryOrder;
+import com.quakearts.webapp.orm.query.criteria.CriteriaMap;
 import com.quakearts.syshub.model.AgentConfiguration;
-import static com.quakearts.webapp.orm.query.helper.ParameterMapBuilder.createParameters;
+import static com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder.createCriteria;
 
 public class AgentConfigurationFinder extends AbstractSysHubFinder {	
 
-	public List<AgentConfiguration> findObjects(Map<String, Serializable> parameters,QueryOrder...queryOrders){
-		return getDataStore().list(AgentConfiguration.class, parameters, queryOrders);
+	public List<AgentConfiguration> findObjects(CriteriaMap criteria){
+		return getDataStore().find(AgentConfiguration.class).using(criteria).thenList();
 	}
+	
 	public AgentConfiguration getById(int id){
 		return getDataStore().get(AgentConfiguration.class,id);
 	}
+	
 	public List<AgentConfiguration> filterByText(String searchString){
-		return getDataStore().list(AgentConfiguration.class, createParameters()
-					.addVariableString("agentName", searchString)
-					.build());	
+		return getDataStore().find(AgentConfiguration.class).using(createCriteria()
+					.property("agentName").mustBeLike(searchString)
+					.finish()).thenList();
 	}
+
 	public List<AgentConfiguration> findByName(String searchString){
-		return getDataStore().list(AgentConfiguration.class, createParameters()
-					.add("agentName", searchString)
-					.build());
+		return getDataStore().find(AgentConfiguration.class).using(createCriteria()
+				.property("agentName").mustBeEqualTo(searchString)
+				.finish()).thenList();
 	}
 }

@@ -10,13 +10,20 @@
  ******************************************************************************/
 package com.quakearts.syshub.core.utils.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ServiceLoader;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
 
 import org.infinispan.Cache;
+import org.infinispan.commons.configuration.ClassWhiteList;
+import org.infinispan.commons.marshall.JavaSerializationMarshaller;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
-import org.infinispan.configuration.cache.SingleFileStoreConfigurationBuilder;
+import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;
 import org.infinispan.eviction.EvictionType;
 import org.infinispan.manager.CacheContainer;
@@ -24,32 +31,47 @@ import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 
 import com.quakearts.syshub.core.utils.CacheManager;
+import com.quakearts.syshub.core.utils.CacheWhiteListProvider;
 
 @Singleton
 public class CacheManagerImpl implements CacheManager {
-	private static EmbeddedCacheManager cache_container;
+	private static EmbeddedCacheManager cacheContainer;
 
 	private static synchronized CacheContainer getCacheContainer() {
-		if (cache_container == null) {
-
-			cache_container = new DefaultCacheManager(new ConfigurationBuilder()
+		if (cacheContainer == null) {
+			cacheContainer = new DefaultCacheManager(new GlobalConfigurationBuilder()
+					.serialization()
+					.marshaller(new JavaSerializationMarshaller(new ClassWhiteList(loadWhiteList())))
+					.defaultCacheName("global.default")
+					.build(), new ConfigurationBuilder()
 					// Eviction configuration
-					.eviction().strategy(EvictionStrategy.LIRS).type(EvictionType.COUNT).size(1000)
+					.memory().evictionStrategy(EvictionStrategy.REMOVE).evictionType(EvictionType.COUNT).size(1000)
 					// Expiration...is this neccessary?
 					.expiration().lifespan(3, TimeUnit.DAYS).reaperEnabled(true).wakeUpInterval(1, TimeUnit.DAYS)
 					// Save items to file. Good for managing high loads
-					.persistence().passivation(true).addStore(SingleFileStoreConfigurationBuilder.class).async()
-					.preload(true).location("syshub_log_cache").build());
+					.persistence().passivation(true).addSingleFileStore()
+					.async().enable().preload(true).location("syshub_log_cache").build());
 
-			cache_container.start();
+			cacheContainer.start();
 			Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-				if (cache_container != null) {
-					cache_container.stop();
+				if (cacheContainer != null) {
+					cacheContainer.stop();
 				}
 			}));
 
 		}
-		return cache_container;
+		return cacheContainer;
+	}
+
+	private static List<String> loadWhiteList() {
+		List<String> whiteList = new ArrayList<>(Arrays.asList("com.quakearts.syshub.model.*"));
+		ServiceLoader<CacheWhiteListProvider> whiteListProviders = ServiceLoader.load(CacheWhiteListProvider.class);
+		Iterator<CacheWhiteListProvider> whiteListProvidersIterators = whiteListProviders.iterator();
+		while (whiteListProvidersIterators.hasNext()) {
+			whiteList.addAll(whiteListProvidersIterators.next().getWhiteList());
+		}
+		
+		return whiteList;
 	}
 
 	/* (non-Javadoc)

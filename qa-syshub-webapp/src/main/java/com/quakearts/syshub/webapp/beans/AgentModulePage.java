@@ -12,20 +12,22 @@ package com.quakearts.syshub.webapp.beans;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.validator.ValidatorException;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import com.quakearts.webapp.facelets.base.BaseBean;
-import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
+import com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder;
 import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.syshub.model.AgentModule;
@@ -36,10 +38,17 @@ import com.quakearts.syshub.core.DataSpooler;
 import com.quakearts.syshub.core.MessageFormatter;
 import com.quakearts.syshub.core.Messenger;
 import com.quakearts.syshub.model.AgentConfiguration;
+import com.quakearts.syshub.model.AgentConfigurationParameter;
 
-@ManagedBean(name = "agentModulePage")
+@Named("agentModulePage")
 @ViewScoped
 public class AgentModulePage extends BaseBean {
+
+	private static final String AGENT_CLASS_IS_NOT_A = "Agent Class is not a ";
+
+	private static final String INVALID_DATA = "Invalid Data";
+
+	private static final String AGENT_CONFIGURATION = "agentConfiguration";
 
 	/**
 	 * 
@@ -49,12 +58,9 @@ public class AgentModulePage extends BaseBean {
 	private static Logger log = Logger.getLogger(AgentModulePage.class.getName());
 
 	private AgentModule agentModule;
+	@Inject @Named("webappmain")
 	private WebApplicationMain webappmain;
 	private transient AgentModuleFinder finder = new AgentModuleFinder();
-
-	public AgentModulePage() {
-		webappmain = new WebApplicationMain();
-	}
 
 	public WebApplicationMain getWebappmain() {
 		return webappmain;
@@ -93,8 +99,7 @@ public class AgentModulePage extends BaseBean {
 		}
 	}
 
-	public void validateAgentName(FacesContext context, UIComponent component, Object value)
-			throws ValidatorException {
+	public void validateAgentName(FacesContext context, UIComponent component, Object value) {
 
 		if(value == null)
 			return;
@@ -104,12 +109,12 @@ public class AgentModulePage extends BaseBean {
 				|| agentModule.getAgentConfiguration().getId()<= 0)
 			throw new ValidatorException(new FacesMessage("Invalid Selection", "Select agent configuration to continue"));
 		
-		List<AgentModule> sameNamedModules = finder.findObjects(new ParameterMapBuilder()
-				.add("agentConfiguration", agentModule.getAgentConfiguration())
-				.add("moduleName", value.toString()).build());
+		List<AgentModule> sameNamedModules = finder.findObjects(CriteriaMapBuilder.createCriteria()
+				.property(AGENT_CONFIGURATION).mustBeEqualTo(agentModule.getAgentConfiguration())
+				.property("moduleName").mustBeEqualTo(value.toString()).finish());
 		
 		if(!sameNamedModules.isEmpty())
-			throw new ValidatorException(new FacesMessage("Invalid Data", "A module already exists with the name "+value));
+			throw new ValidatorException(new FacesMessage(INVALID_DATA, "A module already exists with the name "+value));
 	}
 	
 	public void moduleNameChanged(AjaxBehaviorEvent event) {
@@ -118,8 +123,10 @@ public class AgentModulePage extends BaseBean {
 			DataStore store = finder.getDataStore();
 			AgentModule oldAgentModule = finder.getById(agentModule.getId());//Reload
 			
-			List<AgentModule> mappedModules = finder.findObjects(new ParameterMapBuilder().add("agentConfiguration", agentModule.getAgentConfiguration())
-					.add("mappedModuleName", oldAgentModule.getModuleName()).build());
+			List<AgentModule> mappedModules = finder.findObjects(CriteriaMapBuilder.createCriteria()
+					.property(AGENT_CONFIGURATION).mustBeEqualTo(agentModule.getAgentConfiguration())
+					.property("mappedModuleName").mustBeEqualTo(oldAgentModule.getModuleName())
+					.finish());
 
 			if(!mappedModules.isEmpty()){
 				oldAgentModule.setModuleName(agentModule.getModuleName());
@@ -127,21 +134,21 @@ public class AgentModulePage extends BaseBean {
 				store.save(agentModule);
 				store.clearBuffers();
 				
-				for(AgentModule agentModule : mappedModules){
-					agentModule.setMappedModuleName(agentModule.getModuleName());
-					store.save(agentModule);
+				for(AgentModule agentModuleItem : mappedModules){
+					agentModuleItem.setMappedModuleName(agentModuleItem.getModuleName());
+					store.save(agentModuleItem);
 				}
 			}
 		}
 	}
 	
-	public List<String> foundClassNames;
+	private transient List<String> foundClassNames;
 	
 	public List<String> getFoundClassNames() {
 		return foundClassNames;
 	}
 	
-	public String classNameFilter;
+	private String classNameFilter;
 	
 	public String getClassNameFilter() {
 		return classNameFilter;
@@ -177,11 +184,11 @@ public class AgentModulePage extends BaseBean {
 			if("***".equals(classNameFilter.trim()))
 				foundClassNames = stringsToFilter;
 			else
-				foundClassNames = stringsToFilter.stream().filter((c)-> c.contains(classNameFilter)).collect(Collectors.toList());
+				foundClassNames = stringsToFilter.stream().filter(c-> c.contains(classNameFilter)).collect(Collectors.toList());
 		}
 	}
 	
-	private AgentConfigurationParameterHelper configurationHelper;
+	private transient AgentConfigurationParameterHelper configurationHelper;
 	
 	public AgentConfigurationParameterHelper getConfigurationHelper() {
 		return configurationHelper;
@@ -204,45 +211,44 @@ public class AgentModulePage extends BaseBean {
 			moduleClass = Class.forName(agentModule.getModuleClassName());
 			configurationHelper = new AgentConfigurationParameterHelper(moduleClass, agentModule, agentModule.getAgentConfiguration());
 		} catch (ClassNotFoundException e) {
-			addError("Invalid Data", "Agent Class not found: "+getAgentModule().getModuleClassName(), FacesContext.getCurrentInstance());
+			addError(INVALID_DATA, "Agent Class not found: "+getAgentModule().getModuleClassName(), FacesContext.getCurrentInstance());
 		}
 	}
 	
-	public void validateAgentClass(FacesContext context, UIComponent component, Object value)
-			throws ValidatorException {
+	public void validateAgentClass(FacesContext context, UIComponent component, Object value) {
 		if (getAgentModule().getModuleType() == null)
 			throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Missing Module Type",
 					"Select module type to continue"));
 
 		if (value == null)
 			throw new ValidatorException(
-					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Data", "Agent Class Name cannot be null"));
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, INVALID_DATA, "Agent Class Name cannot be null"));
 
 		Class<?> moduleClass;
 		try {
 			moduleClass = Class.forName(value.toString());
 		} catch (ClassNotFoundException e) {
-			throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Data",
+			throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, INVALID_DATA,
 					"Agent Class named " + value + " not found"));
 		}
 
 		switch (getAgentModule().getModuleType()) {
 		case DATASPOOLER:
 			if (!DataSpooler.class.isAssignableFrom(moduleClass))
-				throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Data",
-						"Agent Class is not a " + DataSpooler.class.getName()));
+				throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, INVALID_DATA,
+						AGENT_CLASS_IS_NOT_A + DataSpooler.class.getName()));
 
 			break;
 		case FORMATTER:
 			if (!MessageFormatter.class.isAssignableFrom(moduleClass))
-				throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Data",
-						"Agent Class is not a " + MessageFormatter.class.getName()));
+				throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, INVALID_DATA,
+						AGENT_CLASS_IS_NOT_A + MessageFormatter.class.getName()));
 
 			break;
 		case MESSENGER:
 			if (!Messenger.class.isAssignableFrom(moduleClass))
-				throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Data",
-						"Agent Class is not a " + Messenger.class.getName()));
+				throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, INVALID_DATA,
+						AGENT_CLASS_IS_NOT_A + Messenger.class.getName()));
 
 			break;
 		default:
@@ -266,35 +272,41 @@ public class AgentModulePage extends BaseBean {
 	}
 
 	public void findAgentModule(ActionEvent event) {
-		ParameterMapBuilder parameterBuilder = new ParameterMapBuilder();
+		CriteriaMapBuilder criteriaMapBuilder = CriteriaMapBuilder.createCriteria();
 		if (agentModule.getModuleClassName() != null && !agentModule.getModuleClassName().trim().isEmpty()) {
-			parameterBuilder.addVariableString("agentClassName", agentModule.getModuleClassName());
+			criteriaMapBuilder.property("agentClassName").mustBeLike(agentModule.getModuleClassName());
 		}
+		
 		if (agentModule.getAgentConfiguration() != null) {
-			parameterBuilder.add("agentConfiguration", agentModule.getAgentConfiguration());
+			criteriaMapBuilder.property(AGENT_CONFIGURATION).mustBeEqualTo(agentModule.getAgentConfiguration());
 		}
+		
 		if (agentModule.getMappedModuleName() != null && !agentModule.getMappedModuleName().trim().isEmpty()) {
-			parameterBuilder.addVariableString("mappedModuleName", agentModule.getMappedModuleName());
+			criteriaMapBuilder.property("mappedModuleName").mustBeLike(agentModule.getMappedModuleName());
 		}
+		
 		if (agentModule.getModuleName() != null && !agentModule.getModuleName().trim().isEmpty()) {
-			parameterBuilder.addVariableString("moduleName", agentModule.getModuleName());
+			criteriaMapBuilder.property("moduleName").mustBeLike(agentModule.getModuleName());
 		}
+		
 		if (agentModule.getModuleType() != null) {
-			parameterBuilder.add("moduleType", agentModule.getModuleType());
+			criteriaMapBuilder.property("moduleType").mustBeEqualTo(agentModule.getModuleType());
 		}
 
 		try {
-			agentModuleList = finder.findObjects(parameterBuilder.build());
+			agentModuleList = finder.findObjects(criteriaMapBuilder.finish());
 			
-			agentModuleList.forEach((agentModule)->{
-				agentModule.getModuleConfigurationMap();
-			});
+			agentModuleList.forEach(this::lazyLoadAgentModuleConfigurationMap);
 		} catch (DataStoreException e) {
 			addError("Search error", "An error occured while searching for Agent Module",
 					FacesContext.getCurrentInstance());
 			log.severe("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()
 					+ ". Exception occured whiles searching for AgentModule");
 		}
+	}
+
+	protected Map<String, AgentConfigurationParameter> lazyLoadAgentModuleConfigurationMap(AgentModule agentModule) {
+		return agentModule.getModuleConfigurationMap();
 	}
 
 	public void removeAgentModule(ActionEvent event) {

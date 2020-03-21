@@ -2,18 +2,20 @@ package com.quakearts.syshub.webapp.beans;
 
 import java.util.List;
 import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import com.quakearts.webapp.facelets.base.BaseBean;
-import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
+import com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentModule;
 
-@ManagedBean(name="agentConfigurationParameterPage")
+@Named("agentConfigurationParameterPage")
 @ViewScoped
 public class AgentConfigurationParameterPage extends BaseBean {
 
@@ -25,13 +27,11 @@ public class AgentConfigurationParameterPage extends BaseBean {
 	private static Logger log = Logger.getLogger(AgentConfigurationParameterPage.class.getName());
 
 	private AgentConfigurationParameter agentConfigurationParameter;
+	
+	@Inject @Named("webappmain")
 	private WebApplicationMain webappmain;
 	private transient AgentConfigurationParameterFinder finder = new AgentConfigurationParameterFinder();
-		
-	public AgentConfigurationParameterPage(){
-		webappmain = new WebApplicationMain();
-	}
-	
+			
 	public WebApplicationMain getWebappmain(){
 		return webappmain;
 	}
@@ -87,31 +87,37 @@ public class AgentConfigurationParameterPage extends BaseBean {
 	}
 	
 	public void findAgentConfigurationParameter(ActionEvent event){
-		ParameterMapBuilder parameterBuilder = new ParameterMapBuilder();
+		CriteriaMapBuilder criteriaMapBuilder = CriteriaMapBuilder.createCriteria();
 		if(agentConfigurationParameter.getAgentConfiguration() != null){
-			parameterBuilder.add("agentConfiguration", agentConfigurationParameter.getAgentConfiguration());
+			criteriaMapBuilder.property("agentConfiguration").mustBeEqualTo(agentConfigurationParameter.getAgentConfiguration());
 		}
+		
 		if(agentConfigurationParameter.getAgentModule() != null){
-			parameterBuilder.add("agentModule", agentConfigurationParameter.getAgentModule());
+			criteriaMapBuilder.property("agentModule").mustBeEqualTo(agentConfigurationParameter.getAgentModule());
 		}
-		if(agentConfigurationParameter.getBooleanValue()){
-			parameterBuilder.add("booleanValue", agentConfigurationParameter.getBooleanValue());
+		
+		if(Boolean.TRUE.equals(agentConfigurationParameter.getBooleanValue())){
+			criteriaMapBuilder.property("booleanValue").mustBeEqualTo(agentConfigurationParameter.getBooleanValue());
 		}
+		
 		if(agentConfigurationParameter.getName() != null && ! agentConfigurationParameter.getName().trim().isEmpty()){
-			parameterBuilder.addVariableString("name", agentConfigurationParameter.getName());
+			criteriaMapBuilder.property("name").mustBeLike(agentConfigurationParameter.getName());
 		}
+		
 		if(agentConfigurationParameter.getNumericValue() != null){
-			parameterBuilder.add("numericValue", agentConfigurationParameter.getNumericValue());
+			criteriaMapBuilder.property("numericValue").mustBeEqualTo(agentConfigurationParameter.getNumericValue());
 		}
+		
 		if(agentConfigurationParameter.getParameterType() != null){
-			parameterBuilder.add("parameterType", agentConfigurationParameter.getParameterType());
+			criteriaMapBuilder.property("parameterType").mustBeEqualTo(agentConfigurationParameter.getParameterType());
 		}
+		
 		if(agentConfigurationParameter.getStringValue() != null && ! agentConfigurationParameter.getStringValue().trim().isEmpty()){
-			parameterBuilder.addVariableString("stringValue", agentConfigurationParameter.getStringValue());
+			criteriaMapBuilder.property("stringValue").mustBeLike(agentConfigurationParameter.getStringValue());
 		}
     		
 		try {
-			agentConfigurationParameterList = finder.findObjects(parameterBuilder.build());
+			agentConfigurationParameterList = finder.findObjects(criteriaMapBuilder.finish());
 		} catch (DataStoreException e) {
 			addError("Search error", "An error occured while searching for Agent Configuration Parameter", FacesContext.getCurrentInstance());
 			log.severe("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()

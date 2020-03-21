@@ -12,16 +12,18 @@ package com.quakearts.syshub.webapp.beans;
 
 import java.util.List;
 import java.util.logging.Logger;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import com.quakearts.webapp.facelets.base.BaseBean;
-import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
+import com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.syshub.model.MaxID;
 
-@ManagedBean(name="maxIDPage")
+@Named("maxIDPage")
 @ViewScoped
 public class MaxIDPage extends BaseBean {
 
@@ -33,17 +35,10 @@ public class MaxIDPage extends BaseBean {
 	private static Logger log = Logger.getLogger(MaxIDPage.class.getName());
 
 	private MaxID maxID;
+	@Inject @Named("webappmain")
 	private WebApplicationMain webappmain;
 	private transient MaxIDFinder finder = new MaxIDFinder();
 		
-	public MaxIDPage(){
-		webappmain = new WebApplicationMain();
-	}
-	
-	public WebApplicationMain getWebappmain(){
-		return webappmain;
-	}
-	
 	public MaxID getMaxID() {
 		if(maxID==null){
 			if(hasParameter("maxID")){
@@ -59,8 +54,6 @@ public class MaxIDPage extends BaseBean {
     	
 	public void setMaxID(MaxID maxID) {
 		this.maxID = maxID;
-		if(maxID!=null){
-		}
 	}
 	
 	
@@ -71,16 +64,17 @@ public class MaxIDPage extends BaseBean {
 	}
 	
 	public void findMaxID(ActionEvent event){
-		ParameterMapBuilder parameterBuilder = new ParameterMapBuilder();
+		CriteriaMapBuilder criteriaMapBuilder = CriteriaMapBuilder.createCriteria();
 		if(maxID.getMaxIDName() != null && ! maxID.getMaxIDName().trim().isEmpty()){
-			parameterBuilder.addVariableString("maxIDName", maxID.getMaxIDName());
+			criteriaMapBuilder.property("maxIDName").mustBeLike(maxID.getMaxIDName());
 		}
+		
 		if(maxID.getMaxIDValue() != 0){
-			parameterBuilder.add("maxIDValue", maxID.getMaxIDValue());
+			criteriaMapBuilder.property("maxIDValue").mustBeEqualTo(maxID.getMaxIDValue());
 		}
     		
 		try {
-			maxIDList = finder.findObjects(parameterBuilder.build());
+			maxIDList = finder.findObjects(criteriaMapBuilder.finish());
 		} catch (DataStoreException e) {
 			addError("Search error", "An error occured while searching for Max I D", FacesContext.getCurrentInstance());
 			log.severe("Exception of type " + e.getClass().getName() + " was thrown. Message is " + e.getMessage()
