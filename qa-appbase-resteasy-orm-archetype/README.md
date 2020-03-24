@@ -14,7 +14,7 @@ To create this archetype, use the command:
 	-DartifactId=YOUR-PROJ-AID \
 	-DarchetypeGroupId=com.quakearts.webtools \
 	-DarchetypeArtifactId=qa-appbase-resteasy-orm-archetype \
-	-DarchetypeVersion=1.0.4 \
+	-DarchetypeVersion=1.0.5 \
 	-DremoteRepositories=https://raw.github.com/kwakutwumasi/Quakearts-Webtools/mvn-repo/
 	
 ```

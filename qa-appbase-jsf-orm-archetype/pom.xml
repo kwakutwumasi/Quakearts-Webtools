@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.quakearts.webtools</groupId>
   <artifactId>qa-appbase-jsf-orm-archetype</artifactId>
-  <version>1.0.4</version>
+  <version>1.0.5</version>
   <name>An Archetype for creating new QA-Appbase JSF ORM applications</name>
   <url>http://maven.apache.org</url>
 </project>
