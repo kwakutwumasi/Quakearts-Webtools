@@ -39,6 +39,10 @@ public class MaxIDPage extends BaseBean {
 	private WebApplicationMain webappmain;
 	private transient MaxIDFinder finder = new MaxIDFinder();
 		
+	public WebApplicationMain getWebappmain() {
+		return webappmain;
+	}
+	
 	public MaxID getMaxID() {
 		if(maxID==null){
 			if(hasParameter("maxID")){
@@ -55,7 +59,6 @@ public class MaxIDPage extends BaseBean {
 	public void setMaxID(MaxID maxID) {
 		this.maxID = maxID;
 	}
-	
 	
 	private List<MaxID> maxIDList;
 	
