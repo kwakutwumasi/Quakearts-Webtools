@@ -89,6 +89,7 @@ public class TestAtomikosBeanDatasourceSpiImpl {
 		assertThat(bean.getConcurrentConnectionValidation(), is(false));
 		assertThat(bean.getReapTimeout(), is(120));
 		assertThat(bean.getTestQuery(), is("SELECT 1"));
+		assertThat(bean.getLocalTransactionMode(), is(true));
 			
 		InitialContext initialContext;
 		try {
@@ -97,8 +98,8 @@ public class TestAtomikosBeanDatasourceSpiImpl {
 			
 			assertThat(dataSource != null, is(true));
 	
-			dataSource =(DataSource) initialContext.lookup("java:/jdbc/TestInternalDB");			
-	
+			dataSource =(DataSource) initialContext.lookup("java:/jdbc/TestInternalDB");
+
 			assertThat(dataSource != null, is(true));
 		} catch (NamingException | ClassCastException e) {
 			fail("unable to obtain a connection: "+e.getMessage());

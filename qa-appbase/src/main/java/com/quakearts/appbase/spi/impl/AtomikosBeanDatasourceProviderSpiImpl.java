@@ -206,6 +206,9 @@ public class AtomikosBeanDatasourceProviderSpiImpl implements DataSourceProvider
 		
 		if (configurationParameters.containsKey("testQuery"))
 			atomikosDataSourceBean.setTestQuery(configurationParameters.getString("testQuery"));
+
+		if (configurationParameters.containsKey("localTransactionMode"))
+			atomikosDataSourceBean.setLocalTransactionMode(configurationParameters.getBoolean("localTransactionMode"));
 	}
 
 	@Override

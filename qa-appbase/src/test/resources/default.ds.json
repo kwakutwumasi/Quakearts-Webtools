@@ -12,5 +12,6 @@
 	"minPoolSize":2,
 	"concurrentConnectionValidation":false,
 	"reapTimeout":120,
-	"testQuery":"SELECT 1"
+	"testQuery":"SELECT 1",
+	"localTransactionMode":true
 }
