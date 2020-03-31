@@ -44,6 +44,7 @@ import com.quakearts.syshub.model.AgentModule.ModuleType;
 @Vetoed
 public class ProcessingAgentBuilder {
 
+	private static final String CANNOT_SET_MESSAGE = "Cannot set ProcessingAgent properties when creating an AgentModule";
 	private static final String QUEUE_SIZE = "queueSize";
 	private static final String KEEP_ALIVE_TIME = "keepAliveTime";
 	private static final String CORE_POOL_SIZE = "corePoolSize";
@@ -105,46 +106,7 @@ public class ProcessingAgentBuilder {
 		Map<Messenger, MessageFormatter> messengerFormatterPairs = new HashMap<>();
 		List<DataSpooler> dataSpoolers = new ArrayList<>();
 		
-		for (AgentModule agentModule : agentModules){
-			Map<String, AgentConfigurationParameter> parameters = configuration.getAgentModuleConfigurationMap(agentModule);
-			
-			if(parameters == null)
-				parameters = configuration.getAgentConfigurationMap();
-			
-			switch (agentModule.getModuleType()) {
-			case DATASPOOLER:
-				dataSpoolers.add(DataSpoolerFactory.getFactory().getInstance(parameters, 
-						agentModule));
-				break;
-			case FORMATTER:
-				messageFormatters.put(agentModule.getModuleName() != null 
-				&& !agentModule.getModuleName().trim().isEmpty()?
-						agentModule.getModuleName():agentModule.getModuleClassName(), 
-						MessageFormatterFactory.getFactory().getInstance(parameters, 
-								agentModule));
-				break;
-			case MESSENGER:
-				Messenger messenger = MessengerFactory.getFactory().getInstance(parameters,
-						agentModule);
-				if(agentModule.getMappedModuleName() != null && !agentModule.getMappedModuleName().trim().isEmpty()) {
-					MessageFormatter formatter = messageFormatters.get(agentModule.getMappedModuleName());
-					if(formatter == null)
-						throw new ConfigurationException("No formatter module named "+agentModule.getMappedModuleName()
-							+" to send data for messenger module "+(agentModule.getModuleName()!=null?
-									agentModule.getModuleName():agentModule.getModuleClassName()));
-					
-					messengerFormatterPairs.put(messenger, formatter);
-				} else {
-					for(MessageFormatter formatter: messageFormatters.values()){
-						if(messenger.isCompatibleWith(formatter)){
-							messengerFormatterPairs.put(messenger, formatter);
-							break;
-						}
-					}
-				}
-				break;
-			}
-		}
+		configureModules(agentModules, messageFormatters, messengerFormatterPairs, dataSpoolers);
 		
 		if(messengerFormatterPairs.isEmpty())
 			throw new ConfigurationException("No Messenger/MessageFormatter pairs to send data");
@@ -156,11 +118,77 @@ public class ProcessingAgentBuilder {
 
 		agent.setDataSpoolers(dataSpoolers);
 		
+		setCommonParameters(agent);		
+		return agent;
+	}
+
+	private void configureModules(List<AgentModule> agentModules, Map<String, MessageFormatter> messageFormatters,
+			Map<Messenger, MessageFormatter> messengerFormatterPairs, List<DataSpooler> dataSpoolers)
+			throws ConfigurationException {
+		for (AgentModule agentModuleInternal : agentModules){
+			Map<String, AgentConfigurationParameter> parameters = configuration.getAgentModuleConfigurationMap(agentModuleInternal);
+			
+			if(parameters == null)
+				parameters = configuration.getAgentConfigurationMap();
+			
+			switch (agentModuleInternal.getModuleType()) {
+			case DATASPOOLER:
+				configureDataSpooler(dataSpoolers, agentModuleInternal, parameters);
+				break;
+			case FORMATTER:
+				configureFormatter(messageFormatters, agentModuleInternal, parameters);
+				break;
+			case MESSENGER:
+				configureMessenger(messageFormatters, messengerFormatterPairs, agentModuleInternal, parameters);
+				break;
+			}
+		}
+	}
+
+	private void configureDataSpooler(List<DataSpooler> dataSpoolers, AgentModule agentModuleInternal,
+			Map<String, AgentConfigurationParameter> parameters) throws ConfigurationException {
+		dataSpoolers.add(DataSpoolerFactory.getFactory().getInstance(parameters, 
+				agentModuleInternal));
+	}
+
+	private void configureFormatter(Map<String, MessageFormatter> messageFormatters, AgentModule agentModuleInternal,
+			Map<String, AgentConfigurationParameter> parameters) throws ConfigurationException {
+		messageFormatters.put(agentModuleInternal.getModuleName() != null 
+		&& !agentModuleInternal.getModuleName().trim().isEmpty()?
+				agentModuleInternal.getModuleName():agentModuleInternal.getModuleClassName(), 
+				MessageFormatterFactory.getFactory().getInstance(parameters, 
+						agentModuleInternal));
+	}
+
+	private void configureMessenger(Map<String, MessageFormatter> messageFormatters,
+			Map<Messenger, MessageFormatter> messengerFormatterPairs, AgentModule agentModuleInternal,
+			Map<String, AgentConfigurationParameter> parameters) throws ConfigurationException {
+		Messenger messenger = MessengerFactory.getFactory().getInstance(parameters,
+				agentModuleInternal);
+		if(agentModuleInternal.getMappedModuleName() != null && !agentModuleInternal.getMappedModuleName().trim().isEmpty()) {
+			MessageFormatter formatter = messageFormatters.get(agentModuleInternal.getMappedModuleName());
+			if(formatter == null)
+				throw new ConfigurationException("No formatter module named "+agentModuleInternal.getMappedModuleName()
+					+" to send data for messenger module "+(agentModuleInternal.getModuleName()!=null?
+							agentModuleInternal.getModuleName():agentModuleInternal.getModuleClassName()));
+			
+			messengerFormatterPairs.put(messenger, formatter);
+		} else {
+			for(MessageFormatter formatter: messageFormatters.values()){
+				if(messenger.isCompatibleWith(formatter)){
+					messengerFormatterPairs.put(messenger, formatter);
+					break;
+				}
+			}
+		}
+	}
+
+	private void setCommonParameters(ProcessingAgent agent) throws ConfigurationException {
 		if (configuration.getAgentConfigurationParameter(MAX_DATA_SPOOLER_WORKERS) != null) {
 			try {
 				agent.setMaxDataSpoolerWorkers(configuration.getAgentConfigurationParameter(MAX_DATA_SPOOLER_WORKERS)
 						.getNumericValue().intValue());
-			} catch (NullPointerException e) {
+			} catch (Exception e) {
 				throw new ConfigurationException("Invalid property: maxDataSpoolerWorkers.");
 			}
 		}
@@ -169,15 +197,27 @@ public class ProcessingAgentBuilder {
 			try {
 				agent.setMaxFormatterMessengerWorkers(configuration.getAgentConfigurationParameter(MAX_FORMATTER_WORKERS)
 						.getNumericValue().intValue());
-			} catch (NullPointerException e) {
+			} catch (Exception e) {
 				throw new ConfigurationException("Invalid property: maxFormatterWorkers.");
 			}
 		}
 
-        if(configuration.getAgentConfigurationParameter(MAXIMUM_POOL_SIZE)!=null){
+        if(configuration.getAgentConfigurationParameter(IS_RESEND_CAPABLE)!=null){
+	        try {
+	        	agent.setResendCapable(configuration.getAgentConfigurationParameter(IS_RESEND_CAPABLE).getBooleanValue());
+			} catch (Exception e) {
+				throw new ConfigurationException("Invalid property: queueSize.");
+			}
+        }
+		
+        setThreadPoolParameters(agent);        
+	}
+
+	private void setThreadPoolParameters(ProcessingAgent agent) throws ConfigurationException {
+		if(configuration.getAgentConfigurationParameter(MAXIMUM_POOL_SIZE)!=null){
 	        try {
 	        	agent.setMaximumPoolSize(configuration.getAgentConfigurationParameter(MAXIMUM_POOL_SIZE).getNumericValue().intValue());
-			} catch (NullPointerException e) {
+			} catch (Exception e) {
 				throw new ConfigurationException("Invalid property: maximumPoolSize");
 			}
         }
@@ -185,7 +225,7 @@ public class ProcessingAgentBuilder {
         if(configuration.getAgentConfigurationParameter(CORE_POOL_SIZE)!=null){
 	        try {
 				agent.setCorePoolSize(configuration.getAgentConfigurationParameter(CORE_POOL_SIZE).getNumericValue().intValue());
-			} catch (NullPointerException e) {
+			} catch (Exception e) {
 				throw new ConfigurationException("Invalid property: corePoolSize.");
 			}
         }
@@ -193,7 +233,7 @@ public class ProcessingAgentBuilder {
         if(configuration.getAgentConfigurationParameter(KEEP_ALIVE_TIME)!=null){
 	        try {
 	        	agent.setKeepAliveTime(configuration.getAgentConfigurationParameter(KEEP_ALIVE_TIME).getNumericValue().longValue());
-			} catch (NullPointerException e) {
+			} catch (Exception e) {
 				throw new ConfigurationException("Invalid property: keepAliveTime.");
 			}
         }
@@ -201,20 +241,10 @@ public class ProcessingAgentBuilder {
         if(configuration.getAgentConfigurationParameter(QUEUE_SIZE)!=null){
 	        try {
 	        	agent.setQueueSize(configuration.getAgentConfigurationParameter(QUEUE_SIZE).getNumericValue().intValue());
-			} catch (NullPointerException e) {
+			} catch (Exception e) {
 				throw new ConfigurationException("Invalid property: queueSize.");
 			}
         }
-        
-        if(configuration.getAgentConfigurationParameter(IS_RESEND_CAPABLE)!=null){
-	        try {
-	        	agent.setResendCapable(configuration.getAgentConfigurationParameter(IS_RESEND_CAPABLE).getBooleanValue());
-			} catch (NullPointerException e) {
-				throw new ConfigurationException("Invalid property: queueSize.");
-			}
-        }
-		
-		return agent;
 	}
 	
 	/**Set the name of the {@linkplain ProcessingAgent}
@@ -399,9 +429,9 @@ public class ProcessingAgentBuilder {
 	 */
 	public ProcessingAgentBuilder maxDataSpoolerWorkers(double amount) {
 		if(agentModule!=null)
-			throw new IllegalStateException("Cannot set ProcessingAgent properties when creating an AgentModule");
+			throw new IllegalStateException(CANNOT_SET_MESSAGE);
 		
-		return addNumericParameter("maxDataSpoolerWorkers", amount);		
+		return addNumericParameter(MAX_DATA_SPOOLER_WORKERS, amount);		
 	}
 	
 	/**Set the maxFormatterWorkers property on the processing agent
@@ -411,9 +441,9 @@ public class ProcessingAgentBuilder {
 	 */
 	public ProcessingAgentBuilder maxFormatterWorkers(double amount) {
 		if(agentModule!=null)
-			throw new IllegalStateException("Cannot set ProcessingAgent properties when creating an AgentModule");
+			throw new IllegalStateException(CANNOT_SET_MESSAGE);
 		
-		return addNumericParameter("maxFormatterWorkers", amount);
+		return addNumericParameter(MAX_FORMATTER_WORKERS, amount);
 	}
 	
 	/**Set the queueSize property on the processing agent
@@ -423,9 +453,9 @@ public class ProcessingAgentBuilder {
 	 */
 	public ProcessingAgentBuilder queueSize(double amount) {
 		if(agentModule!=null)
-			throw new IllegalStateException("Cannot set ProcessingAgent properties when creating an AgentModule");
+			throw new IllegalStateException(CANNOT_SET_MESSAGE);
 		
-		return addNumericParameter("queueSize", amount);
+		return addNumericParameter(QUEUE_SIZE, amount);
 	}
 	
 	/**Set the keepAliveTime property on the processing agent
@@ -435,9 +465,9 @@ public class ProcessingAgentBuilder {
 	 */
 	public ProcessingAgentBuilder keepAliveTime(double amount) {
 		if(agentModule!=null)
-			throw new IllegalStateException("Cannot set ProcessingAgent properties when creating an AgentModule");
+			throw new IllegalStateException(CANNOT_SET_MESSAGE);
 		
-		return addNumericParameter("keepAliveTime", amount);
+		return addNumericParameter(KEEP_ALIVE_TIME, amount);
 	}
 	
 	
@@ -448,9 +478,9 @@ public class ProcessingAgentBuilder {
 	 */
 	public ProcessingAgentBuilder corePoolSize(double amount) {
 		if(agentModule!=null)
-			throw new IllegalStateException("Cannot set ProcessingAgent properties when creating an AgentModule");
+			throw new IllegalStateException(CANNOT_SET_MESSAGE);
 		
-		return addNumericParameter("corePoolSize", amount);
+		return addNumericParameter(CORE_POOL_SIZE, amount);
 	}
 	
 	/**Set the maximumPoolSize property on the processing agent
@@ -460,9 +490,9 @@ public class ProcessingAgentBuilder {
 	 */
 	public ProcessingAgentBuilder maximumPoolSize(double amount) {
 		if(agentModule!=null)
-			throw new IllegalStateException("Cannot set ProcessingAgent properties when creating an AgentModule");
+			throw new IllegalStateException(CANNOT_SET_MESSAGE);
 		
-		return addNumericParameter("maximumPoolSize", amount);
+		return addNumericParameter(MAXIMUM_POOL_SIZE, amount);
 	}
 	
 	/**Set the resendCapable property on the processing agent
@@ -472,8 +502,8 @@ public class ProcessingAgentBuilder {
 	 */
 	public ProcessingAgentBuilder resendCapable(boolean activate) {
 		if(agentModule!=null)
-			throw new IllegalStateException("Cannot set ProcessingAgent properties when creating an AgentModule");
+			throw new IllegalStateException(CANNOT_SET_MESSAGE);
 		
-		return addBooleanParameter("isResendCapable", activate);
+		return addBooleanParameter(IS_RESEND_CAPABLE, activate);
 	}
 }

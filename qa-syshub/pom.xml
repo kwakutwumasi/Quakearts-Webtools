@@ -7,7 +7,7 @@
 	<name>Notification System</name>
 	<description>A messaging platform that takes data from various datasources, formats and sends them to message destinations. 
 		Useful for performing notifications of transactions, conversion of message from one format to another,
-		integration of. Supports configuring retry rules, multiplexing datasources, formatters and messengers
+		integration of disparate systems. Supports configuring retry rules, multiplexing datasources, formatters and messengers
 	</description>
 	<properties>
 		<version.org.jboss.ironjacamar>1.4.2.Final</version.org.jboss.ironjacamar>

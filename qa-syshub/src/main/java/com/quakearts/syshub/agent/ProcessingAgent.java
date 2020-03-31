@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -62,6 +63,7 @@ import com.quakearts.syshub.model.ResultExceptionLog;
  *
  */
 public class ProcessingAgent {
+	private static final String INCOMPLETE_SETUP_MESSAGE = "Incomplete setup: missing Message Formatter/Messenger Pairs";
 	private static final Logger log = LoggerFactory.getLogger(ProcessingAgent.class);
     @Inject
 	private Serializer serializer;
@@ -72,14 +74,19 @@ public class ProcessingAgent {
 	private Map<Messenger, MessageFormatter> mapper;
 	private ThreadPoolExecutor executor;
 	private String name;
-	private Date lastRunTime, startTime;
+	private Date lastRunTime;
+	private Date startTime;
 	private int agentWorkersCreated;
-	private int maxDataSpoolerWorkers = 5, dataSpoolerWorkersCreated;
-	private int maxFormatterMessengerWorkers = 5, formatterMessengerWorkersCreated;
+	private int maxDataSpoolerWorkers = 5;
+	private int dataSpoolerWorkersCreated;
+	private int maxFormatterMessengerWorkers = 5;
+	private int formatterMessengerWorkersCreated;
 	private BlockingQueue<AgentWorker> agentWorkers;
 	private BlockingQueue<AgentDataSpoolerWorker> agentDataSpoolerWorkers = new ArrayBlockingQueue<>(maxDataSpoolerWorkers);
 	private BlockingQueue<AgentFormatterMessengerWorker> agentFormatterMessengerWorkers = new ArrayBlockingQueue<>(maxFormatterMessengerWorkers);
-	private int corePoolSize = 5, maximumPoolSize = 5, queueSize = 10;
+	private int corePoolSize = 5;
+	private int maximumPoolSize = 5;
+	private int queueSize = 10;
     private long keepAliveTime = 60;
     private boolean resendCapable;
 
@@ -98,7 +105,7 @@ public class ProcessingAgent {
 			throw new ProcessingException("Incomplete setup: missing Data Spoolers");			
 		
 		if(mapper == null || mapper.isEmpty())
-			throw new ProcessingException("Incomplete setup: missing Message Formatter/Messenger Pairs");			
+			throw new ProcessingException(INCOMPLETE_SETUP_MESSAGE);			
 		
 		lastRunTime = new Date();
 		
@@ -110,11 +117,11 @@ public class ProcessingAgent {
 			getAnAgentWorker(dataSpoolers.get(0)).startProcess();
 		} else {
 			for(DataSpooler spooler:dataSpoolers){
-				getExecutor().execute(()->{getAnAgentWorker(spooler).startProcess();});
+				getExecutor().execute(()->getAnAgentWorker(spooler).startProcess());
 			}		
 		}
 		if(log.isTraceEnabled()) {
-			log.trace("Processing "+agentConfiguration.getAgentName()+" took "+(System.nanoTime()-executiontime)+"ns");
+			log.trace("Processing {} took {} ns", agentConfiguration.getAgentName(), (System.nanoTime()-executiontime));
 		}
 	}
 
@@ -140,7 +147,7 @@ public class ProcessingAgent {
 			throw new ProcessingException("Processing Agent "+name+" has not been configured for message resending.");
 		
 		if(mapper == null || mapper.isEmpty())
-			throw new ProcessingException("Incomplete setup: missing Message Formatter/Messenger Pairs");			
+			throw new ProcessingException(INCOMPLETE_SETUP_MESSAGE);			
 		
 		if(processingLog == null)
 			throw new ProcessingException("Invalid log passed in. Parameter was null");			
@@ -166,7 +173,7 @@ public class ProcessingAgent {
 	
 	public void reprocessResultExceptionLog(ResultExceptionLog exceptionLog) throws ClassNotFoundException, IOException, ProcessingException {
 		if(mapper == null || mapper.isEmpty())
-			throw new ProcessingException("Incomplete setup: missing Message Formatter/Messenger Pairs");			
+			throw new ProcessingException(INCOMPLETE_SETUP_MESSAGE);			
 		
 		if(exceptionLog == null)
 			throw new ProcessingException("Invalid log passed in. Parameter was null");			
@@ -178,10 +185,9 @@ public class ProcessingAgent {
 			throw new ProcessingException("Invalid log passed in. getResultData() was null");			
 
 		Result<?> rlt =(Result<?>) serializer.toObject(exceptionLog.getResultData());		
-		for(Messenger messenger:mapper.keySet()){
-			MessageFormatter messageFormatter = mapper.get(messenger);
-			Message<?> message = messageFormatter.formatdata(rlt);
-			messenger.sendMessage(message);
+		for(Entry<Messenger,MessageFormatter> messengerPair:mapper.entrySet()){
+			Message<?> message = messengerPair.getValue().formatdata(rlt);
+			messengerPair.getKey().sendMessage(message);
 		}
 	}
 	
@@ -195,6 +201,7 @@ public class ProcessingAgent {
 				worker = agentWorkers.take();
 				worker.dataSpooler = dataSpooler;
 			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
 				throw new FatalException(e);
 			}
 		}
@@ -214,52 +221,53 @@ public class ProcessingAgent {
 				executiontime = System.nanoTime();
 			
 			try {
-				try(CloseableIterator dataIterator = dataSpooler.prepare()){
-					while(dataIterator.hasNext()){
-						Result<?> result = dataIterator.next();	
-						final DataSpooler dataSpooler = this.dataSpooler;
-						getExecutor().execute(()->{getAnAgentDataSpoolerWorker(dataSpooler, result).processData();});
-					}
-				} catch (IOException e) {
-					processingEventTrigger.fire(new ProcessingEvent(e, agentConfiguration, dataSpooler.getAgentModule()));
-					log.error( "Exception " + e.getClass().getName()
-							+ " was thrown while closing CloseableIterator. Message is " + e.getMessage());
-				}
+				runDataExtraction();
 			} catch (ProcessingException e) {
 				processingEventTrigger.fire(new ProcessingEvent(e, agentConfiguration, dataSpooler.getAgentModule()));
-				log.error( "Exception " + e.getClass().getName()
-						+ " was thrown whiles fetching data. Message is " + e.getMessage());
-				return;
+				log.error( "Exception {} was thrown whiles fetching data. Message is {}", e.getClass().getName(), e.getMessage());
 			} finally {
 				if(log.isTraceEnabled()) {
-					log.trace("DataSpooler "+dataSpooler.getAgentModule().getModuleName()
-							+" took "+(System.nanoTime()-executiontime)+"ns");
+					log.trace("DataSpooler {} took {} ns", dataSpooler.getAgentModule().getModuleName(), (System.nanoTime()-executiontime));
 				}
 				dataSpooler = null;
 				try {
 					agentWorkers.put(this);
 				} catch (InterruptedException e) {
-					throw new FatalException(e);
+					Thread.currentThread().interrupt();
 				}
 			}
 		}
-	}
 
-	private synchronized AgentDataSpoolerWorker getAnAgentDataSpoolerWorker(DataSpooler dataSpooler, Result<?> result){
-		AgentDataSpoolerWorker worker;
-		if(dataSpoolerWorkersCreated < maxDataSpoolerWorkers){
-			++dataSpoolerWorkersCreated;
-			worker = new AgentDataSpoolerWorker(dataSpooler, result);
-		} else {
-			try {
-				worker = agentDataSpoolerWorkers.take();
-				worker.dataSpooler = dataSpooler;
-				worker.result = result;
-			} catch (InterruptedException e) {
-				throw new FatalException(e);
+		private void runDataExtraction() throws ProcessingException {
+			try(CloseableIterator dataIterator = dataSpooler.prepare()){
+				while(dataIterator.hasNext()){
+					Result<?> result = dataIterator.next();	
+					final DataSpooler dataSpoolerInternal = this.dataSpooler;
+					getExecutor().execute(()->getAnAgentDataSpoolerWorker(dataSpoolerInternal, result).processData());
+				}
+			} catch (IOException e) {
+				processingEventTrigger.fire(new ProcessingEvent(e, agentConfiguration, dataSpooler.getAgentModule()));
+				log.error( "Exception {} was thrown while closing CloseableIterator. Message is {}", e.getClass().getName(), e.getMessage());
 			}
 		}
-		return worker;
+		
+		private synchronized AgentDataSpoolerWorker getAnAgentDataSpoolerWorker(DataSpooler dataSpooler, Result<?> result){
+			AgentDataSpoolerWorker worker;
+			if(dataSpoolerWorkersCreated < maxDataSpoolerWorkers){
+				++dataSpoolerWorkersCreated;
+				worker = new AgentDataSpoolerWorker(dataSpooler, result);
+			} else {
+				try {
+					worker = agentDataSpoolerWorkers.take();
+					worker.dataSpooler = dataSpooler;
+					worker.result = result;
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					throw new FatalException(e);
+				}
+			}
+			return worker;
+		}
 	}
 
 	private class AgentDataSpoolerWorker {
@@ -287,19 +295,17 @@ public class ProcessingAgent {
 					Messenger messenger = mapper.keySet().iterator().next();
 					MessageFormatter formatter = mapper.get(messenger);
 					if(log.isTraceEnabled()) {
-						log.trace("MessageFormatter and Messenger preparation for DataSpooler "
-								+dataSpooler.getAgentModule().getModuleName()
-								+" took "+(System.nanoTime()-executiontime)+"ns");
+						log.trace("MessageFormatter and Messenger preparation for DataSpooler {} took  {} ns", 
+								dataSpooler.getAgentModule().getModuleName(), (System.nanoTime()-executiontime));
 					}
 					getAnAgentFormatterMessengerWorker(dataSpooler, 
 							formatter, messenger, result).formatDataAndSend();
 				} else {
-					for(Messenger messenger:mapper.keySet()){
-						final DataSpooler dataSpooler = this.dataSpooler;
-						getExecutor().execute(()->{
-							getAnAgentFormatterMessengerWorker(dataSpooler, 
-									mapper.get(messenger), messenger, result).formatDataAndSend();
-						});
+					for(Entry<Messenger,MessageFormatter> messengerPair:mapper.entrySet()){
+						final DataSpooler dataSpoolerInternal = this.dataSpooler;
+						getExecutor().execute(()->
+							getAnAgentFormatterMessengerWorker(dataSpoolerInternal, 
+									messengerPair.getValue(), messengerPair.getKey(), result).formatDataAndSend());
 					}
 					if(log.isTraceEnabled()) {
 						log.trace("MessageFormatter and Messenger preparation for DataSpooler "
@@ -312,32 +318,33 @@ public class ProcessingAgent {
 				try {
 					agentDataSpoolerWorkers.put(this);
 				} catch (InterruptedException e) {
-					throw new FatalException(e);
+					Thread.currentThread().interrupt();
 				}
 			}
 		}
-	}
+		
+		private synchronized AgentFormatterMessengerWorker getAnAgentFormatterMessengerWorker(DataSpooler dataSpooler,
+				MessageFormatter messageFormatter, Messenger messenger,
+				Result<?> result){
 
-	private synchronized AgentFormatterMessengerWorker getAnAgentFormatterMessengerWorker(DataSpooler dataSpooler,
-			MessageFormatter messageFormatter, Messenger messenger,
-			Result<?> result){
-
-		AgentFormatterMessengerWorker worker;
-		if(formatterMessengerWorkersCreated < maxFormatterMessengerWorkers){
-			worker = new AgentFormatterMessengerWorker(dataSpooler, messageFormatter, messenger, result);
-			formatterMessengerWorkersCreated++;
-		} else {
-			try {
-				worker = agentFormatterMessengerWorkers.take();
-				worker.dataSpooler = dataSpooler;
-				worker.messageFormatter = messageFormatter;
-				worker.messenger = messenger;
-				worker.result = result;
-			} catch (InterruptedException e) {
-				throw new FatalException(e);
+			AgentFormatterMessengerWorker worker;
+			if(formatterMessengerWorkersCreated < maxFormatterMessengerWorkers){
+				worker = new AgentFormatterMessengerWorker(dataSpooler, messageFormatter, messenger, result);
+				formatterMessengerWorkersCreated++;
+			} else {
+				try {
+					worker = agentFormatterMessengerWorkers.take();
+					worker.dataSpooler = dataSpooler;
+					worker.messageFormatter = messageFormatter;
+					worker.messenger = messenger;
+					worker.result = result;
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					throw new FatalException(e);
+				}
 			}
+			return worker;
 		}
-		return worker;
 	}
 
 	private class AgentFormatterMessengerWorker {
@@ -402,7 +409,7 @@ public class ProcessingAgent {
 				try {
 					agentFormatterMessengerWorkers.put(this);
 				} catch (InterruptedException e) {
-					throw new FatalException(e);
+					Thread.currentThread().interrupt();
 				}
 			}			
 		}
@@ -559,7 +566,7 @@ public class ProcessingAgent {
 	}
 
 	public void setDataSpoolers(List<DataSpooler> dataSpoolers) {
-		if(dataSpoolers == null || dataSpoolers.size() <= 0)
+		if(dataSpoolers == null || dataSpoolers.isEmpty())
 			return;
 		
 		this.dataSpoolers = Collections.unmodifiableList(dataSpoolers);

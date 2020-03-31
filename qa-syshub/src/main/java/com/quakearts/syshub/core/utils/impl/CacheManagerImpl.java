@@ -11,7 +11,6 @@
 package com.quakearts.syshub.core.utils.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -20,51 +19,67 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Singleton;
 
 import org.infinispan.Cache;
+import org.infinispan.commons.CacheConfigurationException;
 import org.infinispan.commons.configuration.ClassWhiteList;
 import org.infinispan.commons.marshall.JavaSerializationMarshaller;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;
 import org.infinispan.eviction.EvictionType;
-import org.infinispan.manager.CacheContainer;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
+import org.infinispan.configuration.cache.Configuration;
 
 import com.quakearts.syshub.core.utils.CacheManager;
 import com.quakearts.syshub.core.utils.CacheWhiteListProvider;
 
 @Singleton
 public class CacheManagerImpl implements CacheManager {
-	private static EmbeddedCacheManager cacheContainer;
+	private EmbeddedCacheManager embeddedCacheManager;
+	private Configuration configuration;
 
-	private static synchronized CacheContainer getCacheContainer() {
-		if (cacheContainer == null) {
-			cacheContainer = new DefaultCacheManager(new GlobalConfigurationBuilder()
-					.serialization()
-					.marshaller(new JavaSerializationMarshaller(new ClassWhiteList(loadWhiteList())))
-					.defaultCacheName("global.default")
-					.build(), new ConfigurationBuilder()
+	private synchronized EmbeddedCacheManager getEmbeddedCacheManager() {
+		if (embeddedCacheManager == null) {
+			configuration = new ConfigurationBuilder()
 					// Eviction configuration
-					.memory().evictionStrategy(EvictionStrategy.REMOVE).evictionType(EvictionType.COUNT).size(1000)
+					.memory()
+						.evictionStrategy(EvictionStrategy.REMOVE)
+						.evictionType(EvictionType.COUNT)
+						.size(1000)
 					// Expiration...is this neccessary?
 					.expiration().lifespan(3, TimeUnit.DAYS).reaperEnabled(true).wakeUpInterval(1, TimeUnit.DAYS)
 					// Save items to file. Good for managing high loads
-					.persistence().passivation(true).addSingleFileStore()
-					.async().enable().preload(true).location("syshub_log_cache").build());
+					.persistence()
+						.passivation(true)
+						.addSingleFileStore()
+							.location("syshub_log_cache")
+								.async()
+								.enable()
+								.preload(true)
+								.segmented(false)
+								.shared(false)
+					.build();
 
-			cacheContainer.start();
+			embeddedCacheManager = new DefaultCacheManager(new GlobalConfigurationBuilder()
+					.serialization()
+					.marshaller(new JavaSerializationMarshaller(new ClassWhiteList(loadWhiteList())))
+					.defaultCacheName("global.default")
+					.build(), configuration);
+			
+			embeddedCacheManager.start();
 			Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-				if (cacheContainer != null) {
-					cacheContainer.stop();
+				if (embeddedCacheManager != null) {
+					embeddedCacheManager.stop();
 				}
 			}));
 
 		}
-		return cacheContainer;
+		return embeddedCacheManager;
 	}
 
 	private static List<String> loadWhiteList() {
-		List<String> whiteList = new ArrayList<>(Arrays.asList("com.quakearts.syshub.model.*"));
+		List<String> whiteList = new ArrayList<>();
+		whiteList.add("com.quakearts.syshub.model.*");
 		ServiceLoader<CacheWhiteListProvider> whiteListProviders = ServiceLoader.load(CacheWhiteListProvider.class);
 		Iterator<CacheWhiteListProvider> whiteListProvidersIterators = whiteListProviders.iterator();
 		while (whiteListProvidersIterators.hasNext()) {
@@ -79,7 +94,17 @@ public class CacheManagerImpl implements CacheManager {
 	 */
 	@Override
 	public <T> Cache<String, T> getCache(Class<T> cacheType, String suffix) {
-		return getCacheContainer().getCache(cacheType.getName() + (suffix != null ? suffix : ""));
+		String name = cacheType.getName() + (suffix != null ? suffix : "");
+		return getCacheByName(name);
+	}
+
+	private <T> Cache<String, T> getCacheByName(String name) {
+		try {
+			return getEmbeddedCacheManager().getCache(name);
+		} catch (CacheConfigurationException e) {
+			getEmbeddedCacheManager().defineConfiguration(name, configuration);
+			return getCacheByName(name);
+		}
 	}
 
 }

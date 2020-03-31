@@ -127,7 +127,7 @@ public class AgentConfiguration implements Serializable {
 	private void createConfigurationMaps() {
 		agentConfigurationMap = new HashMap<>();
 		moduleConfigurationMaps = new HashMap<>();
-		if(getParameters().isEmpty()){
+		if(!getParameters().isEmpty()){
 			loadParameters();			
 			setEntries();			
 			createMaps();
