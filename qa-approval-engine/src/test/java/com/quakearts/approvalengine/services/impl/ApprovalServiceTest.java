@@ -2,7 +2,7 @@ package com.quakearts.approvalengine.services.impl;
 
 import static org.junit.Assert.*;
 import static org.awaitility.Awaitility.*;
-import static com.quakearts.approvalengine.utils.SetUtil.*;
+import static com.quakearts.approvalengine.utils.AEUtils.*;
 
 import java.util.Collections;
 import java.util.HashSet;

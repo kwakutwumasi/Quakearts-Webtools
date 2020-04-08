@@ -16,6 +16,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.quakearts.approvalengine.utils.AEUtils;
+
 /**Represents an approval process
  * @author kwaku
  *
@@ -179,4 +181,8 @@ public class ApprovalProcess implements Serializable {
 		return !approved && complete;
 	}
 
+	@Override
+	public String toString() {
+		return AEUtils.toEncodedString(id, (long)hashCode());
+	}
 }

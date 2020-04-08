@@ -13,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.quakearts.approvalengine.utils.AEUtils;
+
 /**Represents an approval given by an {@linkplain Approver}
  * @author kwaku
  *
@@ -128,5 +130,10 @@ public class Approval implements Serializable {
 	 */
 	public void setValid(boolean valid) {
 		this.valid = valid;
+	}
+	
+	@Override
+	public String toString() {
+		return AEUtils.toEncodedString(id, (long)hashCode());
 	}
 }

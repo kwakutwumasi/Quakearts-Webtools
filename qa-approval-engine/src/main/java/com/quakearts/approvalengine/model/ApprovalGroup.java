@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.quakearts.approvalengine.utils.AEUtils;
+
 /**Represents the approval group. Used to group all other instances
  * @author kwaku
  *
@@ -73,4 +75,8 @@ public class ApprovalGroup implements Serializable {
 		this.valid = valid;
 	}
 
+	@Override
+	public String toString() {
+		return AEUtils.toEncodedString(id, (long)hashCode());
+	}
 }

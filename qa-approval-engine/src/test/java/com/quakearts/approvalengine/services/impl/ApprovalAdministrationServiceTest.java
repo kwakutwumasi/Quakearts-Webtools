@@ -36,7 +36,7 @@ import com.quakearts.approvalengine.model.ApprovalRule;
 import com.quakearts.approvalengine.model.ApprovalRules;
 import com.quakearts.approvalengine.model.Approver;
 import com.quakearts.approvalengine.services.ApprovalAdministrationService;
-import com.quakearts.approvalengine.utils.SetUtil;
+import com.quakearts.approvalengine.utils.AEUtils;
 import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.cdi.annotation.DataStoreHandle;
 import com.quakearts.webapp.orm.cdi.annotation.RequiresTransaction;
@@ -462,7 +462,7 @@ public class ApprovalAdministrationServiceTest {
 				.findApprovalRulesByPriority("testGroup2", 2);
 		
 		assertThat(approvalRulesList.size(), is(3));
-		Set<String> names = SetUtil.asSet("testApprovalRules11",
+		Set<String> names = AEUtils.asSet("testApprovalRules11",
 			"testApprovalRules12",
 			"testApprovalRules13");
 		for(ApprovalRules approvalRules:approvalRulesList){

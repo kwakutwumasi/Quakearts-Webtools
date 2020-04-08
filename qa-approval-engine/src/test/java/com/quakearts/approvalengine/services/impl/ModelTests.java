@@ -21,6 +21,7 @@ import com.quakearts.approvalengine.model.ApprovalRule;
 import com.quakearts.approvalengine.model.ApprovalRules;
 import com.quakearts.approvalengine.model.Approver;
 import com.quakearts.approvalengine.model.ids.ApprovalProcessRulesId;
+import com.quakearts.approvalengine.utils.AEUtils;
 
 public class ModelTests {
 
@@ -53,17 +54,18 @@ public class ModelTests {
 		assertThat(approval.isValid(), is(false));
 		approval.setValid(true);
 		assertThat(approval.isValid(), is(true));
-
+		assertFalse(approval.toString().contains("Approval"));
 		
-		assertThat(approvalGroup.getId(), is(0));
+		assertThat(approvalGroup.getId(), is(0l));
 		approvalGroup.setId(1);
-		assertThat(approvalGroup.getId(), is(1));
+		assertThat(approvalGroup.getId(), is(1l));
 		assertThat(approvalGroup.getName(), is(nullValue()));
 		approvalGroup.setName("Name");
 		assertThat(approvalGroup.getName(), is("Name"));
 		assertThat(approvalGroup.isValid(), is(false));
 		approvalGroup.setValid(true);
 		assertThat(approvalGroup.isValid(), is(true));
+		assertFalse(approvalGroup.toString().contains("ApprovalGroup"));
 
 		assertThat(approvalProcess.getApprovalProcessRulesSet(), is(notNullValue()));
 		HashSet<ApprovalProcessRules> set = new HashSet<>();
@@ -91,6 +93,7 @@ public class ModelTests {
 		assertThat(approvalProcess.isValid(), is(false));
 		approvalProcess.setValid(true);
 		assertThat(approvalProcess.isValid(), is(true));
+		assertFalse(approvalProcess.toString().contains("ApprovalProcess"));
 
 		assertThat(approvalProcessRules.getApprovalProcess(), is(nullValue()));
 		approvalProcessRules.setApprovalProcess(approvalProcess);
@@ -104,6 +107,7 @@ public class ModelTests {
 		assertThat(approvalProcessRules.getApprovalRulesId(), is(0));
 		approvalProcessRules.setApprovalRulesId(2);
 		assertThat(approvalProcessRules.getApprovalRulesId(), is(2));
+		assertFalse(approvalProcessRules.toString().contains("ApprovalProcessRules"));
 
 		assertThat(approvalRule.getCount(), is(0));
 		approvalRule.setCount(1);
@@ -120,6 +124,7 @@ public class ModelTests {
 		assertThat(approvalRule.isActive(), is(false));
 		approvalRule.setActive(true);
 		assertThat(approvalRule.isActive(), is(true));
+		assertFalse(approvalRule.toString().contains("ApprovalRule"));
 
 		assertThat(approvalRules.getGroup(), is(nullValue()));
 		approvalRules.setGroup(approvalGroup);
@@ -140,6 +145,7 @@ public class ModelTests {
 		assertThat(approvalRules.isActive(), is(false));
 		approvalRules.setActive(true);
 		assertThat(approvalRules.isActive(), is(true));
+		assertFalse(approvalRules.toString().contains("ApprovalRules"));
 
 		assertThat(approver.getExternalId(), is(nullValue()));
 		approver.setExternalId("ExternalId");
@@ -156,6 +162,7 @@ public class ModelTests {
 		assertThat(approver.isValid(), is(false));
 		approver.setValid(true);
 		assertThat(approver.isValid(), is(true));
+		assertFalse(approver.toString().contains("Approver"));
 	}
 
 	@Test
@@ -178,5 +185,16 @@ public class ModelTests {
 		assertFalse(((Object)approvalProcessRulesId).equals(""));
 		
 		assertTrue(approvalProcessRulesId.hashCode() == new ApprovalProcessRulesId(1, 2).hashCode());		
+	}
+	
+	@Test
+	public void testAEUtilstoString() throws Exception {
+		assertThat(AEUtils.toEncodedString(), is(""));
+		assertThat(AEUtils.toEncodedString(1l), is("01"));
+		assertThat(AEUtils.toEncodedString(10l), is("0A"));
+		assertThat(AEUtils.toEncodedString(16l), is("10"));
+		assertThat(AEUtils.toEncodedString(10l, 16l), is("0A10"));
+		assertThat(AEUtils.toEncodedString(20l, 4587l), is("1411EB"));
+		assertThat(AEUtils.toEncodedString((long)0xEF0FF, (long)0xAF234, (long)0x3DAF), is("0EF0FF0AF2343DAF"));
 	}
 }

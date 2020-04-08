@@ -13,6 +13,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import com.quakearts.approvalengine.utils.AEUtils;
+
 /**Represents an approver within an approval group
  * @author kwaku
  *
@@ -114,5 +116,10 @@ public class Approver implements Serializable {
 	 */
 	public void setValid(boolean valid) {
 		this.valid = valid;
+	}
+	
+	@Override
+	public String toString() {
+		return AEUtils.toEncodedString(id, (long)hashCode());
 	}
 }

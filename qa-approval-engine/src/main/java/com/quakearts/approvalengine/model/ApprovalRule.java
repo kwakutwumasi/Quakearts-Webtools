@@ -13,6 +13,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import com.quakearts.approvalengine.utils.AEUtils;
+
 /**Represents a single rule in an instance of {@linkplain ApprovalRules}
  * @author kwaku
  *
@@ -113,4 +115,8 @@ public class ApprovalRule implements Serializable {
 		this.active = valid;
 	}
 
+	@Override
+	public String toString() {
+		return AEUtils.toEncodedString((long)id, (long)hashCode());
+	}
 }

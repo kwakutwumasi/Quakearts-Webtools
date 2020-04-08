@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.quakearts.approvalengine.model.ids.ApprovalProcessRulesId;
+import com.quakearts.approvalengine.utils.AEUtils;
 
 /**Represents a mapping of {@linkplain ApprovalProcess} instances to
  * {@linkplain ApprovalRules} instances
@@ -93,5 +94,9 @@ public class ApprovalProcessRules implements Serializable {
 	public void setActive(boolean active) {
 		this.active = active;
 	}
-
+	
+	@Override
+	public String toString() {
+		return AEUtils.toEncodedString(approvalProcessId, (long)approvalRulesId, (long)hashCode());
+	}
 }

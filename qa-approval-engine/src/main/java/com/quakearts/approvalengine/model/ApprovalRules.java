@@ -16,6 +16,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import com.quakearts.approvalengine.utils.AEUtils;
+
 /**Represents the set of {@linkplain ApprovalRule} instances that make up
  * the approval rules to be used to determine approval process completion
  * @author kwaku
@@ -138,4 +140,8 @@ public class ApprovalRules implements Serializable {
 		this.ruleElements = ruleElements;
 	}
 
+	@Override
+	public String toString() {
+		return AEUtils.toEncodedString((long)id, (long)hashCode());
+	}
 }
