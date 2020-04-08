@@ -12,6 +12,7 @@
   	<module>../qa-appbase-minimal-archetype</module>
   	<module>../qa-appbase-resteasy-orm-archetype</module>
   	<module>../qa-appbase-test-helper</module>
+  	<module>../qa-approval-engine</module>
   	<module>../qa-auth</module>
   	<module>../qa-beansupport</module>
   	<module>../qa-boot</module>
