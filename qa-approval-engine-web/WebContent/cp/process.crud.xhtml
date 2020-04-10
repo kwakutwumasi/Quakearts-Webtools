@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:component>
+	<b:formGroup>
+		<label id="group_label">Group</label>
+		<b:selectOneInput id="processGroupDropDown"
+			mainClass="#{loader.overlayClass}"
+			disabled="#{processPage.approvalapp.mode eq 'read' || processPage.approvalGroupDropdownHelper.inCreateMode}"
+			value="#{process.group}" autocomplete="true"
+			suggestion="#{processPage.approvalGroupDropdownHelper.searchText}"
+			delay="0.55"
+			listener="#{processPage.approvalGroupDropdownHelper.filterItems}"
+			onevent="#{loader.overlayAjaxLoader}"
+			render="@this processGroupMessage">
+			<f:selectItems
+				value="#{processPage.approvalGroupDropdownHelper.foundItems}"
+				var="group" itemValue="#{group}" itemLabel="#{group.name}">
+			</f:selectItems>
+			<c:pojoConverter></c:pojoConverter>
+		</b:selectOneInput>
+		<h:message id="processGroupMessage" showDetail="true"
+			for="processGroupDropDown" />
+	</b:formGroup>
+	<b:formGroup>
+		<label id="startDate_label">Start Date</label>
+		<h:panelGroup rendered="#{!processPage.inSearchMode}">
+			<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs" 
+				value="#{process.startDate}" converter="#{processPage.approvalapp.converter}" 
+				disabled="#{processPage.approvalapp.mode eq 'read'}" format="dmyhns" min="5">
+			</b:date>
+		</h:panelGroup>
+		<h:panelGroup rendered="#{processPage.inSearchMode}">
+			<div>Between</div>
+			<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs" 
+				value="#{processPage.startDateRange.from}" converter="#{processPage.approvalapp.converter}" 
+				format="dmyhns" min="5">
+			</b:date>
+			<div>And</div>
+			<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs" 
+				value="#{processPage.startDateRange.to}" converter="#{processPage.approvalapp.converter}" 
+				format="dmyhns" min="5">
+			</b:date>
+		</h:panelGroup>
+	</b:formGroup>
+	<b:formGroup>
+		<label id="complete_label"><h:selectBooleanCheckbox disabled="#{processPage.approvalapp.mode eq 'read'}" value="#{process.complete}">
+			<f:ajax execute="@this" render="processPageCompleteDate"></f:ajax>
+		</h:selectBooleanCheckbox>Complete</label>
+	</b:formGroup>
+	<b:formGroup>
+		<label id="completeDate_label">Complete Date</label>
+		<h:panelGroup rendered="#{!processPage.inSearchMode}">
+			<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs" id="processPageCompleteDate"
+				value="#{process.completeDate}" converter="#{processPage.approvalapp.converter}" 
+				disabled="#{processPage.approvalapp.mode eq 'read' or !process.complete}" format="dmyhns" min="5">
+			</b:date>
+		</h:panelGroup>
+		<h:panelGroup rendered="#{processPage.inSearchMode}">
+			<div>Between</div>
+			<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs"
+				value="#{processPage.completeDateRange.from}" converter="#{processPage.approvalapp.converter}" 
+				format="dmyhns" min="5">
+			</b:date>
+			<div>And</div>
+			<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs"
+				value="#{processPage.completeDateRange.to}" converter="#{processPage.approvalapp.converter}" 
+				format="dmyhns" min="5">
+			</b:date>
+		</h:panelGroup>
+	</b:formGroup>
+	<b:formGroup>
+		<label id="approved_label"><h:selectBooleanCheckbox disabled="#{processPage.approvalapp.mode eq 'read'}" value="#{process.approved}"></h:selectBooleanCheckbox>Approved</label>
+	</b:formGroup>
+	<b:formGroup>
+		<label id="valid_label"><h:selectBooleanCheckbox disabled="#{processPage.approvalapp.mode eq 'read'}" value="#{process.valid}"></h:selectBooleanCheckbox>Valid</label>
+	</b:formGroup>
+</ui:component>
+</html>

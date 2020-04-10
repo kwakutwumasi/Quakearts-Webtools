@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:component>
+	<b:formGroup>
+		<label id="name_label">Name</label>
+		<h:inputText styleClass="form-control" value="#{rules.name}" disabled="#{rulesPage.approvalapp.mode eq 'read'}">
+		</h:inputText>
+	</b:formGroup>
+	<b:formGroup>
+		<label id="priority_label">Priority</label>
+		<h:inputText styleClass="form-control" value="#{rules.priority}" disabled="#{rulesPage.approvalapp.mode eq 'read'}">
+			<f:convertNumber></f:convertNumber>
+		</h:inputText>
+	</b:formGroup>
+	<b:formGroup>
+		<label id="group_label">Group</label>
+		<b:selectOneInput id="rulesGroupDropDown"
+			mainClass="#{loader.overlayClass}"
+			disabled="#{rulesPage.approvalapp.mode eq 'read' || rulesPage.approvalGroupDropdownHelper.inCreateMode}"
+			value="#{rules.group}" autocomplete="true"
+			suggestion="#{rulesPage.approvalGroupDropdownHelper.searchText}"
+			delay="0.55"
+			listener="#{rulesPage.approvalGroupDropdownHelper.filterItems}"
+			onevent="#{loader.overlayAjaxLoader}"
+			render="@this rulesGroupMessage">
+			<f:selectItems
+				value="#{rulesPage.approvalGroupDropdownHelper.foundItems}"
+				var="group" itemValue="#{group}" itemLabel="#{group.name}">
+			</f:selectItems>
+			<c:pojoConverter></c:pojoConverter>
+		</b:selectOneInput>
+		<h:message id="rulesGroupMessage" showDetail="true"
+			for="rulesGroupDropDown" />
+	</b:formGroup>
+	<b:formGroup>
+		<label id="active_label"><h:selectBooleanCheckbox disabled="#{rulesPage.approvalapp.mode eq 'read'}" value="#{rules.active}"></h:selectBooleanCheckbox>Active</label>
+	</b:formGroup>
+</ui:component>
+</html>

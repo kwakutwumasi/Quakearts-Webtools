@@ -1,0 +1,8 @@
+/target/
+/.settings
+/.project
+/.classpath
+/*.lck
+/*.log
+/testApprovalDB/
+/webservers/

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common"
+	xmlns:ut="http://quakearts.com/utils">
+<h:head>
+  <title><ui:insert name="title">QA-Approval-Engine</ui:insert></title>
+</h:head>
+<h:body>
+<b:ajaxLoader mainloaderimage="../resources/images/loading.gif" overlayloaderimage="../resources/images/loading-small.gif" miniloaderimage="../resources/images/loading-small.gif" startTimeout="1000" />
+<b:container fluid="true">
+<b:navbar>
+	<f:facet name="header">
+		<span class="navbar-brand">QA-Approval-Engine</span>
+	</f:facet>
+	<h:form>
+		<b:nav>
+ 			<c:secure roles="Read.AE">
+				<b:menu value="View">
+					<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/approval.list.jsf"><span style="display: inline-block; width: 200px; margin-right: 5px;">View Approval</span><b:glyph value="search"></b:glyph> </h:outputLink>
+					<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/group.list.jsf"><span style="display: inline-block; width: 200px; margin-right: 5px;">View ApprovalGroup</span><b:glyph value="search"></b:glyph> </h:outputLink>
+					<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/process.list.jsf"><span style="display: inline-block; width: 200px; margin-right: 5px;">View ApprovalProcess</span><b:glyph value="search"></b:glyph> </h:outputLink>
+					<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/processRules.list.jsf"><span style="display: inline-block; width: 200px; margin-right: 5px;">View ApprovalProcessRules</span><b:glyph value="search"></b:glyph> </h:outputLink>
+					<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/rule.list.jsf"><span style="display: inline-block; width: 200px; margin-right: 5px;">View ApprovalRule</span><b:glyph value="search"></b:glyph> </h:outputLink>
+					<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/rules.list.jsf"><span style="display: inline-block; width: 200px; margin-right: 5px;">View ApprovalRules</span><b:glyph value="search"></b:glyph> </h:outputLink>
+					<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/approver.list.jsf"><span style="display: inline-block; width: 200px; margin-right: 5px;">View Approver</span><b:glyph value="search"></b:glyph> </h:outputLink>
+				</b:menu>
+			</c:secure>
+		</b:nav>
+	</h:form>
+</b:navbar>
+<b:row>
+	<b:column sm="10" offsetsm="1" md="8" offsetmd="2">
+		<ui:insert name="content"></ui:insert>
+	</b:column>
+</b:row>
+</b:container>
+<footer>
+	<div style="text-align: center; font-family: Arial; font-size: 10px">
+		(c)Copyright Quake Arts Inc.
+		<h:outputText value="#{ut:now()}">
+			<f:convertDateTime pattern="yyyy"></f:convertDateTime>
+		</h:outputText>
+	</div>
+</footer>
+<b:script>
+var ca = {};
+ca.error = function(data){
+	if(data)
+	if(data.status)
+		alert("There was an unknown error processing the server call: HTTP Code: "+data.status);
+	else
+		alert("There was an unknown error processing the server call: HTTP Code Unknown.");
+}
+</b:script>
+</h:body>
+
+</html>

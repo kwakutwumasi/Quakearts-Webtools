@@ -1,0 +1,9 @@
+{
+	"xa.createDatabase": "create",
+	"xa.databaseName": "./testApprovalDB",
+	"datasource.class": "org.apache.derby.jdbc.EmbeddedXADataSource",
+	"datasource.name": "TestApprovalDS",
+	"maxPoolSize": 20,
+	"poolSize": 3,
+	"localTransactionMode" : true
+}

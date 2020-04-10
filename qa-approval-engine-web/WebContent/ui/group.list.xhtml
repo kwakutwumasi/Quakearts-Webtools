@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:composition template="/base/template.xhtml">
+    <ui:define name="content">
+        <c:secure roles="Read.AE" message="You are not authorized to read from this table">
+			<h:form>
+	 			<b:messages showDetail="true" dismissible="true" id="messages"></b:messages>
+	    		<span class="h4">#{(groupPage.group ne null) and groupPage.approvalapp.mode eq 'edit'?'Edit ':(groupPage.approvalapp.mode eq 'read'?'View ':'Search ')} Approval Group</span>
+	    		<br />
+            	<h:commandLink styleClass="btn btn-primary" rendered="#{(groupPage.approvalapp.mode eq 'edit' or groupPage.approvalapp.mode eq 'read') and (param.group eq null)}">
+					<b:glyph value="backward"></b:glyph>Back to search...
+					<c:set as="#{null}" var="#{groupPage.approvalapp.mode}" />
+	    			<c:set as="#{null}" var="#{groupPage.group}"></c:set>
+					<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+				</h:commandLink>
+				<b:row rendered="#{empty groupPage.approvalapp.mode}">	
+					<b:pagination for="#{table}" pageSize="10"></b:pagination>
+					<b:dataTable value="#{groupPage.groupList}" var="group" binding="#{table}">
+	    				<h:column>
+	    					<f:facet name="header">
+	    						ID
+	    					</f:facet>
+							#{group.id}	
+    					</h:column>
+	    				<h:column>
+	    					<f:facet name="header">
+	    						Name
+	    					</f:facet>
+							#{group.name}	
+    					</h:column>
+	    				<h:column>
+	    					<f:facet name="header">
+	    						Status
+	    					</f:facet>
+	    					<b:glyph style="color:green" title="Valid" value="ok-circle" rendered="#{group.valid}"></b:glyph>
+	    					<b:glyph style="color:red" title="Invalid" value="trash" rendered="#{!group.valid}"></b:glyph>
+    					</h:column>
+	    				<h:column>
+	    					<f:facet name="header">
+	    						Action
+	    					</f:facet>
+	    					<c:secure roles="Update.AE">
+		    					<h:commandLink value="Edit">
+		    						<c:set as="#{group}" var="#{groupPage.group}"></c:set>
+		    						<c:set as="edit" var="#{groupPage.approvalapp.mode}" />
+									<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+		    					</h:commandLink>
+		    					<br />
+	    					</c:secure>
+	    					<h:commandLink value="View">
+	    						<c:set as="#{group}" var="#{groupPage.group}"></c:set>
+	    						<c:set as="read" var="#{groupPage.approvalapp.mode}" />
+								<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+	    					</h:commandLink>
+	    				</h:column>
+	    			</b:dataTable>
+				</b:row>
+				<b:row>
+					<ui:include src="../cp/group.crud.xhtml">
+						<ui:param name="group" value="#{groupPage.group}"></ui:param>
+					</ui:include>
+					<c:secure roles="Update.AE">
+						<b:buttonGroup rendered="#{groupPage.approvalapp.mode eq 'edit'}">
+							<b:button>
+								<b:glyph value="save" />
+								Save
+								<c:saveUpdate object="#{groupPage.group}" action="update"></c:saveUpdate>
+								<f:ajax execute="@form" render="messages" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+							</b:button>
+							<c:secure roles="Delete.AE">
+								<b:button>
+									<b:glyph value="trash" />
+									Delete
+									<c:delete object="#{groupPage.group}"></c:delete>
+									<c:executeAction listener="#{groupPage.removeGroup}"></c:executeAction>
+									<c:set as="#{null}" var="#{groupPage.group}"></c:set>
+									<c:set as="#{null}" var="#{groupPage.approvalapp.mode}"></c:set>
+									<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+								</b:button>
+							</c:secure>
+						</b:buttonGroup>
+						<b:button rendered="#{groupPage.approvalapp.mode eq 'read'}">
+							<b:glyph value="edit" />
+							Edit
+							<c:set as="edit" var="#{groupPage.approvalapp.mode}" />
+							<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+						</b:button>
+					</c:secure>
+					<b:button rendered="#{empty groupPage.approvalapp.mode}">
+						<b:glyph value="search" />
+						Search
+						<c:executeAction listener="#{groupPage.findGroup}"></c:executeAction>
+						<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+					</b:button>
+				</b:row>
+			</h:form>
+		</c:secure>
+    </ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:composition template="/base/template.xhtml">
+	<ui:define name="content">
+		<table class="table">
+			<tr>
+				<td><h:outputLink
+						value="#{facesContext.externalContext.requestContextPath}/ui/approval.list.jsf">
+						<span>View Approval</span>
+						<b:glyph value="search"></b:glyph>
+					</h:outputLink></td>
+			</tr>
+			<tr>
+				<td><h:outputLink
+						value="#{facesContext.externalContext.requestContextPath}/ui/group.list.jsf">
+						<span>View ApprovalGroup</span>
+						<b:glyph value="search"></b:glyph>
+					</h:outputLink></td>
+			</tr>
+			<tr>
+				<td><h:outputLink
+						value="#{facesContext.externalContext.requestContextPath}/ui/process.list.jsf">
+						<span>View ApprovalProcess</span>
+						<b:glyph value="search"></b:glyph>
+					</h:outputLink></td>
+			</tr>
+			<tr>
+				<td><h:outputLink
+						value="#{facesContext.externalContext.requestContextPath}/ui/processRules.list.jsf">
+						<span>View ApprovalProcessRules</span>
+						<b:glyph value="search"></b:glyph>
+					</h:outputLink></td>
+			</tr>
+			<tr>
+				<td><h:outputLink
+						value="#{facesContext.externalContext.requestContextPath}/ui/rule.list.jsf">
+						<span>View ApprovalRule</span>
+						<b:glyph value="search"></b:glyph>
+					</h:outputLink></td>
+			</tr>
+			<tr>
+				<td><h:outputLink
+						value="#{facesContext.externalContext.requestContextPath}/ui/rules.list.jsf">
+						<span>View ApprovalRules</span>
+						<b:glyph value="search"></b:glyph>
+					</h:outputLink></td>
+			</tr>
+			<tr>
+				<td><h:outputLink
+						value="#{facesContext.externalContext.requestContextPath}/ui/approver.list.jsf">
+						<span>View Approver</span>
+						<b:glyph value="search"></b:glyph>
+					</h:outputLink></td>
+			</tr>
+		</table>
+	</ui:define>
+</ui:composition>
+</html>

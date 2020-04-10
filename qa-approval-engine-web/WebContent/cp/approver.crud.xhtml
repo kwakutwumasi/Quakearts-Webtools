@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:component>
+	<b:formGroup>
+		<label id="externalId_label">External ID</label>
+		<h:inputText styleClass="form-control" value="#{approver.externalId}" disabled="#{approverPage.approvalapp.mode eq 'read'}">
+		</h:inputText>
+	</b:formGroup>
+	<b:formGroup>
+		<label id="level_label">Level</label>
+		<h:inputText styleClass="form-control" value="#{approver.level}" disabled="#{approverPage.approvalapp.mode eq 'read'}">
+			<f:convertNumber></f:convertNumber>
+		</h:inputText>
+	</b:formGroup>
+	<b:formGroup>
+		<label id="group_label">Group</label>
+		<b:selectOneInput id="approverGroupDropDown"
+			mainClass="#{loader.overlayClass}"
+			disabled="#{approverPage.approvalapp.mode eq 'read' || approverPage.approvalGroupDropdownHelper.inCreateMode}"
+			value="#{approver.group}" autocomplete="true"
+			suggestion="#{approverPage.approvalGroupDropdownHelper.searchText}"
+			delay="0.55"
+			listener="#{approverPage.approvalGroupDropdownHelper.filterItems}"
+			onevent="#{loader.overlayAjaxLoader}"
+			render="@this approverGroupMessage">
+			<f:selectItems
+				value="#{approverPage.approvalGroupDropdownHelper.foundItems}"
+				var="group" itemValue="#{group}" itemLabel="#{group.name}">
+			</f:selectItems>
+			<c:pojoConverter></c:pojoConverter>
+		</b:selectOneInput>
+		<h:message id="approverGroupMessage" showDetail="true" for="approverGroupDropDown" />
+	</b:formGroup>
+	<b:formGroup>
+		<label id="valid_label"><h:selectBooleanCheckbox disabled="#{approverPage.approvalapp.mode eq 'read'}" value="#{approver.valid}"></h:selectBooleanCheckbox>Valid</label>
+	</b:formGroup>
+</ui:component>
+</html>

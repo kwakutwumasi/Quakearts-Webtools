@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+                                         "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+		<property name="hibernate.dialect">org.hibernate.dialect.DerbyTenSevenDialect</property>
+		<property name="hibernate.connection.datasource">java:/jdbc/TestApprovalDS</property>
+		<property name="hibernate.bytecode.use_reflection_optimizer">true</property>
+		<property name="hibernate.default_entity_mode">pojo</property>
+		<property name="hibernate.default_schema">DBO</property>
+		<property name="hibernate.transaction.jta.platform">com.quakearts.webapp.hibernate.appbase.AppBaseJTAPlatform</property>
+		<property name="hibernate.transaction.coordinator_class">jta</property>
+		<mapping class="com.quakearts.approvalengine.model.Approval" />
+		<mapping class="com.quakearts.approvalengine.model.ApprovalGroup" />
+		<mapping class="com.quakearts.approvalengine.model.ApprovalProcess" />
+		<mapping class="com.quakearts.approvalengine.model.ApprovalProcessRules" />
+		<mapping class="com.quakearts.approvalengine.model.ApprovalRule" />
+		<mapping class="com.quakearts.approvalengine.model.ApprovalRules" />
+		<mapping class="com.quakearts.approvalengine.model.Approver" />
+	</session-factory>
+</hibernate-configuration>

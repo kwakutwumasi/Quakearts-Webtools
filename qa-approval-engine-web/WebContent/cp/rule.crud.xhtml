@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:component>
+	<b:formGroup>
+		<label id="rules_label">Rules Set</label>
+		<b:selectOneInput id="ruleRulesDropDown"
+			mainClass="#{loader.overlayClass}"
+			disabled="#{rulePage.approvalapp.mode eq 'read' || rulePage.approvalRulesDropdownHelper.inCreateMode}"
+			value="#{rule.rules}" autocomplete="true"
+			suggestion="#{rulePage.approvalRulesDropdownHelper.searchText}"
+			delay="0.55"
+			listener="#{rulePage.approvalRulesDropdownHelper.filterItems}"
+			onevent="#{loader.overlayAjaxLoader}" render="@this ruleRulesMessage">
+			<f:selectItems
+				value="#{rulePage.approvalRulesDropdownHelper.foundItems}"
+				var="rules" itemValue="#{rules}" itemLabel="#{rules.name}:#{rules.group.name}">
+			</f:selectItems>
+			<c:pojoConverter></c:pojoConverter>
+		</b:selectOneInput>
+		<h:message id="ruleRulesMessage" showDetail="true"
+			for="ruleRulesDropDown" />
+	</b:formGroup>
+	<b:formGroup>
+		<label id="level_label">Level</label>
+		<h:inputText styleClass="form-control" value="#{rule.level}" disabled="#{rulePage.approvalapp.mode eq 'read'}">
+			<f:convertNumber></f:convertNumber>
+		</h:inputText>
+	</b:formGroup>
+	<b:formGroup>
+		<label id="count_label">Required Approvals</label>
+		<h:inputText styleClass="form-control" value="#{rule.count}" disabled="#{rulePage.approvalapp.mode eq 'read'}">
+			<f:convertNumber></f:convertNumber>
+		</h:inputText>
+	</b:formGroup>
+	<b:formGroup>
+		<label id="active_label"><h:selectBooleanCheckbox disabled="#{rulePage.approvalapp.mode eq 'read'}" value="#{rule.active}"></h:selectBooleanCheckbox>Active</label>
+	</b:formGroup>
+</ui:component>
+</html>

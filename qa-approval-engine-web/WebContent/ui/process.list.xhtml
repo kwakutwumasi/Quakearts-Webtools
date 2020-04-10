@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:composition template="/base/template.xhtml">
+    <ui:define name="content">
+        <c:secure roles="Read.AE" message="You are not authorized to read from this table">
+			<h:form>
+	 			<b:messages showDetail="true" dismissible="true" id="messages"></b:messages>
+	    		<span class="h4">#{(processPage.process ne null) and processPage.approvalapp.mode eq 'edit'?'Edit ':(processPage.approvalapp.mode eq 'read'?'View ':'Search ')} Approval Process</span>
+	    		<br />
+            	<h:commandLink styleClass="btn btn-primary" rendered="#{(processPage.approvalapp.mode eq 'edit' or processPage.approvalapp.mode eq 'read') and (param.process eq null)}">
+					<b:glyph value="backward"></b:glyph>Back to search...
+					<c:set as="#{null}" var="#{processPage.approvalapp.mode}" />
+	    			<c:set as="#{null}" var="#{processPage.process}"></c:set>
+					<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+				</h:commandLink>
+				<b:row rendered="#{empty processPage.approvalapp.mode}">	
+					<b:pagination for="#{table}" pageSize="10"></b:pagination>
+					<b:dataTable value="#{processPage.processList}" var="process" binding="#{table}">
+	    				<h:column>
+	    					<f:facet name="header">
+	    						ID
+	    					</f:facet>
+							#{process.id}	
+    					</h:column>
+	    				<h:column>
+	    					<f:facet name="header">
+	    						Group
+	    					</f:facet>
+							#{process.group.name}	
+							<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/group.list.jsf" rendered="#{process.group != null}">View
+								<f:param name="group" value="#{process.group.id}"></f:param>
+							</h:outputLink>
+    					</h:column>
+	    				<h:column>
+	    					<f:facet name="header">
+	    						Start Date
+	    					</f:facet>
+							<h:outputText value="#{process.startDate}" converter="#{processPage.approvalapp.converter}"></h:outputText>	
+    					</h:column>
+	    				<h:column>
+	    					<f:facet name="header">
+	    						Status
+	    					</f:facet>
+							<b:glyph style="color:green" title="Approved" value="thumbs-up"
+								rendered="#{process.valid and process.complete and process.approved}"></b:glyph>
+							<b:glyph style="color:red" title="Rejected" value="thumbs-down"
+								rendered="#{process.valid and process.complete and !process.approved}"></b:glyph>
+							<b:glyph style="color:red" title="Complete" value="stop"
+								rendered="#{process.valid and process.complete}"></b:glyph>
+							<b:glyph style="color:green" title="Processing" value="play"
+								rendered="#{process.valid and !process.complete}"></b:glyph>
+							<b:glyph style="color:green" title="Valid" value="ok-circle"
+								rendered="#{process.valid}"></b:glyph>
+							<b:glyph style="color:red" title="Invalid" value="trash"
+								rendered="#{!process.valid}"></b:glyph>
+							<h:panelGroup rendered="#{process.complete}">
+								<table class="table">
+									<tr>
+										<th>Complete Date</th>
+										<td colspan="6"><h:outputText
+												value="#{process.completeDate}"
+												converter="#{processPage.approvalapp.converter}"></h:outputText>
+										</td>
+									</tr>
+								</table>
+							</h:panelGroup>
+						</h:column>
+	    				<h:column>
+	    					<f:facet name="header">
+	    						Action
+	    					</f:facet>
+	    					<c:secure roles="Update.AE">
+		    					<h:commandLink value="Edit">
+		    						<c:set as="#{process}" var="#{processPage.process}"></c:set>
+		    						<c:set as="edit" var="#{processPage.approvalapp.mode}" />
+									<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+		    					</h:commandLink>
+		    					<br />
+	    					</c:secure>
+	    					<h:commandLink value="View">
+	    						<c:set as="#{process}" var="#{processPage.process}"></c:set>
+	    						<c:set as="read" var="#{processPage.approvalapp.mode}" />
+								<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+	    					</h:commandLink>
+	    				</h:column>
+	    			</b:dataTable>
+				</b:row>
+				<b:row>
+					<ui:include src="../cp/process.crud.xhtml">
+						<ui:param name="process" value="#{processPage.process}"></ui:param>
+					</ui:include>
+					<c:secure roles="Update.AE">
+						<b:buttonGroup rendered="#{processPage.approvalapp.mode eq 'edit'}">
+							<b:button>
+								<b:glyph value="save" />
+								Save
+								<c:saveUpdate object="#{processPage.process}" action="update"></c:saveUpdate>
+								<f:ajax execute="@form" render="messages" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+							</b:button>
+							<c:secure roles="Delete.AE">
+								<b:button>
+									<b:glyph value="trash" />
+									Delete
+									<c:delete object="#{processPage.process}"></c:delete>
+									<c:executeAction listener="#{processPage.removeProcess}"></c:executeAction>
+									<c:set as="#{null}" var="#{processPage.process}"></c:set>
+									<c:set as="#{null}" var="#{processPage.approvalapp.mode}"></c:set>
+									<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+								</b:button>
+							</c:secure>
+						</b:buttonGroup>
+						<b:button rendered="#{processPage.approvalapp.mode eq 'read'}">
+							<b:glyph value="edit" />
+							Edit
+							<c:set as="edit" var="#{processPage.approvalapp.mode}" />
+							<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+						</b:button>
+					</c:secure>
+					<b:button rendered="#{empty processPage.approvalapp.mode}">
+						<b:glyph value="search" />
+						Search
+						<c:executeAction listener="#{processPage.findProcess}"></c:executeAction>
+						<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+					</b:button>
+				</b:row>
+			</h:form>
+		</c:secure>
+    </ui:define>
+</ui:composition>
+</html>

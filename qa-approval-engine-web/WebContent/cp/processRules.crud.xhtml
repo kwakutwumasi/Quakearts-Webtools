@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:component>
+	<b:formGroup>
+		<label id="approvalProcess_label">Process</label>
+		<b:selectOneInput id="processRulesProcessDropDown"
+			mainClass="#{loader.overlayClass}"
+			disabled="#{processRulesPage.approvalapp.mode eq 'read' || processRulesPage.approvalProcessDropdownHelper.inCreateMode}"
+			value="#{processRules.approvalProcess}" autocomplete="true"
+			suggestion="#{processRulesPage.approvalProcessDropdownHelper.searchText}"
+			delay="0.55"
+			listener="#{processRulesPage.approvalProcessDropdownHelper.filterItems}"
+			onevent="#{loader.overlayAjaxLoader}"
+			render="@this processRulesProcessMessage">
+			<f:selectItems
+				value="#{processRulesPage.approvalProcessDropdownHelper.foundItems}"
+				var="approvalProcess" itemValue="#{approvalProcess}"
+				itemLabel="#{approvalProcess.id}:#{approvalProcess.group.name}">
+			</f:selectItems>
+			<c:pojoConverter></c:pojoConverter>
+		</b:selectOneInput>
+		<h:message id="processRulesProcessMessage" showDetail="true"
+			for="processRulesProcessDropDown" />
+	</b:formGroup>
+	<b:formGroup>
+		<label id="approvalRules_label">Rules Set<h:commandLink
+				value="New"
+				styleClass="#{!processRulesPage.approvalRulesDropdownHelper.inCreateMode?'':'collapse'}"
+				rendered="#{processRulesPage.inCreateOrEditMode}">
+				<f:ajax onevent="#{loader.overlayAjaxLoader}" execute="@this"
+					render="processRulesRulesInset"></f:ajax>
+				<f:setPropertyActionListener value="#{true}"
+					target="#{processRulesPage.approvalRulesDropdownHelper.inCreateMode}"></f:setPropertyActionListener>
+			</h:commandLink>
+		</label>
+		<b:selectOneInput id="processRulesRulesDropDown"
+			mainClass="#{loader.overlayClass}"
+			disabled="#{processRulesPage.approvalapp.mode eq 'read' || processRulesPage.approvalRulesDropdownHelper.inCreateMode}"
+			value="#{processRules.approvalRules}" autocomplete="true"
+			suggestion="#{processRulesPage.approvalRulesDropdownHelper.searchText}"
+			delay="0.55"
+			listener="#{processRulesPage.approvalRulesDropdownHelper.filterItems}"
+			onevent="#{loader.overlayAjaxLoader}"
+			render="@this processRulesRulesMessage">
+			<f:selectItems
+				value="#{processRulesPage.approvalRulesDropdownHelper.foundItems}"
+				var="approvalRules" itemValue="#{approvalRules}"
+				itemLabel="#{approvalRules.name} ">
+			</f:selectItems>
+			<c:pojoConverter></c:pojoConverter>
+		</b:selectOneInput>
+		<h:message id="processRulesRulesMessage" showDetail="true"
+			for="processRulesRulesDropDown" />
+	</b:formGroup>
+	<b:formGroup>
+		<label id="active_label"><h:selectBooleanCheckbox disabled="#{processRulesPage.approvalapp.mode eq 'read'}" value="#{processRules.active}"></h:selectBooleanCheckbox>Active</label>
+	</b:formGroup>
+</ui:component>
+</html>

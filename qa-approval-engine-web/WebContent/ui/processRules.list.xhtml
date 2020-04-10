@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:composition template="/base/template.xhtml">
+    <ui:define name="content">
+        <c:secure roles="Read.AE" message="You are not authorized to read from this table">
+			<h:form>
+	 			<b:messages showDetail="true" dismissible="true" id="messages"></b:messages>
+	    		<span class="h4">#{(processRulesPage.processRules ne null) and processRulesPage.approvalapp.mode eq 'edit'?'Edit ':(processRulesPage.approvalapp.mode eq 'read'?'View ':'Search ')} Approval Process Rules</span>
+	    		<br />
+            	<h:commandLink styleClass="btn btn-primary" rendered="#{(processRulesPage.approvalapp.mode eq 'edit' or processRulesPage.approvalapp.mode eq 'read') and (param.processRules eq null)}">
+					<b:glyph value="backward"></b:glyph>Back to search...
+					<c:set as="#{null}" var="#{processRulesPage.approvalapp.mode}" />
+	    			<c:set as="#{null}" var="#{processRulesPage.processRules}"></c:set>
+					<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+				</h:commandLink>
+				<b:row rendered="#{empty processRulesPage.approvalapp.mode}">	
+					<b:pagination for="#{table}" pageSize="10"></b:pagination>
+					<b:dataTable value="#{processRulesPage.processRulesList}" var="processRules" binding="#{table}">
+	    				<h:column>
+	    					<f:facet name="header">
+	    						Process
+	    					</f:facet>
+							#{processRules.approvalProcess.id}:
+							#{processRules.approvalProcess.group.name}	
+							<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/process.list.jsf" rendered="#{processRules.approvalProcess != null}">View
+								<f:param name="process" value="#{processRules.approvalProcess.id}"></f:param>
+							</h:outputLink>
+    					</h:column>
+	    				<h:column>
+	    					<f:facet name="header">
+	    						Rules Set
+	    					</f:facet>
+							#{processRules.approvalRules.name}	
+							<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/rules.list.jsf" rendered="#{processRules.approvalRules != null}">View
+								<f:param name="rules" value="#{processRules.approvalRules.id}"></f:param>
+							</h:outputLink>
+    					</h:column>
+	    				<h:column>
+	    					<f:facet name="header">
+	    						Status
+	    					</f:facet>
+	    					<b:glyph style="color:green" value="play" title="Active" rendered="#{processRules.active}"></b:glyph>
+	    					<b:glyph style="color:red" value="stop" title="Inactive" rendered="#{!processRules.active}"></b:glyph>
+    					</h:column>
+	    				<h:column>
+	    					<f:facet name="header">
+	    						Action
+	    					</f:facet>
+	    					<c:secure roles="Update.AE">
+		    					<h:commandLink value="Edit">
+		    						<c:set as="#{processRules}" var="#{processRulesPage.processRules}"></c:set>
+		    						<c:set as="edit" var="#{processRulesPage.approvalapp.mode}" />
+									<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+		    					</h:commandLink>
+		    					<br />
+	    					</c:secure>
+	    					<h:commandLink value="View">
+	    						<c:set as="#{processRules}" var="#{processRulesPage.processRules}"></c:set>
+	    						<c:set as="read" var="#{processRulesPage.approvalapp.mode}" />
+								<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+	    					</h:commandLink>
+	    				</h:column>
+	    			</b:dataTable>
+				</b:row>
+				<b:row>
+					<ui:include src="../cp/processRules.crud.xhtml">
+						<ui:param name="processRules" value="#{processRulesPage.processRules}"></ui:param>
+					</ui:include>
+					<c:secure roles="Update.AE">
+						<b:buttonGroup rendered="#{processRulesPage.approvalapp.mode eq 'edit'}">
+							<b:button>
+								<b:glyph value="save" />
+								Save
+								<c:saveUpdate object="#{processRulesPage.processRules}" action="update"></c:saveUpdate>
+								<f:ajax execute="@form" render="messages" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+							</b:button>
+							<c:secure roles="Delete.AE">
+								<b:button>
+									<b:glyph value="trash" />
+									Delete
+									<c:delete object="#{processRulesPage.processRules}"></c:delete>
+									<c:executeAction listener="#{processRulesPage.removeProcessRules}"></c:executeAction>
+									<c:set as="#{null}" var="#{processRulesPage.processRules}"></c:set>
+									<c:set as="#{null}" var="#{processRulesPage.approvalapp.mode}"></c:set>
+									<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+								</b:button>
+							</c:secure>
+						</b:buttonGroup>
+						<b:button rendered="#{processRulesPage.approvalapp.mode eq 'read'}">
+							<b:glyph value="edit" />
+							Edit
+							<c:set as="edit" var="#{processRulesPage.approvalapp.mode}" />
+							<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+						</b:button>
+					</c:secure>
+					<b:button rendered="#{empty processRulesPage.approvalapp.mode}">
+						<b:glyph value="search" />
+						Search
+						<c:executeAction listener="#{processRulesPage.findProcessRules}"></c:executeAction>
+						<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+					</b:button>
+				</b:row>
+			</h:form>
+		</c:secure>
+    </ui:define>
+</ui:composition>
+</html>

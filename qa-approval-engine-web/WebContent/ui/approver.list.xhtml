@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:composition template="/base/template.xhtml">
+    <ui:define name="content">
+        <c:secure roles="Read.AE" message="You are not authorized to read from this table">
+			<h:form>
+	 			<b:messages showDetail="true" dismissible="true" id="messages"></b:messages>
+	    		<span class="h4">#{(approverPage.approver ne null) and approverPage.approvalapp.mode eq 'edit'?'Edit ':(approverPage.approvalapp.mode eq 'read'?'View ':'Search ')} Approver</span>
+	    		<br />
+            	<h:commandLink styleClass="btn btn-primary" rendered="#{(approverPage.approvalapp.mode eq 'edit' or approverPage.approvalapp.mode eq 'read') and (param.approver eq null)}">
+					<b:glyph value="backward"></b:glyph>Back to search...
+					<c:set as="#{null}" var="#{approverPage.approvalapp.mode}" />
+	    			<c:set as="#{null}" var="#{approverPage.approver}"></c:set>
+					<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+				</h:commandLink>
+				<b:row rendered="#{empty approverPage.approvalapp.mode}">	
+					<b:pagination for="#{table}" pageSize="10"></b:pagination>
+					<b:dataTable value="#{approverPage.approverList}" var="approver" binding="#{table}">
+		    				<h:column>
+		    					<f:facet name="header">
+		    						ID
+		    					</f:facet>
+								#{approver.id}	
+	    					</h:column>
+		    				<h:column>
+		    					<f:facet name="header">
+		    						Group
+		    					</f:facet>
+								#{approver.group.name}	
+								<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/group.list.jsf" rendered="#{approver.group != null}">View
+									<f:param name="group" value="#{approver.group.id}"></f:param>
+								</h:outputLink>
+	    					</h:column>
+		    				<h:column>
+		    					<f:facet name="header">
+		    						External ID
+		    					</f:facet>
+								#{approver.externalId}	
+	    					</h:column>
+		    				<h:column>
+		    					<f:facet name="header">
+		    						Level
+		    					</f:facet>
+								#{approver.level}	
+	    					</h:column>
+		    				<h:column>
+		    					<f:facet name="header">
+		    						Status
+		    					</f:facet>
+		    					<b:glyph style="color:green" title="Valid" value="ok-circle" rendered="#{approver.valid}"></b:glyph>
+		    					<b:glyph style="color:red" title="Invalid" value="trash" rendered="#{!approver.valid}"></b:glyph>
+	    					</h:column>
+		    				<h:column>
+		    					<f:facet name="header">
+		    						Action
+		    					</f:facet>
+		    					<c:secure roles="Update.AE">
+			    					<h:commandLink value="Edit">
+			    						<c:set as="#{approver}" var="#{approverPage.approver}"></c:set>
+			    						<c:set as="edit" var="#{approverPage.approvalapp.mode}" />
+										<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+			    					</h:commandLink>
+			    					<br />
+		    					</c:secure>
+		    					<h:commandLink value="View">
+		    						<c:set as="#{approver}" var="#{approverPage.approver}"></c:set>
+		    						<c:set as="read" var="#{approverPage.approvalapp.mode}" />
+									<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+		    					</h:commandLink>
+		    				</h:column>
+		    			</b:dataTable>
+				</b:row>
+				<b:row>
+					<ui:include src="../cp/approver.crud.xhtml">
+						<ui:param name="approver" value="#{approverPage.approver}"></ui:param>
+					</ui:include>
+					<c:secure roles="Update.AE">
+						<b:buttonGroup rendered="#{approverPage.approvalapp.mode eq 'edit'}">
+							<b:button>
+								<b:glyph value="save" />
+								Save
+								<c:saveUpdate object="#{approverPage.approver}" action="update"></c:saveUpdate>
+								<f:ajax execute="@form" render="messages" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+							</b:button>
+							<c:secure roles="Delete.AE">
+								<b:button>
+									<b:glyph value="trash" />
+									Delete
+									<c:delete object="#{approverPage.approver}"></c:delete>
+									<c:executeAction listener="#{approverPage.removeApprover}"></c:executeAction>
+									<c:set as="#{null}" var="#{approverPage.approver}"></c:set>
+									<c:set as="#{null}" var="#{approverPage.approvalapp.mode}"></c:set>
+									<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+								</b:button>
+							</c:secure>
+						</b:buttonGroup>
+						<b:button rendered="#{approverPage.approvalapp.mode eq 'read'}">
+							<b:glyph value="edit" />
+							Edit
+							<c:set as="edit" var="#{approverPage.approvalapp.mode}" />
+							<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+						</b:button>
+					</c:secure>
+					<b:button rendered="#{empty approverPage.approvalapp.mode}">
+						<b:glyph value="search" />
+						Search
+						<c:executeAction listener="#{approverPage.findApprover}"></c:executeAction>
+						<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+					</b:button>
+				</b:row>
+			</h:form>
+		</c:secure>
+    </ui:define>
+</ui:composition>
+</html>

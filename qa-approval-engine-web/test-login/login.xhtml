@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:composition template="/base/template.xhtml">
+    <ui:define name="content">
+		<form action="j_security_check" method="post">
+			<b:formGroup>
+				<label>Login with Roles:</label>
+				<input class="form-control" name="j_username" value="ApplicationUser;Read.AE;Update.AE;Delete.AE"></input>		
+			</b:formGroup>
+			<b:formGroup>
+				<button class="btn btn-success btn-md"><b:glyph value="log-in" /> Login</button>
+			</b:formGroup>
+			<input type="hidden" name="j_password"></input>
+		</form>
+		<h:form>
+	 		<h:commandLink value="Logout">
+	   			<c:logout redirect="main.jsf"></c:logout>
+	 		</h:commandLink>
+ 		</h:form>
+    </ui:define>
+</ui:composition>
+</html>

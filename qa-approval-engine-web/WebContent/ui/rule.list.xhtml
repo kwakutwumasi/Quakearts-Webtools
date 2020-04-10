@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:composition template="/base/template.xhtml">
+    <ui:define name="content">
+        <c:secure roles="Read.AE" message="You are not authorized to read from this table">
+			<h:form>
+	 			<b:messages showDetail="true" dismissible="true" id="messages"></b:messages>
+	    		<span class="h4">#{(rulePage.rule ne null) and rulePage.approvalapp.mode eq 'edit'?'Edit ':(rulePage.approvalapp.mode eq 'read'?'View ':'Search ')} Approval Rule</span>
+	    		<br />
+            	<h:commandLink styleClass="btn btn-primary" rendered="#{(rulePage.approvalapp.mode eq 'edit' or rulePage.approvalapp.mode eq 'read') and (param.rule eq null)}">
+					<b:glyph value="backward"></b:glyph>Back to search...
+					<c:set as="#{null}" var="#{rulePage.approvalapp.mode}" />
+	    			<c:set as="#{null}" var="#{rulePage.rule}"></c:set>
+					<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+				</h:commandLink>
+				<b:row rendered="#{empty rulePage.approvalapp.mode}">	
+					<b:pagination for="#{table}" pageSize="10"></b:pagination>
+					<b:dataTable value="#{rulePage.ruleList}" var="rule" binding="#{table}">
+	    				<h:column>
+	    					<f:facet name="header">
+	    						ID
+	    					</f:facet>
+							#{rule.id}	
+    					</h:column>
+	    				<h:column>
+	    					<f:facet name="header">
+	    						Approval Rules Set
+	    					</f:facet>
+							#{rule.rules.name}:#{rule.rules.group.name}
+							<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/rules.list.jsf" rendered="#{rule.rules != null}">View
+								<f:param name="rules" value="#{rule.rules.id}"></f:param>
+							</h:outputLink>
+    					</h:column>
+	    				<h:column>
+	    					<f:facet name="header">
+	    						Approver Level
+	    					</f:facet>
+							#{rule.level}	
+    					</h:column>
+	    				<h:column>
+	    					<f:facet name="header">
+	    						Required Approvals
+	    					</f:facet>
+							#{rule.count}	
+    					</h:column>
+	    				<h:column>
+	    					<f:facet name="header">
+	    						Status
+	    					</f:facet>
+	    					<b:glyph style="color:green" value="play" title="Active" rendered="#{rule.active}"></b:glyph>
+	    					<b:glyph style="color:red" value="stop" title="Inactive" rendered="#{!rule.active}"></b:glyph>
+    					</h:column>
+	    				<h:column>
+	    					<f:facet name="header">
+	    						Action
+	    					</f:facet>
+	    					<c:secure roles="Update.AE">
+		    					<h:commandLink value="Edit">
+		    						<c:set as="#{rule}" var="#{rulePage.rule}"></c:set>
+		    						<c:set as="edit" var="#{rulePage.approvalapp.mode}" />
+									<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+		    					</h:commandLink>
+		    					<br />
+	    					</c:secure>
+	    					<h:commandLink value="View">
+	    						<c:set as="#{rule}" var="#{rulePage.rule}"></c:set>
+	    						<c:set as="read" var="#{rulePage.approvalapp.mode}" />
+								<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+	    					</h:commandLink>
+	    				</h:column>
+	    			</b:dataTable>
+				</b:row>
+				<b:row>
+					<ui:include src="../cp/rule.crud.xhtml">
+						<ui:param name="rule" value="#{rulePage.rule}"></ui:param>
+					</ui:include>
+					<c:secure roles="Update.AE">
+						<b:buttonGroup rendered="#{rulePage.approvalapp.mode eq 'edit'}">
+							<b:button>
+								<b:glyph value="save" />
+								Save
+								<c:saveUpdate object="#{rulePage.rule}" action="update"></c:saveUpdate>
+								<f:ajax execute="@form" render="messages" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+							</b:button>
+							<c:secure roles="Delete.AE">
+								<b:button>
+									<b:glyph value="trash" />
+									Delete
+									<c:delete object="#{rulePage.rule}"></c:delete>
+									<c:executeAction listener="#{rulePage.removeRule}"></c:executeAction>
+									<c:set as="#{null}" var="#{rulePage.rule}"></c:set>
+									<c:set as="#{null}" var="#{rulePage.approvalapp.mode}"></c:set>
+									<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+								</b:button>
+							</c:secure>
+						</b:buttonGroup>
+						<b:button rendered="#{rulePage.approvalapp.mode eq 'read'}">
+							<b:glyph value="edit" />
+							Edit
+							<c:set as="edit" var="#{rulePage.approvalapp.mode}" />
+							<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+						</b:button>
+					</c:secure>
+					<b:button rendered="#{empty rulePage.approvalapp.mode}">
+						<b:glyph value="search" />
+						Search
+						<c:executeAction listener="#{rulePage.findRule}"></c:executeAction>
+						<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}" onerror="ca.error"></f:ajax>
+					</b:button>
+				</b:row>
+			</h:form>
+		</c:secure>
+    </ui:define>
+</ui:composition>
+</html>

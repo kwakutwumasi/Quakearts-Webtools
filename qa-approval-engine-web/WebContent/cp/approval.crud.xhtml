@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:b="http://quakearts.com/2.0/boot"
+	xmlns:c="http://quakearts.com/2.0/common">
+<ui:component>
+	<b:formGroup>
+		<label id="approvalProcess_label">Process</label>
+		<b:selectOneInput id="approvalProcessDropDown"
+			mainClass="#{loader.overlayClass}"
+			disabled="#{approvalPage.approvalapp.mode eq 'read' || approvalPage.approvalProcessDropdownHelper.inCreateMode}"
+			value="#{approval.approvalProcess}" autocomplete="true"
+			suggestion="#{approvalPage.approvalProcessDropdownHelper.searchText}"
+			delay="0.55"
+			listener="#{approvalPage.approvalProcessDropdownHelper.filterItems}"
+			onevent="#{loader.overlayAjaxLoader}"
+			render="@this approvalApprovalProcessMessage">
+			<f:selectItems
+				value="#{approvalPage.approvalProcessDropdownHelper.foundItems}"
+				var="approvalProcess" itemValue="#{approvalProcess}"
+				itemLabel="#{approvalProcess.id}:#{approvalProcess.group.name}">
+			</f:selectItems>
+			<c:pojoConverter></c:pojoConverter>
+		</b:selectOneInput>
+		<h:message id="approvalApprovalProcessMessage" showDetail="true" for="approvalProcessDropDown" />
+	</b:formGroup>
+	<b:formGroup>
+		<label id="approver_label">Approver</label>
+		<b:selectOneInput id="approvalApproverDropDown"
+			mainClass="#{loader.overlayClass}"
+			disabled="#{approvalPage.approvalapp.mode eq 'read' || approvalPage.approverDropdownHelper.inCreateMode}"
+			value="#{approval.approver}" autocomplete="true"
+			suggestion="#{approvalPage.approverDropdownHelper.searchText}"
+			delay="0.55"
+			listener="#{approvalPage.approverDropdownHelper.filterItems}"
+			onevent="#{loader.overlayAjaxLoader}"
+			render="@this approvalApproverMessage">
+			<f:selectItems
+				value="#{approvalPage.approverDropdownHelper.foundItems}"
+				var="approver" itemValue="#{approver}"
+				itemLabel="#{approver.externalId} : #{approver.group.name}">
+			</f:selectItems>
+			<c:pojoConverter></c:pojoConverter>
+		</b:selectOneInput>
+		<h:message id="approvalApproverMessage" showDetail="true"
+			for="approvalApproverDropDown" />
+	</b:formGroup>
+	<b:formGroup>
+ 		<label id="action_label">Action</label>
+ 		<b:selectOneInput disabled="#{approvalPage.approvalapp.mode eq 'read'}"
+    			value="#{approval.action}">
+    			<f:selectItems value="#{approvalPage.approvalapp.approvalActions}"></f:selectItems>
+    		</b:selectOneInput>
+	</b:formGroup>
+	<b:formGroup>
+		<label id="approvalDate_label">Approval Date</label>
+		<h:panelGroup rendered="#{!approvalPage.inSearchMode}">
+			<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs" 
+				value="#{approval.approvalDate}" converter="#{approvalPage.approvalapp.converter}" 
+				disabled="#{approvalPage.approvalapp.mode eq 'read'}" format="dmyhns" min="5">
+			</b:date>
+		</h:panelGroup>
+		<h:panelGroup rendered="#{approvalPage.inSearchMode}">
+			<div>Between</div>
+			<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs" 
+				value="#{approvalPage.approvalDateRange.from}" converter="#{approvalPage.approvalapp.converter}" 
+				format="dmyhns" min="5">
+			</b:date>
+			<div>And</div>
+			<b:date nullable="true" dayClass="btn-xs" monthClass="btn-xs" yearClass="btn-xs" 
+				value="#{approvalPage.approvalDateRange.to}" converter="#{approvalPage.approvalapp.converter}" 
+				format="dmyhns" min="5">
+			</b:date>
+		</h:panelGroup>
+	</b:formGroup>
+	<b:formGroup>
+		<label id="valid_label"><h:selectBooleanCheckbox disabled="#{approvalPage.approvalapp.mode eq 'read'}" value="#{approval.valid}"></h:selectBooleanCheckbox>Valid</label>
+	</b:formGroup>
+</ui:component>
+</html>

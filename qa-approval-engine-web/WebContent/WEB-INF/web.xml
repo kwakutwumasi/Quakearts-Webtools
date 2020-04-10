@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	id="WebApp_ID" version="3.0">
+  <display-name>QA-Approval-Engine</display-name>
+	<context-param>
+		<param-name>com.sun.faces.expressionFactory</param-name>
+		<param-value>org.apache.el.ExpressionFactoryImpl</param-value>
+	</context-param>
+	<context-param>
+		<param-name>javax.faces.DEFAULT_SUFFIX</param-name>
+		<param-value>.xhtml</param-value>
+	</context-param>
+	<context-param>
+		<param-name>javax.faces.PROJECT_STAGE</param-name>
+		<param-value>Development</param-value>
+	</context-param>
+
+	<security-role>
+		<role-name>ApplicationUser</role-name>
+	</security-role>
+
+	<security-constraint>
+		<display-name>CRUDD App Security</display-name>
+		<web-resource-collection>
+			<web-resource-name>CRUDD App pages</web-resource-name>
+			<description>Pages for creating, reading, updating and deleting database data</description>
+			<url-pattern>/tm/*</url-pattern>
+			<url-pattern>/ui/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>ApplicationUser</role-name>
+		</auth-constraint>
+	</security-constraint>
+</web-app>
