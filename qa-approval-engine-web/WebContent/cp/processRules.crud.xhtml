@@ -28,16 +28,7 @@
 			for="processRulesProcessDropDown" />
 	</b:formGroup>
 	<b:formGroup>
-		<label id="approvalRules_label">Rules Set<h:commandLink
-				value="New"
-				styleClass="#{!processRulesPage.approvalRulesDropdownHelper.inCreateMode?'':'collapse'}"
-				rendered="#{processRulesPage.inCreateOrEditMode}">
-				<f:ajax onevent="#{loader.overlayAjaxLoader}" execute="@this"
-					render="processRulesRulesInset"></f:ajax>
-				<f:setPropertyActionListener value="#{true}"
-					target="#{processRulesPage.approvalRulesDropdownHelper.inCreateMode}"></f:setPropertyActionListener>
-			</h:commandLink>
-		</label>
+		<label id="approvalRules_label">Rules Set</label>
 		<b:selectOneInput id="processRulesRulesDropDown"
 			mainClass="#{loader.overlayClass}"
 			disabled="#{processRulesPage.approvalapp.mode eq 'read' || processRulesPage.approvalRulesDropdownHelper.inCreateMode}"
