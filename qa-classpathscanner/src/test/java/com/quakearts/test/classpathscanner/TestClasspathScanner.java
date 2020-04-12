@@ -1,10 +1,14 @@
 package com.quakearts.test.classpathscanner;
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.net.URL;
+import java.net.URLClassLoader;
+
 import org.junit.Test;
 
 import com.quakearts.classannotationscanner.ClasspathScanner;
@@ -30,9 +34,36 @@ public class TestClasspathScanner {
 		scanner.addAnnotationListener(listener);
 		scanner.setFilter(new DefaultFilter(new String[]{"com.quakearts.test.classpathscanner"}));
 		scanner.scan();
-		assertTrue(!listener.hasRun);
+		assertFalse(listener.hasRun);
+		
+		listener = new TestClassAnnotationScanningListener();
+		scanner = new ClasspathScanner(new DefaultFilter(new String[]{"com.quakearts.test.classpathscanner"}));
+		scanner.addAnnotationListener(listener);
+		scanner.scan();
+		assertFalse(listener.hasRun);
 	}
 	
+	@Test
+	public void testTestUrlClassLoader() throws Exception {
+		ClassLoader oldClassLoader = Thread.currentThread()
+				.getContextClassLoader();
+		
+		try {
+			URLClassLoader classLoader = new URLClassLoader(new URL[]{
+				new File("test-lib"+File.separator+"commons-collections-3.2.2.jar").toURI().toURL(),	
+				new File("test-lib"+File.separator+"commons-logging-1.2.jar").toURI().toURL()
+			});
+			Thread.currentThread().setContextClassLoader(classLoader);
+			TestClassAnnotationScanningListener listener = new TestClassAnnotationScanningListener();
+			ClasspathScanner scanner = new ClasspathScanner();
+			scanner.addAnnotationListener(listener);
+			
+			scanner.scan();
+			assertTrue(listener.hasRun);
+		} finally {
+			Thread.currentThread().setContextClassLoader(oldClassLoader);
+		}
+	}
 }
 
 class TestClassAnnotationScanningListener implements ClassAnnotationScanningListener{

@@ -13,14 +13,18 @@ package com.quakearts.classannotationscanner;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
+import com.quakearts.classannotationscanner.exception.ScannerRuntimeException;
 import com.quakearts.classannotationscanner.resource.ClassFileIterator;
 import com.quakearts.classannotationscanner.resource.JarFileIterator;
 import com.quakearts.classannotationscanner.resource.ResourceInputStreamIterator;
@@ -62,13 +66,25 @@ public class ClasspathScanner extends URLResourceScanner {
 	 */
 	@Override
     protected final URL[] findResources() {
-        URL[] ret = getUrlsForCurrentClasspath();
-        if (ret.length == 0) ret = getUrlsForSystemClasspath();
-        return ret;
+		Set<URI> uris = new HashSet<>();
+        URI[] ret = getUrlsForCurrentClasspath();
+        uris.addAll(Arrays.asList(ret));
+        ret = getUrlsForSystemClasspath();
+        uris.addAll(Arrays.asList(ret));
+        return uris.stream().map(this::toUrl)
+        		.collect(Collectors.toList()).toArray(new URL[0]);
     }
 
+	private URL toUrl(URI url) {
+		try {
+			return url.toURL();
+		} catch (MalformedURLException e) {
+			throw new ScannerRuntimeException(e);
+		}
+	}
+
     /* (non-Javadoc)
-     * @see com.quakearts.classpathscanner.ScannerImpl#getResourceIterator(java.net.URL, com.quakearts.classpathscanner.Filter)
+     * @see com.quakearts.classpathscanner.ScannerImpl#getResourceIterator(java.net.URI, com.quakearts.classpathscanner.Filter)
      */
     @Override
     protected ResourceInputStreamIterator getResourceIterator(URL url, Filter filter) throws IOException {
@@ -114,29 +130,34 @@ public class ClasspathScanner extends URLResourceScanner {
         this.filter = filter;
     }
 
-    /**Looks for {@link URL}s from the implementations of {@link URLClassLoader} in the current class loader hierarchy.
-     * @return an array of {@link URL}s to iterate over
+    /**Looks for {@link URI}s from the implementations of {@link URLClassLoader} in the current class loader hierarchy.
+     * @return an array of {@link URI}s to iterate over
      */
-    private URL[] getUrlsForCurrentClasspath() {
-        List<URL> list = new ArrayList<URL>();
+    private URI[] getUrlsForCurrentClasspath() {
+        Set<URI> list = new HashSet<>();
 
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         while (loader != null) {
             if (loader instanceof URLClassLoader) {
-                URL[]     urlArray = ((URLClassLoader) loader).getURLs();
-                List<URL> urlList  = Arrays.asList(urlArray);
-                list.addAll(urlList);
+                URL[] urlArray = ((URLClassLoader) loader).getURLs();
+                for(URL url:urlArray) {
+					try {
+						list.add(url.toURI());
+					} catch (URISyntaxException e) {
+						throw new ScannerRuntimeException(e);
+					}
+                }
             }
             loader = loader.getParent();
         }
-        return list.toArray(new URL[list.size()]);
+        return list.toArray(new URI[list.size()]);
     }
 
-    /**Looks for {@link URL}s from the system class path
-     * @return an array of {@link URL}s to iterate over
+    /**Looks for {@link URI}s from the system class path
+     * @return an array of {@link URI}s to iterate over
      */
-    private URL[] getUrlsForSystemClasspath() {
-        List<URL> list = new ArrayList<URL>();
+    private URI[] getUrlsForSystemClasspath() {
+        Set<URI> list = new HashSet<>();
         String classpath = System.getProperty("java.class.path");
         StringTokenizer tokenizer = new StringTokenizer(classpath,
                 File.pathSeparator);
@@ -146,14 +167,10 @@ public class ClasspathScanner extends URLResourceScanner {
 
             File fp = new File(path);
             if (!fp.exists())
-                throw new RuntimeException(
+                throw new ScannerRuntimeException(
                         "File in java.class.path does not exist: " + fp);
-            try {
-                list.add(fp.toURI().toURL());
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
+            list.add(fp.toURI());
         }
-        return list.toArray(new URL[list.size()]);
+        return list.toArray(new URI[list.size()]);
     }
 }
