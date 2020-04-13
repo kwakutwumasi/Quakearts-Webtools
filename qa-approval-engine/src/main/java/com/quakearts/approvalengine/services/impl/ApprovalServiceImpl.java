@@ -102,7 +102,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 	}
 
 	private void validateParameters(String groupName, Set<String> activeRuleNamesSet, Set<String> inActiveRuleNamesSet)
-			throws MissingFieldException, DuplicateRuleException {
+			throws DuplicateRuleException {
 		if(groupName == null || activeRuleNamesSet == null 
 				|| activeRuleNamesSet.isEmpty() 
 				|| inActiveRuleNamesSet == null
@@ -276,7 +276,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 	}
 
 	private void updateApprovalProcessRulesValidity(Set<String> ruleNames, ApprovalProcess approvalProcess,
-			boolean activate) throws MissingFieldException, InvalidApprovalGroupException, NotFoundException, 
+			boolean activate) throws InvalidApprovalGroupException, NotFoundException, 
 			InvalidApprovalProcessException, ApprovalCompleteException {
 		checkParameters(ruleNames, approvalProcess);		
 		DataStore dataStore = dataStoreFactory.getDataStore();
@@ -289,7 +289,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 		}
 	}
 
-	private void checkParameters(Set<String> ruleNames, ApprovalProcess approvalProcess) throws MissingFieldException {
+	private void checkParameters(Set<String> ruleNames, ApprovalProcess approvalProcess) {
 		if(ruleNames == null || ruleNames.isEmpty() || approvalProcess == null 
 				|| approvalProcess.getId() <= 0){
 			throw new MissingFieldException("Field {0} is missing and is required", 

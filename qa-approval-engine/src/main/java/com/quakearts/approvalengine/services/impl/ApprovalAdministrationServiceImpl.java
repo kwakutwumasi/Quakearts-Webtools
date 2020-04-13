@@ -42,7 +42,7 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 	private DataStoreFactory factory;
 	
 	@Override
-	public ApprovalGroup createApprovalGroup(String name) throws MissingFieldException, DuplicateGroupNameException {
+	public ApprovalGroup createApprovalGroup(String name) throws DuplicateGroupNameException {
 		if(name == null)
 			throw new MissingFieldException("Field name is missing and is required");
 		
@@ -68,8 +68,8 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 	}
 	
 	@Override
-	public ApprovalRulesBuilder createApprovalRules(String name, String groupName) throws MissingFieldException,
-		NotFoundException, InvalidApprovalGroupException, DuplicateRuleException {
+	public ApprovalRulesBuilder createApprovalRules(String name, String groupName) throws NotFoundException, 
+		InvalidApprovalGroupException, DuplicateRuleException {
 		return new ApprovalRuleBuilderImpl(name, groupName, factory.getDataStore());
 	}
 
@@ -80,7 +80,7 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 		private DataStore dataStore;
 		
 		private ApprovalRuleBuilderImpl(String name, String groupName, DataStore dataStore) 
-				throws MissingFieldException, NotFoundException, InvalidApprovalGroupException, DuplicateRuleException {
+				throws NotFoundException, InvalidApprovalGroupException, DuplicateRuleException {
 			checkNullStrings(name, groupName, NAME, GROUP_NAME_PARAMETER);
 			
 			this.dataStore = dataStore;
@@ -160,7 +160,7 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 	
 	@Override
 	public Approver createApprover(String externalId, int level, String groupName) 
-			throws NotFoundException, MissingFieldException, DuplicateApproverIdentityException, InvalidApprovalGroupException {
+			throws NotFoundException, DuplicateApproverIdentityException, InvalidApprovalGroupException {
 		checkNullStrings(externalId, groupName, EXTERNAL_ID, GROUP_NAME_PARAMETER);
 
 		DataStore dataStore = factory.getDataStore();
@@ -186,7 +186,7 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 	}
 
 	@Override
-	public Optional<ApprovalProcess> findApprovalProcess(long id, String groupName) throws MissingFieldException {
+	public Optional<ApprovalProcess> findApprovalProcess(long id, String groupName) {
 		checkSingleString(groupName, GROUP_NAME_PARAMETER);
 		return factory.getDataStore()
 				.find(ApprovalProcess.class)
@@ -196,7 +196,7 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 	}
 	
 	@Override
-	public Optional<ApprovalGroup> findApprovalGroupByName(String name) throws MissingFieldException {
+	public Optional<ApprovalGroup> findApprovalGroupByName(String name) {
 		checkSingleString(name,NAME);
 		return factory.getDataStore()
 				.find(ApprovalGroup.class)
@@ -204,14 +204,14 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 				.thenGetFirst();
 	}
 
-	private void checkSingleString(String string, String stringName) throws MissingFieldException {
+	private void checkSingleString(String string, String stringName) {
 		if(string == null) {
 			throw new MissingFieldException(FIELD_REQUIRED, stringName);
 		}
 	}
 
 	@Override
-	public Optional<ApprovalRules> findApprovalRulesByName(String groupName, String rulesName) throws MissingFieldException {
+	public Optional<ApprovalRules> findApprovalRulesByName(String groupName, String rulesName) {
 		checkNullStrings(rulesName, groupName, RULES_NAME, GROUP_NAME_PARAMETER);
 		return factory.getDataStore()
 				.find(ApprovalRules.class)
@@ -221,8 +221,7 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 	}
 
 	@Override
-	public List<ApprovalRules> findApprovalRulesByPriority(String groupName, int priority)
-			throws MissingFieldException {
+	public List<ApprovalRules> findApprovalRulesByPriority(String groupName, int priority) {
 		checkSingleString(groupName, GROUP_NAME_PARAMETER);
 		return factory.getDataStore().find(ApprovalRules.class)
 				.filterBy(GROUP_NAME).withAValueEqualTo(groupName)
@@ -231,7 +230,7 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 	}
 	
 	@Override
-	public Optional<Approver> findApproverByIdentity(String groupName, String externalId) throws MissingFieldException {
+	public Optional<Approver> findApproverByIdentity(String groupName, String externalId) {
 		checkNullStrings(externalId, groupName, EXTERNAL_ID, GROUP_NAME_PARAMETER);
 		return factory.getDataStore()
 				.find(Approver.class)
@@ -241,7 +240,7 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 	}
 
 	@Override
-	public List<Approver> findApproversByLevel(String groupName, int level) throws MissingFieldException {
+	public List<Approver> findApproversByLevel(String groupName, int level) {
 		checkSingleString(groupName, GROUP_NAME_PARAMETER);
 		return factory.getDataStore()
 				.find(Approver.class)
@@ -268,18 +267,18 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 
 	@Override
 	public void activateApprovalRules(String rulesName, String groupName) 
-			throws MissingFieldException, NotFoundException, InvalidApprovalGroupException {
+			throws NotFoundException, InvalidApprovalGroupException {
 		updateApprovalRuleValidity(rulesName, groupName, true);
 	}
 
 	@Override
 	public void deactivateApprovalRules(String rulesName, String groupName) 
-			throws MissingFieldException, NotFoundException, InvalidApprovalGroupException {
+			throws NotFoundException, InvalidApprovalGroupException {
 		updateApprovalRuleValidity(rulesName, groupName, false);
 	}
 
 	private void updateApprovalRuleValidity(String rulesName, String groupName, boolean activate)
-			throws MissingFieldException, NotFoundException, InvalidApprovalGroupException {
+			throws NotFoundException, InvalidApprovalGroupException {
 		checkNullStrings(rulesName, groupName, RULES_NAME, GROUP_NAME_PARAMETER);
 		DataStore dataStore = factory.getDataStore();
 		ApprovalRules approvalRules = findApprovalRules(rulesName, groupName, dataStore);
@@ -309,12 +308,12 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 
 	@Override
 	public void activateApprovalRule(int level, String rulesName, String groupName) 
-			throws MissingFieldException, NotFoundException, InvalidApprovalRulesException, InvalidApprovalGroupException {
+			throws NotFoundException, InvalidApprovalRulesException, InvalidApprovalGroupException {
 		updateApprovalRuleValidity(level, rulesName, groupName, true);
 	}
 
 	private void updateApprovalRuleValidity(int level, String rulesName, String groupName, boolean activated)
-			throws NotFoundException, InvalidApprovalRulesException, InvalidApprovalGroupException, MissingFieldException {
+			throws NotFoundException, InvalidApprovalRulesException, InvalidApprovalGroupException {
 		checkNullStrings(rulesName, groupName, RULES_NAME, GROUP_NAME_PARAMETER);
 		DataStore dataStore = factory.getDataStore();
 		ApprovalRule approvalRule = findApprovalRule(level, rulesName, groupName, dataStore);
@@ -348,12 +347,12 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 
 	@Override
 	public void deactivateApprovalRule(int level, String rulesName, String groupName) 
-			throws MissingFieldException, NotFoundException, InvalidApprovalRulesException, InvalidApprovalGroupException {
+			throws NotFoundException, InvalidApprovalRulesException, InvalidApprovalGroupException {
 		updateApprovalRuleValidity(level, rulesName, groupName, false);
 	}
 	
 	private void checkNullStrings(String string1, String string2, String string1Name, 
-			String string2Name) throws MissingFieldException {
+			String string2Name) {
 		if(string1 == null || string2 == null){
 			throw new MissingFieldException(FIELD_REQUIRED, 
 					string1 == null?string1:string2);

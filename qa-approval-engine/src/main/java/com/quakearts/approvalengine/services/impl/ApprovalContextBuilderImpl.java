@@ -69,7 +69,7 @@ public class ApprovalContextBuilderImpl implements ApprovalContextBuilder {
 	
 	@Override
 	public ApprovalContext thenBuild() 
-			throws MissingFieldException, InvalidApprovalException, 
+			throws InvalidApprovalException, 
 			ApprovalCompleteException, NotFoundException, InvalidApprovalProcessException, 
 			InvalidApprovalGroupException {
 		if(approvalProcess == null)

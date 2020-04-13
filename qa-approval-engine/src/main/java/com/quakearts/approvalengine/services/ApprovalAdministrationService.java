@@ -91,39 +91,39 @@ public interface ApprovalAdministrationService {
 	 * @return an {@linkplain Optional} instance that may or may not contain the ApprovalProcess
 	 * @throws MissingFieldException if id, level, or groupName is invalid
 	 */
-	Optional<ApprovalProcess> findApprovalProcess(long id, String groupName) throws MissingFieldException;
+	Optional<ApprovalProcess> findApprovalProcess(long id, String groupName);
 	/**Retrieve the {@linkplain ApprovalGroup} using its name
 	 * @param name the name of the ApprovalGroup
 	 * @return an {@linkplain Optional} instance that may or may not contain the ApprovalGroup
 	 * @throws MissingFieldException if name is invalid
 	 */
-	Optional<ApprovalGroup> findApprovalGroupByName(String name) throws MissingFieldException;
+	Optional<ApprovalGroup> findApprovalGroupByName(String name);
 	/**Retrieve the {@linkplain ApprovalRules} instance using its name and approval group name
 	 * @param groupName the name of the ApprovalGroup the ApprovalRules instance belongs to
 	 * @param rulesName the name of the ApprovalRules instance
 	 * @return an {@linkplain Optional} instance that may or may not contain the ApprovalRules instance
 	 * @throws MissingFieldException if groupName or rulesName is invalid
 	 */
-	Optional<ApprovalRules> findApprovalRulesByName(String groupName, String rulesName) throws MissingFieldException;
+	Optional<ApprovalRules> findApprovalRulesByName(String groupName, String rulesName);
 	/**Retrieve all {@linkplain ApprovalRules} instances by priority and approval group name
 	 * @param groupName the name of the ApprovalGroup the ApprovalRules instance belongs to
 	 * @param priority the priority of the ApprovalRules instance
 	 * @return a {@linkplain List} instance that may or may not contain the ApprovalRules instances
 	 * @throws MissingFieldException if groupName or rulesName is invalid
 	 */
-	List<ApprovalRules> findApprovalRulesByPriority(String groupName, int priority) throws MissingFieldException;
+	List<ApprovalRules> findApprovalRulesByPriority(String groupName, int priority);
 	/**Retrieve the {@linkplain Approver} using its externalId and approval group name
 	 * @param groupName the name of the ApprovalGroup the Approver belongs to
 	 * @param externalId the name of the ApprovalRules instance
 	 * @return an {@linkplain Optional} instance that may or may not contain the ApprovalRules instance
 	 * @throws MissingFieldException if groupName or rulesName is invalid
 	 */
-	Optional<Approver> findApproverByIdentity(String groupName, String externalId) throws MissingFieldException;
+	Optional<Approver> findApproverByIdentity(String groupName, String externalId);
 	/**Retrieve all {@linkplain Approver} instances by level and approval group name
 	 * @param groupName the name of the ApprovalGroup the Approver instance belongs to
 	 * @param level the level of the Approvers
 	 * @return a {@linkplain List} instance that may or may not contain the Approvers
 	 * @throws MissingFieldException if groupName or rulesName is invalid
 	 */
-	List<Approver> findApproversByLevel(String groupName, int level) throws MissingFieldException;
+	List<Approver> findApproversByLevel(String groupName, int level);
 }
