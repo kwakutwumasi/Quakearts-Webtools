@@ -104,6 +104,7 @@ public class ApprovalAdministrationServiceTest {
 		assertThat(approvalRules.getPriority(), is(1));
 		assertThat(approvalRules.getRuleElements(), is(notNullValue()));
 		assertThat(approvalRules.getRuleElements().size(), is(2));
+		assertTrue(approvalRules.isActive());
 
 		Iterator<ApprovalRule> rulesIterator = approvalRules.getRuleElements().iterator();
 
@@ -127,6 +128,7 @@ public class ApprovalAdministrationServiceTest {
 		assertThat(approvalRules.getPriority(), is(1));
 		assertThat(approvalRules.getRuleElements(), is(notNullValue()));
 		assertThat(approvalRules.getRuleElements().size(), is(1));
+		assertTrue(approvalRules.isActive());
 
 		rulesIterator = approvalRules.getRuleElements().iterator();
 
@@ -148,6 +150,7 @@ public class ApprovalAdministrationServiceTest {
 		assertThat(approvalRules.getPriority(), is(2));
 		assertThat(approvalRules.getRuleElements(), is(notNullValue()));
 		assertThat(approvalRules.getRuleElements().size(), is(1));
+		assertTrue(approvalRules.isActive());
 
 		rulesIterator = approvalRules.getRuleElements().iterator();
 
@@ -174,6 +177,7 @@ public class ApprovalAdministrationServiceTest {
 		assertThat(approvalRules.getPriority(), is(5));
 		assertThat(approvalRules.getRuleElements(), is(notNullValue()));
 		assertThat(approvalRules.getRuleElements().isEmpty(), is(true));
+		assertTrue(approvalRules.isActive());
 	}
 
 	@Test
@@ -253,6 +257,7 @@ public class ApprovalAdministrationServiceTest {
 		assertTrue(approver.getId() > 0);
 		assertThat(approver.getExternalId(), is("testCreateApprover"));
 		assertThat(approver.getLevel(), is(1));
+		assertTrue(approver.isValid());
 	}
 
 	@Test
