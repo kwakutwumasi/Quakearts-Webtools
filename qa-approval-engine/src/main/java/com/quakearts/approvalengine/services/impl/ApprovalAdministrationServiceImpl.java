@@ -12,7 +12,6 @@ import com.quakearts.approvalengine.exception.DuplicateApproverIdentityException
 import com.quakearts.approvalengine.exception.DuplicateGroupNameException;
 import com.quakearts.approvalengine.exception.DuplicateLevelException;
 import com.quakearts.approvalengine.exception.DuplicateRuleException;
-import com.quakearts.approvalengine.exception.IncompleteApprovalRulesException;
 import com.quakearts.approvalengine.exception.InvalidApprovalGroupException;
 import com.quakearts.approvalengine.exception.InvalidApprovalRulesException;
 import com.quakearts.approvalengine.exception.InvalidCountException;
@@ -109,7 +108,7 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 		@Override
 		public ApprovalRulesBuilder addRule(int level, int approvalCount)
 				throws DuplicateLevelException, InvalidCountException {
-			if(approvalCount < 0)
+			if(approvalCount <= 0)
 				throw new InvalidCountException();
 			
 			if(getApprovalRulesSet().containsKey(level))
@@ -125,21 +124,21 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 		}
 
 		@Override
-		public ApprovalRules thenBuild() throws IncompleteApprovalRulesException {
+		public ApprovalRules thenBuild() {
 			if(getApprovalRules().getPriority() == 0)
 				getApprovalRules().setPriority(1);
 			
-			if(getApprovalRulesSet().isEmpty())
-				throw new IncompleteApprovalRulesException("At least one approval rule is required");
-									
-			Collection<ApprovalRule> approvalRuleCollection 
-				= getApprovalRulesSet().values();
 			dataStore.save(getApprovalRules());
 			dataStore.flushBuffers();
-			approvalRuleCollection.forEach(dataStore::save);
-			dataStore.flushBuffers();
 
-			getApprovalRules().getRuleElements().addAll(approvalRuleCollection);
+			if(!getApprovalRulesSet().isEmpty()){					
+				Collection<ApprovalRule> approvalRuleCollection 
+					= getApprovalRulesSet().values();
+				approvalRuleCollection.forEach(dataStore::save);
+				dataStore.flushBuffers();
+				getApprovalRules().getRuleElements().addAll(approvalRuleCollection);
+			}
+			
 			return getApprovalRules();
 		}
 
@@ -156,6 +155,34 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 			
 			return approvalRulesSet;
 		}
+	}
+	
+	@Override
+	public ApprovalRule createApprovalRule(int level, int approvalCount, String rulesName, String groupName) 
+			throws InvalidCountException, NotFoundException, InvalidApprovalGroupException, InvalidApprovalRulesException, DuplicateLevelException {
+		checkNullStrings(groupName, rulesName, GROUP_NAME_PARAMETER, RULES_NAME);
+		if(approvalCount <= 0)
+			throw new InvalidCountException();
+
+		DataStore dataStore = factory.getDataStore();
+		
+		ApprovalRules approvalRules = findApprovalRules(rulesName, groupName, dataStore);
+		if(!approvalRules.isActive())
+			throw new InvalidApprovalRulesException("The ApprovalRules set named {0} belonging to ApprovalGroup named {1} is not valid",
+					rulesName, groupName);
+		
+		if(approvalRules.getRuleElements().stream().anyMatch(ruleElement->ruleElement.getLevel()==level))
+			throw new DuplicateLevelException();
+		
+		ApprovalRule approvalRule = new ApprovalRule();
+		approvalRule.setActive(true);
+		approvalRule.setLevel(level);
+		approvalRule.setCount(approvalCount);
+		approvalRule.setRules(approvalRules);
+		
+		dataStore.save(approvalRule);
+		
+		return approvalRule;
 	}
 	
 	@Override
@@ -183,6 +210,22 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 		
 		dataStore.save(approver);
 		return approver;
+	}
+
+	private ApprovalGroup findGroupByName(String groupName, DataStore dataStore) throws NotFoundException, InvalidApprovalGroupException {
+		Optional<ApprovalGroup> optionalApprovalGroup = 
+				dataStore.find(ApprovalGroup.class)
+				.filterBy(NAME).withAValueEqualTo(groupName)
+				.thenGetFirst();
+		
+		if(!optionalApprovalGroup.isPresent())
+			throw new NotFoundException("The ApprovalGroup with groupName {0} cannot be found",
+					groupName);
+
+		if(!optionalApprovalGroup.get().isValid())
+			throw new InvalidApprovalGroupException();
+		
+		return optionalApprovalGroup.get();
 	}
 
 	@Override
@@ -230,6 +273,15 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 	}
 	
 	@Override
+	public List<ApprovalRule> findRulesByRuleName(String rulesName, String groupName) {
+		checkNullStrings(groupName, rulesName, GROUP_NAME_PARAMETER, RULES_NAME);
+		return factory.getDataStore().find(ApprovalRule.class)
+				.filterBy("rules.group.name").withAValueEqualTo(groupName)
+				.filterBy("rules.name").withAValueEqualTo(rulesName)
+				.thenList();
+	}
+	
+	@Override
 	public Optional<Approver> findApproverByIdentity(String groupName, String externalId) {
 		checkNullStrings(externalId, groupName, EXTERNAL_ID, GROUP_NAME_PARAMETER);
 		return factory.getDataStore()
@@ -249,22 +301,14 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 				.thenList();
 	}
 
-	private ApprovalGroup findGroupByName(String groupName, DataStore dataStore) throws NotFoundException, InvalidApprovalGroupException {
-		Optional<ApprovalGroup> optionalApprovalGroup = 
-				dataStore.find(ApprovalGroup.class)
-				.filterBy(NAME).withAValueEqualTo(groupName)
-				.thenGetFirst();
-		
-		if(!optionalApprovalGroup.isPresent())
-			throw new NotFoundException("The ApprovalGroup with groupName {0} cannot be found",
-					groupName);
-
-		if(!optionalApprovalGroup.get().isValid())
-			throw new InvalidApprovalGroupException();
-		
-		return optionalApprovalGroup.get();
+	@Override
+	public List<Approver> findApproversByExternalId(String externalId) {
+		checkSingleString(externalId, EXTERNAL_ID);
+		return factory.getDataStore().find(Approver.class)
+				.filterBy(EXTERNAL_ID).withAValueEqualTo(externalId)
+				.thenList();
 	}
-
+	
 	@Override
 	public void activateApprovalRules(String rulesName, String groupName) 
 			throws NotFoundException, InvalidApprovalGroupException {
@@ -311,6 +355,12 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 			throws NotFoundException, InvalidApprovalRulesException, InvalidApprovalGroupException {
 		updateApprovalRuleValidity(level, rulesName, groupName, true);
 	}
+	
+	@Override
+	public void deactivateApprovalRule(int level, String rulesName, String groupName) 
+			throws NotFoundException, InvalidApprovalRulesException, InvalidApprovalGroupException {
+		updateApprovalRuleValidity(level, rulesName, groupName, false);
+	}
 
 	private void updateApprovalRuleValidity(int level, String rulesName, String groupName, boolean activated)
 			throws NotFoundException, InvalidApprovalRulesException, InvalidApprovalGroupException {
@@ -343,12 +393,6 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 			throw new InvalidApprovalGroupException();
 
 		return approvalRule;
-	}
-
-	@Override
-	public void deactivateApprovalRule(int level, String rulesName, String groupName) 
-			throws NotFoundException, InvalidApprovalRulesException, InvalidApprovalGroupException {
-		updateApprovalRuleValidity(level, rulesName, groupName, false);
 	}
 	
 	private void checkNullStrings(String string1, String string2, String string1Name, 

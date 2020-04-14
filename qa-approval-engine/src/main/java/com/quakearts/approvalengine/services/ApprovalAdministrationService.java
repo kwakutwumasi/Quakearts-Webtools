@@ -7,12 +7,13 @@ import com.quakearts.approvalengine.exception.ApprovalProcessingException;
 import com.quakearts.approvalengine.exception.MissingFieldException;
 import com.quakearts.approvalengine.model.ApprovalGroup;
 import com.quakearts.approvalengine.model.ApprovalProcess;
+import com.quakearts.approvalengine.model.ApprovalRule;
 import com.quakearts.approvalengine.model.ApprovalRules;
 import com.quakearts.approvalengine.model.Approver;
 
 /**Central administrative service for the Approval Engine.
  * Use it to create or find {@linkplain ApprovalGroup}, {@linkplain ApprovalRules},
- * {@link com.quakearts.approvalengine.model.ApprovalRule ApprovalRule} and {@linkplain Approver},
+ * {@linkplain ApprovalRule} and {@linkplain Approver},
  * and to find {@linkplain ApprovalProcess} instances.
  * 
  * @author kwaku
@@ -38,7 +39,7 @@ public interface ApprovalAdministrationService {
 		 * @return this instance for method chaining
 		 */
 		ApprovalRulesBuilder setPriorityAs(int priority);
-		/**Add an {@link com.quakearts.approvalengine.model.ApprovalRule ApprovalRule} to the {@linkplain ApprovalRules} instance
+		/**Add an {@linkplain ApprovalRule} to the {@linkplain ApprovalRules} instance
 		 * @param level the {@linkplain Approver} level this rule applies to. Level is determined by {@linkplain Approver#getLevel()}
 		 * @param approvalCount the number of approvals required to pass this rule
 		 * @return this instance for method chaining
@@ -51,6 +52,25 @@ public interface ApprovalAdministrationService {
 		 */
 		ApprovalRules thenBuild() throws ApprovalProcessingException;
 	}
+	
+	/**Add an {@linkplain ApprovalRule} to the {@linkplain ApprovalRules} instance
+	 * with the stated rulesName belonging to the {@linkplain ApprovalGroup} identified by groupName
+	 * @param level the {@linkplain Approver} level this rule applies to. Level is determined by {@linkplain Approver#getLevel()}
+	 * @param approvalCount the number of approvals required to pass this rule
+	 * @param rulesName the name of the ApprovalRules instance
+	 * @param groupName the name of the ApprovalGroup the ApprovalRules instance belongs to
+	 * @return the created ApprovalRule element instance
+	 */
+	ApprovalRule createApprovalRule(int level, int approvalCount, String rulesName, String groupName) throws ApprovalProcessingException;
+	
+	/**Create an {@linkplain Approver}
+	 * @param externalId the external ID used to pick this approver profile. Usually the system username or identity
+	 * @param level the approver level of the Approver
+	 * @param groupName the name of the {@linkplain ApprovalGroup} the Approver belongs to
+	 * @return the created Approver instance
+	 * @throws ApprovalProcessingException id the externalId, level or groupName is invalid
+	 */
+	Approver createApprover(String externalId, int level, String groupName) throws ApprovalProcessingException;
 	/**Activate an {@linkplain ApprovalRules} instance
 	 * @param rulesName the name of the approval rules instance
 	 * @param groupName the group name of the approval rules instance
@@ -63,28 +83,20 @@ public interface ApprovalAdministrationService {
 	 * @throws ApprovalProcessingException if the rulesName or groupName is invalid, or the rule was not found
 	 */
 	void deactivateApprovalRules(String rulesName, String groupName) throws ApprovalProcessingException;
-	/**Activate an {@link com.quakearts.approvalengine.model.ApprovalRule ApprovalRule}
+	/**Activate an {@linkplain ApprovalRule}
 	 * @param level the {@link Approver} level the rule applies to
 	 * @param rulesName the name of the approval rules instance
 	 * @param groupName the group name of the approval rules instance
 	 * @throws ApprovalProcessingException if the rulesName or groupName is invalid, or the rule was not found
 	 */
 	void activateApprovalRule(int level, String rulesName, String groupName) throws ApprovalProcessingException;
-	/**Deactivate an {@link com.quakearts.approvalengine.model.ApprovalRule ApprovalRule}
+	/**Deactivate an {@linkplain ApprovalRule}
 	 * @param level the {@link Approver} level the rule applies to
 	 * @param rulesName the name of the approval rules instance
 	 * @param groupName the group name of the approval rules instance
 	 * @throws ApprovalProcessingException if the rulesName or groupName is invalid, or the rule was not found
 	 */
 	void deactivateApprovalRule(int level, String rulesName, String groupName) throws ApprovalProcessingException;
-	/**Create an {@linkplain Approver}
-	 * @param externalId the external ID used to pick this approver profile. Usually the system username or identity
-	 * @param level the approver level of the Approver
-	 * @param groupName the name of the {@linkplain ApprovalGroup} the Approver belongs to
-	 * @return the created Approver instance
-	 * @throws ApprovalProcessingException id the externalId, level or groupName is invalid
-	 */
-	Approver createApprover(String externalId, int level, String groupName) throws ApprovalProcessingException;
 	/**Retrieve the {@linkplain ApprovalProcess} identified by the ID
 	 * @param id the ID of the approval process 
 	 * @param groupName the name of the {@linkplain ApprovalGroup} the ApprovalProcess belongs to
@@ -126,4 +138,23 @@ public interface ApprovalAdministrationService {
 	 * @throws MissingFieldException if groupName or rulesName is invalid
 	 */
 	List<Approver> findApproversByLevel(String groupName, int level);
+
+	/**Retrieve all {@linkplain Approver} instances by externalId.
+	 * Approver instances may share externalId's to allow one entity identified by the 
+	 * externalId participate in multiple {@linkplain ApprovalProcess}es belonging to different
+	 * {@linkplain ApprovalGroup}
+	 * @param externalId the externalId to search for
+	 * @return a {@linkplain List} instance that may or may not contain the Approvers
+	 * @throws MissingFieldException if externalId is invalid
+	 */
+	List<Approver> findApproversByExternalId(String externalId);
+
+	/**Retrieve all {@linkplain ApprovalRule} elements registered under the {@linkplain ApprovalRules} instance
+	 * identified by rulesName belonging to the {@linkplain ApprovalGroup} identified by groupName
+	 * @param rulesName the name of the ApprovalRules instance
+	 * @param groupName the name of the ApprovalGroup the ApprovalRules instance belongs to
+	 * @return a {@linkplain List} instance that may or may not contain ApprovalRule elements
+	 * @throws MissingFieldException if groupName or rulesName is invalid
+	 */
+	List<ApprovalRule> findRulesByRuleName(String rulesName, String groupName);
 }

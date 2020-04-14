@@ -54,6 +54,7 @@ public class DataCreator {
 	private ApprovalRules approvalRules1;
 	private ApprovalRules approvalRules7;
 	private ApprovalRules approvalRules11;
+	private ApprovalRules approvalRules16;
 	private ApprovalRule approvalRule3;
 	private ApprovalRule approvalRule4;
 	private ApprovalProcessRules approvalProcessRules13;
@@ -62,6 +63,7 @@ public class DataCreator {
 	private ApprovalProcessRules approvalProcessRules16;
 	private ApprovalProcessRules approvalProcessRules17;
 	private ApprovalProcessRules approvalProcessRules18;
+
 
 	@Transactional(TransactionType.SINGLETON)
 	public void createTestData() {
@@ -155,11 +157,25 @@ public class DataCreator {
 					dataStore.save(approver10);
 					
 					Approver approver11 = new Approver();
-					approver11.setGroup(approvalGroup3);
+					approver11.setGroup(approvalGroup1);
 					approver11.setExternalId("testApprover11");
-					approver11.setLevel(2);
+					approver11.setLevel(1);
 					approver11.setValid(true);
 					dataStore.save(approver11);
+
+					Approver approver12 = new Approver();
+					approver12.setGroup(approvalGroup2);
+					approver12.setExternalId("testApprover11");
+					approver12.setLevel(2);
+					approver12.setValid(true);
+					dataStore.save(approver12);
+
+					Approver approver13 = new Approver();
+					approver13.setGroup(approvalGroup3);
+					approver13.setExternalId("testApprover11");
+					approver13.setLevel(3);
+					approver13.setValid(true);
+					dataStore.save(approver13);
 
 					approvalRules1 = new ApprovalRules();
 					approvalRules1.setGroup(approvalGroup1);
@@ -464,6 +480,13 @@ public class DataCreator {
 				
 					dataStore.save(approvalProcessRules1);
 				
+					approvalRules16 = new ApprovalRules();
+					approvalRules16.setGroup(approvalGroup2);
+					approvalRules16.setName("testApprovalRules16");
+					approvalRules16.setPriority(1);
+					approvalRules16.setActive(true);
+					dataStore.save(approvalRules16);
+					
 					approvalProcess2 = new ApprovalProcess();
 					approvalProcess2.setStartDate(Timestamp.from(Instant.now()));
 					approvalProcess2.setGroup(approvalGroup1);
@@ -925,6 +948,10 @@ public class DataCreator {
 	
 	public ApprovalRules getApprovalRules11() {
 		return approvalRules11;
+	}
+	
+	public ApprovalRules getApprovalRules16() {
+		return approvalRules16;
 	}
 	
 	public ApprovalProcessRules getApprovalProcessRules13() {

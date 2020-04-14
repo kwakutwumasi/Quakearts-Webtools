@@ -24,7 +24,6 @@ import com.quakearts.approvalengine.exception.DuplicateApproverIdentityException
 import com.quakearts.approvalengine.exception.DuplicateGroupNameException;
 import com.quakearts.approvalengine.exception.DuplicateLevelException;
 import com.quakearts.approvalengine.exception.DuplicateRuleException;
-import com.quakearts.approvalengine.exception.IncompleteApprovalRulesException;
 import com.quakearts.approvalengine.exception.InvalidApprovalGroupException;
 import com.quakearts.approvalengine.exception.InvalidApprovalRulesException;
 import com.quakearts.approvalengine.exception.InvalidCountException;
@@ -161,6 +160,24 @@ public class ApprovalAdministrationServiceTest {
 	
 	@Test
 	@Transactional(TransactionType.SINGLETON)
+	public void testCreateApprovalRulesWithNoRules() throws Exception {
+		ApprovalRules approvalRules = approvalAdministrationService
+			.createApprovalRules("testCreateApprovalRuleNoRuleElements", "testGroup1")
+			.setPriorityAs(5).thenBuild();
+		
+		dataStore.flushBuffers();
+
+		assertTrue(approvalRules.getId() > 0);
+		assertThat(approvalRules.getName(), is("testCreateApprovalRuleNoRuleElements"));
+		assertThat(approvalRules.getGroup(), is(notNullValue()));
+		assertThat(approvalRules.getGroup().getId(), is(dataCreator.getApprovalGroup1().getId()));
+		assertThat(approvalRules.getPriority(), is(5));
+		assertThat(approvalRules.getRuleElements(), is(notNullValue()));
+		assertThat(approvalRules.getRuleElements().isEmpty(), is(true));
+	}
+
+	@Test
+	@Transactional(TransactionType.SINGLETON)
 	public void testCreateApprovalRulesWithDuplicateRule() throws Exception {
 		expectedException.expect(DuplicateLevelException.class);
 		approvalAdministrationService
@@ -279,14 +296,73 @@ public class ApprovalAdministrationServiceTest {
 	
 	@Test
 	@Transactional(TransactionType.SINGLETON)
-	public void testCreateApproverWithNoRules() throws Exception {
-		expectedException.expect(IncompleteApprovalRulesException.class);
-		approvalAdministrationService
-			.createApprovalRules("testCreateApprovalRuleNoRuleElements", "testGroup1")
-			.setPriorityAs(1).thenBuild();
-		dataStore.flushBuffers();
+	public void testCreateApprovalRule() throws Exception {
+		ApprovalRule approvalRule = approvalAdministrationService
+				.createApprovalRule(1, 2, "testApprovalRules16", "testGroup2");
+		assertTrue(approvalRule.getId() > 0); 
+		assertTrue(approvalRule.getRules() != null);
+		assertThat(approvalRule.getRules().getId(), is(dataCreator.getApprovalRules16().getId()));
+		assertTrue(approvalRule.isActive());
+		assertThat(approvalRule.getCount(), is(2));
+		assertThat(approvalRule.getLevel(), is(1));
 	}
-
+	
+	@Test
+	@Transactional(TransactionType.SINGLETON)
+	public void testCreateApprovalRuleWithInvalidApprovalCount() throws Exception {
+		expectedException.expect(InvalidCountException.class);
+		approvalAdministrationService.createApprovalRule(3, -3, "testApprovalRules16", "testGroup2");
+	}
+	
+	@Test
+	@Transactional(TransactionType.SINGLETON)
+	public void testCreateApprovalRuleWithDuplicateApprovalRule() throws Exception {
+		expectedException.expect(DuplicateLevelException.class);
+		approvalAdministrationService.createApprovalRule(2, 1, "testApprovalRules6", "testGroup2");
+	}
+	
+	@Test
+	@Transactional(TransactionType.SINGLETON)
+	public void testCreateApprovalRuleWithMissingApprovalRulesName() throws Exception {
+		expectedException.expect(MissingFieldException.class);
+		approvalAdministrationService.createApprovalRule(3, 2, null, "testGroup2");
+	}
+	
+	@Test
+	@Transactional(TransactionType.SINGLETON)
+	public void testCreateApprovalRuleWithNonExistentApprovalRulesName() throws Exception {
+		expectedException.expect(NotFoundException.class);
+		approvalAdministrationService.createApprovalRule(3, 2, "testInvalidApprovalRules", "testGroup2");
+	}
+	
+	@Test
+	@Transactional(TransactionType.SINGLETON)
+	public void testCreateApprovalRuleWithMissingApprovalGroupName() throws Exception {
+		expectedException.expect(MissingFieldException.class);
+		approvalAdministrationService.createApprovalRule(3, 2, "testApprovalRules16", null);
+	}
+	
+	@Test
+	@Transactional(TransactionType.SINGLETON)
+	public void testCreateApprovalRuleWithNonExistentApprovalGroupName() throws Exception {
+		expectedException.expect(NotFoundException.class);
+		approvalAdministrationService.createApprovalRule(3, 2, "testApprovalRules16", "testInvalidGroup");
+	}
+	
+	@Test
+	@Transactional(TransactionType.SINGLETON)
+	public void testCreateApprovalRuleWithInvalidApprovalGroupName() throws Exception {
+		expectedException.expect(InvalidApprovalGroupException.class);
+		approvalAdministrationService.createApprovalRule(3, 2, "testApprovalRules15", "testGroup3");
+	}
+	
+	@Test
+	@Transactional(TransactionType.SINGLETON)
+	public void testCreateApprovalRuleWithInvalidApprovalRulesName() throws Exception {
+		expectedException.expect(InvalidApprovalRulesException.class);
+		approvalAdministrationService.createApprovalRule(3, 2, "testApprovalRules13", "testGroup2");
+	}
+	
 	@Test
 	@Transactional(TransactionType.SINGLETON)
 	public void testFindApprovalProcess() throws Exception {
@@ -480,6 +556,64 @@ public class ApprovalAdministrationServiceTest {
 	public void testFindApproverRulesByPriorityWithMissingGroupName() throws Exception {
 		expectedException.expect(MissingFieldException.class);
 		approvalAdministrationService.findApprovalRulesByPriority(null, 1);
+	}
+	
+	@Test
+	@Transactional(TransactionType.SINGLETON)
+	public void findApproversByExternalId() throws Exception {
+		List<Approver> approvers = approvalAdministrationService
+				.findApproversByExternalId("testApprover11");
+		
+		assertThat(approvers, is(notNullValue()));
+		assertThat(approvers.size(), is(3));
+		assertThat(approvers.get(0).getExternalId(), is("testApprover11"));
+		assertThat(approvers.get(0).getGroup().getId() != approvers.get(1).getGroup().getId(),is(true));
+		
+		assertThat(approvers.get(1).getExternalId(), is("testApprover11"));
+		assertThat(approvers.get(1).getGroup().getId() != approvers.get(2).getGroup().getId(),is(true));
+		assertThat(approvers.get(2).getExternalId(), is("testApprover11"));
+		assertThat(approvers.get(2).getGroup().getId() != approvers.get(0).getGroup().getId(),is(true));
+	}
+	
+	@Test
+	@Transactional(TransactionType.SINGLETON)
+	public void findApproversByExternalIdWithMissingExternalId() throws Exception {
+		expectedException.expect(MissingFieldException.class);
+		approvalAdministrationService.findApproversByExternalId(null);
+	}
+	
+	@Test
+	@Transactional(TransactionType.SINGLETON)
+	public void findRulesByRuleName() throws Exception {
+		List<ApprovalRule> approvalRuleElements = approvalAdministrationService
+				.findRulesByRuleName("testApprovalRules1", "testGroup1");
+		
+		assertThat(approvalRuleElements, is(notNullValue()));
+		assertThat(approvalRuleElements.size(), is(2));
+		
+		Iterator<ApprovalRule> rulesIterator = approvalRuleElements.iterator();
+
+		while (rulesIterator.hasNext()) {
+			ApprovalRule approvalRule = rulesIterator.next();
+			assertTrue(approvalRule.getId() > 0 && approvalRule.getRules() != null
+					&& approvalRule.getRules().getId() == dataCreator.getApprovalRules1().getId()
+					&& approvalRule.isActive() && ((approvalRule.getCount() == 2 && approvalRule.getLevel() == 2)
+							|| (approvalRule.getCount() == 1 && approvalRule.getLevel() == 1)));
+		}
+	}
+	
+	@Test
+	@Transactional(TransactionType.SINGLETON)
+	public void findRulesByRuleNameWithMissingApprovalRulesName() throws Exception {
+		expectedException.expect(MissingFieldException.class);
+		approvalAdministrationService.findRulesByRuleName(null, "testGroup1");
+	}
+	
+	@Test
+	@Transactional(TransactionType.SINGLETON)
+	public void findRulesByRuleNameWithMissingApprovalGroupName() throws Exception {
+		expectedException.expect(MissingFieldException.class);
+		approvalAdministrationService.findRulesByRuleName("testApprovalRules1", null);
 	}
 	
 	@Test
