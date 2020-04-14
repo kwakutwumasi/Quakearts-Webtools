@@ -128,6 +128,8 @@ public class ApprovalAdministrationServiceImpl implements ApprovalAdministration
 			if(getApprovalRules().getPriority() == 0)
 				getApprovalRules().setPriority(1);
 			
+			getApprovalRules().setActive(true);
+			
 			dataStore.save(getApprovalRules());
 			dataStore.flushBuffers();
 
