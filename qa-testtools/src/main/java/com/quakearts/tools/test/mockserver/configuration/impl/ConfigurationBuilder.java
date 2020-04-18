@@ -219,7 +219,7 @@ public class ConfigurationBuilder {
 		if(configuration.mode == null)
 			throw new ConfigurationException("Property mode is required");
 		
-		if(configuration.mode == MockingMode.RECORD 
+		if(configuration.mode != MockingMode.MOCK
 				&& configuration.urlToRecord == null) 
 			throw new ConfigurationException("Property urlToRecord is required when mocking mode is RECORD");
 
