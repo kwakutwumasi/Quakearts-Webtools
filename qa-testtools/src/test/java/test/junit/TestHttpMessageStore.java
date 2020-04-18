@@ -155,6 +155,9 @@ public class TestHttpMessageStore {
 			public byte[] getContentBytes() {
 				return null;
 			}
+			
+			@Override
+			public void setId(String id) {}
 		});
 	}
 	
@@ -173,6 +176,38 @@ public class TestHttpMessageStore {
 		MockServletHttpMessageStore.getInstance().storeRequest(httpRequest1);
 		
 		assertThat(new File("http-messages/testId4.mock").exists(), is(true));
+		
+		httpRequest1 = HttpMessageBuilder.createNewHttpRequest()
+				.setId("testId4")
+				.setMethodAs("OPTIONS")
+				.setResourceAs("/test/resource/2")
+				.setContentBytes("test=test&result=true".getBytes())
+				.addHeaders(new HttpHeaderImpl("Content-Type","application/x-form-urlencoded"),
+						new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"),
+						new HttpHeaderImpl("X-Application-Role", Arrays.asList("Role1", "Role2", "Role3")))
+				.thenBuild();
+		
+		MockServletHttpMessageStore.getInstance().storeRequest(httpRequest1);
+		
+		assertThat(new File("http-messages/testId4-1.mock").exists(), is(true));
+		httpRequest1 = MockServletHttpMessageStore.getInstance().findRequestIdentifiedBy("testId4-1");
+		assertThat(httpRequest1.getId(), is("testId4-1"));
+		
+		httpRequest1 = HttpMessageBuilder.createNewHttpRequest()
+				.setId("testId4")
+				.setMethodAs("OPTIONS")
+				.setResourceAs("/test/resource/2")
+				.setContentBytes("test=test&result=true".getBytes())
+				.addHeaders(new HttpHeaderImpl("Content-Type","application/x-form-urlencoded"),
+						new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"),
+						new HttpHeaderImpl("X-Application-Role", Arrays.asList("Role1", "Role2", "Role3")))
+				.thenBuild();
+		
+		MockServletHttpMessageStore.getInstance().storeRequest(httpRequest1);
+		
+		assertThat(new File("http-messages/testId4-2.mock").exists(), is(true));
+		httpRequest1 = MockServletHttpMessageStore.getInstance().findRequestIdentifiedBy("testId4-2");
+		assertThat(httpRequest1.getId(), is("testId4-2"));
 	}
 	
 	@Test

@@ -43,4 +43,8 @@ public interface HttpRequest extends HttpMessage {
 	 * @return the ID
 	 */
 	String getId();
+	/**Set ID used to store this HTTP message
+	 * @param id the ID
+	 */
+	void setId(String id);
 }

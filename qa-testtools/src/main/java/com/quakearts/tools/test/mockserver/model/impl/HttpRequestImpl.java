@@ -45,8 +45,7 @@ class HttpRequestImpl extends HttpMessageImpl implements HttpRequest {
 		response = request.getResponse();
 	}
 
-	HttpRequestImpl() {
-	}
+	HttpRequestImpl() {}
 	
 	/* (non-Javadoc)
 	 * @see com.quakearts.tools.test.mockserver.model.impl.HttpRequest#getMethod()
@@ -78,6 +77,14 @@ class HttpRequestImpl extends HttpMessageImpl implements HttpRequest {
 	@Override
 	public String getId() {
 		return id;
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.quakearts.tools.test.mockserver.model.HttpRequest#getId()
+	 */
+	@Override
+	public void setId(String id) {
+		this.id = id;
 	}
 	
 	/* (non-Javadoc)

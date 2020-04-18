@@ -418,6 +418,9 @@ public class TestHttpMessageBuilder {
 			public String getId() {
 				return "ID";
 			}
+			
+			@Override
+			public void setId(String id) {}
 		}).thenBuild();
 		
 		assertThat(httpRequest2.getContent(), is("Hello"));

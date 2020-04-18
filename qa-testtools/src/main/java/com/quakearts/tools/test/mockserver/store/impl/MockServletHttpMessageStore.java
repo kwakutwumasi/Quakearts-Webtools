@@ -17,19 +17,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.quakearts.tools.test.mocking.proxy.MockingProxyBuilder;
 import com.quakearts.tools.test.mockserver.exception.MockServerRuntimeException;
-import com.quakearts.tools.test.mockserver.model.HttpHeader;
 import com.quakearts.tools.test.mockserver.model.HttpRequest;
-import com.quakearts.tools.test.mockserver.model.HttpResponse;
 import com.quakearts.tools.test.mockserver.store.HttpMessageStore;
 import com.quakearts.tools.test.mockserver.store.exception.HttpMessageStoreException;
 import com.quakearts.tools.test.mockserver.store.fi.HttpMessageStoreQuery;
@@ -76,15 +72,23 @@ public class MockServletHttpMessageStore implements HttpMessageStore {
 	@Override
 	public void storeRequest(HttpRequest httpRequest) throws HttpMessageStoreException {
 		if(httpRequest instanceof Serializable) {
-			String id = sanitizeFileName(httpRequest.getId())+EXT;
-			File storageName = new File(saveLocation, id);
-			try(FileOutputStream fos = new FileOutputStream(storageName);){
+			String id = sanitizeFileName(httpRequest.getId());
+			String fileName = id + EXT;
+			File storageFile = new File(saveLocation, fileName);
+			int count = 1;
+			while (storageFile.exists()) {
+				String newId = (id+"-"+count++);
+				fileName = newId + EXT;
+				storageFile = new File(saveLocation, fileName);
+				httpRequest.setId(newId);
+			}
+			try(FileOutputStream fos = new FileOutputStream(storageFile);){
 				ObjectOutputStream oos = new ObjectOutputStream(fos);
 				oos.writeObject(httpRequest);
 			} catch (IOException e) {
 				throw new HttpMessageStoreException("Cannot save httpRequest", e);
 			}
-			getSavedRequests().put(id, httpRequest);
+			getSavedRequests().put(fileName, httpRequest);
 		} else {
 			throw new HttpMessageStoreException("Cannot save httpRequest. HttpRequest implementation must be serializable");
 		}
@@ -167,69 +171,7 @@ public class MockServletHttpMessageStore implements HttpMessageStore {
 		return savedRequests;
 	}
 	
-	private static final NullHttpRequest NULL = new NullHttpRequest();
-	
-	private static class NullHttpRequest implements HttpRequest {
-
-		@Override
-		public Collection<HttpHeader> getHeaders() {
-			return null;
-		}
-
-		@Override
-		public String getHeaderValue(String name) {
-			return null;
-		}
-
-		@Override
-		public List<String> getHeaderValues(String name) {
-			return null;
-		}
-		
-		@Override
-		public String getContentEncoding() {
-			return null;
-		}
-
-		@Override
-		public String getContent() throws UnsupportedEncodingException {
-			return null;
-		}
-
-		@Override
-		public String getMethod() {
-			return null;
-		}
-
-		@Override
-		public String getResource() {
-			return null;
-		}
-
-		@Override
-		public HttpResponse getResponse() {
-			return null;
-		}
-
-		@Override
-		public List<String> getURIParameterValue(String name) {
-			return null;
-		}
-
-		@Override
-		public boolean hasParameter(String name) {
-			return false;
-		}
-
-		@Override
-		public byte[] getContentBytes() {
-			return null;
-		}
-
-		@Override
-		public String getId() {
-			return null;
-		}
-		
-	}
+	private static final HttpRequest NULL =  MockingProxyBuilder
+			.createMockingInvocationHandlerFor(HttpRequest.class)
+			.thenBuild();
 }
