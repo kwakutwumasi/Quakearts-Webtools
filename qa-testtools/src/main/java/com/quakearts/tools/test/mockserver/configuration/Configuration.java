@@ -21,15 +21,18 @@ public interface Configuration {
 	 * @author kwakutwumasi-afriyie
 	 *
 	 */
-	static enum MockingMode {
+	enum MockingMode {
 		/**Record mode: record and save HTTP request and response cycles
 		 * The server acts like a proxy, forwarding calls to the live server
 		 */
 		RECORD,
 		/**Mocking mode: replay recorded request and response cycles
-		 * 
 		 */
-		MOCK
+		MOCK,
+		/**Mixed mode: replay recorded request, try to record requests
+		 * that have not been handled
+		 */
+		MIXED
 	}
 	
 	/**Get the URL to record

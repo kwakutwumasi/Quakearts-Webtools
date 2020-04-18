@@ -35,38 +35,38 @@ public interface MockServer {
 	/**Initialize the mock server
 	 * @throws MockServerRuntimeException
 	 */
-	void start() throws MockServerRuntimeException;
+	void start();
 	/**Stop a running mock server
 	 * @throws MockServerRuntimeException
 	 */
-	void stop() throws MockServerRuntimeException;
+	void stop();
 	/**Configure the mock server using the passed in configuration object
 	 * @param configuration {@linkplain Configuration} to use
 	 * @return this object for method chaining
 	 * @throws ConfigurationException if there is an error configuring the server
 	 */
-	MockServer configure(Configuration configuration) throws ConfigurationException;
+	MockServer configure(Configuration configuration);
 	/**Configure the mock server using the configuration loaded from the named file
 	 * @param fileName the name of the file containing the configuration
 	 * @return this object for method chaining
 	 * @throws ConfigurationException if there is an error configuring the server
 	 * @throws IOException if there is an error reading the file
 	 */
-	MockServer configureFromFile(String fileName) throws IOException, ConfigurationException;
+	MockServer configureFromFile(String fileName) throws IOException;
 	/**Configure the mock server using the configuration loaded from the file
 	 * @param file the {@linkplain File} containing the configuration
 	 * @return this object for method chaining
 	 * @throws ConfigurationException if there is an error configuring the server
 	 * @throws IOException if there is an error reading the file
 	 */
-	MockServer configureFromFile(File file) throws IOException, ConfigurationException;
+	MockServer configureFromFile(File file) throws IOException;
 	/**Configure the mock server using the configuration loaded from the input source
 	 * @param inputStream the {@linkplain InputStream} the configuration source
 	 * @return this object for method chaining
 	 * @throws ConfigurationException if there is an error configuring the server
 	 * @throws IOException if there is an error reading the file
 	 */
-	MockServer configureFromStream(InputStream inputStream) throws IOException, ConfigurationException;
+	MockServer configureFromStream(InputStream inputStream) throws IOException;
 	/**Add an action to be executed every time the mock server processes a request
 	 * @param actions
 	 * @return this object for method chaining

@@ -47,9 +47,9 @@ public class MockServerServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 4680208631254192578L;
-	private Set<MockAction> mockActions;
-	private Set<DefaultAction> defaultActions;
-	private Configuration configuration;
+	private final Set<MockAction> mockActions;
+	private final Set<DefaultAction> defaultActions;
+	private final Configuration configuration;
 	
 	MockServerServlet(Set<MockAction> mockActions, Set<DefaultAction> defaultActions,
 			Configuration configuration) {
@@ -74,11 +74,15 @@ public class MockServerServlet extends HttpServlet {
 		try {
 			switch (configuration.getMockingMode()) {
 			case MOCK:
-				mock(context);
+				mock(context, false);
 				return;
 			case RECORD:
 				record(context);
 				return;
+			case MIXED:
+				mock(context, true);
+				if(!context.responseSent())
+					record(context);
 			}
 		} catch (MockServerProcessingException | HttpMessageStoreException e) {
 			resp.sendError(500, e.getMessage()+(e.getCause()!=null?"; Caused by "+e.getCause().getMessage():""));
@@ -98,7 +102,7 @@ public class MockServerServlet extends HttpServlet {
 		return MockServletProcessingContextBuilder.createProcessingContext(req, resp, configuration.getURLToRecord());
 	}
 
-	private void mock(ProcessingContext context) throws MockServerProcessingException {
+	private void mock(ProcessingContext context, boolean mixed) throws MockServerProcessingException {
 		for(MockAction action:mockActions) {
 			if(action.requestMatches(context.getHttpRequest())) {
 				HttpResponse httpResponse = action.executeAction(context.getHttpRequest());
@@ -107,11 +111,12 @@ public class MockServerServlet extends HttpServlet {
 				return;
 			}
 		}
-		context.sendHttpError(500, "No matching httpRequest found");
+		if(!mixed)
+			context.sendHttpError(500, "No matching httpRequest found");
 	}
 
 	private void record(ProcessingContext context) throws 
-			MockServerProcessingException, HttpMessageStoreException, ServletException {
+			MockServerProcessingException, HttpMessageStoreException {
 		HttpRequest request = context.getHttpRequest();
 		try {
 			HttpURLConnection con = prepareConnection(request);
@@ -136,9 +141,8 @@ public class MockServerServlet extends HttpServlet {
 		if(con instanceof HttpsURLConnection 
 				&& (configuration.getURLToRecord().startsWith("https://localhost")
 						||configuration.getURLToRecord().startsWith("https://127.0.0.1"))) {
-			((HttpsURLConnection)con).setHostnameVerifier((hostname,session) -> {
-				return true;
-			});
+			((HttpsURLConnection)con).setHostnameVerifier((hostname,session) -> (hostname.equals("localhost")
+					|| hostname.equals("127.0.0.1")));
 		}
 		
 		con.setRequestMethod(request.getMethod());
@@ -164,6 +168,12 @@ public class MockServerServlet extends HttpServlet {
 				&& request.getContentBytes() == null)
 			throw new MockServerProcessingException("Invalid http input");
 				
+		writeRequestToOutputStream(request, con);
+		return con;
+	}
+
+	private void writeRequestToOutputStream(HttpRequest request, HttpURLConnection con)
+			throws MockServerProcessingException, IOException {
 		if(request.getContentBytes()!=null) {
 			if(!configuration.dishonorRESTContract()
 					&& !requiringOutputMethodsInclude(request.getMethod())
@@ -173,7 +183,6 @@ public class MockServerServlet extends HttpServlet {
 			con.setDoOutput(true);
 			con.getOutputStream().write(request.getContentBytes());
 		}
-		return con;
 	}
 
 	private byte[] getResponseContent(HttpURLConnection con) throws IOException {
@@ -202,9 +211,8 @@ public class MockServerServlet extends HttpServlet {
 				.setContentBytes(responseContent);
 		
 		Map<String, List<String>> headerMap = con.getHeaderFields();
-		List<HttpHeader> headers = headerMap.entrySet().stream().map((entry)->{
-			return new HttpHeaderImpl(entry.getKey(), entry.getValue());
-		}).collect(Collectors.toList());
+		List<HttpHeader> headers = headerMap.entrySet().stream().map(entry->new HttpHeaderImpl(entry.getKey(), entry.getValue()))
+				.collect(Collectors.toList());
 
 		builder.addHeaders(headers.toArray(new HttpHeader[headers.size()]));
 

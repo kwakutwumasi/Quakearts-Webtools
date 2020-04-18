@@ -275,8 +275,8 @@ public class TestMockServer {
 	@Test
 	public void testRecordMode() throws Exception {
 		MockServer recordingServer = buildAndStartRecordModeServer();
-		MockServer recordingServerWithWontractsDishonored = buildAndStartRecordModeServerWithContractsDishonored();
-		Tomcat mockingServer = buildAndStartMockingModeServer();
+		MockServer recordingServerWithContractsDishonored = buildAndStartRecordModeServerWithContractsDishonored();
+		Tomcat mockingServer = buildAndStartMockingModeServer(4443);
 		try {
 			HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:4084/test").openConnection();
 			connection.setRequestMethod("GET");
@@ -399,7 +399,7 @@ public class TestMockServer {
 			connection.disconnect();
 		} finally {
 			recordingServer.stop();
-			recordingServerWithWontractsDishonored.stop();
+			recordingServerWithContractsDishonored.stop();
 			try {
 				mockingServer.stop();
 			} catch (Exception e) {
@@ -407,7 +407,63 @@ public class TestMockServer {
 		}
 	}
 	
-	private Tomcat buildAndStartMockingModeServer() {
+	@Test
+	public void testMixedMode() throws Exception {
+		MockServer recordingServer = buildAndStartMixedModeServer();
+		Tomcat mockingServer = buildAndStartMockingModeServer(4444);
+		try {
+			HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:4086/test").openConnection();
+			connection.setRequestMethod("GET");
+			connection.addRequestProperty("Content-Type", "application/json");
+			connection.setDoInput(true);
+			connection.connect();
+			assertThat(connection.getResponseCode(), is(200));
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			InputStream in = connection.getInputStream();
+			int read;
+			while ((read=in.read())!=-1) {
+				bos.write(read);
+			}
+			assertThat(new String(bos.toByteArray()), is("{\"test\":\"value\"}"));		
+			connection.disconnect();
+			File file = new File("http-messages"+File.separator+"GET-https---localhost-4444-test.mock");
+			assertThat(file.exists(), is(true));
+			HttpRequest httpRequest = MockServletHttpMessageStore.getInstance().findRequestIdentifiedBy("GET-https://localhost:4444/test");
+			assertThat(httpRequest.getMethod(), is("GET"));
+			assertThat(httpRequest.getResource(), is("/test"));
+			assertThat(httpRequest.getHeaders()!=null, is(true));
+			assertThat(httpRequest.getHeaders().isEmpty(), is(false));
+			assertThat(httpRequest.getContentBytes() == null, is(true));
+			assertThat(httpRequest.getResponse()!=null, is(true));
+			assertThat(httpRequest.getResponse().getResponseCode(), is(200));
+			assertThat(httpRequest.getResponse().getHeaders()!=null, is(true));
+			assertThat(httpRequest.getResponse().getHeaders().isEmpty(), is(false));
+			assertThat(httpRequest.getResponse().getContent(), is("{\"test\":\"value\"}"));
+			file.delete();
+			
+			connection = (HttpURLConnection) new URL("http://localhost:4086/test-notrecorded").openConnection();
+			connection.setRequestMethod("GET");
+			connection.addRequestProperty("Content-Type", "application/json");
+			connection.setDoInput(true);
+			connection.connect();
+			assertThat(connection.getResponseCode(), is(200));
+			bos = new ByteArrayOutputStream();
+			in = connection.getInputStream();
+			while ((read=in.read())!=-1) {
+				bos.write(read);
+			}
+			assertThat(new String(bos.toByteArray()), is("{\"test\":\"value\"}"));		
+			connection.disconnect();
+		} finally {
+			recordingServer.stop();
+			try {
+				mockingServer.stop();
+			} catch (Exception e) {
+			}
+		}
+	}
+	
+	private Tomcat buildAndStartMockingModeServer(int port) {
 		TestMockingServlet testMockingServlet = new TestMockingServlet()
 				.addDefaultActions((context)->{
 					context.addHeader("Server", "Mock Server V1.0");
@@ -512,7 +568,7 @@ public class TestMockServer {
 			throw new MockServerRuntimeException("Unable to start embedded server", e);
 		}
 
-		tomcat.setPort(4443);
+		tomcat.setPort(port);
 		
 		SSLHostConfig hostConfig = new SSLHostConfig();
 		hostConfig.setProtocols("TLSv1.2");
@@ -550,6 +606,33 @@ public class TestMockServer {
 						.setURLToRecord("https://localhost:4443")
 						.setPortAs(4084)
 						.thenBuild());
+		
+		mockServer.start();
+		return mockServer;
+	}
+	
+	private MockServer buildAndStartMixedModeServer() {
+		MockServer mockServer = MockServerFactory.getInstance().getMockServer()
+				.configure(ConfigurationBuilder
+						.newConfiguration().setMockingModeAs(MockingMode.MIXED)
+						.setURLToRecord("https://localhost:4444")
+						.setPortAs(4086)
+						.thenBuild())
+				.add(MockActionBuilder.createNewMockAction()
+								.setRequestAs(HttpMessageBuilder
+										.createNewHttpRequest()
+										.setId("testId1")
+										.setMethodAs("GET")
+										.setResourceAs("/test-notrecorded")
+										.addHeaders(new HttpHeaderImpl("Content-Type", "application/json"))
+										.setResponseAs(HttpMessageBuilder
+											.createNewHttpResponse()
+											.setContentBytes("{\"test\":\"value\"}".getBytes())
+											.setResponseCodeAs(200)
+											.addHeaders(new HttpHeaderImpl("Content-Type", "application/json"))
+											.thenBuild())
+										.thenBuild())
+								.thenBuild());
 		
 		mockServer.start();
 		return mockServer;

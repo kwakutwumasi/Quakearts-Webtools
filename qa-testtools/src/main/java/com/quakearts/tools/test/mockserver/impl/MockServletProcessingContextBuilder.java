@@ -29,6 +29,8 @@ import static com.quakearts.tools.test.mockserver.model.impl.HttpMessageBuilder.
 
 class MockServletProcessingContextBuilder {
 		
+	private MockServletProcessingContextBuilder() {}
+	
 	static ProcessingContext createProcessingContext(HttpServletRequest req, HttpServletResponse res, String urlToMock) {
 		MockServletProcessingContext context = new MockServletProcessingContext();
 		context.req = req;
@@ -58,37 +60,43 @@ class MockServletProcessingContextBuilder {
 				
 				requestBuilder.setId(req.getMethod()+"-"+urlToMock+(resource.startsWith("/")?"":"/")+resource);
 				
-				Enumeration<String> names = req.getHeaderNames();
-				if(names != null)
-					while (names.hasMoreElements()) {
-						String headerName = names.nextElement();
-						HttpHeaderImpl header = new HttpHeaderImpl();
-						header.setName(headerName);
-						Enumeration<String> values = req.getHeaders(headerName);
-						while (values.hasMoreElements()) {
-							String value = values.nextElement();
-							header.addValue(value);
-						}
-						requestBuilder.addHeaders(header);
-					}
-				
-				try {
-					InputStream in = req.getInputStream();
-						ByteArrayOutputStream bos = new ByteArrayOutputStream(1024);
-						int read;
-						while ((read=in.read())!=-1) {
-							bos.write(read);
-						}
-					
-					if(bos.size()>0)
-						requestBuilder.setContentBytes(bos.toByteArray());
-				} catch (IOException e) {
-					throw new MockServerProcessingException("Unable to get content", e);
-				}
-				
+				processHeaderNames(requestBuilder);				
+				readResponse(requestBuilder);				
 				httpRequest = requestBuilder.thenBuild();
 			}
 			return httpRequest;
+		}
+
+		private void processHeaderNames(HttpRequestBuilder requestBuilder) {
+			Enumeration<String> names = req.getHeaderNames();
+			if(names != null)
+				while (names.hasMoreElements()) {
+					String headerName = names.nextElement();
+					HttpHeaderImpl header = new HttpHeaderImpl();
+					header.setName(headerName);
+					Enumeration<String> values = req.getHeaders(headerName);
+					while (values.hasMoreElements()) {
+						String value = values.nextElement();
+						header.addValue(value);
+					}
+					requestBuilder.addHeaders(header);
+				}
+		}
+
+		private void readResponse(HttpRequestBuilder requestBuilder) throws MockServerProcessingException {
+			try {
+				InputStream in = req.getInputStream();
+					ByteArrayOutputStream bos = new ByteArrayOutputStream(1024);
+					int read;
+					while ((read=in.read())!=-1) {
+						bos.write(read);
+					}
+				
+				if(bos.size()>0)
+					requestBuilder.setContentBytes(bos.toByteArray());
+			} catch (IOException e) {
+				throw new MockServerProcessingException("Unable to get content", e);
+			}
 		}
 
 		@Override
@@ -139,6 +147,7 @@ class MockServletProcessingContextBuilder {
 				try {
 					res.getOutputStream().write(response.getContentBytes());
 					res.getOutputStream().flush();
+					responseSent = true;
 				} catch (IOException e) {
 					throw new MockServerProcessingException(e);
 				}
