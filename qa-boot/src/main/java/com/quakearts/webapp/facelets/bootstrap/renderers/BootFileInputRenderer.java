@@ -179,7 +179,14 @@ public class BootFileInputRenderer extends Renderer {
         }
 		
     	renderPassThruAttributes(context, writer, component, new Attribute[0]);
-        writer.write(label!=null?label:"Browse");
+    	
+    	UIComponent labelFacet = component.getFacet("label");
+        if(labelFacet!=null){
+        	labelFacet.encodeAll(context);
+        } else {
+            writer.write(label!=null?label:"Browse");
+        }
+        
 		writer.endElement("button");
         writer.write("\n");
         if(!componentDisabled){
