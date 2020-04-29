@@ -159,22 +159,22 @@ public class TestAppBaseMainStartup {
 	}
 	
 	private static void clearInstanceVariable(Object object, String fieldName) throws IllegalArgumentException, IllegalAccessException {
-        Field[] declaredFields = object.getClass().getDeclaredFields();
-        for(Field field: declaredFields) {
-            if(fieldName.equals(field.getName())){
-	            field.setAccessible(true);
-	            field.set(object, null);
-            }
-        }
+		try {
+			Field field = object.getClass().getDeclaredField(fieldName);
+			field.setAccessible(true);
+			field.set(object, null);
+		} catch (NoSuchFieldException | SecurityException e) {
+			// Won't happen
+		}
      }
 	
 	private static void clearMainInstance() throws IllegalArgumentException, IllegalAccessException {
-        Field[] declaredFields = Main.class.getDeclaredFields();
-        for(Field field: declaredFields) {
-            if("instance".equals(field.getName())){
-	            field.setAccessible(true);
-	            field.set(null, null);
-            }
-        }
+		try {
+			Field field = Main.class.getDeclaredField("instance");
+	        field.setAccessible(true);
+	        field.set(null, null);
+		} catch (NoSuchFieldException | SecurityException e) {
+			// Won't happen
+		}
 	}
 }
