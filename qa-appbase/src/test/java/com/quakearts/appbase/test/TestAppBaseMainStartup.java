@@ -141,8 +141,12 @@ public class TestAppBaseMainStartup {
 
 	@Test
 	public void testMainUsage() throws Exception {
-		Main.main(new String[] {MainTestHelper.class.getName(),"test","value"});
-		clearInstanceVariables();
+		try {
+			Main.main(new String[] {MainTestHelper.class.getName(),"test","value"});
+			clearInstanceVariables();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 	}
 	
 	public static void clearInstanceVariables() throws IllegalArgumentException, IllegalAccessException {
