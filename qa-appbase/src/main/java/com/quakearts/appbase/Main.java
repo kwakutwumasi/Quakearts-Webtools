@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.MessageFormat;
@@ -256,16 +257,14 @@ public class Main {
 		
 		while(true){
 			Socket commandSocket;
-			try(ServerSocket shutdownSocket = ServerSocketFactory.getDefault().createServerSocket(port)) {
+			try(ServerSocket shutdownSocket = ServerSocketFactory.getDefault().createServerSocket(port,0,InetAddress.getLoopbackAddress())) {
 				commandSocket = shutdownSocket.accept();
-				if(commandSocket.getInetAddress().isLoopbackAddress()){
-					int b = commandSocket.getInputStream().read();
-					if(b==0xFA) {
-						Main.log.info("Shutdown called....");
-						instance.shutDown();
-						Main.log.info("Shutdown complete");
-						break;
-					}
+				int b = commandSocket.getInputStream().read();
+				if(b==0xFA) {
+					Main.log.info("Shutdown called....");
+					instance.shutDown();
+					Main.log.info("Shutdown complete");
+					break;
 				}
 			} catch (IOException e) {
 				log.error("Could not understand message from shutdown command: {}",e.getMessage());
