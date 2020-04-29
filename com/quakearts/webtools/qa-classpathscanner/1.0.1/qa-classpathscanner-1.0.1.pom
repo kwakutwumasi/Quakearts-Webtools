@@ -8,7 +8,6 @@
 	<description>A classpath annotation scanner for bootstrapping annotated classes</description>
 	<packaging>jar</packaging>
 	<build>
-		<sourceDirectory>src</sourceDirectory>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
