@@ -13,8 +13,8 @@ public class EncryptedValueStringConverter extends EncryptedValueBase implements
 			if(attribute == null)
 				return null;
 		
-			if(attribute.getDataStoreName()==null || attribute.getValue() == null
-					|| attribute.getValue().length==0)
+			if(attribute.getDataStoreName()==null || attribute.getStringValue() == null
+					|| attribute.getStringValue().isEmpty())
 				throw new DataStoreException("The dataStoreName and value are required for EncryptedValue");
 			
 			String encrypted = getCryptoResource(attribute.getDataStoreName()).doEncrypt(attribute.getStringValue());

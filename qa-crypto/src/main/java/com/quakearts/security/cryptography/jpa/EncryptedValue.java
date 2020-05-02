@@ -2,6 +2,7 @@ package com.quakearts.security.cryptography.jpa;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Objects;
 
 import com.quakearts.security.cryptography.CryptoResource;
 
@@ -12,6 +13,7 @@ public class EncryptedValue implements Serializable {
 	private static final long serialVersionUID = -2984594581882621613L;
 	private String dataStoreName;
 	private byte[] value;
+	private String stringValue;
 
 	public String getDataStoreName() {
 		return dataStoreName;
@@ -29,39 +31,37 @@ public class EncryptedValue implements Serializable {
 		this.value = value;
 	}
 	
-	public void setStringValue(String value) {
-		setValue(value!=null? value.getBytes():null);
+	public void setStringValue(String stringValue) {
+		this.stringValue = stringValue;
 	}
 
 	public String getStringValue() {
-		return value!=null?new String(value):null;
+		return value!=null?new String(value):stringValue;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((dataStoreName == null) ? 0 : dataStoreName.hashCode());
 		result = prime * result + Arrays.hashCode(value);
+		result = prime * result + Objects.hash(dataStoreName, stringValue);
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		EncryptedValue other = (EncryptedValue) obj;
-		if (dataStoreName == null) {
-			if (other.dataStoreName != null)
-				return false;
-		} else if (!dataStoreName.equals(other.dataStoreName)) {
+		}
+		if (obj == null) {
 			return false;
 		}
-		return Arrays.equals(value, other.value);
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		EncryptedValue other = (EncryptedValue) obj;
+		return Objects.equals(dataStoreName, other.dataStoreName) && Objects.equals(stringValue, other.stringValue)
+				&& Arrays.equals(value, other.value);
 	}
 
 	@Override

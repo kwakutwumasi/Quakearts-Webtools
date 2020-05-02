@@ -2,6 +2,7 @@ package com.quakearts.security.cryptography.test;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.*;
+import static org.hamcrest.core.IsNull.*;
 import static org.hamcrest.core.IsNot.*;
 
 import org.junit.BeforeClass;
@@ -134,7 +135,7 @@ public class JPAConverterTests {
 		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test");
 		EncryptedValue value = new EncryptedValue();
 		value.setDataStoreName("teststore");
-		value.setStringValue("Test");
+		value.setValue("Test".getBytes());
 		EncryptedValueConverter converter = new EncryptedValueConverter();
 		byte[] encrypted = converter.convertToDatabaseColumn(value);
 		EncryptedValue plaintext = converter.convertToEntityAttribute(encrypted);
@@ -152,7 +153,7 @@ public class JPAConverterTests {
 		expectedException.expectMessage(is("The dataStoreName and value are required for EncryptedValue"));
 		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test");
 		EncryptedValue value = new EncryptedValue();
-		value.setStringValue("Test");
+		value.setValue("Test".getBytes());
 		EncryptedValueConverter converter = new EncryptedValueConverter();
 		converter.convertToDatabaseColumn(value);
 	}
@@ -175,7 +176,7 @@ public class JPAConverterTests {
 		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test");
 		EncryptedValue value = new EncryptedValue();
 		value.setDataStoreName("teststore");
-		value.setStringValue("");
+		value.setValue(new byte[0]);
 		EncryptedValueConverter converter = new EncryptedValueConverter();
 		converter.convertToDatabaseColumn(value);
 	}
@@ -196,7 +197,7 @@ public class JPAConverterTests {
 		EncryptedValueConverter converter = new EncryptedValueConverter();
 		EncryptedValue value = new EncryptedValue();
 		value.setDataStoreName("teststore");
-		value.setStringValue("Test");
+		value.setValue("Test".getBytes());
 		converter.convertToDatabaseColumn(value);		
 	}
 
@@ -207,7 +208,7 @@ public class JPAConverterTests {
 		EncryptedValueConverter converter = new EncryptedValueConverter();
 		EncryptedValue value = new EncryptedValue();
 		value.setDataStoreName("teststore");
-		value.setStringValue("Test");
+		value.setValue("Test".getBytes());
 		converter.convertToDatabaseColumn(value);		
 	}
 	
@@ -218,7 +219,7 @@ public class JPAConverterTests {
 		EncryptedValueConverter converter = new EncryptedValueConverter();
 		EncryptedValue value = new EncryptedValue();
 		value.setDataStoreName("teststore");
-		value.setStringValue("Test");
+		value.setValue("Test".getBytes());
 		converter.convertToDatabaseColumn(value);		
 	}
 
@@ -237,7 +238,7 @@ public class JPAConverterTests {
 		EncryptedValueConverter converter = new EncryptedValueConverter();
 		EncryptedValue value = new EncryptedValue();
 		value.setDataStoreName("teststore");
-		value.setStringValue("Test");
+		value.setValue("Test".getBytes());
 		converter.convertToDatabaseColumn(value);		
 	}
 	
@@ -248,7 +249,7 @@ public class JPAConverterTests {
 		EncryptedValueConverter converter = new EncryptedValueConverter();
 		EncryptedValue value = new EncryptedValue();
 		value.setDataStoreName("teststore");
-		value.setStringValue("Test");
+		value.setValue("Test".getBytes());
 		converter.convertToDatabaseColumn(value);		
 	}
 	
@@ -259,7 +260,7 @@ public class JPAConverterTests {
 		EncryptedValueConverter converter = new EncryptedValueConverter();
 		EncryptedValue value = new EncryptedValue();
 		value.setDataStoreName("teststore");
-		value.setStringValue("Test");
+		value.setValue("Test".getBytes());
 		converter.convertToDatabaseColumn(value);		
 	}
 	
@@ -405,6 +406,13 @@ public class JPAConverterTests {
 		value.setStringValue("Test");
 		assertThat(value.getDataStoreName(), is("teststore"));
 		assertThat(value.getStringValue(), is("Test"));
+		assertThat(value.getValue(), is(nullValue()));
+		
+		value = new EncryptedValue();
+		value.setDataStoreName("teststore");
+		value.setValue("Test".getBytes());
+		assertThat(value.getDataStoreName(), is("teststore"));
+		assertThat(value.getStringValue(), is("Test"));
 		assertThat(value.getValue(), is("Test".getBytes()));
 		
 		value = new EncryptedValue();
@@ -422,35 +430,41 @@ public class JPAConverterTests {
 		
 		EncryptedValue value3 = new EncryptedValue();
 		value3.setDataStoreName("teststore1");
-		value3.setStringValue("Test");
-		
+		value3.setValue("Test".getBytes());
+
 		EncryptedValue value4 = new EncryptedValue();
-		value4.setDataStoreName("teststore");
-		value4.setStringValue("Test1");
-		
+		value4.setDataStoreName("teststore1");
+		value4.setValue("Test".getBytes());
+
 		EncryptedValue value5 = new EncryptedValue();
 		value5.setDataStoreName("teststore");
-
-		EncryptedValue value6 = new EncryptedValue();
-		value6.setStringValue("Test");
+		value5.setValue("Test1".getBytes());
 		
+		EncryptedValue value6 = new EncryptedValue();
+		value6.setDataStoreName("teststore");
+
 		EncryptedValue value7 = new EncryptedValue();
-		value7.setDataStoreName("teststore1");
-		value7.setStringValue("Test1");
+		value7.setValue("Test".getBytes());
+		
+		EncryptedValue value8 = new EncryptedValue();
+		value8.setDataStoreName("teststore1");
+		value8.setStringValue("Test1");
 		
 		assertThat(value, is(value));
 		assertThat(value2, is(value));
 		assertTrue(value.hashCode()==value2.hashCode());
 		assertThat(value3, is(not(value)));
 		assertFalse(value.hashCode()==value3.hashCode());
-		assertThat(value4, is(not(value)));
-		assertFalse(value.hashCode()==value4.hashCode());
+		assertThat(value3, is(value4));
+		assertTrue(value3.hashCode()==value4.hashCode());
 		assertThat(value5, is(not(value)));
 		assertFalse(value.hashCode()==value5.hashCode());
 		assertThat(value6, is(not(value)));
 		assertFalse(value.hashCode()==value6.hashCode());
 		assertThat(value7, is(not(value)));
 		assertFalse(value.hashCode()==value7.hashCode());
+		assertThat(value8, is(not(value)));
+		assertFalse(value.hashCode()==value8.hashCode());
 		assertThat(new EncryptedValue(), is(not(value)));
 		assertFalse(value.hashCode()==new EncryptedValue().hashCode());
 		
