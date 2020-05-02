@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.enterprise.event.Observes;
+import javax.enterprise.event.ObservesAsync;
 import javax.inject.Singleton;
 import javax.websocket.Session;
 import org.slf4j.Logger;
@@ -30,16 +30,16 @@ public class ViewUpdaterServiceImpl implements ViewUpdaterService {
 		registeredSessions.remove(session);
 	}
 	
-	public void triggerViewUpdateForUpdateViewEvent(@Observes UpdateViewEvent event) {
+	public void triggerViewUpdateForUpdateViewEvent(@ObservesAsync UpdateViewEvent event) {
 		sendEvent(event);
 	}
 
-	public void triggerViewUpdateFor(@Observes ProcessingEvent event) {
+	public void triggerViewUpdateFor(@ObservesAsync ProcessingEvent event) {
 		sendEvent(new ProcessingUpdateViewEvent(event));
 	}
 
 	private synchronized void sendEvent(Object event) {
-		registeredSessions.keySet().parallelStream().forEach((session)->{
+		registeredSessions.keySet().parallelStream().forEach(session->{
 			if(session.isOpen()) {
 				try {
 					session.getBasicRemote().sendText(gson.toJson(event));

@@ -31,6 +31,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.quakearts.security.cryptography.jpa.EncryptedValue;
 import com.quakearts.syshub.SysHub;
 import com.quakearts.syshub.core.runner.AgentRunner;
 import com.quakearts.syshub.core.runner.ScheduledStateReporter;
@@ -56,7 +57,7 @@ public class WebApplicationMain implements Serializable {
 	private transient Converter converter;
 
 	@Inject
-	private SysHub sysHub;
+	private transient SysHub sysHub;
 	
 	public String getMode() {
 		return mode;
@@ -231,4 +232,32 @@ public class WebApplicationMain implements Serializable {
 				.append(context.getRequestContextPath())
 				.toString();
 	}
+	
+	
+	public static final class EncryptedValueConverter implements Converter {
+
+		@Override
+		public Object getAsObject(FacesContext context, UIComponent component, String value) {
+			EncryptedValue encryptedValue = new EncryptedValue();
+			encryptedValue.setStringValue(value);
+			return encryptedValue;
+		}
+
+		@Override
+		public String getAsString(FacesContext context, UIComponent component, Object value) {
+			if(value instanceof EncryptedValue) {
+				return ((EncryptedValue)value).getStringValue();
+			}
+			
+			return null;
+		}
+		
+	}
+	
+	private transient Converter encryptedValueConverter = new EncryptedValueConverter();
+	
+	public Converter getEncryptedValueConverter() {
+		return encryptedValueConverter;
+	}
+
 }

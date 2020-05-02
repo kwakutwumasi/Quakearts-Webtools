@@ -52,6 +52,10 @@ public interface Messenger extends AgentConfigurationModule, AgentModuleValidato
      *  For graceful shutdown this method should block until all current messages are
      *  sent. 
      */    
-    public void close();
+    void close();
+    
+    default boolean isResendCapable() {
+    	return false;
+    }
     
 }

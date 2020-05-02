@@ -19,13 +19,16 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.naming.InitialContext;
 
 import com.quakearts.webapp.facelets.base.BaseBean;
 import com.quakearts.webapp.orm.query.Range;
 import com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.syshub.model.ProcessingLog;
+import com.quakearts.appbase.spi.factory.JavaNamingDirectorySpiFactory;
 import com.quakearts.syshub.SysHub;
+import com.quakearts.syshub.core.Messenger;
 import com.quakearts.syshub.core.runner.AgentRunner;
 import com.quakearts.syshub.exception.ProcessingException;
 import com.quakearts.syshub.model.AgentConfiguration;
@@ -34,13 +37,15 @@ import com.quakearts.syshub.model.AgentConfiguration;
 @ViewScoped
 public class ProcessingLogPage extends BaseBean {
 
+	private static final String SYSTEM_ERROR = "System Error";
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1849694857204230644L;
 
 	@Inject 
-	private SysHub sysHub;
+	private transient SysHub sysHub;
 	
 	private static Logger log = Logger.getLogger(ProcessingLogPage.class.getName());
 
@@ -48,6 +53,8 @@ public class ProcessingLogPage extends BaseBean {
 	@Inject @Named("webappmain")
 	private WebApplicationMain webappmain;
 	private transient ProcessingLogFinder finder = new ProcessingLogFinder();
+	private transient InitialContext context = JavaNamingDirectorySpiFactory
+			.getInstance().getJavaNamingDirectorySpi().getInitialContext();
 		
 	public WebApplicationMain getWebappmain(){
 		return webappmain;
@@ -167,6 +174,19 @@ public class ProcessingLogPage extends BaseBean {
 		return FacesContext.getCurrentInstance().getViewRoot().getViewId().endsWith("create.xhtml") || "edit".equals(webappmain.getMode());
 	}
 	
+	public boolean canReprocess(ProcessingLog processingLog) {
+		if(processingLog != null && processingLog.getAgentModule()!=null) {
+			try {
+				Messenger messenger = (Messenger) context.lookup("messenger:/"+processingLog.getAgentModule().getModuleName());
+				return messenger.isResendCapable();
+			} catch (Exception e) {
+				//The messenger may not be deployed
+			}
+		}
+		
+		return false;
+	}
+	
 	public void retryProcessingMessage(AjaxBehaviorEvent event){
 		if(getProcessingLog().getLogID() == 0){
 			addError("Invalid Data", "Select a valid ProcessingLog to continue", FacesContext.getCurrentInstance());
@@ -180,10 +200,10 @@ public class ProcessingLogPage extends BaseBean {
 					agentRunner.getProcessingAgent().reprocessProcessingLog(getProcessingLog());
 					removeProcessingLog(null);
 				} catch (ClassNotFoundException | IOException | ProcessingException e) {
-					addError("System Error", "Unable to reprocess message: "+e.getMessage(), FacesContext.getCurrentInstance());
+					addError(SYSTEM_ERROR, "Unable to reprocess message: "+e.getMessage(), FacesContext.getCurrentInstance());
 				}
 			} else {
-				addError("System Error", "Agent Runner "
+				addError(SYSTEM_ERROR, "Agent Runner "
 						+getProcessingLog().getAgentConfiguration().getAgentName()
 						+" has not been deployed.", FacesContext.getCurrentInstance());
 			}

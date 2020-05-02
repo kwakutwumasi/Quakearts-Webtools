@@ -12,6 +12,7 @@
   <property name="hibernate.order_inserts">true</property>
   <property name="hibernate.order_updates">true</property>
   <property name="hibernate.bytecode.use_reflection_optimizer">true</property>
+  <property name="com.quakearts.cryptoname">test</property>
   <mapping class="com.quakearts.syshub.model.AgentConfiguration"/>
   <mapping class="com.quakearts.syshub.model.AgentConfigurationParameter"/>
   <mapping class="com.quakearts.syshub.model.AgentModule"/>

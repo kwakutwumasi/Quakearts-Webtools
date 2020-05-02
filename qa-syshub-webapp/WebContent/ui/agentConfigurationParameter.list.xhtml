@@ -15,7 +15,7 @@
 				<b:glyph value="backward"></b:glyph>Back to search...
 				<c:set as="#{null}" var="#{agentConfigurationParameterPage.webappmain.mode}" />
     			<c:set as="#{null}" var="#{agentConfigurationParameterPage.agentConfigurationParameter}"></c:set>
-				<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+				<f:ajax render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
 			</h:commandLink>
 			<b:row rendered="#{empty agentConfigurationParameterPage.webappmain.mode}">	
     			<h:panelGroup rendered="#{agentConfigurationParameterPage.agentConfigurationParameter.agentModule != null or agentConfigurationParameterPage.agentConfigurationParameter.agentConfiguration != null}">

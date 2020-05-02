@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.util.Base64;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -22,11 +23,16 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 
+import com.quakearts.security.cryptography.jpa.EncryptedValue;
+import com.quakearts.security.cryptography.jpa.EncryptedValueStringConverter;
 import com.quakearts.syshub.exception.ConfigurationException;
 
 @Entity
-@Table(name="agent_configuration_parameters")
+@Table(name="agent_configuration_parameters", uniqueConstraints = @UniqueConstraint(columnNames = {
+		"agentConfiguration_id","agentModule_id","name"
+}))
 public class AgentConfigurationParameter implements Serializable {
 
 	/**
@@ -48,10 +54,13 @@ public class AgentConfigurationParameter implements Serializable {
 	private Boolean booleanValue;
 	@Column(length=1024)
 	private String stringValue;
+	@Column(length=1024)
+	@Convert(converter = EncryptedValueStringConverter.class)
+	private EncryptedValue encryptedValue;
 	@Column(nullable=false, name="isGlobal")
 	private boolean global;
 		
-	public static enum ParameterType {
+	public enum ParameterType {
 		/**Numeric parameter, like integer, double or float values
 		 * 
 		 */
@@ -182,6 +191,17 @@ public class AgentConfigurationParameter implements Serializable {
 		this.stringValue = stringValue;
 	}
 	
+	public EncryptedValue getEncryptedValue() {
+		return encryptedValue;
+	}
+
+	public void setEncryptedValue(EncryptedValue encryptedValue) {
+		if(encryptedValue != null)
+			encryptedValue.setDataStoreName("system");
+		
+		this.encryptedValue = encryptedValue;
+	}
+
 	public boolean isGlobal() {
 		return global;
 	}
@@ -212,11 +232,11 @@ public class AgentConfigurationParameter implements Serializable {
 						+agentConfiguration.getAgentName(), e);
 			}
 		else
-			return null;
+			return new byte[0];
 	}
 	
 	@Override
 	public String toString() {
-		return Integer.toHexString(this.hashCode()+(int)(id>0?id:0));
+		return Integer.toHexString(this.hashCode()+(id>0?id:0));
 	}
 }

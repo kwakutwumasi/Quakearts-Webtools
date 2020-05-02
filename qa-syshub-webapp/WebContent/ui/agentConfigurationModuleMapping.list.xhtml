@@ -14,8 +14,8 @@
             <h:commandLink styleClass="btn btn-primary" rendered="#{agentConfigurationModuleMappingPage.webappmain.mode eq 'edit' and (param.agentConfigurationModuleMapping eq null)}">
 				<b:glyph value="backward"></b:glyph>Back to search...
 				<c:set as="#{null}" var="#{agentConfigurationModuleMappingPage.webappmain.mode}" />
-    				<c:set as="#{null}" var="#{agentConfigurationModuleMappingPage.agentConfigurationModuleMapping}"></c:set>
-				<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+    			<c:set as="#{null}" var="#{agentConfigurationModuleMappingPage.agentConfigurationModuleMapping}"></c:set>
+				<f:ajax render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
 			</h:commandLink>
 			<b:row rendered="#{empty agentConfigurationModuleMappingPage.webappmain.mode}">	
 				<b:pagination for="#{table}" pageSize="10"></b:pagination>

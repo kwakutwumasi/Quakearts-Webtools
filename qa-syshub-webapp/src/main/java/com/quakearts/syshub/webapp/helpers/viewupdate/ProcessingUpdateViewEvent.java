@@ -3,7 +3,9 @@ package com.quakearts.syshub.webapp.helpers.viewupdate;
 import com.quakearts.syshub.agent.event.ProcessingEvent;
 
 public class ProcessingUpdateViewEvent {
-	private String exception, agentName, moduleName;
+	private String exception;
+	private String agentName;
+	private String moduleName;
 
 	public ProcessingUpdateViewEvent(ProcessingEvent event) {
 		exception = event.getException()!=null?

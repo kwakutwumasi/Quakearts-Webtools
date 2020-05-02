@@ -7,6 +7,7 @@ import javax.inject.Singleton;
 import javax.transaction.UserTransaction;
 
 import com.quakearts.appbase.cdi.annotation.Transaction;
+import com.quakearts.security.cryptography.jpa.EncryptedValue;
 import com.quakearts.syshub.SysHubMain;
 import com.quakearts.syshub.core.utils.SystemDataStoreManager;
 import com.quakearts.syshub.model.AgentConfiguration;
@@ -105,7 +106,9 @@ public class TestSysHubMain {
 		agentModule.setModuleType(ModuleType.MESSENGER);
 
 		parameter = new AgentConfigurationParameter("test.password", ParameterType.PASSWORD);
-		parameter.setStringValue("Password1");
+		EncryptedValue encryptedValue = new EncryptedValue();
+		encryptedValue.setStringValue("Password1");
+		parameter.setEncryptedValue(encryptedValue);
 		parameter.setAgentConfiguration(agentConfiguration);
 		parameter.setAgentModule(agentModule);
 		agentModule.getParameters().add(parameter);
@@ -129,7 +132,7 @@ public class TestSysHubMain {
 		parameter.setGlobal(true);
 		parameter.setName("schedule.cron");
 		parameter.setParameterType(ParameterType.CRONCONFIGURATION);
-		parameter.setStringValue("0 0/1 * * * ? *");
+		parameter.setStringValue("0/15 * * * * ? *");
 		agentConfiguration.getParameters().add(parameter);
 		
 		parameter = new AgentConfigurationParameter();

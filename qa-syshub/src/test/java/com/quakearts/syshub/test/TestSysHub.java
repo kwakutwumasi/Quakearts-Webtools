@@ -477,7 +477,6 @@ public class TestSysHub {
 	@Test(expected=ProcessingException.class)
 	public void testProcessDataWithNoMappings() throws Exception {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
-		agent.setResendCapable(true);
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
 		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
@@ -613,7 +612,6 @@ public class TestSysHub {
 	@Test(expected=ProcessingException.class)
 	public void testReprocessProcessingLogWithNullMappings() throws Exception {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
-		agent.setResendCapable(true);
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
 		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
@@ -623,7 +621,6 @@ public class TestSysHub {
 	@Test(expected=ProcessingException.class)
 	public void testReprocessProcessingLogWithNoMappings() throws Exception {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
-		agent.setResendCapable(true);
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
 		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
@@ -632,15 +629,8 @@ public class TestSysHub {
 	}
 
 	@Test(expected=ProcessingException.class)
-	public void testReprocessProcessingLogWithResendIncapableAgent() throws Exception {
-		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
-		agent.reprocessProcessingLog(new ProcessingLog());
-	}
-
-	@Test(expected=ProcessingException.class)
 	public void testReprocessProcessingLogWithNullProcessingLog() throws Exception {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
-		agent.setResendCapable(true);
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
 		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
@@ -657,7 +647,6 @@ public class TestSysHub {
 	@Test(expected=ProcessingException.class)
 	public void testReprocessProcessingLogWithNullAgentModule() throws Exception {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
-		agent.setResendCapable(true);
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
 		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
@@ -674,7 +663,6 @@ public class TestSysHub {
 	@Test(expected=ProcessingException.class)
 	public void testReprocessProcessingLogWithNullMessageData() throws Exception {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
-		agent.setResendCapable(true);
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
 		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
@@ -697,7 +685,6 @@ public class TestSysHub {
 	@Test
 	public void testReprocessProcessingLog() throws Exception {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
-		agent.setResendCapable(true);
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
 		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
@@ -751,6 +738,39 @@ public class TestSysHub {
 		
 		MessageByteImpl messageData = new MessageByteImpl();
 		messageData.appendBody("Test".getBytes());
+		
+		Serializer serializer = CDI.current().select(Serializer.class).get();
+		processingLog.setMessageData(serializer.toByteArray(messageData));
+		processingLog.setMid(messageData.getId());
+		processingLog.setRecipient("Test");
+		processingLog.setRetries(0);
+		processingLog.setStatusMessage("Test");
+		processingLog.setType(LogType.INFO);
+		
+		agent.reprocessProcessingLog(processingLog);
+	}
+	
+	@Test(expected=ProcessingException.class)
+	public void testReprocessProcessingLogWithNonResendCapableModule() throws Exception {
+		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
+		agent.setAgentConfiguration(new AgentConfiguration());
+		agent.setName("Name");
+		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
+		Map<Messenger, MessageFormatter> map = new HashMap<>();
+		TestMessenger2 messenger = new TestMessenger2();
+		messenger.setAgentModule(new AgentModule());
+		messenger.getAgentModule().setModuleName("Test");
+		map.put(messenger, new TestFormatter1());
+		agent.setMessengerFormatterMapper(map);
+
+		ProcessingLog processingLog = new ProcessingLog();
+		processingLog.setLogID(1);
+		processingLog.setAgentConfiguration(agent.getAgentConfiguration());
+		processingLog.setAgentModule(messenger.getAgentModule());
+		processingLog.setLogDt(new Date());
+		
+		MessageStringImpl messageData = new MessageStringImpl();
+		messageData.appendBody("Test");
 		
 		Serializer serializer = CDI.current().select(Serializer.class).get();
 		processingLog.setMessageData(serializer.toByteArray(messageData));
@@ -901,7 +921,6 @@ public class TestSysHub {
 			.keepAliveTime(120.0)
 			.corePoolSize( 5.0)
 			.maximumPoolSize(45.0)
-			.resendCapable(true)
 			.dataSpooler(TestDataSpooler.class, "Test ProcessingAgentBuilder Module 1")
 			.addBinaryParameter("test1", "value".getBytes())
 			.messageFormatter(TestFormatter1.class,  "Test ProcessingAgentBuilder Module 2")
@@ -946,12 +965,11 @@ public class TestSysHub {
 			}
 			
 			Set<AgentConfigurationParameter> parameters = processingAgent.getAgentConfiguration().getParameters();
-			assertThat(parameters.size(), is(8));
+			assertThat(parameters.size(), is(7));
 			parameters = agentConfiguration.getParameters();
-			assertThat(parameters.size(), is(8));
+			assertThat(parameters.size(), is(7));
 
-			List<String> lists = new ArrayList<>(Arrays.asList("isResendCapable",
-					"maxFormatterWorkers","maxDataSpoolerWorkers",
+			List<String> lists = new ArrayList<>(Arrays.asList("maxFormatterWorkers","maxDataSpoolerWorkers",
 					"queueSize","keepAliveTime",
 					"corePoolSize","maximumPoolSize"));
 			for(AgentConfigurationParameter agentConfigurationParameter:parameters) {
@@ -990,11 +1008,6 @@ public class TestSysHub {
 					assertThat(agentConfigurationParameter.getParameterType(), is(ParameterType.NUMERIC));
 					assertThat(agentConfigurationParameter.getNumericValue(), is(45.0d));				
 					assertThat(processingAgent.getMaximumPoolSize(), is(45));
-					break;
-				case "isResendCapable":
-					assertThat(agentConfigurationParameter.getParameterType(), is(ParameterType.BOOLEAN));
-					assertThat(agentConfigurationParameter.getBooleanValue(), is(true));				
-					assertThat(processingAgent.isResendCapable(), is(true));
 					break;	
 				default:
 					fail("Uknown parameter: "+agentConfigurationParameter.getName());

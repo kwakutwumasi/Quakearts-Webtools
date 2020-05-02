@@ -18,6 +18,7 @@ import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperties;
 import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperty;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.exception.ProcessingException;
+import com.quakearts.syshub.log.MessageLogger;
 import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 import com.quakearts.syshub.model.AgentModule;
@@ -40,6 +41,9 @@ public class TestMessenger1 extends RandomErrorThrower implements Messenger {
 	private AgentModule agentModule;
 	private AtomicInteger integer = new AtomicInteger(0);
 	private static final Logger log = LoggerFactory.getLogger(TestMessenger1.class);
+	
+	@Inject
+	private MessageLogger logger;
 	
 	public int getSendCount(){
 		return integer.get();
@@ -81,6 +85,12 @@ public class TestMessenger1 extends RandomErrorThrower implements Messenger {
 
 	@Override
 	public void sendMessage(Message<?> mssg) throws ProcessingException {
+		try {
+			Thread.sleep(Math.abs((getRandom().nextLong()%10)*1000));
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+		
 		throwErrorOrNot();
 		if(!(mssg instanceof MessageStringImpl))
 			throw new ProcessingException("Wrong message type: "+mssg.getClass().getName());
@@ -96,8 +106,9 @@ public class TestMessenger1 extends RandomErrorThrower implements Messenger {
 
 		integer.incrementAndGet();
 		log.trace(outputBuilder.toString());
-		updateViewEvent.fire(new UpdateViewEvent("TestMessenger1#sendMessage()", agentConfiguration, agentModule));
+		updateViewEvent.fireAsync(new UpdateViewEvent("TestMessenger1#sendMessage()", agentConfiguration, agentModule));
 		mssg.setMessageStatus("complete");
+		logger.logMessage(agentConfiguration, agentModule, mssg, "Test Logging", false);
 	}
 
 	@Override
@@ -114,4 +125,8 @@ public class TestMessenger1 extends RandomErrorThrower implements Messenger {
 	public void close() {
 	}
 
+	@Override
+	public boolean isResendCapable() {
+		return true;
+	}
 }

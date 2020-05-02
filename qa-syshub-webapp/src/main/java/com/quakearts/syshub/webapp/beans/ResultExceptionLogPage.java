@@ -40,7 +40,7 @@ public class ResultExceptionLogPage extends BaseBean {
 	private static final long serialVersionUID = -106873496623437310L;
 
 	@Inject
-	private SysHub sysHub;
+	private transient SysHub sysHub;
 	
 	private static Logger log = Logger.getLogger(ResultExceptionLogPage.class.getName());
 

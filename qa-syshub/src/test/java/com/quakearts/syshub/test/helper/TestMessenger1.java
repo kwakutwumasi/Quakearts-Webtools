@@ -96,5 +96,10 @@ public class TestMessenger1 implements Messenger {
 	@Override
 	public void close() {
 	}
+	
+	@Override
+	public boolean isResendCapable() {
+		return true;
+	}
 
 }

@@ -54,7 +54,7 @@ public class AgentConfigurationPage extends BaseBean {
 	private WebApplicationMain webappmain;
 
 	@Inject
-	private SysHub sysHub;
+	private transient SysHub sysHub;
 	
 	private AgentConfiguration agentConfiguration;
 	private transient AgentConfigurationFinder finder = new AgentConfigurationFinder();
@@ -470,10 +470,12 @@ public class AgentConfigurationPage extends BaseBean {
 		if(value == null)
 			return;
 		
-		List<AgentConfiguration> agentConfigurations = finder.findByName(value.toString());
-		
-		if(!agentConfigurations.isEmpty()){
-			throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Data", "An agent with the name "+value+" already exits"));
+		if(!webappmain.isInSearchMode() && !value.equals(getAgentConfiguration().getAgentName())) {
+			List<AgentConfiguration> agentConfigurations = finder.findByName(value.toString());
+			
+			if(!agentConfigurations.isEmpty()){
+				throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Data", "An agent with the name "+value+" already exits"));
+			}
 		}
 	}	
 }

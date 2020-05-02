@@ -25,3 +25,4 @@ local.properties
 /SysHubDS/
 tmlog*
 webservers/default/webapps/webapp/
+/syshub_log_cache/

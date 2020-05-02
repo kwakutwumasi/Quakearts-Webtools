@@ -11,6 +11,8 @@
 package com.quakearts.syshub.webapp.helpers.parameter;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +23,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.validator.ValidatorException;
 import javax.naming.NamingException;
+
+import org.quartz.CronExpression;
 
 import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperties;
 import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperty;
@@ -43,41 +47,7 @@ public class AgentConfigurationParameterHelper implements SysHubDataStoreUser {
 			+ "|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}"
 			+ "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:"
 			+ "(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\"
-			+ "[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])",
-	CRONPATTERN = "\"^\\\\s*($|#|\\\\w+\\\\s*=|(\\\\?|\\\\*|(?:[0-5]?\\\\d)"
-			+ "(?:(?:-|/|,)(?:[0-5]?\\\\d))?(?:,(?:[0-5]?\\\\d)(?:(?:-|/|,)"
-			+ "(?:[0-5]?\\\\d))?)*)\\\\s+(\\\\?|\\\\*|(?:[0-5]?\\\\d)"
-			+ "(?:(?:-|/|,)(?:[0-5]?\\\\d))?(?:,(?:[0-5]?\\\\d)"
-			+ "(?:(?:-|/|,)(?:[0-5]?\\\\d))?)*)\\\\s+(\\\\?|\\\\*|(?:[01]?\\\\d|2[0-3])"
-			+ "(?:(?:-|/|,)(?:[01]?\\\\d|2[0-3]))?(?:,(?:[01]?\\\\d|2[0-3])"
-			+ "(?:(?:-|/|,)(?:[01]?\\\\d|2[0-3]))?)*)\\\\s+"
-			+ "(\\\\?|\\\\*|(?:0?[1-9]|[12]\\\\d|3[01])(?:(?:-|/|,)"
-			+ "(?:0?[1-9]|[12]\\\\d|3[01]))?(?:,(?:0?[1-9]|[12]\\\\d|3[01])"
-			+ "(?:(?:-|/|,)(?:0?[1-9]|[12]\\\\d|3[01]))?)*)\\\\s+"
-			+ "(\\\\?|\\\\*|(?:[1-9]|1[012])(?:(?:-|/|,)"
-			+ "(?:[1-9]|1[012]))?(?:L|W)?(?:,(?:[1-9]|1[012])"
-			+ "(?:(?:-|/|,)(?:[1-9]|1[012]))?(?:L|W)?)*|\\\\?|\\\\*|"
-			+ "(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)"
-			+ "(?:(?:-)(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC))?"
-			+ "(?:,(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)"
-			+ "(?:(?:-)(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC))?)*)\\\\s+"
-			+ "(\\\\?|\\\\*|(?:[0-6])(?:(?:-|/|,|#)(?:[0-6]))?(?:L)?(?:,(?:[0-6])"
-			+ "(?:(?:-|/|,|#)(?:[0-6]))?(?:L)?)*|\\\\?|\\\\*|"
-			+ "(?:MON|TUE|WED|THU|FRI|SAT|SUN)(?:(?:-)(?:MON|TUE|WED|THU|FRI|SAT|SUN))?"
-			+ "(?:,(?:MON|TUE|WED|THU|FRI|SAT|SUN)(?:(?:-)(?:MON|TUE|WED|THU|FRI|SAT|SUN))?)*)"
-			+ "(|\\\\s)+(\\\\?|\\\\*|(?:|\\\\d{4})(?:(?:-|/|,)(?:|\\\\d{4}))?(?:,(?:|\\\\d{4})"
-			+ "(?:(?:-|/|,)(?:|\\\\d{4}))?)*))$\"",
-	URLPATTERN = "(?i)^(?:(?:https?|ftp)://)(?:\\S+(?::\\S*)?@)?"
-			+ "(?:(?!(?:10|127)(?:\\.\\d{1,3}){3})"
-			+ "(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})"
-			+ "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})"
-			+ "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])"
-			+ "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}"
-			+ "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))"
-			+ "|(?:(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)"
-			+ "(?:\\.(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)*"
-			+ "(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))\\.?)"
-			+ "(?::\\d{2,5})?(?:[/?#]\\S*)?$";
+			+ "[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])";
 	
 	public AgentConfigurationParameterHelper(Class<?> configurableClass, AgentModule module,
 			AgentConfiguration agentConfiguration) {		
@@ -96,6 +66,8 @@ public class AgentConfigurationParameterHelper implements SysHubDataStoreUser {
 	}
 	
 	public static final class ParameterMetaData {
+		private static final String PARAMETER = "Parameter ";
+		private static final String INVALID_DATA = "Invalid Data";
 		ConfigurationProperty property;
 		AgentConfigurationParameter agentConfigurationParameter;
 		AgentModule module;
@@ -193,11 +165,10 @@ public class AgentConfigurationParameterHelper implements SysHubDataStoreUser {
 			}
 		}
 		
-		public void validateParameter(FacesContext context, UIComponent component, Object value)
-				throws ValidatorException {
+		public void validateParameter(FacesContext context, UIComponent component, Object value) {
 			if(isRequired() && (value == null 
 					|| value.toString().trim().isEmpty())){
-				throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Data","Parameter "
+				throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, INVALID_DATA,PARAMETER
 					+(getFriendlyName()==null?property.value():getFriendlyName())+" is required."));
 			}
 			
@@ -206,71 +177,103 @@ public class AgentConfigurationParameterHelper implements SysHubDataStoreUser {
 			
 			if(getPattern() != null && !getPattern().trim().isEmpty() 
 					&& !value.toString().matches(getPattern()))
-				throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Data","Parameter "
+				throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, INVALID_DATA,PARAMETER
 						+(getFriendlyName()==null?property.value():getFriendlyName())
 						+" does not match required pattern: "+getPattern()));
 							
 			switch (getType()) {
 			case CLASS:
-				Class<?> loadedClass;
-				try {
-					loadedClass = Class.forName(value.toString());
-				} catch (ClassNotFoundException e) {
-					throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Data","Parameter "
-							+(getFriendlyName()==null?property.value():getFriendlyName())+" is not valid class name"));
-				}
-				
-				if(!property.assignableType().isAssignableFrom(loadedClass))
-					throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Data","Parameter "
-							+(getFriendlyName()==null?property.value():getFriendlyName())+" is not a "
-							+property.assignableType().getName()));
+				validateClass(value);
 				break;
 			case CRONCONFIGURATION:
-				if(!value.toString().matches(CRONPATTERN))
-					throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Data","Parameter "
-							+(getFriendlyName()==null?property.value():getFriendlyName())
-							+" is not a valid Cron expression"));
+				validateCRONPattern(value);
 				break;
 			case EMAIL:
-				String email = value.toString().trim();
-				if(email.contains(";") || email.contains(",")){
-					String[] emails = email.split("[;,]");
-					for(String emailToCheck:emails){
-						if(!emailToCheck.matches(EMAILPATTERN))
-							throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Data","Parameter "
-									+(getFriendlyName()==null?property.value():getFriendlyName())
-									+" is not a valid email"));
-					}
-				} else {
-					if(!email.matches(EMAILPATTERN))
-						throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Data","Parameter "
-								+(getFriendlyName()==null?property.value():getFriendlyName())
-								+" is not a valid email"));
-				}
+				validateEmail(value);
 				break;
 			case ENDPOINTADDRESS:
-				if(!value.toString().matches(URLPATTERN))
-					throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Data","Parameter "
-							+(getFriendlyName()==null?property.value():getFriendlyName())
-							+" is not a valid url"));
+				validateEndpointURL(value);
 				break;
 			case FILE:
-				if(!new File(value.toString()).exists())
-					throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Data","Parameter "
-							+(getFriendlyName()==null?property.value():getFriendlyName())
-							+" is not a file that exits"));
+				validateFile(value);
 				break;
 			case JNDINAME:
-				try {
-					SysHubUtils.getInitialContext().lookup(value.toString());
-				} catch (NamingException e) {
-					throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Data","Parameter "
-							+(getFriendlyName()==null?property.value():getFriendlyName())
-							+" is not bound."));
-				}
+				validateJNDIName(value);
 				break;
 			default:
 				break;
+			}
+		}
+
+		private void validateClass(Object value) {
+			Class<?> loadedClass;
+			try {
+				loadedClass = Class.forName(value.toString());
+			} catch (ClassNotFoundException e) {
+				throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, INVALID_DATA,PARAMETER
+						+(getFriendlyName()==null?property.value():getFriendlyName())+" is not valid class name"));
+			}
+			
+			if(!property.assignableType().isAssignableFrom(loadedClass))
+				throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, INVALID_DATA,PARAMETER
+						+(getFriendlyName()==null?property.value():getFriendlyName())+" is not a "
+						+property.assignableType().getName()));
+		}
+
+		private void validateCRONPattern(Object value) {
+			if(!CronExpression.isValidExpression(value.toString()))
+				throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, INVALID_DATA,PARAMETER
+						+(getFriendlyName()==null?property.value():getFriendlyName())
+						+" is not a valid Cron expression"));
+		}
+
+		private void validateEmail(Object value) {
+			String email = value.toString().trim();
+			if(email.contains(";") || email.contains(",")){
+				validateMultipleEmails(email);
+			} else {
+				validateSingleEmail(email);
+			}
+		}
+
+		private void validateMultipleEmails(String email) {
+			String[] emails = email.split("[;,]");
+			for(String emailToCheck:emails){
+				validateSingleEmail(emailToCheck);
+			}
+		}
+
+		private void validateSingleEmail(String email) {
+			if(!email.matches(EMAILPATTERN))
+				throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, INVALID_DATA,PARAMETER
+						+(getFriendlyName()==null?property.value():getFriendlyName())
+						+" is not a valid email"));
+		}
+
+		private void validateEndpointURL(Object value) {
+			try {
+				new URL(value.toString());
+			} catch (MalformedURLException e) {
+				throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, INVALID_DATA,PARAMETER
+						+(getFriendlyName()==null?property.value():getFriendlyName())
+						+" is not a valid url: "+e.getMessage()));
+			}
+		}
+
+		private void validateFile(Object value) {
+			if(!new File(value.toString()).exists())
+				throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, INVALID_DATA,PARAMETER
+						+(getFriendlyName()==null?property.value():getFriendlyName())
+						+" is not a file that exits"));
+		}
+
+		private void validateJNDIName(Object value) {
+			try {
+				SysHubUtils.getInitialContext().lookup(value.toString());
+			} catch (NamingException e) {
+				throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, INVALID_DATA,PARAMETER
+						+(getFriendlyName()==null?property.value():getFriendlyName())
+						+" is not bound."));
 			}
 		}
 	}

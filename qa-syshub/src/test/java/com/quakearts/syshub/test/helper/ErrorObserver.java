@@ -4,6 +4,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.ObservesAsync;
 import javax.inject.Singleton;
 
 import com.quakearts.appbase.Main;
@@ -18,7 +19,7 @@ public class ErrorObserver {
 		return queue;
 	}
 	
-	public void handleProcessingEvent(@Observes ProcessingEvent event) {
+	public void handleProcessingEvent(@ObservesAsync ProcessingEvent event) {
 		Main.log.info("Handling "+event.getException().getClass().getName());
 		if(event.getAgentConfiguration().getAgentName().equals("ErrorThrowingModule")) {
 			try {

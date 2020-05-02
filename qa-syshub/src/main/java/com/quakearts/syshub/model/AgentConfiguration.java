@@ -28,13 +28,14 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 
 /**
  * @author QuakesHome
  *
  */
 @Entity
-@Table(name = "agent_configuration")
+@Table(name = "agent_configuration", uniqueConstraints = @UniqueConstraint(columnNames = {"agentName"}))
 public class AgentConfiguration implements Serializable {
 
 	/**

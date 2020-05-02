@@ -178,7 +178,7 @@ if(window.WebSocket){
 	syshub.ws = new WebSocket(syshub.wslocation);
 	syshub.ws.onmessage = function(event) {
 		var message = JSON.parse(event.data);
-		if(message.exception){
+		if(message.exception) {
 			var exception = message.exception;
 
 			var agentName = '';
@@ -192,6 +192,23 @@ if(window.WebSocket){
 			var outWindow = $('#output-window');
 			outWindow.html('<div class="row"><table class="table" style="margin-left: 10px"><tbody><tr><th colspan="2">Exception:</th></tr><tr><td colspan="2">'
 					+exception+'</td></tr><tr><th>Agent</th><td>'
+					+agentName+'</td></tr><tr><th>Module</th><td>'
+					+moduleName+'</td></tr></tbody></table></div>'
+					+syshub.topten(outWindow));
+		} else if(message.updateData) {
+			var updateData = message.updateData;
+
+			var agentName = '';
+			if(message.agentName)
+				agentName = message.agentName;				
+
+			var moduleName = '';
+			if(message.moduleName)
+				moduleName = message.moduleName;				
+			if(message.agentName)
+			var outWindow = $('#output-window');
+			outWindow.html('<div class="row"><table class="table" style="margin-left: 10px"><tbody><tr><th colspan="2">Update:</th></tr><tr><td colspan="2">'
+					+updateData+'</td></tr><tr><th>Agent</th><td>'
 					+agentName+'</td></tr><tr><th>Module</th><td>'
 					+moduleName+'</td></tr></tbody></table></div>'
 					+syshub.topten(outWindow));

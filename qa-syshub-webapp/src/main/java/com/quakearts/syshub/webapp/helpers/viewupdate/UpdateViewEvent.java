@@ -4,16 +4,18 @@ import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentModule;
 
 public class UpdateViewEvent {
-	private String source, agentName, moduleName;
+	private String updateData;
+	private String agentName;
+	private String moduleName;
 	
-	public UpdateViewEvent(String source, AgentConfiguration agentConfiguration, AgentModule agentModule) {
-		this.source = source;
+	public UpdateViewEvent(String updateData, AgentConfiguration agentConfiguration, AgentModule agentModule) {
+		this.updateData = updateData;
 		this.agentName = agentConfiguration!=null?agentConfiguration.getAgentName():null;
 		this.moduleName = agentModule!=null?agentModule.getModuleName():null;
 	}
 
-	public String getSource() {
-		return source;
+	public String getUpdateData() {
+		return updateData;
 	}
 
 	public String getAgentName() {

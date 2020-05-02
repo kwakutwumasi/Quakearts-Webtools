@@ -28,9 +28,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name="agent_module")
+@Table(name="agent_module", uniqueConstraints = @UniqueConstraint(columnNames = {
+		"agentConfiguration_id","moduleName"
+}))
 public class AgentModule implements Serializable {
 	/**
 	 * 
@@ -54,7 +57,7 @@ public class AgentModule implements Serializable {
 	@OneToMany(mappedBy="agentModule", fetch=FetchType.LAZY, cascade={CascadeType.ALL})
 	private Set<AgentConfigurationModuleMapping> agentConfigurationModuleMappings = new HashSet<>();
 	
-	public static enum ModuleType {
+	public enum ModuleType {
 		DATASPOOLER,
 		FORMATTER,
 		MESSENGER
@@ -130,7 +133,7 @@ public class AgentModule implements Serializable {
 	public Map<String, AgentConfigurationParameter> getModuleConfigurationMap() {
 		if(moduleConfigurationMap == null){
 			moduleConfigurationMap = new HashMap<>();
-			if(parameters.size()>0){
+			if(!parameters.isEmpty()){
 				for(AgentConfigurationParameter agentConfigurationParameter : parameters){
 					moduleConfigurationMap.put(agentConfigurationParameter.getName(), agentConfigurationParameter);
 				}
@@ -144,7 +147,7 @@ public class AgentModule implements Serializable {
 	
 	@Override
 	public String toString() {
-		return Integer.toHexString(this.hashCode()+(int)(id>0?id:0));
+		return Integer.toHexString(this.hashCode()+(id>0?id:0));
 	}
 
 }

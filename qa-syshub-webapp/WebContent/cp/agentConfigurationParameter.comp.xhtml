@@ -59,11 +59,19 @@
 				validator="#{parameter.validateParameter}">
 			</h:inputTextarea>
 		</h:panelGroup>
+		<b:inputText rows="1"
+			rendered="#{parameter.type == 'PASSWORD'}"
+			value="#{parameter.agentConfigurationParameter.encryptedValue}"
+			converter="#{webappmain.encryptedValueConverter}"
+			type="password">
+			<f:facet name="label">
+				<b:fa value="lock" />
+			</f:facet>
+		</b:inputText>
 		<b:inputText disabled="#{disabled}" data-overlay-target="buttonsDiv"
-			rendered="#{parameter.type != 'LONGSTRING' and parameter.type != 'NUMERIC' and parameter.type != 'BOOLEAN' and parameter.type != 'LIST'}"
+			rendered="#{parameter.type != 'LONGSTRING' and parameter.type != 'NUMERIC' and parameter.type != 'BOOLEAN' and parameter.type != 'LIST' and parameter.type != 'PASSWORD'}"
 			value="#{parameter.agentConfigurationParameter.stringValue}"
-			validator="#{parameter.validateParameter}" 
-			type="#{parameter.type == 'PASSWORD'?'password':'text'}">
+			validator="#{parameter.validateParameter}">
 			<f:facet name="label">
 				<b:fa rendered="#{parameter.type == 'BINARY'}" value="hdd-o"></b:fa>
 				<b:fa rendered="#{parameter.type == 'CLASS'}" value="file-code-o"></b:fa>
@@ -72,7 +80,6 @@
 				<b:flaticon rendered="#{parameter.type == 'ENDPOINTADDRESS'}" value="business-2"></b:flaticon>
 				<b:fa rendered="#{parameter.type == 'FILE'}" value="sticky-note-o"></b:fa>
 				<b:fa rendered="#{parameter.type == 'JNDINAME'}" value="crosshairs"></b:fa>
-				<b:fa rendered="#{parameter.type == 'PASSWORD'}" value="lock"></b:fa>
 				<b:fa rendered="#{parameter.type == 'STRING'}" value="i-cursor"></b:fa>
 			</f:facet>
 			<f:ajax listener="#{parameter.parameterChanged}" onevent="#{loader.overlayAjaxLoader}"></f:ajax>

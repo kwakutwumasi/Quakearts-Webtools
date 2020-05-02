@@ -15,7 +15,7 @@
 				<b:glyph value="backward"></b:glyph>Back to search...
 				<c:set as="#{null}" var="#{resultExceptionLogPage.webappmain.mode}" />
     			<c:set as="#{null}" var="#{resultExceptionLogPage.resultExceptionLog}"></c:set>
-				<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+				<f:ajax render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
 			</h:commandLink>
 			<b:row rendered="#{empty resultExceptionLogPage.webappmain.mode}">	
 				<b:pagination for="#{table}" pageSize="10"></b:pagination>
@@ -67,7 +67,7 @@
     							converter="#{resultExceptionLogPage.webappmain.serializedObjectConverter}">
     						</h:outputText>
     					</b:panel>
-						<a href="#"
+						<a href="javascript:void(0)"
 							onclick="$('#exceptionData_#{resultExceptionLog.id}').fadeIn('slow')"><b:fa
 								value="window-maximize"></b:fa>Show</a>
 					</h:column>
@@ -80,7 +80,7 @@
     							converter="#{resultExceptionLogPage.webappmain.serializedObjectConverter}">
     						</h:outputText>
     					</b:panel>
-						<a href="#"
+						<a href="javascript:void(0)"
 							onclick="$('#resultData_#{resultExceptionLog.id}').fadeIn('slow')"><b:fa
 								value="window-maximize"></b:fa>Show</a>
     				</h:column>

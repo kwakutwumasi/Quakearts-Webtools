@@ -17,6 +17,7 @@ import com.quakearts.syshub.core.impl.MessageByteImpl;
 import com.quakearts.syshub.core.metadata.annotations.Autoconfigured;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.exception.ProcessingException;
+import com.quakearts.syshub.log.MessageLogger;
 import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 import com.quakearts.syshub.model.AgentModule;
@@ -33,7 +34,10 @@ public class TestMessenger2 extends RandomErrorThrower implements Messenger {
 	private Map<String, AgentConfigurationParameter> parameters;
 	private AgentModule agentModule;
 	private AtomicInteger integer = new AtomicInteger(0);
-	private static final Logger log = LoggerFactory.getLogger(TestMessenger1.class);
+	private static final Logger log = LoggerFactory.getLogger(TestMessenger2.class);
+	
+	@Inject
+	private MessageLogger messageLogger;
 	
 	public int getSendCount(){
 		return integer.get();
@@ -89,8 +93,9 @@ public class TestMessenger2 extends RandomErrorThrower implements Messenger {
 
 		integer.incrementAndGet();
 		log.trace(outputBuilder.toString());
-		updateViewEvent.fire(new UpdateViewEvent("TestMessenger2#sendMessage()", agentConfiguration, agentModule));
+		updateViewEvent.fireAsync(new UpdateViewEvent("TestMessenger2#sendMessage()", agentConfiguration, agentModule));
 		mssg.setMessageStatus("complete");
+		messageLogger.logMessage(agentConfiguration, agentModule, mssg, "Test Logging 2", false);
 	}
 
 	@Override

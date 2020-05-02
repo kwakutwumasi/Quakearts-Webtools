@@ -88,7 +88,6 @@ public class ProcessingAgent {
 	private int maximumPoolSize = 5;
 	private int queueSize = 10;
     private long keepAliveTime = 60;
-    private boolean resendCapable;
 
 	/** Default constructor. Looks for a file named notificationagent.config at the root of the current directory
 	 */
@@ -142,10 +141,7 @@ public class ProcessingAgent {
 		executor = null;
 	}
 
-	public void reprocessProcessingLog(ProcessingLog processingLog) throws ClassNotFoundException, IOException, ProcessingException {
-		if(!resendCapable)
-			throw new ProcessingException("Processing Agent "+name+" has not been configured for message resending.");
-		
+	public void reprocessProcessingLog(ProcessingLog processingLog) throws ClassNotFoundException, IOException, ProcessingException {		
 		if(mapper == null || mapper.isEmpty())
 			throw new ProcessingException(INCOMPLETE_SETUP_MESSAGE);			
 		
@@ -159,7 +155,7 @@ public class ProcessingAgent {
 			throw new ProcessingException("Invalid log passed in. getMessageData() was null");			
 		
 		for(Messenger messenger:mapper.keySet()){
-			if(messenger.getAgentModule().getModuleName()
+			if(messenger.isResendCapable() && messenger.getAgentModule().getModuleName()
 					.equals(processingLog.getAgentModule().getModuleName())){					
 				Message<?> message = (Message<?>) serializer.toObject(processingLog.getMessageData());
 				
@@ -223,7 +219,7 @@ public class ProcessingAgent {
 			try {
 				runDataExtraction();
 			} catch (ProcessingException e) {
-				processingEventTrigger.fire(new ProcessingEvent(e, agentConfiguration, dataSpooler.getAgentModule()));
+				processingEventTrigger.fireAsync(new ProcessingEvent(e, agentConfiguration, dataSpooler.getAgentModule()));
 				log.error( "Exception {} was thrown whiles fetching data. Message is {}", e.getClass().getName(), e.getMessage());
 			} finally {
 				if(log.isTraceEnabled()) {
@@ -246,7 +242,7 @@ public class ProcessingAgent {
 					getExecutor().execute(()->getAnAgentDataSpoolerWorker(dataSpoolerInternal, result).processData());
 				}
 			} catch (IOException e) {
-				processingEventTrigger.fire(new ProcessingEvent(e, agentConfiguration, dataSpooler.getAgentModule()));
+				processingEventTrigger.fireAsync(new ProcessingEvent(e, agentConfiguration, dataSpooler.getAgentModule()));
 				log.error( "Exception {} was thrown while closing CloseableIterator. Message is {}", e.getClass().getName(), e.getMessage());
 			}
 		}
@@ -372,14 +368,14 @@ public class ProcessingAgent {
 				try {
 					message = messageFormatter.formatdata(result);
 				} catch (ProcessingException e) {
-					processingEventTrigger.fire(new ProcessingEvent(e, agentConfiguration, messageFormatter.getAgentModule(), result));
+					processingEventTrigger.fireAsync(new ProcessingEvent(e, agentConfiguration, messageFormatter.getAgentModule(), result));
 					return;
 				} 
 				
 				try {
 					messenger.sendMessage(message);
 				} catch (ProcessingException e) {
-					processingEventTrigger.fire(new ProcessingEvent(e, agentConfiguration, messenger.getAgentModule(), message));
+					processingEventTrigger.fireAsync(new ProcessingEvent(e, agentConfiguration, messenger.getAgentModule(), message));
 					log.error( "Exception " + e.getClass().getName()
 							+ " was thrown. Message is " + e.getMessage()+". Exception occured whiles attempting to send message", e);
 					return;
@@ -388,7 +384,7 @@ public class ProcessingAgent {
 				try {
 					dataSpooler.updateData(result, message);
 				} catch (ProcessingException e) {
-					processingEventTrigger.fire(new ProcessingEvent(e, agentConfiguration, dataSpooler.getAgentModule()));
+					processingEventTrigger.fireAsync(new ProcessingEvent(e, agentConfiguration, dataSpooler.getAgentModule()));
 					log.error( "Exception " + e.getClass().getName()
 							+ " was thrown. Message is " + e.getMessage()
 							+". Exception occured whiles attempting to format data for sending", e);
@@ -670,19 +666,5 @@ public class ProcessingAgent {
 	 */
 	public Date getStartTime() {
 		return startTime;
-	}
-	
-	/**
-	 * @return true if this processing agent allows it's messages to be resent
-	 */
-	public boolean isResendCapable() {
-		return resendCapable;
-	}
-	
-	/** Allow messages to be resent using this processing agent's messengers
-	 * @param resendCapable
-	 */
-	public void setResendCapable(boolean resendCapable) {
-		this.resendCapable = resendCapable;
-	}
+	}	
 }

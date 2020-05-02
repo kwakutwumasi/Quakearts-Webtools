@@ -51,7 +51,6 @@ public class ProcessingAgentBuilder {
 	private static final String MAX_FORMATTER_WORKERS = "maxFormatterWorkers";
 	private static final String MAX_DATA_SPOOLER_WORKERS = "maxDataSpoolerWorkers";
 	private static final String MAXIMUM_POOL_SIZE = "maximumPoolSize";
-	private static final String IS_RESEND_CAPABLE = "isResendCapable";
 	private AgentConfiguration configuration;
 	private AgentModule agentModule;
 	private static final Logger log = LoggerFactory.getLogger(ProcessingAgentBuilder.class);
@@ -201,14 +200,6 @@ public class ProcessingAgentBuilder {
 				throw new ConfigurationException("Invalid property: maxFormatterWorkers.");
 			}
 		}
-
-        if(configuration.getAgentConfigurationParameter(IS_RESEND_CAPABLE)!=null){
-	        try {
-	        	agent.setResendCapable(configuration.getAgentConfigurationParameter(IS_RESEND_CAPABLE).getBooleanValue());
-			} catch (Exception e) {
-				throw new ConfigurationException("Invalid property: queueSize.");
-			}
-        }
 		
         setThreadPoolParameters(agent);        
 	}
@@ -493,17 +484,5 @@ public class ProcessingAgentBuilder {
 			throw new IllegalStateException(CANNOT_SET_MESSAGE);
 		
 		return addNumericParameter(MAXIMUM_POOL_SIZE, amount);
-	}
-	
-	/**Set the resendCapable property on the processing agent
-	 * @param amount
-	 * @return
-	 * @throws IllegalStateException if an agent module is being created.
-	 */
-	public ProcessingAgentBuilder resendCapable(boolean activate) {
-		if(agentModule!=null)
-			throw new IllegalStateException(CANNOT_SET_MESSAGE);
-		
-		return addBooleanParameter(IS_RESEND_CAPABLE, activate);
-	}
+	}	
 }
