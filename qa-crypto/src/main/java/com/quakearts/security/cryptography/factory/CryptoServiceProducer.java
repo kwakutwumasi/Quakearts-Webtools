@@ -19,7 +19,6 @@ import com.quakearts.security.cryptography.CryptoResource;
 import com.quakearts.security.cryptography.cdi.CryptoInstance;
 import com.quakearts.security.cryptography.cdi.CryptoResourceHandle;
 import com.quakearts.security.cryptography.exception.CryptoResourceRuntimeException;
-import com.quakearts.security.cryptography.exception.KeyProviderException;
 
 public class CryptoServiceProducer {
 	private CryptoServiceProducer() {}
@@ -35,7 +34,7 @@ public class CryptoServiceProducer {
 		if(instanceHandle!=null) {
 			try {
 				return CryptoServiceImpl.getInstance().getCryptoResource(instanceHandle.value());
-			} catch (ReflectiveOperationException | GeneralSecurityException | IOException | KeyProviderException e) {
+			} catch (ReflectiveOperationException | GeneralSecurityException | IOException e) {
 				throw new CryptoResourceRuntimeException(e);
 			}
 		} else {

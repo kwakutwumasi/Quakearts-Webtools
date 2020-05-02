@@ -107,7 +107,7 @@ public class JPAConverterTests {
 	
 	@Test
 	public void testEncryptedTypeBaseInvalidKeyStoreFile() {
-		expectedException.expect(CryptoResourceRuntimeException.class);
+		expectedException.expect(DataStoreException.class);
 		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test-invalid-keystorefile");
 		EncryptedStringConverter converter = new EncryptedStringConverter();
 		converter.convertToDatabaseColumn("Test");
@@ -115,7 +115,7 @@ public class JPAConverterTests {
 	
 	@Test
 	public void testEncryptedTypeBaseThrowErrorOnGetKey() {
-		expectedException.expect(CryptoResourceRuntimeException.class);
+		expectedException.expect(DataStoreException.class);
 		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test-throw-error-on-get-key");
 		EncryptedBytesConverter converter = new EncryptedBytesConverter();
 		converter.convertToDatabaseColumn("Test".getBytes());		
@@ -232,7 +232,7 @@ public class JPAConverterTests {
 	
 	@Test
 	public void testEncryptedValueConverterInvalidKeyStoreFile() {
-		expectedException.expect(CryptoResourceRuntimeException.class);
+		expectedException.expect(DataStoreException.class);
 		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test-invalid-keystorefile");
 		EncryptedValueConverter converter = new EncryptedValueConverter();
 		EncryptedValue value = new EncryptedValue();
@@ -243,7 +243,7 @@ public class JPAConverterTests {
 	
 	@Test
 	public void testEncryptedValueConverterThrowErrorOnGetKey() {
-		expectedException.expect(CryptoResourceRuntimeException.class);
+		expectedException.expect(DataStoreException.class);
 		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test-throw-error-on-get-key");
 		EncryptedValueConverter converter = new EncryptedValueConverter();
 		EncryptedValue value = new EncryptedValue();
@@ -366,7 +366,7 @@ public class JPAConverterTests {
 	
 	@Test
 	public void testEncryptedValueStringConverterInvalidKeyStoreFile() {
-		expectedException.expect(CryptoResourceRuntimeException.class);
+		expectedException.expect(DataStoreException.class);
 		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test-invalid-keystorefile");
 		EncryptedValueStringConverter converter = new EncryptedValueStringConverter();
 		EncryptedValue value = new EncryptedValue();
@@ -377,7 +377,7 @@ public class JPAConverterTests {
 	
 	@Test
 	public void testEncryptedValueStringConverterThrowErrorOnGetKey() {
-		expectedException.expect(CryptoResourceRuntimeException.class);
+		expectedException.expect(DataStoreException.class);
 		MockDataStoreFactory.getMap().put("com.quakearts.cryptoname", "test-throw-error-on-get-key");
 		EncryptedValueStringConverter converter = new EncryptedValueStringConverter();
 		EncryptedValue value = new EncryptedValue();

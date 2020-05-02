@@ -12,18 +12,14 @@ package com.quakearts.security.cryptography.jpa;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.logging.Logger;
-
 import com.quakearts.security.cryptography.CryptoResource;
 import com.quakearts.security.cryptography.exception.CryptoResourceRuntimeException;
-import com.quakearts.security.cryptography.exception.KeyProviderException;
 import com.quakearts.security.cryptography.factory.CryptoServiceImpl;
 import com.quakearts.webapp.orm.DataStoreFactory;
 
 public abstract class EncryptedTypeBase {
 
 	private CryptoResource resource;
-	private static final Logger log = Logger.getLogger(EncryptedTypeBase.class.getName());
 
 	protected CryptoResource getCryptoResource() {
 		if (resource == null) {
@@ -33,8 +29,7 @@ public abstract class EncryptedTypeBase {
 
 				resource = CryptoServiceImpl.getInstance().getCryptoResource(resourceName);
 			} catch (ReflectiveOperationException | GeneralSecurityException
-					| IOException | KeyProviderException e) {
-				log.severe("Cannot perform cryptography: " + e.getMessage() + ". " + e.getClass().getName());
+					| IOException e) {
 				throw new CryptoResourceRuntimeException(e);
 			}
 		}

@@ -20,6 +20,7 @@ import com.quakearts.security.cryptography.exception.KeyProviderException;
  * @author kwakutwumasi-afriyie
  *
  */
+@FunctionalInterface
 public interface KeyProvider {
 	/**Get the cryptographic key to use in operations
 	 * @return the cryptographic key
@@ -30,5 +31,5 @@ public interface KeyProvider {
 	 * @param props a map of the configuration properties
 	 */
 	@SuppressWarnings("rawtypes")
-	public void setProperties(Map props);
+	public default void setProperties(Map props){}
 }

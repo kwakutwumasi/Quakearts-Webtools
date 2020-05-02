@@ -21,9 +21,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.quakearts.security.cryptography.exception.CryptoResourceRuntimeException;
 import com.quakearts.security.cryptography.exception.KeyProviderException;
 import com.quakearts.security.cryptography.provider.KeyProvider;
 
@@ -34,21 +32,19 @@ public class KeystoreKeyProvider implements KeyProvider {
 	private String storePass;
 	private String keyPass;
 	private String keyAlias;
-	
-	private static final Logger log = Logger.getLogger(KeystoreKeyProvider.class.getName());
-		
+			
 	@Override
 	public Key getKey() throws KeyProviderException {			
 		if(keyStoreType == null)
-			throw new NullPointerException("keyStoreType is null");
+			throw new CryptoResourceRuntimeException("keyStoreType is null");
 		if(keyStoreFile == null)
-			throw new NullPointerException("keyfile is null");
+			throw new CryptoResourceRuntimeException("keyfile is null");
 		if(keyAlias == null)
-			throw new NullPointerException("keyAlias is null");
+			throw new CryptoResourceRuntimeException("keyAlias is null");
 		if(keyPass == null)
-			throw new NullPointerException("keyPass is null");
+			throw new CryptoResourceRuntimeException("keyPass is null");
 		if(storePass == null)
-			throw new NullPointerException("storePass is null");
+			throw new CryptoResourceRuntimeException("storePass is null");
 		
 		KeyStore store;
 		try {
@@ -66,7 +62,6 @@ public class KeystoreKeyProvider implements KeyProvider {
 			store.load(stream, storePass.toCharArray());
 			key = store.getKey(keyAlias, keyPass.toCharArray());
 		} catch (IOException | GeneralSecurityException e) {
-			log.log(Level.SEVERE, "Exception " + e.getClass().getName() + ". Message is "+ e.getMessage(),e);
 			throw new KeyProviderException(e);
 		} 
 		return key;

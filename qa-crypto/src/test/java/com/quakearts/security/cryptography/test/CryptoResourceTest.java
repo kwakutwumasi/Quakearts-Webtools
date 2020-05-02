@@ -16,6 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import javax.crypto.spec.SecretKeySpec;
+import javax.security.auth.DestroyFailedException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -26,6 +27,7 @@ import org.junit.rules.ExpectedException;
 import com.quakearts.security.cryptography.CryptoResource;
 import com.quakearts.security.cryptography.exception.IllegalCryptoActionException;
 import com.quakearts.security.cryptography.exception.KeyProviderException;
+import com.quakearts.security.cryptography.provider.KeyProvider;
 import com.quakearts.tools.test.generator.primitives.StringGenerator;
 import com.quakearts.tools.test.generator.primitives.StringRandomGenerator;
 
@@ -47,7 +49,7 @@ public class CryptoResourceTest {
 	public class TestTriplet {
 		private String plainText, cipherText, decryptedPlainText;
 		
-		public TestTriplet(StringRandomGenerator<String> generator, CryptoResource cryptoResource) throws IllegalCryptoActionException {
+		public TestTriplet(StringRandomGenerator<String> generator, CryptoResource cryptoResource) throws IllegalCryptoActionException, KeyProviderException {
 			plainText = generator.generateRandom();
 			cipherText = cryptoResource.doEncrypt(plainText);
 			decryptedPlainText = cryptoResource.doDecrypt(cipherText);
@@ -283,7 +285,6 @@ public class CryptoResourceTest {
 		CryptoResource.hexAsByte("acdab1e4bbbcf359b5a5520d4c1fce8");
 	}
 	
-	
 	@Test
 	public void testHexAsByteWithInvalidNumberInHexString() throws Exception {
 		expectedException.expect(IllegalCryptoActionException.class);
@@ -292,29 +293,8 @@ public class CryptoResourceTest {
 		CryptoResource.hexAsByte("zcdab1e4bbbcf359b5a5520d4c1fce88");
 	}
 
-	private Key getBlowfishKey() throws KeyProviderException {
-		byte[] key;
-		try {
-			key = "testkey".getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new KeyProviderException(e);
-		}
-
-		MessageDigest sha;
-		try {
-			sha = MessageDigest.getInstance("SHA-1");
-		} catch (NoSuchAlgorithmException e) {
-			throw new KeyProviderException(e);
-		}
-
-		key = sha.digest(key);
-		key = Arrays.copyOf(key, 4); // use only first 32 bits
-
-		SecretKeySpec secretKeySpec = new SecretKeySpec(key, "Blowfish");
-		return secretKeySpec;
-	}
-
-	private Key getAESKey() throws KeyProviderException {
+	@Test
+	public void testKeyDestroyedAfterUsage() throws Exception {
 		byte[] key;
 		try {
 			key = "testkey".getBytes("UTF-8");
@@ -332,7 +312,141 @@ public class CryptoResourceTest {
 		key = sha.digest(key);
 		key = Arrays.copyOf(key, 16); // use only first 128 bits
 
-		SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
-		return secretKeySpec;
+		SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES"){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -4281264114614150478L;
+
+			boolean destroyed;
+			@Override
+			public void destroy() throws DestroyFailedException {
+				destroyed = true;
+			}
+			
+			@Override
+			public boolean isDestroyed() {
+				return destroyed;
+			}
+		};
+		CryptoResource cryptoResource = new CryptoResource(()->secretKeySpec, "AES", "SunJCE");
+		
+		cryptoResource.doEncrypt("test");
+		
+		assertThat(secretKeySpec.isDestroyed(), is(true));
+		
+		SecretKeySpec secretKeySpecWithDestroyExceptionMessage = new SecretKeySpec(key, "AES"){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -4281264114614150478L;
+
+			@Override
+			public void destroy() throws DestroyFailedException {
+				throw new DestroyFailedException("Show this warning");
+			}
+			
+		};
+		
+		new CryptoResource(()->secretKeySpecWithDestroyExceptionMessage, "AES", "SunJCE").doEncrypt("test");
+	}
+	
+	@Test
+	public void testUseNonDestroyableKey() throws Exception {
+		byte[] key;
+		try {
+			key = "testkey".getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new KeyProviderException(e);
+		}
+
+		MessageDigest sha;
+		try {
+			sha = MessageDigest.getInstance("SHA-1");
+		} catch (NoSuchAlgorithmException e) {
+			throw new KeyProviderException(e);
+		}
+
+		key = sha.digest(key);
+		key = Arrays.copyOf(key, 16); 
+		
+		byte[] keyFinal = key;
+		
+		Key secretKeySpec = new Key() {
+			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -5343829418407629626L;
+			SecretKeySpec keySpec = new SecretKeySpec(keyFinal, "AES");
+			
+			@Override
+			public String getFormat() {
+				return keySpec.getFormat();
+			}
+			
+			@Override
+			public byte[] getEncoded() {
+				return keySpec.getEncoded();
+			}
+			
+			@Override
+			public String getAlgorithm() {
+				return keySpec.getAlgorithm();
+			}
+		};
+		
+		CryptoResource cryptoResource = new CryptoResource(()->secretKeySpec, "AES", "SunJCE");
+		try {
+			cryptoResource.doEncrypt("test");
+		} catch (Exception e) {
+			fail("Exception thrown: "+e.getMessage());
+		}
+	}
+	
+	private KeyProvider getBlowfishKey() throws KeyProviderException {
+		return ()->{
+			byte[] key;
+			try {
+				key = "testkey".getBytes("UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				throw new KeyProviderException(e);
+			}
+
+			MessageDigest sha;
+			try {
+				sha = MessageDigest.getInstance("SHA-1");
+			} catch (NoSuchAlgorithmException e) {
+				throw new KeyProviderException(e);
+			}
+
+			key = sha.digest(key);
+			key = Arrays.copyOf(key, 4); // use only first 32 bits
+
+			return new SecretKeySpec(key, "Blowfish");
+		};
+	}
+
+	private KeyProvider getAESKey() throws KeyProviderException {
+		return ()->{
+			byte[] key;
+			try {
+				key = "testkey".getBytes("UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				throw new KeyProviderException(e);
+			}
+
+			MessageDigest sha;
+			try {
+				sha = MessageDigest.getInstance("SHA-1");
+			} catch (NoSuchAlgorithmException e) {
+				throw new KeyProviderException(e);
+			}
+
+			key = sha.digest(key);
+			key = Arrays.copyOf(key, 16); // use only first 128 bits
+
+			return new SecretKeySpec(key, "AES");
+		};
 	}
 }

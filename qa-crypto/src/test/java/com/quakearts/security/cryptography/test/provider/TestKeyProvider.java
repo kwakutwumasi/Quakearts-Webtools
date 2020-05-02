@@ -38,8 +38,7 @@ public class TestKeyProvider implements KeyProvider {
 		key = sha.digest(key);
 		key = Arrays.copyOf(key, 16); // use only first 128 bit
 
-		SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
-		return secretKeySpec;
+		return new SecretKeySpec(key, "AES");
 	}
 
 	@SuppressWarnings("rawtypes")

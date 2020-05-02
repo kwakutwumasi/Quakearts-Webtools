@@ -4,12 +4,16 @@ import static org.hamcrest.core.Is.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.security.Key;
 import java.util.Properties;
+
+import javax.security.auth.Destroyable;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import com.quakearts.security.cryptography.exception.CryptoResourceRuntimeException;
 import com.quakearts.security.cryptography.exception.KeyProviderException;
 import com.quakearts.security.cryptography.provider.impl.KeystoreKeyProvider;
 
@@ -37,7 +41,9 @@ public class KeystoreKeyProviderTest {
 				+"test.keystore");
 		keyProvider.setProperties(properties);
 		
-		assertNotNull(keyProvider.getKey());
+		Key key = keyProvider.getKey();
+		assertNotNull(key);
+		assertThat(key instanceof Destroyable, is(true));
 	}
 
 	@Test
@@ -52,7 +58,7 @@ public class KeystoreKeyProviderTest {
 
 	@Test
 	public void testGetKeyWithoutKeyStoreType() throws Exception {
-		expectedException.expect(NullPointerException.class);
+		expectedException.expect(CryptoResourceRuntimeException.class);
 		expectedException.expectMessage(is("keyStoreType is null"));
 		KeystoreKeyProvider keyProvider = new KeystoreKeyProvider();
 		Properties properties = new Properties();
@@ -63,7 +69,7 @@ public class KeystoreKeyProviderTest {
 
 	@Test
 	public void testGetKeyWithoutKeyfile() throws Exception {
-		expectedException.expect(NullPointerException.class);
+		expectedException.expect(CryptoResourceRuntimeException.class);
 		expectedException.expectMessage(is("keyfile is null"));
 		KeystoreKeyProvider keyProvider = new KeystoreKeyProvider();
 		Properties properties = new Properties();
@@ -75,7 +81,7 @@ public class KeystoreKeyProviderTest {
 
 	@Test
 	public void testGetKeyWithoutKeyAlias() throws Exception {
-		expectedException.expect(NullPointerException.class);
+		expectedException.expect(CryptoResourceRuntimeException.class);
 		expectedException.expectMessage(is("keyAlias is null"));
 		KeystoreKeyProvider keyProvider = new KeystoreKeyProvider();
 		Properties properties = new Properties();
@@ -90,7 +96,7 @@ public class KeystoreKeyProviderTest {
 
 	@Test
 	public void testGetKeyWithoutKeyPass() throws Exception {
-		expectedException.expect(NullPointerException.class);
+		expectedException.expect(CryptoResourceRuntimeException.class);
 		expectedException.expectMessage(is("keyPass is null"));
 		KeystoreKeyProvider keyProvider = new KeystoreKeyProvider();
 		Properties properties = new Properties();
@@ -106,7 +112,7 @@ public class KeystoreKeyProviderTest {
 
 	@Test
 	public void testGetKeyWithoutStorePass() throws Exception {
-		expectedException.expect(NullPointerException.class);
+		expectedException.expect(CryptoResourceRuntimeException.class);
 		expectedException.expectMessage(is("storePass is null"));
 		KeystoreKeyProvider keyProvider = new KeystoreKeyProvider();
 		Properties properties = new Properties();

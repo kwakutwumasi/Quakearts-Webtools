@@ -33,8 +33,7 @@ public class TestBlowfishKeyProvider implements KeyProvider {
 		key = sha.digest(key);
 		key = Arrays.copyOf(key, 4); // use only first 32 bits
 
-		SecretKeySpec secretKeySpec = new SecretKeySpec(key, "Blowfish");
-		return secretKeySpec;
+		return new SecretKeySpec(key, "Blowfish");
 	}
 
 	@SuppressWarnings("rawtypes")

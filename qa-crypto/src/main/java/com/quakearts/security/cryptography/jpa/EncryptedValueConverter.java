@@ -3,6 +3,7 @@ package com.quakearts.security.cryptography.jpa;
 import javax.persistence.AttributeConverter;
 
 import com.quakearts.security.cryptography.exception.IllegalCryptoActionException;
+import com.quakearts.security.cryptography.exception.KeyProviderException;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 
 public class EncryptedValueConverter extends EncryptedValueBase implements AttributeConverter<EncryptedValue, byte[]> {		
@@ -22,7 +23,7 @@ public class EncryptedValueConverter extends EncryptedValueBase implements Attri
 			System.arraycopy("|".getBytes(), 0, storedValue, attribute.getDataStoreName().length(), 1);
 			System.arraycopy(encrypted, 0, storedValue, attribute.getDataStoreName().length()+1, encrypted.length);
 			return storedValue;
-		} catch (IllegalCryptoActionException e) {
+		} catch (IllegalCryptoActionException | KeyProviderException e) {
 			throw new DataStoreException("Exception " + e.getClass().getName() + ". Message is "
 					+ e.getMessage(),e);
 		}
@@ -55,7 +56,7 @@ public class EncryptedValueConverter extends EncryptedValueBase implements Attri
 		try {
 			value.setValue(getCryptoResource(value.getDataStoreName()).doDecrypt(encrypted));
 			return value;
-		} catch (IllegalCryptoActionException e) {
+		} catch (IllegalCryptoActionException | KeyProviderException e) {
 			throw new DataStoreException("Exception " + e.getClass().getName() + ". Message is "
 					+ e.getMessage(),e);
 		}

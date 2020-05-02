@@ -18,7 +18,6 @@ import java.util.Map;
 import javax.crypto.NoSuchPaddingException;
 
 import com.quakearts.security.cryptography.CryptoResource;
-import com.quakearts.security.cryptography.exception.KeyProviderException;
 
 public interface CryptoService {
 
@@ -32,14 +31,12 @@ public interface CryptoService {
 	 * @throws ClassNotFoundException the key provider class could not be found
 	 * @throws InstantiationException the key provider class could not be instantiated
 	 * @throws IllegalAccessException the key provider class could not be instantiated
-	 * @throws KeyProviderException the key provider class could not be instantiated
 	 * @throws NoSuchAlgorithmException the cryptographic algorithm is invalid
 	 * @throws NoSuchPaddingException the cryptographic algorithm is invalid
 	 * @throws NoSuchProviderException the cryptographic provider name is invalid
 	 */
 	CryptoResource getCryptoResource(String instance, String provider, String keyProviderClass, Map<Object, Object> properties,
-			String name) throws ClassNotFoundException, InstantiationException, IllegalAccessException,
-			KeyProviderException, NoSuchAlgorithmException, NoSuchPaddingException, NoSuchProviderException;
+			String name) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchAlgorithmException, NoSuchPaddingException, NoSuchProviderException;
 
 	/**Obtain a cryptographic resource with the given name
 	 * @param name the name to give the resource
@@ -48,12 +45,11 @@ public interface CryptoService {
 	 * @throws ClassNotFoundException the key provider class could not be found
 	 * @throws InstantiationException the key provider class could not be instantiated
 	 * @throws IllegalAccessException the key provider class could not be instantiated
-	 * @throws KeyProviderException the key provider class could not be instantiated
 	 * @throws NoSuchAlgorithmException the cryptographic algorithm is invalid
 	 * @throws NoSuchPaddingException the cryptographic algorithm is invalid
 	 * @throws NoSuchProviderException the cryptographic provider name is invalid
 	 */
 	CryptoResource getCryptoResource(String name) throws IOException, ClassNotFoundException, InstantiationException,
-			IllegalAccessException, NoSuchAlgorithmException, NoSuchPaddingException, KeyProviderException, NoSuchProviderException;
+			IllegalAccessException, NoSuchAlgorithmException, NoSuchPaddingException, NoSuchProviderException;
 
 }

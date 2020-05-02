@@ -5,7 +5,6 @@ import static org.hamcrest.core.Is.*;
 
 import java.io.UnsupportedEncodingException;
 import java.security.AllPermission;
-import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Permission;
@@ -20,6 +19,7 @@ import org.junit.rules.ExpectedException;
 import com.quakearts.security.cryptography.CryptoResource;
 import com.quakearts.security.cryptography.exception.KeyProviderException;
 import com.quakearts.security.cryptography.permission.CryptographyOperationPermission;
+import com.quakearts.security.cryptography.provider.KeyProvider;
 
 public class CryptographyOperationPermissionTest {
 
@@ -141,7 +141,7 @@ public class CryptographyOperationPermissionTest {
 		}
 	}
 	
-	private Key getAESKey() throws KeyProviderException {
+	private KeyProvider getAESKey() throws KeyProviderException {
 		byte[] key;
 		try {
 			key = "testkey".getBytes("UTF-8");
@@ -160,6 +160,6 @@ public class CryptographyOperationPermissionTest {
 		key = Arrays.copyOf(key, 16); // use only first 128 bits
 
 		SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
-		return secretKeySpec;
+		return ()->secretKeySpec;
 	}
 }

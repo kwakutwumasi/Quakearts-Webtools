@@ -21,10 +21,8 @@ import com.quakearts.security.cryptography.factory.CryptoServiceImpl;
 import com.quakearts.security.cryptography.factory.KeyProviderFactory;
 import com.quakearts.security.cryptography.test.injecterror.TestInjectInvalidClass;
 import com.quakearts.security.cryptography.test.injecterror.TestInjectInvalidInstance;
-import com.quakearts.security.cryptography.test.injecterror.TestInjectInvalidKeyStoreFile;
 import com.quakearts.security.cryptography.test.injecterror.TestInjectMissingHandle;
 import com.quakearts.security.cryptography.test.injecterror.TestInjectNonExistent;
-import com.quakearts.security.cryptography.test.injecterror.TestInjectThrowErrorOnGetKey;
 import com.quakearts.security.cryptography.test.provider.TestKeyProvider;
 import com.quakearts.webtools.test.CDIRunner;
 
@@ -62,19 +60,7 @@ public class CryptoServiceProducerTest {
 		expectedException.expect(CryptoResourceRuntimeException.class);
 		CDI.current().select(TestInjectInvalidInstance.class).get();	
 	}
-	
-	@Test
-	public void testGetAndUseCryptoResourceWithInvalidKeyStoreFile() {
-		expectedException.expect(CryptoResourceRuntimeException.class);
-		CDI.current().select(TestInjectInvalidKeyStoreFile.class).get();	
-	}
-	
-	@Test
-	public void testGetAndUseCryptoResourceWithThrowErrorOnGetKey() {
-		expectedException.expect(CryptoResourceRuntimeException.class);
-		CDI.current().select(TestInjectThrowErrorOnGetKey.class).get();	
-	}
-	
+		
 	@Test
 	public void testGetAndUseCryptoResourceWithNonExistent() {
 		expectedException.expect(CryptoResourceRuntimeException.class);

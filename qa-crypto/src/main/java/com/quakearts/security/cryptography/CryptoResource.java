@@ -19,9 +19,16 @@ import java.util.regex.Pattern;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
+import javax.security.auth.DestroyFailedException;
+import javax.security.auth.Destroyable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.quakearts.security.cryptography.exception.IllegalCryptoActionException;
+import com.quakearts.security.cryptography.exception.KeyProviderException;
 import com.quakearts.security.cryptography.permission.CryptographyOperationPermission;
+import com.quakearts.security.cryptography.provider.KeyProvider;
 
 /**A Cryptographic resource that can be used for symetric encryptions.
  * If the algorithm requires an initialization vector, the resource automatically
@@ -34,39 +41,41 @@ import com.quakearts.security.cryptography.permission.CryptographyOperationPermi
  */
 public class CryptoResource {
 	private static final String INVALID_HEXIDECIMAL_STRING = "Invalid hexidecimal string";
-	private Key secretKey;
+	private KeyProvider keyProvider;
 	private CryptographyOperationPermission decryptPermission;
 	private CryptographyOperationPermission encryptPermission;
 	private boolean generatesIv;
+	
+	private static final Logger log = LoggerFactory.getLogger(CryptoResource.class);
 
 	private static final Pattern ivPatterns = Pattern.compile(".+/((CBC)|(CFB)|(OFB)|(CTR))/?(.*)?");
 	private Cipher cipher;
 	
 	/**Simple constructor, taking the key and the algorithm instance
-	 * @param key
+	 * @param keyProvider
 	 * @param instance
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchPaddingException
 	 * @throws NoSuchProviderException 
 	 */
-	public CryptoResource(Key key, String instance, String provider) 
+	public CryptoResource(KeyProvider keyProvider, String instance, String provider) 
 			throws NoSuchAlgorithmException, NoSuchPaddingException, NoSuchProviderException {
-		this(key,instance, provider, null);
+		this(keyProvider, instance, provider, null);
 	}
 	
 	/**Constructor for use in environments with a security manager. The profile
 	 * is used to load the {@link java.security.Permission Permission} object. It points
 	 * to the profile name in the security properties file to load.
-	 * @param key
+	 * @param keyProvider
 	 * @param instance
 	 * @param securityProfile
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchPaddingException
 	 * @throws NoSuchProviderException 
 	 */
-	public CryptoResource(Key key, String instance, String provider, String securityProfile)
+	public CryptoResource(KeyProvider keyProvider, String instance, String provider, String securityProfile)
 			throws NoSuchAlgorithmException, NoSuchPaddingException, NoSuchProviderException {
-		secretKey = key;
+		this.keyProvider = keyProvider;
 		cipher = Cipher.getInstance(instance, provider);
 		generatesIv = ivPatterns.matcher(instance).matches();
 		if (System.getSecurityManager() != null && securityProfile != null) {
@@ -123,8 +132,9 @@ public class CryptoResource {
 	 * @param cipheredtext the text to decrypt
 	 * @return the decrypted cipher text
 	 * @throws IllegalCryptoActionException if decryption failed
+	 * @throws KeyProviderException 
 	 */
-	public String doDecrypt(String cipheredtext) throws IllegalCryptoActionException {
+	public String doDecrypt(String cipheredtext) throws IllegalCryptoActionException, KeyProviderException {
 		if (cipheredtext == null || cipheredtext.trim().isEmpty())
 			return "";
 
@@ -137,8 +147,9 @@ public class CryptoResource {
 	 * @param plaintext the text to encrypt
 	 * @return the encrypted plain text
 	 * @throws IllegalCryptoActionException if encryption failed
+	 * @throws KeyProviderException if there is an exception loading the encryption keys
 	 */
-	public String doEncrypt(String plaintext) throws IllegalCryptoActionException {
+	public String doEncrypt(String plaintext) throws IllegalCryptoActionException, KeyProviderException {
 		if (plaintext == null || plaintext.trim().isEmpty())
 			return "";
 
@@ -149,8 +160,9 @@ public class CryptoResource {
 	 * @param cipheredtext the text to decrypt
 	 * @return the decrypted cipher text
 	 * @throws IllegalCryptoActionException if decryption failed
+	 * @throws KeyProviderException 
 	 */
-	public byte[] doDecrypt(byte[] cipheredtext) throws IllegalCryptoActionException {
+	public byte[] doDecrypt(byte[] cipheredtext) throws IllegalCryptoActionException, KeyProviderException {
 		SecurityManager manager = System.getSecurityManager();
 		if (manager != null) {
 			manager.checkPermission(decryptPermission);
@@ -159,6 +171,8 @@ public class CryptoResource {
 		if (cipheredtext == null || cipheredtext.length == 0)
 			return new byte[0];
 
+		Key key = keyProvider.getKey();
+		
 		try {
 			byte[] ivPart = null;
 			byte[] cipheredPart = null;
@@ -171,16 +185,18 @@ public class CryptoResource {
 			
 			synchronized(this) {
 				if(generatesIv) {
-					cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(ivPart));
+					cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(ivPart));
 					return cipher.doFinal(cipheredPart);
 				} else {
-					cipher.init(Cipher.DECRYPT_MODE, secretKey);
+					cipher.init(Cipher.DECRYPT_MODE, key);
 					return cipher.doFinal(cipheredtext);
 				}
 			}
 		} catch (GeneralSecurityException e) {
 			throw new IllegalCryptoActionException(
 					"Error decrypting text.\nException " + e.getClass().getName() + ". Message is " + e.getMessage(),e);
+		} finally {
+			destroyKey(key);
 		}
 	}
 
@@ -188,8 +204,9 @@ public class CryptoResource {
 	 * @param plaintext the text to encrypt
 	 * @return the encrypted plain text
 	 * @throws IllegalCryptoActionException if encryption failed
+	 * @throws KeyProviderException 
 	 */
-	public byte[] doEncrypt(byte[] plaintext) throws IllegalCryptoActionException {
+	public byte[] doEncrypt(byte[] plaintext) throws IllegalCryptoActionException, KeyProviderException {
 		SecurityManager manager = System.getSecurityManager();
 		if (manager != null) {
 			manager.checkPermission(encryptPermission);
@@ -198,11 +215,12 @@ public class CryptoResource {
 		if (plaintext == null || plaintext.length == 0)
 			return new byte[0];
 
+		Key key = keyProvider.getKey();
 		try {
 			byte[] ciphertext;
 			byte[] iv = null;
 			synchronized(this) {
-				cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+				cipher.init(Cipher.ENCRYPT_MODE, key);
 				ciphertext = cipher.doFinal(plaintext);
 				if(generatesIv)
 					iv = cipher.getIV();
@@ -219,6 +237,22 @@ public class CryptoResource {
 			
 		} catch (GeneralSecurityException e) {
 			throw new IllegalCryptoActionException("Cryptographic service failure.\n" + e.getMessage(), e.getCause());
+		} finally {
+			destroyKey(key);
+		}
+	}
+
+	private void destroyKey(Key key) {
+		if(key instanceof Destroyable) {
+			try {
+				((Destroyable)key).destroy();
+			} catch (DestroyFailedException e) {
+				//The default implementation simply throws DestroyFailedException
+				//Simply ignore if so. Otherwise, show warning
+				if(e.getMessage()!=null)
+					log.warn("The key was not destroyed. {}", e.getMessage());
+				// Just log this, since the default implementation of destroyable throws DestroyFailedException
+			}
 		}
 	}
 }

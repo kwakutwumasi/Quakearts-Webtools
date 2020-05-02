@@ -13,6 +13,7 @@ package com.quakearts.security.cryptography.jpa;
 import javax.persistence.AttributeConverter;
 
 import com.quakearts.security.cryptography.exception.IllegalCryptoActionException;
+import com.quakearts.security.cryptography.exception.KeyProviderException;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 
 /**A JPA converter for encrypting and decrypting byte fields
@@ -25,10 +26,10 @@ public class EncryptedBytesConverter extends EncryptedTypeBase implements Attrib
 	public byte[] convertToDatabaseColumn(byte[] attribute) {
 		try {
 			if(attribute == null)
-				return null;
+				return null;//default DB behavior
 			
 			return getCryptoResource().doEncrypt(attribute);
-		} catch (IllegalCryptoActionException e) {
+		} catch (IllegalCryptoActionException | KeyProviderException e) {
 			throw new DataStoreException("Exception " + e.getClass().getName() + ". Message is "
 					+ e.getMessage(),e);
 		}
@@ -38,10 +39,10 @@ public class EncryptedBytesConverter extends EncryptedTypeBase implements Attrib
 	public byte[] convertToEntityAttribute(byte[] dbData) {
 		try {
 			if(dbData == null)
-				return null;
+				return null;//default DB behavior
 			
 			return getCryptoResource().doDecrypt(dbData);
-		} catch (IllegalCryptoActionException e) {
+		} catch (IllegalCryptoActionException | KeyProviderException e) {
 			throw new DataStoreException("Exception " + e.getClass().getName() + ". Message is "
 					+ e.getMessage(),e);
 		}

@@ -4,18 +4,14 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
-
 import com.quakearts.security.cryptography.CryptoResource;
 import com.quakearts.security.cryptography.exception.CryptoResourceRuntimeException;
-import com.quakearts.security.cryptography.exception.KeyProviderException;
 import com.quakearts.security.cryptography.factory.CryptoServiceImpl;
 import com.quakearts.webapp.orm.DataStoreFactory;
 
 public class EncryptedValueBase {
 
 	private Map<String, CryptoResource> resources = new ConcurrentHashMap<>();
-	private static final Logger log = Logger.getLogger(EncryptedValueStringConverter.class.getName());
 
 	public EncryptedValueBase() {
 		super();
@@ -30,9 +26,7 @@ public class EncryptedValueBase {
 	
 				resource = CryptoServiceImpl.getInstance().getCryptoResource(resourceName);
 				resources.put(dataStoreName, resource);
-			} catch (ReflectiveOperationException | GeneralSecurityException
-					| IOException | KeyProviderException e) {
-				log.severe("Cannot perform cryptography: " + e.getMessage() + ". " + e.getClass().getName());
+			} catch (ReflectiveOperationException | GeneralSecurityException| IOException e) {
 				throw new CryptoResourceRuntimeException(e);
 			}
 		}
