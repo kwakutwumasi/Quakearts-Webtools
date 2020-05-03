@@ -42,7 +42,6 @@ import com.quakearts.syshub.model.AgentConfigurationParameter.ParameterType;
 import com.quakearts.syshub.model.AgentModule.ModuleType;
 import com.quakearts.syshub.model.ProcessingLog.LogType;
 import com.quakearts.syshub.webapp.helpers.utils.HtmlUtils;
-import com.quakearts.webapp.facelets.util.Base64;
 
 @Named("webappmain")
 @ViewScoped
@@ -125,36 +124,6 @@ public class WebApplicationMain implements Serializable {
 		return LogType.values();
 	}
 	
-	public static class Base64Converter implements Converter {
-
-		@Override
-		public Object getAsObject(FacesContext context, UIComponent component, String value) {
-			try {
-				return Base64.decodeToBytes(value);
-			} catch (IOException e) {
-				FacesContext.getCurrentInstance().addMessage( component.getClientId(), new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Cannot convert Base64 string to bytes"));
-				return null;
-			}
-		}
-
-		@Override
-		public String getAsString(FacesContext context, UIComponent component, Object value) {
-			if(value instanceof byte[])
-				return Base64.encodeBytes((byte[])value);
-			else if(value != null)
-				return Base64.encode(value.toString());
-			
-			return null;
-		}
-		
-	}
-	
-	private transient Converter base64Converter = new Base64Converter();
-
-	public Converter getBase64Converter() {
-		return base64Converter;
-	}
-
 	public static class SerializedObjectConverter implements Converter {
 
 		private Serializer serializer = CDI.current().select(Serializer.class).get();

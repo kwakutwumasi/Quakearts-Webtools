@@ -145,13 +145,14 @@
 			<f:convertNumber></f:convertNumber>
 		</h:inputText>
 	</b:formGroup>
-	<b:formGroup>
+	<b:formGroup rendered="#{!processingLogPage.webappmain.inSearchMode}">
 		<label id="messageData_label">Message Data</label>
-		<h:inputTextarea styleClass="form-control" value="#{processingLog.messageData}" rows="5"
-			converter="#{processingLogPage.webappmain.base64Converter}"
-			disabled="#{processingLogPage.webappmain.mode eq 'read'}"
-			rendered="#{!processingLogPage.webappmain.inSearchMode}">			
-		</h:inputTextarea>
+		<b:panel>
+			<h:outputText escape="false"
+				value="#{processingLog.messageData}"
+				converter="#{processingLogPage.webappmain.serializedObjectConverter}">			
+			</h:outputText>
+		</b:panel>
 	</b:formGroup>
 	<b:formGroup>
 		<label id="error_label"><h:selectBooleanCheckbox disabled="#{processingLogPage.webappmain.mode eq 'read'}" value="#{processingLog.error}"></h:selectBooleanCheckbox>Error</label>
