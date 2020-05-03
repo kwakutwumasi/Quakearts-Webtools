@@ -36,6 +36,7 @@
  		<b:selectOneInput disabled="#{processingLogPage.webappmain.mode eq 'read'}"
     		value="#{processingLog.type}">
     		<f:selectItems value="#{processingLogPage.webappmain.logTypes}"></f:selectItems>
+    		<f:selectItem noSelectionOption="true" itemValue="#{null}" itemLabel="Select a type..."></f:selectItem>
     	</b:selectOneInput>
 	</b:formGroup>
 	<c:unique>
@@ -56,6 +57,7 @@
     				<f:selectItems value="#{processingLogPage.agentConfigurationDropdownHelper.foundItems}" 
     					var="agentConfiguration" itemValue="#{agentConfiguration}" itemLabel= "#{agentConfiguration.agentName} ">
     				</f:selectItems>
+		    		<f:selectItem noSelectionOption="true" itemValue="#{null}" itemLabel="None"></f:selectItem>
     				<c:pojoConverter></c:pojoConverter>
     			</b:selectOneInput>
     		</b:formGroup>
@@ -99,6 +101,7 @@
     				<f:selectItems value="#{processingLogPage.agentModuleDropdownHelper.foundItems}" 
     					var="agentModule" itemValue="#{agentModule}" itemLabel= "#{agentModule.moduleClassName} / #{agentModule.moduleName}  ">
     				</f:selectItems>
+		    		<f:selectItem noSelectionOption="true" itemValue="#{null}" itemLabel="None"></f:selectItem>
     				<c:pojoConverter></c:pojoConverter>
     			</b:selectOneInput>
     		</b:formGroup>
@@ -125,7 +128,7 @@
     	</h:panelGroup>	
 	</c:unique>
 	<b:formGroup>
-		<label id="mid_label">Mid</label>
+		<label id="mid_label">Message ID</label>
 		<h:inputText styleClass="form-control" value="#{processingLog.mid}" disabled="#{processingLogPage.webappmain.mode eq 'read'}">
 		</h:inputText>
 	</b:formGroup>
@@ -145,13 +148,14 @@
 			<f:convertNumber></f:convertNumber>
 		</h:inputText>
 	</b:formGroup>
-	<b:formGroup>
+	<b:formGroup rendered="#{!processingLogPage.webappmain.inSearchMode}">
 		<label id="messageData_label">Message Data</label>
-		<h:inputTextarea styleClass="form-control" value="#{processingLog.messageData}" rows="5"
-			converter="#{processingLogPage.webappmain.base64Converter}"
-			disabled="#{processingLogPage.webappmain.mode eq 'read'}"
-			rendered="#{!processingLogPage.webappmain.inSearchMode}">			
-		</h:inputTextarea>
+		<b:panel>
+			<h:outputText escape="false"
+				value="#{processingLog.messageData}"
+				converter="#{processingLogPage.webappmain.serializedObjectConverter}">			
+			</h:outputText>
+		</b:panel>
 	</b:formGroup>
 	<b:formGroup>
 		<label id="error_label"><h:selectBooleanCheckbox disabled="#{processingLogPage.webappmain.mode eq 'read'}" value="#{processingLog.error}"></h:selectBooleanCheckbox>Error</label>

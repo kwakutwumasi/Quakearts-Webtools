@@ -15,7 +15,7 @@
 				<b:glyph value="backward"></b:glyph>Back to search...
 				<c:set as="#{null}" var="#{processingLogPage.webappmain.mode}" />
     			<c:set as="#{null}" var="#{processingLogPage.processingLog}"></c:set>
-				<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+				<f:ajax render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
 			</h:commandLink>
 			<b:row rendered="#{empty processingLogPage.webappmain.mode}">	
 				<b:pagination for="#{table}" pageSize="10"></b:pagination>
@@ -62,7 +62,7 @@
     					<f:facet name="header">
     						Information
     					</f:facet>
-    					<a href="#" data-target="info_#{processingLog.logID}" onclick="b.tgl(this)"><b:glyph value="chevron-down"></b:glyph> Show</a>
+    					<a href="javascript:void(0)" data-target="info_#{processingLog.logID}" onclick="b.tgl(this)"><b:glyph value="chevron-down"></b:glyph> Show</a>
     					<table class="table collapse" id="info_#{processingLog.logID}">
 							<tr>
 								<th>Status Message</th>
@@ -99,7 +99,7 @@
 											</h:outputText>
 										</div>
 									</b:panel>
-									<a href="#"
+									<a href="javascript:void(0)"
 										onclick="$('##{messageDataComp.clientId}').fadeIn('slow')"><b:fa
 										value="window-maximize"></b:fa>Show</a>
 								</td>
@@ -120,13 +120,13 @@
     						<c:set as="read" var="#{processingLogPage.webappmain.mode}" />
 							<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
     					</h:commandLink><br />
-    					<span>
+    					<h:panelGroup rendered="#{processingLogPage.canReprocess(processingLog)}">
 	    					<h:commandLink value="Resend">
 	    						<c:set as="#{processingLog}" var="#{processingLogPage.processingLog}"></c:set>
 								<f:ajax onevent="#{loader.miniAjaxLoader}" render="messages" 
 									listener="#{processingLogPage.retryProcessingMessage}"></f:ajax>
 	    					</h:commandLink>
-    					</span>
+    					</h:panelGroup>
     				</h:column>
     			</b:dataTable>
 			</b:row>

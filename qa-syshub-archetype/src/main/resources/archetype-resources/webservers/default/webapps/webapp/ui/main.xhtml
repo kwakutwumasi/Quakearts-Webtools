@@ -39,15 +39,31 @@
 					<f:facet name="header">
 						<b:fa value="cogs"></b:fa>
 						<h:outputText value="#{webappmain.agentRunner.processingAgent.name}"></h:outputText>
-						<h:commandLink rendered="#{webappmain.agentRunner != null}">
+						<b:button title="Refresh" style="margin-left:10px;" styleClass="btn-xs" rendered="#{webappmain.agentRunner != null}">
 							<b:glyph value="refresh" title="Refresh" style="color:green"></b:glyph>
 							<f:ajax render="agentRunnerDisplay"></f:ajax>
-						</h:commandLink>
-						<h:outputLink value="/ui/agentConfiguration.list.jsf" 
+						</b:button>
+						<h:outputLink style="margin-left:10px;" styleClass="btn btn-default btn-xs" value="/ui/agentConfiguration.list.jsf" 
 							rendered="#{webappmain.agentRunner != null}">
 							<b:glyph value="cog" title="Manage"></b:glyph>
 							<f:param value="#{webappmain.agentRunner.processingAgent.agentConfiguration.id}" name="agentConfiguration"></f:param>
 						</h:outputLink>
+						<h:panelGroup layout="block" style="margin-left:10px;" styleClass="btn-group" rendered="#{webappmain.agentRunner != null}">
+							<b:button styleClass="btn-xs dropdown-toggle" title="Manage Modules" 
+								data-toggle="dropdown">
+								<b:glyph value="menu-hamburger"></b:glyph>
+							</b:button>
+							<ul class="dropdown-menu" role="menu">
+								<ui:repeat var="agentModule" value="#{webappmain.agentModules}">
+									<li>
+										<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/agentModule.list.jsf">
+											#{agentModule.moduleName}
+											<f:param name="agentModule"  value="#{agentModule.id}" />
+										</h:outputLink>
+									</li>
+								</ui:repeat>
+							</ul>
+						</h:panelGroup>
 					</f:facet>
 					<h:panelGroup rendered="#{webappmain.agentRunner != null}">
 						<table class="table">
@@ -178,7 +194,7 @@ if(window.WebSocket){
 	syshub.ws = new WebSocket(syshub.wslocation);
 	syshub.ws.onmessage = function(event) {
 		var message = JSON.parse(event.data);
-		if(message.exception){
+		if(message.exception) {
 			var exception = message.exception;
 
 			var agentName = '';
@@ -192,6 +208,23 @@ if(window.WebSocket){
 			var outWindow = $('#output-window');
 			outWindow.html('<div class="row"><table class="table" style="margin-left: 10px"><tbody><tr><th colspan="2">Exception:</th></tr><tr><td colspan="2">'
 					+exception+'</td></tr><tr><th>Agent</th><td>'
+					+agentName+'</td></tr><tr><th>Module</th><td>'
+					+moduleName+'</td></tr></tbody></table></div>'
+					+syshub.topten(outWindow));
+		} else if(message.updateData) {
+			var updateData = message.updateData;
+
+			var agentName = '';
+			if(message.agentName)
+				agentName = message.agentName;				
+
+			var moduleName = '';
+			if(message.moduleName)
+				moduleName = message.moduleName;				
+			if(message.agentName)
+			var outWindow = $('#output-window');
+			outWindow.html('<div class="row"><table class="table" style="margin-left: 10px"><tbody><tr><th colspan="2">Update:</th></tr><tr><td colspan="2">'
+					+updateData+'</td></tr><tr><th>Agent</th><td>'
 					+agentName+'</td></tr><tr><th>Module</th><td>'
 					+moduleName+'</td></tr></tbody></table></div>'
 					+syshub.topten(outWindow));

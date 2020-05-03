@@ -15,7 +15,7 @@
 				<b:glyph value="backward"></b:glyph>Back to search...
 				<c:set as="#{null}" var="#{agentModulePage.webappmain.mode}" />
     			<c:set as="#{null}" var="#{agentModulePage.agentModule}"></c:set>
-				<f:ajax execute="@form" render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+				<f:ajax render="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
 			</h:commandLink>
 			<b:row rendered="#{empty agentModulePage.webappmain.mode}">	
 				<b:pagination for="#{table}" pageSize="10"></b:pagination>

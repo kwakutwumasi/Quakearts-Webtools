@@ -8,13 +8,8 @@
 <ui:component>
 	<b:formGroup>
 		<label id="agentName_label">Agent Name</label>
-		<h:inputText styleClass="form-control" disabled="#{agentConfigurationPage.webappmain.mode eq 'read'}"
-			rendered="#{agentConfigurationPage.webappmain.inSearchMode or agentConfigurationPage.webappmain.mode eq 'read' or agentConfigurationPage.webappmain.mode eq 'edit'}"
-			value="#{agentConfiguration.agentName}">
-		</h:inputText>
 		<h:inputText validator="#{agentConfigurationPage.validateAgentName}" 
 			styleClass="form-control" 
-			rendered="#{!agentConfigurationPage.webappmain.inSearchMode and agentConfigurationPage.webappmain.mode != 'read' and agentConfigurationPage.webappmain.mode != 'edit'}"
 			value="#{agentConfiguration.agentName}" >
 		</h:inputText>
 	</b:formGroup>

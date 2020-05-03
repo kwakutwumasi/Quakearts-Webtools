@@ -7,9 +7,10 @@
 			"jsf-impl-2.2.14.jar",
 			"tomcat-embed-websocket-9.0.33.jar",
 			"tomcat-embed-el-9.0.33.jar",
-			"qa-orm-hibernate-web-1.0.1.jar",
+			"qa-orm-hibernate-web-1.1.0.jar",
 			"qa-weldjsf-cdi-1.0.1.jar",
-			"qa-syshub-webapp-1.0.2-deploy.jar"
+			"qa-syshub-webapp-1.1.0-deploy.jar",
+			"${artifactId}-${version}.jar"
 		]
 	},
 	"webapp.directories": {

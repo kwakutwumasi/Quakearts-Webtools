@@ -80,9 +80,10 @@
 							<target name="Copy wars">
 								<echo>Copying Resources</echo>
 								<mkdir dir="target/etc" />
-								<copy todir="target">
-									<fileset dir="server" />
+								<copy todir="target/webservers">
+									<fileset dir="webservers" />
 								</copy>
+								<copy file="live-config/webapp.config.json" toDir="webservers/default/webapps/webapp/META-INF" />
 							</target>
 						</configuration>
 					</execution>
