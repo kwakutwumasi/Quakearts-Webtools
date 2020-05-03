@@ -24,6 +24,7 @@
     				<f:selectItems value="#{agentModulePage.agentConfigurationDropdownHelper.foundItems}" 
     					var="agentConfiguration" itemValue="#{agentConfiguration}" itemLabel= "#{agentConfiguration.agentName} ">
     				</f:selectItems>
+    				<f:selectItem noSelectionOption="true" itemLabel="None" itemValue="#{null}"></f:selectItem>
     				<f:ajax></f:ajax>
     				<c:pojoConverter></c:pojoConverter>
     			</b:selectOneInput>

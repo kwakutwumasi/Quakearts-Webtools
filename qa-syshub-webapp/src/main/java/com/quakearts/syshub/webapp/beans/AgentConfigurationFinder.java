@@ -27,7 +27,7 @@ public class AgentConfigurationFinder extends AbstractSysHubFinder {
 	
 	public List<AgentConfiguration> filterByText(String searchString){
 		return getDataStore().find(AgentConfiguration.class).using(createCriteria()
-					.property("agentName").mustBeLike(searchString)
+					.property("agentName").mustBeLike("%"+searchString+"%")
 					.finish()).thenList();
 	}
 
@@ -35,5 +35,9 @@ public class AgentConfigurationFinder extends AbstractSysHubFinder {
 		return getDataStore().find(AgentConfiguration.class).using(createCriteria()
 				.property("agentName").mustBeEqualTo(searchString)
 				.finish()).thenList();
+	}
+
+	public List<AgentConfiguration> getAll() {
+		return getDataStore().list(AgentConfiguration.class);
 	}
 }

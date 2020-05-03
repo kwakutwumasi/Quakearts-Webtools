@@ -212,6 +212,9 @@ public class AgentConfigurationPage extends BaseBean {
 	private List<AgentConfiguration> agentConfigurationList;
 	
 	public List<AgentConfiguration> getAgentConfigurationList(){
+		if(webappmain.isInSearchMode() && agentConfigurationList == null){
+			agentConfigurationList = finder.getAll();
+		}
 		return agentConfigurationList;
 	}
 	
@@ -221,7 +224,7 @@ public class AgentConfigurationPage extends BaseBean {
 			criteriaMapBuilder.property("active").mustBeEqualTo(agentConfiguration.isActive());
 		}
 		if(agentConfiguration.getAgentName() != null && ! agentConfiguration.getAgentName().trim().isEmpty()){
-			criteriaMapBuilder.property("agentName").mustBeEqualTo(agentConfiguration.getAgentName());
+			criteriaMapBuilder.property("agentName").mustBeLike(agentConfiguration.getAgentName());
 		}
 		if(agentConfiguration.getType() != null){
 			criteriaMapBuilder.property("type").mustBeEqualTo(agentConfiguration.getType());

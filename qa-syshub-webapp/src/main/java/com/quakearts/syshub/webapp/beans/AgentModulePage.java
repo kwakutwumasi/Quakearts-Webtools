@@ -101,7 +101,7 @@ public class AgentModulePage extends BaseBean {
 
 	public void validateAgentName(FacesContext context, UIComponent component, Object value) {
 
-		if(value == null)
+		if(value == null || webappmain.isInSearchMode())
 			return;
 		
 		if(agentModule == null 
@@ -268,6 +268,9 @@ public class AgentModulePage extends BaseBean {
 	private List<AgentModule> agentModuleList;
 
 	public List<AgentModule> getAgentModuleList() {
+		if(webappmain.isInSearchMode() && agentModuleList == null) {
+			agentModuleList = finder.getAll();
+		}
 		return agentModuleList;
 	}
 

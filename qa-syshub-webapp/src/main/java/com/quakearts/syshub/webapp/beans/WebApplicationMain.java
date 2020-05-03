@@ -14,10 +14,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.enterprise.inject.spi.CDI;
 import javax.faces.application.FacesMessage;
@@ -33,12 +37,14 @@ import javax.inject.Named;
 
 import com.quakearts.security.cryptography.jpa.EncryptedValue;
 import com.quakearts.syshub.SysHub;
+import com.quakearts.syshub.core.DataSpooler;
 import com.quakearts.syshub.core.runner.AgentRunner;
 import com.quakearts.syshub.core.runner.ScheduledStateReporter;
 import com.quakearts.syshub.core.runner.TriggeredStateReporter;
 import com.quakearts.syshub.core.utils.Serializer;
 import com.quakearts.syshub.model.AgentConfiguration.RunType;
 import com.quakearts.syshub.model.AgentConfigurationParameter.ParameterType;
+import com.quakearts.syshub.model.AgentModule;
 import com.quakearts.syshub.model.AgentModule.ModuleType;
 import com.quakearts.syshub.model.ProcessingLog.LogType;
 import com.quakearts.syshub.webapp.helpers.utils.HtmlUtils;
@@ -176,7 +182,27 @@ public class WebApplicationMain implements Serializable {
 	}
 
 	public void setAgentRunner(AgentRunner agentRunner) {
-		this.agentRunner = agentRunner;
+		if(agentRunner!= null && !agentRunner.equals(this.agentRunner)) {
+			agentModules = null;
+			this.agentRunner = agentRunner;
+		}
+	}
+	
+	private List<AgentModule> agentModules;
+
+	public List<AgentModule> getAgentModules() {
+		if(agentModules == null && agentRunner != null){
+			agentModules = new ArrayList<>();
+			agentModules.addAll(agentRunner.getProcessingAgent().getDataSpoolers().stream()
+					.map(DataSpooler::getAgentModule).collect(Collectors.toList()));
+			agentModules.addAll(agentRunner.getProcessingAgent().getMessengerFormatterMapper().entrySet().stream()
+					.flatMap(entry -> Stream.of(entry.getKey().getAgentModule(), entry.getValue().getAgentModule()))
+					.collect(Collectors.toList()));
+		} else {
+			agentModules = Collections.emptyList();
+		}
+		
+		return agentModules;
 	}
 	
 	public ScheduledStateReporter getScheduledStateReporter() {

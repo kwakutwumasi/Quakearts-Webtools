@@ -28,6 +28,7 @@ public class AgentModuleFinder extends AbstractSysHubFinder {
 	}
 	
 	public List<AgentModule> filterByText(String searchString){
+		searchString = "%"+searchString+"%";
 		return getDataStore().find(AgentModule.class).using(createCriteria().
 				requireAnyOfTheFollowing()
 					.property("agentClassName").mustBeLike(searchString)
@@ -44,5 +45,9 @@ public class AgentModuleFinder extends AbstractSysHubFinder {
 				.property("moduleName").mustBeLike(searchString)
 				.property("moduleType").mustBeEqualTo(ModuleType.FORMATTER)
 			.finish()).thenList();
+	}
+
+	public List<AgentModule> getAll() {
+		return getDataStore().list(AgentModule.class);
 	}
 }
