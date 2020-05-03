@@ -270,6 +270,7 @@ public class AgentModulePage extends BaseBean {
 	public List<AgentModule> getAgentModuleList() {
 		if(webappmain.isInSearchMode() && agentModuleList == null) {
 			agentModuleList = finder.getAll();
+			agentModuleList.forEach(this::lazyLoadAgentModuleConfigurationMap);
 		}
 		return agentModuleList;
 	}
