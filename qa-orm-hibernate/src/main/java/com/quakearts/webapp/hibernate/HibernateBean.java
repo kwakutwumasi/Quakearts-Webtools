@@ -184,9 +184,9 @@ public abstract class HibernateBean {
 				convert(range.getFrom()), convert(range.getTo()));
 	}
 
-	@SuppressWarnings("unchecked")
-	private<T> Comparable<T> convert(Serializable value) {
-		return (Comparable<T>) value;
+	@SuppressWarnings("rawtypes")
+	private Comparable convert(Serializable value) {
+		return (Comparable) value;
 	}
 }
 
