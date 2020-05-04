@@ -70,6 +70,11 @@
 			<version>10.1.4.Final</version>
 		</dependency>
 		<dependency>
+			<groupId>com.quakearts.webtools</groupId>
+			<artifactId>qa-crypto</artifactId>
+			<version>3.1</version>
+		</dependency>		
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-jdk14</artifactId>
 			<version>1.7.30</version>
