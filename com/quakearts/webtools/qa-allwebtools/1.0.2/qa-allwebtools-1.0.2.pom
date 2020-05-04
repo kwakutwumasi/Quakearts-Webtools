@@ -1,0 +1,43 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.quakearts.webtools</groupId>
+  <artifactId>qa-allwebtools</artifactId>
+  <version>1.0.2</version>
+  <packaging>pom</packaging>
+  <name>All Quakearts Webtools</name>
+  <modules>
+  	<module>../qa-appbase</module>
+  	<module>../qa-appbase-archetype</module>
+  	<module>../qa-appbase-jsf-orm-archetype</module>
+  	<module>../qa-appbase-minimal-archetype</module>
+  	<module>../qa-appbase-resteasy-orm-archetype</module>
+  	<module>../qa-appbase-test-helper</module>
+  	<module>../qa-approval-engine</module>
+  	<module>../qa-auth</module>
+  	<module>../qa-beansupport</module>
+  	<module>../qa-boot</module>
+  	<module>../qa-classpathscanner</module>
+  	<module>../qa-codegenerator-annotations</module>
+  	<module>../qa-common</module>
+  	<module>../qa-common-tools</module>
+  	<module>../qa-commonui</module>
+  	<module>../qa-crypto</module>
+  	<module>../qa-dbloader</module>
+  	<module>../qa-exception</module>
+  	<module>../qa-logging</module>
+  	<module>../qa-message-broker</module>
+  	<module>../qa-orm</module>
+  	<module>../qa-orm-cdi</module>
+  	<module>../qa-orm-hibernate</module>
+  	<module>../qa-orm-hibernate-web</module>
+  	<module>../qa-resteasy-cdi</module>
+  	<module>../qa-resteasy-validation-11</module>
+  	<module>../qa-restsecurity</module>
+  	<module>../qa-resttools</module>
+  	<module>../qa-syshub</module>
+  	<module>../qa-syshub-archetype</module>
+  	<module>../qa-syshub-webapp</module>
+  	<module>../qa-testtools</module>
+  	<module>../qa-weldjsf-cdi</module>
+  </modules>
+</project>
