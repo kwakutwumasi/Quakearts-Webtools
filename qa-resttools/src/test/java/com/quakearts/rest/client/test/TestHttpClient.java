@@ -976,5 +976,10 @@ public class TestHttpClient {
 			return null;
 		}
 
+		@Override
+		public void setId(String id) {
+			// TODO Auto-generated method stub
+		}
+
 	}
 }
