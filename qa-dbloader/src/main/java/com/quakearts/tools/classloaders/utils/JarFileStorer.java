@@ -211,7 +211,7 @@ public class JarFileStorer {
 	 * @return the list of jar files that were deleted
 	 */
 	public JarFile[] cleanOrphanJars(DataStore store) {
-		List<JarFile> files = store.list(JarFile.class, null);
+		List<JarFile> files = store.list(JarFile.class);
 		ArrayList<JarFile> deleteList = new ArrayList<>();
 		for (JarFile file : files) {
 			if (file.getJarFileEntries().isEmpty()) {
