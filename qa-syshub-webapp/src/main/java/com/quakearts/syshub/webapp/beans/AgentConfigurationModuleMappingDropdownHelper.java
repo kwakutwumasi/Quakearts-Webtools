@@ -45,7 +45,8 @@ public class AgentConfigurationModuleMappingDropdownHelper implements Serializab
 		if(foundItems==null)
 			foundItems = new ArrayList<>();
 		
-		foundItems.add(agentConfigurationModuleMapping);
+		if(!foundItems.contains(agentConfigurationModuleMapping))
+			foundItems.add(agentConfigurationModuleMapping);
 	}
 	
 }

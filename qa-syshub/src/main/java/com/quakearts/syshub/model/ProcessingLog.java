@@ -16,6 +16,7 @@ import java.io.Serializable;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -187,6 +188,26 @@ public class ProcessingLog implements Serializable {
 		this.transactionLogs = transactionLogs;
 	}
 	
+	@Override
+	public int hashCode() {
+		return Objects.hash(mid);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		ProcessingLog other = (ProcessingLog) obj;
+		return Objects.equals(mid, other.mid);
+	}
+
 	@Override
 	public String toString() {
 		return Integer.toHexString(this.hashCode()+(int)(logID>0?logID:0));

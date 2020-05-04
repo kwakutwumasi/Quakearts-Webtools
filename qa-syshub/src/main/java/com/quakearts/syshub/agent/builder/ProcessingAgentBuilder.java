@@ -271,7 +271,7 @@ public class ProcessingAgentBuilder {
 	 * @return this {@linkplain ProcessingAgentBuilder} for method chaining
 	 */
 	public ProcessingAgentBuilder messenger(Class<? extends Messenger> messengerClass, String moduleName){
-		return createAgentModule(ModuleType.MESSENGER, messengerClass.getName(), moduleName, null);
+		return messenger(messengerClass, moduleName, null);
 	}
 
 	/**Create a messenger

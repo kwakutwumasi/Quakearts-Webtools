@@ -54,7 +54,8 @@ public class AgentConfigurationParameterDropdownHelper implements Serializable{
 		if(foundItems==null)
 			foundItems = new ArrayList<>();
 		
-		foundItems.add(agentConfigurationParameter);
+		if(!foundItems.contains(agentConfigurationParameter))
+			foundItems.add(agentConfigurationParameter);
 	}
 	
 	private String searchText;

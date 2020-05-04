@@ -54,7 +54,8 @@ public class AgentModuleDropdownHelper implements Serializable{
 		if(foundItems==null)
 			foundItems = new ArrayList<>();
 		
-		foundItems.add(agentModule);
+		if(!foundItems.contains(agentModule))
+			foundItems.add(agentModule);
 	}
 	
 	private String searchText;

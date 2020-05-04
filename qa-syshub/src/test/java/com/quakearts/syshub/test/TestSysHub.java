@@ -3,6 +3,7 @@ package com.quakearts.syshub.test;
 import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.*;
 import static org.hamcrest.core.IsNull.*;
+import static org.hamcrest.core.IsNot.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,10 +52,14 @@ import com.quakearts.syshub.log.LoggerImpl;
 import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 import com.quakearts.syshub.model.AgentConfiguration.RunType;
+import com.quakearts.syshub.model.AgentConfigurationModuleMapping;
 import com.quakearts.syshub.model.AgentConfigurationParameter.ParameterType;
 import com.quakearts.syshub.model.AgentModule.ModuleType;
+import com.quakearts.syshub.model.MaxID;
 import com.quakearts.syshub.model.ProcessingLog.LogType;
 import com.quakearts.syshub.model.ResultExceptionLog;
+import com.quakearts.syshub.model.TransactionLog;
+import com.quakearts.syshub.model.VariableCache;
 import com.quakearts.syshub.model.AgentModule;
 import com.quakearts.syshub.model.ProcessingLog;
 import com.quakearts.syshub.test.helper.ErrorObserver;
@@ -925,7 +930,7 @@ public class TestSysHub {
 			.addBinaryParameter("test1", "value".getBytes())
 			.messageFormatter(TestFormatter1.class,  "Test ProcessingAgentBuilder Module 2")
 			.addBooleanParameter("test2", true)
-			.messenger(TestMessenger1.class, "Test ProcessingAgentBuilder Module 2")
+			.messenger(TestMessenger1.class, "Test ProcessingAgentBuilder Module 3")
 			.addStringParameter("test3", "value", ParameterType.PASSWORD)
 			.map(agentModule1).map(agentModule2)
 			.build();
@@ -1153,6 +1158,251 @@ public class TestSysHub {
 		} finally {
 			transaction.commit();
 		}
+	}
+	
+	@Test
+	public void testModelEquals() throws Exception {
+		assertThat(new AgentConfiguration(), 
+				is(new AgentConfiguration()));
+		AgentConfiguration agentConfiguration1 = new AgentConfiguration();
+		
+		agentConfiguration1.setAgentName("Test");
+		assertThat(agentConfiguration1, is(agentConfiguration1));
+		assertThat(agentConfiguration1.hashCode(), is(agentConfiguration1.hashCode()));
+
+		AgentConfiguration agentConfiguration2 = new AgentConfiguration();
+
+		agentConfiguration1.setAgentName("Test");
+		assertThat(agentConfiguration1, is(not(agentConfiguration2)));
+		assertThat(agentConfiguration1.hashCode(), is(not(agentConfiguration2.hashCode())));
+
+		agentConfiguration2.setAgentName("Test");
+		assertThat(agentConfiguration1, is(agentConfiguration2));
+		assertThat(agentConfiguration1.hashCode(), is(agentConfiguration2.hashCode()));
+		
+		assertThat(agentConfiguration1.equals(null), is(false));
+		assertThat(((Object)agentConfiguration1).equals(""), is(false));
+
+		assertThat(new AgentModule(), is(new AgentModule()));		
+		AgentModule agentModule1 = new AgentModule();
+		AgentModule agentModule2 = new AgentModule();
+		assertThat(agentModule1, is(agentModule1));
+		assertThat(agentModule1.hashCode(), is(agentModule1.hashCode()));
+		agentModule1.setAgentConfiguration(agentConfiguration1);
+		assertThat(agentModule1, is(not(agentModule2)));
+		assertThat(agentModule1.hashCode(), is(not(agentModule2.hashCode())));
+		agentModule2.setAgentConfiguration(agentConfiguration1);
+		assertThat(agentModule1, is(agentModule2));
+		assertThat(agentModule1.hashCode(), is(agentModule2.hashCode()));
+		assertThat(agentModule1, is(agentModule1));
+		assertThat(agentModule1.hashCode(), is(agentModule1.hashCode()));
+		agentModule1.setModuleName("Test");
+		assertThat(agentModule1, is(not(agentModule2)));
+		assertThat(agentModule1.hashCode(), is(not(agentModule2.hashCode())));
+		agentModule2.setModuleName("Test");
+		assertThat(agentModule1, is(agentModule2));
+		assertThat(agentModule1.hashCode(), is(agentModule2.hashCode()));
+		assertThat(agentModule1.equals(null), is(false));
+		assertThat(((Object)agentModule1).equals(""), is(false));
+		
+		assertThat(new AgentConfigurationModuleMapping(), 
+				is(new AgentConfigurationModuleMapping()));
+		
+		AgentConfigurationModuleMapping agentConfigurationModuleMapping1 =
+				new AgentConfigurationModuleMapping();		
+		AgentConfigurationModuleMapping agentConfigurationModuleMapping2 =
+				new AgentConfigurationModuleMapping();
+		
+		assertThat(agentConfigurationModuleMapping1, is(agentConfigurationModuleMapping1));
+		assertThat(agentConfigurationModuleMapping1.hashCode(), is(agentConfigurationModuleMapping1.hashCode()));
+		agentConfigurationModuleMapping1.setAcid(1);
+		assertThat(agentConfigurationModuleMapping1, is(not(agentConfigurationModuleMapping2)));
+		assertThat(agentConfigurationModuleMapping1.hashCode(), is(not(agentConfigurationModuleMapping2.hashCode())));
+		agentConfigurationModuleMapping2.setAcid(1);
+		assertThat(agentConfigurationModuleMapping1, is(agentConfigurationModuleMapping2));
+		assertThat(agentConfigurationModuleMapping1.hashCode(), is(agentConfigurationModuleMapping2.hashCode()));
+		assertThat(agentConfigurationModuleMapping1, is(agentConfigurationModuleMapping1));
+		assertThat(agentConfigurationModuleMapping1.hashCode(), is(agentConfigurationModuleMapping1.hashCode()));
+		agentConfigurationModuleMapping1.setAmid(2);
+		assertThat(agentConfigurationModuleMapping1, is(not(agentConfigurationModuleMapping2)));
+		assertThat(agentConfigurationModuleMapping1.hashCode(), is(not(agentConfigurationModuleMapping2.hashCode())));
+		agentConfigurationModuleMapping2.setAmid(2);
+		assertThat(agentConfigurationModuleMapping1, is(agentConfigurationModuleMapping2));
+		assertThat(agentConfigurationModuleMapping1.hashCode(), is(agentConfigurationModuleMapping2.hashCode()));
+		
+		assertThat(agentConfigurationModuleMapping1.equals(null), is(false));
+		assertThat(((Object)agentConfigurationModuleMapping1).equals(""), is(false));
+		
+		assertThat(new AgentConfigurationParameter(), 
+				is(new AgentConfigurationParameter()));
+		
+		AgentConfigurationParameter agentConfigurationParameter1 =
+				new AgentConfigurationParameter();		
+		AgentConfigurationParameter agentConfigurationParameter2 =
+				new AgentConfigurationParameter();
+		
+		assertThat(agentConfigurationParameter1, is(agentConfigurationParameter1));
+		assertThat(agentConfigurationParameter1.hashCode(), is(agentConfigurationParameter1.hashCode()));
+		agentConfigurationParameter1.setAgentConfiguration(agentConfiguration1);
+		assertThat(agentConfigurationParameter1, is(not(agentConfigurationParameter2)));
+		assertThat(agentConfigurationParameter1.hashCode(), is(not(agentConfigurationParameter2.hashCode())));
+		agentConfigurationParameter2.setAgentConfiguration(agentConfiguration1);
+		assertThat(agentConfigurationParameter1, is(agentConfigurationParameter2));
+		assertThat(agentConfigurationParameter1.hashCode(), is(agentConfigurationParameter2.hashCode()));
+		assertThat(agentConfigurationParameter1, is(agentConfigurationParameter1));
+		assertThat(agentConfigurationParameter1.hashCode(), is(agentConfigurationParameter1.hashCode()));
+		agentConfigurationParameter1.setAgentModule(agentModule1);
+		assertThat(agentConfigurationParameter1, is(not(agentConfigurationParameter2)));
+		assertThat(agentConfigurationParameter1.hashCode(), is(not(agentConfigurationParameter2.hashCode())));
+		agentConfigurationParameter2.setAgentModule(agentModule1);
+		assertThat(agentConfigurationParameter1, is(agentConfigurationParameter2));
+		assertThat(agentConfigurationParameter1.hashCode(), is(agentConfigurationParameter2.hashCode()));
+		assertThat(agentConfigurationParameter1, is(agentConfigurationParameter1));
+		assertThat(agentConfigurationParameter1.hashCode(), is(agentConfigurationParameter1.hashCode()));
+		agentConfigurationParameter1.setName("Test");
+		assertThat(agentConfigurationParameter1, is(not(agentConfigurationParameter2)));
+		assertThat(agentConfigurationParameter1.hashCode(), is(not(agentConfigurationParameter2.hashCode())));
+		agentConfigurationParameter2.setName("Test");
+		assertThat(agentConfigurationParameter1, is(agentConfigurationParameter2));
+		assertThat(agentConfigurationParameter1.hashCode(), is(agentConfigurationParameter2.hashCode()));
+
+		assertThat(agentConfigurationParameter1.equals(null), is(false));
+		assertThat(((Object)agentConfigurationParameter1).equals(""), is(false));
+				
+		assertThat(new MaxID(), is(new MaxID()));
+		MaxID maxID1 = new MaxID();
+		maxID1.setMaxIDName("Test");
+		MaxID maxID2 = new MaxID();
+		assertThat(maxID1, is(not(maxID2)));
+		maxID2.setMaxIDName("Test");
+		assertThat(maxID1, is(maxID2));
+		assertThat(maxID1.equals(null), is(false));
+		assertThat(((Object)maxID1).equals(""), is(false));
+		
+		assertThat(new ProcessingLog(), is(new ProcessingLog()));
+		ProcessingLog processingLog1 = new ProcessingLog();
+		processingLog1.setMid("Test");
+		ProcessingLog processingLog2 = new ProcessingLog();
+		assertThat(processingLog1, is(not(processingLog2)));
+		processingLog2.setMid("Test");
+		assertThat(processingLog1, is(processingLog2));
+		assertThat(processingLog1.equals(null), is(false));
+		assertThat(((Object)processingLog1).equals(""), is(false));
+
+
+		assertThat(new ResultExceptionLog(), is(new ResultExceptionLog()));
+		
+		ResultExceptionLog resultExceptionLog1 = new ResultExceptionLog();
+		ResultExceptionLog resultExceptionLog2 = new ResultExceptionLog();
+
+		Date date = new Date(System.currentTimeMillis()-100000);
+		
+		assertThat(resultExceptionLog1, is(resultExceptionLog1));
+		assertThat(resultExceptionLog1.hashCode(), is(resultExceptionLog1.hashCode()));
+		resultExceptionLog1.setAgentConfiguration(agentConfiguration1);
+		assertThat(resultExceptionLog1, is(not(resultExceptionLog2)));
+		assertThat(resultExceptionLog1.hashCode(), is(not(resultExceptionLog2.hashCode())));
+		resultExceptionLog2.setAgentConfiguration(agentConfiguration1);
+		assertThat(resultExceptionLog1, is(resultExceptionLog2));
+		assertThat(resultExceptionLog1.hashCode(), is(resultExceptionLog2.hashCode()));
+		assertThat(resultExceptionLog1, is(resultExceptionLog1));
+		assertThat(resultExceptionLog1.hashCode(), is(resultExceptionLog1.hashCode()));
+		resultExceptionLog1.setAgentModule(agentModule1);
+		assertThat(resultExceptionLog1, is(not(resultExceptionLog2)));
+		assertThat(resultExceptionLog1.hashCode(), is(not(resultExceptionLog2.hashCode())));
+		resultExceptionLog2.setAgentModule(agentModule1);
+		assertThat(resultExceptionLog1, is(resultExceptionLog2));
+		assertThat(resultExceptionLog1.hashCode(), is(resultExceptionLog2.hashCode()));
+		assertThat(resultExceptionLog1, is(resultExceptionLog1));
+		assertThat(resultExceptionLog1.hashCode(), is(resultExceptionLog1.hashCode()));
+		resultExceptionLog1.setExceptionData("Test".getBytes());
+		assertThat(resultExceptionLog1, is(not(resultExceptionLog2)));
+		assertThat(resultExceptionLog1.hashCode(), is(not(resultExceptionLog2.hashCode())));
+		resultExceptionLog2.setExceptionData("Test".getBytes());
+		assertThat(resultExceptionLog1, is(resultExceptionLog2));
+		assertThat(resultExceptionLog1.hashCode(), is(resultExceptionLog2.hashCode()));
+		assertThat(resultExceptionLog1, is(resultExceptionLog1));
+		assertThat(resultExceptionLog1.hashCode(), is(resultExceptionLog1.hashCode()));
+		resultExceptionLog1.setExceptionDt(date);
+		assertThat(resultExceptionLog1, is(not(resultExceptionLog2)));
+		assertThat(resultExceptionLog1.hashCode(), is(not(resultExceptionLog2.hashCode())));
+		resultExceptionLog2.setExceptionDt(date);
+		assertThat(resultExceptionLog1, is(resultExceptionLog2));
+		assertThat(resultExceptionLog1.hashCode(), is(resultExceptionLog2.hashCode()));
+		assertThat(resultExceptionLog1, is(resultExceptionLog1));
+		assertThat(resultExceptionLog1.hashCode(), is(resultExceptionLog1.hashCode()));
+		resultExceptionLog1.setExceptionType("Test2");
+		assertThat(resultExceptionLog1, is(not(resultExceptionLog2)));
+		assertThat(resultExceptionLog1.hashCode(), is(not(resultExceptionLog2.hashCode())));
+		resultExceptionLog2.setExceptionType("Test2");
+		assertThat(resultExceptionLog1, is(resultExceptionLog2));
+		assertThat(resultExceptionLog1.hashCode(), is(resultExceptionLog2.hashCode()));
+		assertThat(resultExceptionLog1, is(resultExceptionLog1));
+		assertThat(resultExceptionLog1.hashCode(), is(resultExceptionLog1.hashCode()));
+		resultExceptionLog1.setResultData("Test3".getBytes());
+		assertThat(resultExceptionLog1, is(not(resultExceptionLog2)));
+		assertThat(resultExceptionLog1.hashCode(), is(not(resultExceptionLog2.hashCode())));
+		resultExceptionLog2.setResultData("Test3".getBytes());
+		assertThat(resultExceptionLog1, is(resultExceptionLog2));
+		assertThat(resultExceptionLog1.hashCode(), is(resultExceptionLog2.hashCode()));
+		assertThat(resultExceptionLog1.equals(null), is(false));
+		assertThat(((Object)resultExceptionLog1).equals(""), is(false));
+		
+		assertThat(new TransactionLog(), is(new TransactionLog()));
+
+		TransactionLog transactionLog1 = new TransactionLog();
+		TransactionLog transactionLog2 = new TransactionLog();
+		
+		assertThat(transactionLog1, is(transactionLog1));
+		assertThat(transactionLog1.hashCode(), is(transactionLog1.hashCode()));
+		transactionLog1.setAction("Test");
+		assertThat(transactionLog1, is(not(transactionLog2)));
+		assertThat(transactionLog1.hashCode(), is(not(transactionLog2.hashCode())));
+		transactionLog2.setAction("Test");
+		assertThat(transactionLog1, is(transactionLog2));
+		assertThat(transactionLog1.hashCode(), is(transactionLog2.hashCode()));
+		assertThat(transactionLog1, is(transactionLog1));
+		assertThat(transactionLog1.hashCode(), is(transactionLog1.hashCode()));
+		transactionLog1.setProcessingLog(processingLog1);
+		assertThat(transactionLog1, is(not(transactionLog2)));
+		assertThat(transactionLog1.hashCode(), is(not(transactionLog2.hashCode())));
+		transactionLog2.setProcessingLog(processingLog1);
+		assertThat(transactionLog1, is(transactionLog2));
+		assertThat(transactionLog1.hashCode(), is(transactionLog2.hashCode()));
+		assertThat(transactionLog1, is(transactionLog1));
+		assertThat(transactionLog1.hashCode(), is(transactionLog1.hashCode()));
+		transactionLog1.setTranDt(date);
+		assertThat(transactionLog1, is(not(transactionLog2)));
+		assertThat(transactionLog1.hashCode(), is(not(transactionLog2.hashCode())));
+		transactionLog2.setTranDt(date);
+		assertThat(transactionLog1, is(transactionLog2));
+		assertThat(transactionLog1.hashCode(), is(transactionLog2.hashCode()));
+		assertThat(transactionLog1, is(transactionLog1));
+		assertThat(transactionLog1.hashCode(), is(transactionLog1.hashCode()));
+		transactionLog1.setUsername("Name");
+		assertThat(transactionLog1, is(not(transactionLog2)));
+		assertThat(transactionLog1.hashCode(), is(not(transactionLog2.hashCode())));
+		transactionLog2.setUsername("Name");
+		assertThat(transactionLog1, is(transactionLog2));
+		assertThat(transactionLog1.hashCode(), is(transactionLog2.hashCode()));
+		assertThat(transactionLog1.equals(null), is(false));
+		assertThat(((Object)transactionLog1).equals(""), is(false));
+
+		assertThat(new VariableCache(), is(new VariableCache()));
+
+		VariableCache variableCache1 = new VariableCache();
+		VariableCache variableCache2 = new VariableCache();
+		
+		assertThat(variableCache1, is(variableCache1));
+		assertThat(variableCache1.hashCode(), is(variableCache1.hashCode()));
+		variableCache1.setAppKey("Test");
+		assertThat(variableCache1, is(not(variableCache2)));
+		assertThat(variableCache1.hashCode(), is(not(variableCache2.hashCode())));
+		variableCache2.setAppKey("Test");
+		assertThat(variableCache1, is(variableCache2));
+		assertThat(variableCache1.hashCode(), is(variableCache2.hashCode()));
+		assertThat(variableCache1.equals(null), is(false));
+		assertThat(((Object)variableCache1).equals(""), is(false));
 	}
 	
 	private void pause(long time){

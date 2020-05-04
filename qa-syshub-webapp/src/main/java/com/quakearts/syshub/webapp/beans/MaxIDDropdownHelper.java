@@ -54,7 +54,8 @@ public class MaxIDDropdownHelper implements Serializable{
 		if(foundItems==null)
 			foundItems = new ArrayList<>();
 		
-		foundItems.add(maxID);
+		if(!foundItems.contains(maxID))
+			foundItems.add(maxID);
 	}
 	
 	private String searchText;

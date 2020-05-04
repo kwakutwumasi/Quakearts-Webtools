@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -198,6 +199,26 @@ public class AgentConfiguration implements Serializable {
 		}
 	}
 	
+	@Override
+	public int hashCode() {
+		return Objects.hash(agentName);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		AgentConfiguration other = (AgentConfiguration) obj;
+		return Objects.equals(agentName, other.agentName);
+	}
+
 	@Override
 	public String toString() {
 		return Integer.toHexString(this.hashCode()+id>0?id:0);

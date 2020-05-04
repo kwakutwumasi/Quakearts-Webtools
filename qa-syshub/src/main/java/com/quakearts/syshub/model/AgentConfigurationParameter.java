@@ -12,6 +12,7 @@ package com.quakearts.syshub.model;
 
 import java.io.Serializable;
 import java.util.Base64;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -235,6 +236,29 @@ public class AgentConfigurationParameter implements Serializable {
 			return new byte[0];
 	}
 	
+	
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(agentConfiguration, agentModule, name);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		AgentConfigurationParameter other = (AgentConfigurationParameter) obj;
+		return Objects.equals(agentConfiguration, other.agentConfiguration)
+				&& Objects.equals(agentModule, other.agentModule) && Objects.equals(name, other.name);
+	}
+
 	@Override
 	public String toString() {
 		return Integer.toHexString(this.hashCode()+(id>0?id:0));

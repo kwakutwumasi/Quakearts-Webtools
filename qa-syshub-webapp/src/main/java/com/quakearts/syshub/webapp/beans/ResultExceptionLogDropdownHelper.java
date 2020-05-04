@@ -54,7 +54,8 @@ public class ResultExceptionLogDropdownHelper implements Serializable{
 		if(foundItems==null)
 			foundItems = new ArrayList<>();
 		
-		foundItems.add(resultExceptionLog);
+		if(!foundItems.contains(resultExceptionLog))
+			foundItems.add(resultExceptionLog);
 	}
 	
 	private String searchText;

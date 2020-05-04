@@ -54,7 +54,8 @@ public class VariableCacheDropdownHelper implements Serializable{
 		if(foundItems==null)
 			foundItems = new ArrayList<>();
 		
-		foundItems.add(variableCache);
+		if(!foundItems.contains(variableCache))
+			foundItems.add(variableCache);
 	}
 	
 	private String searchText;

@@ -54,7 +54,8 @@ public class ProcessingLogDropdownHelper implements Serializable{
 		if(foundItems==null)
 			foundItems = new ArrayList<>();
 		
-		foundItems.add(processingLog);
+		if(!foundItems.contains(processingLog))
+			foundItems.add(processingLog);
 	}
 	
 	private String searchText;

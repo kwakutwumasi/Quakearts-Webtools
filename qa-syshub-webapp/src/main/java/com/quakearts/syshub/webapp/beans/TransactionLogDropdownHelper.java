@@ -54,7 +54,8 @@ public class TransactionLogDropdownHelper implements Serializable{
 		if(foundItems==null)
 			foundItems = new ArrayList<>();
 		
-		foundItems.add(transactionLog);
+		if(!foundItems.contains(transactionLog))
+			foundItems.add(transactionLog);
 	}
 	
 	private String searchText;

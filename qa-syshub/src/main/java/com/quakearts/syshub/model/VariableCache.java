@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.quakearts.syshub.model;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -56,6 +58,26 @@ public class VariableCache implements java.io.Serializable {
 
 	public void setAppData(byte[] appData) {
 		this.appData = appData;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(appKey);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		VariableCache other = (VariableCache) obj;
+		return Objects.equals(appKey, other.appKey);
 	}
 
 	@Override

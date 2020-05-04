@@ -11,6 +11,7 @@
 package com.quakearts.syshub.model;
 
 import java.util.Date;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -90,6 +91,27 @@ public class TransactionLog implements java.io.Serializable {
 
 	public void setTranDt(Date tranDt) {
 		this.tranDt = tranDt;
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(action, processingLog, tranDt, username);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		TransactionLog other = (TransactionLog) obj;
+		return Objects.equals(action, other.action) && Objects.equals(processingLog, other.processingLog)
+				&& Objects.equals(tranDt, other.tranDt) && Objects.equals(username, other.username);
 	}
 
 	@Override

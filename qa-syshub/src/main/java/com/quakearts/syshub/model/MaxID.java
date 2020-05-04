@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.quakearts.syshub.model;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -71,6 +73,26 @@ public class MaxID implements java.io.Serializable {
 
 	@Override
 	public String toString() {
-		return Integer.toHexString(this.hashCode()+(int)(id>0?id:0));
+		return Integer.toHexString(this.hashCode()+(id>0?id:0));
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(maxIDName);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		MaxID other = (MaxID) obj;
+		return Objects.equals(maxIDName, other.maxIDName);
 	}
 }
