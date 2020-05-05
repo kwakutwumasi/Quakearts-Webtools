@@ -67,6 +67,7 @@
 			<f:facet name="label">
 				<b:fa value="lock" />
 			</f:facet>
+			<f:ajax listener="#{parameter.parameterChanged}" onevent="#{loader.overlayAjaxLoader}"></f:ajax>
 		</b:inputText>
 		<b:inputText disabled="#{disabled}" data-overlay-target="buttonsDiv"
 			rendered="#{parameter.type != 'LONGSTRING' and parameter.type != 'NUMERIC' and parameter.type != 'BOOLEAN' and parameter.type != 'LIST' and parameter.type != 'PASSWORD'}"
