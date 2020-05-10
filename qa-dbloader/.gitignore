@@ -22,3 +22,5 @@ local.properties
 .classpath
 /derby.log
 /test/
+/super/
+/default/

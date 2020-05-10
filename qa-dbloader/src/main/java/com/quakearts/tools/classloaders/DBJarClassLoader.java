@@ -13,18 +13,15 @@ package com.quakearts.tools.classloaders;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.zip.ZipInputStream;
+import java.util.jar.JarInputStream;
+
 import com.quakearts.tools.classloaders.hibernate.JarFileEntry;
-import com.quakearts.tools.classloaders.utils.UtilityMethods;
 import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.DataStoreFactory;
 import com.quakearts.webapp.orm.exception.DataStoreException;
-
+import static com.quakearts.tools.classloaders.utils.UtilityMethods.findZipEntry;
 /**A classloader that uses JPA to load and store class files. 
  * Useful for projects that may require dynamic deployment of 
  * plugin-like operations.
@@ -33,8 +30,16 @@ import com.quakearts.webapp.orm.exception.DataStoreException;
  */
 public class DBJarClassLoader extends ClassLoader {
 
+	private static final String JAVA_PROTOCOL_HANDLER_PKGS = "java.protocol.handler.pkgs";
 	private static final ConcurrentHashMap<Long, byte[]> CACHED_JARS = new ConcurrentHashMap<>();
 	private String domain;
+	
+	static {
+		String existingHandlers = System.getProperties().contains(JAVA_PROTOCOL_HANDLER_PKGS)
+				?System.getProperties().getProperty(JAVA_PROTOCOL_HANDLER_PKGS)+"|":"";
+		existingHandlers+="com.quakearts.tools";
+		System.setProperty(JAVA_PROTOCOL_HANDLER_PKGS, existingHandlers);
+	}
 	
 	/**Constructor that uses the current thread context classloader as it's parent
 	 * 
@@ -68,7 +73,6 @@ public class DBJarClassLoader extends ClassLoader {
 		this.domain = domain;
 	}
 
-	
 	/**Get a class from storage using the passed in name
 	 * @param name the name of the class in persistent storage
 	 * @return The class
@@ -80,20 +84,16 @@ public class DBJarClassLoader extends ClassLoader {
 	
 	@Override
 	protected Class<?> findClass(String className) throws ClassNotFoundException {
-		try{
+		try {
 			JarFileEntry classObject = loadEntry(className.replace(".", "/") +".class");
 			if(classObject==null)
 				throw new ClassNotFoundException("Class "+className+" does not exist in database");
 			else
 				return defineClass(classObject,className);
-		}catch (DataStoreException e) {
+		} catch (DataStoreException | IOException e) {
 			throw new ClassNotFoundException("Exception of type " + e.getClass().getName()
 					+ " was thrown. Message is " + e.getMessage()
 					+ ". Exception occured whiles finding class in database.",e);
-		} catch (IOException e) {
-			throw new ClassNotFoundException("Exception of type " + e.getClass().getName()
-					+ " was thrown. Message is " + e.getMessage()
-					+ ". Exception occured whiles loading class from jar stream.",e);
 		}
 	}
 
@@ -107,6 +107,16 @@ public class DBJarClassLoader extends ClassLoader {
 	}
 
 	private byte[] getBytes(JarFileEntry jarFileEntry) throws IOException{
+		JarInputStream jarStream = getStream(jarFileEntry);
+		
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		for(int c=jarStream.read();c!=-1;c=jarStream.read())
+			bos.write(c);
+		
+		return bos.toByteArray();
+	}
+
+	private JarInputStream getStream(JarFileEntry jarFileEntry) throws IOException {
 		ByteArrayInputStream in;
 		byte[] cachedJar;
 		if((cachedJar = CACHED_JARS.get(jarFileEntry.getJarId()))!=null)
@@ -114,17 +124,11 @@ public class DBJarClassLoader extends ClassLoader {
 		else
 			in = new ByteArrayInputStream(jarFileEntry.getJarFile().getJarData());
 
-		ZipInputStream jarStream = new ZipInputStream(in);
+		JarInputStream jarStream = new JarInputStream(in);
 		String entryFileName = jarFileEntry.getId();
-		if(UtilityMethods.findZipEntry(entryFileName, jarStream)==null)
+		if(findZipEntry(entryFileName, jarStream)==null)
 			throw new IOException("No such jar entry in jarfile: "+entryFileName);
-		else{
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			for(int c=jarStream.read();c!=-1;c=jarStream.read())
-				bos.write(c);
-			
-			return bos.toByteArray();
-		}
+		return jarStream;
 	}
 
 	private Class<?> defineClass(JarFileEntry classObject, String className) throws IOException {
@@ -133,16 +137,15 @@ public class DBJarClassLoader extends ClassLoader {
 	}
 
 	@Override
-	protected URL findResource(String name) {
-		
-		byte[] bytes;		
+	protected URL findResource(String name) {		
 		try {
 			JarFileEntry entry = loadEntry(name);
 			if(entry==null)
 				return null;
 			
-			bytes = getBytes(entry);
-			return new URL(null, "jardbresource://jar.file.id"+entry.getJarId()+"/"+name, new BytesUrlStreamHandler(bytes));
+			String url = domain+"/"+entry.getJarId()+"/"+name;
+			Handler.cache(url, getStream(entry));
+			return new URL("classloaders://"+url);
 		} catch (IOException e1) {
 			return null;
 		}
@@ -161,40 +164,4 @@ public class DBJarClassLoader extends ClassLoader {
 	public void setDomain(String domain) {
 		this.domain = domain;
 	}
-
-	/**Inner class for creating a {@linkplain URLStreamHandler} for resource URLs returned by this classloader
-	 * @author kwakutwumasi-afriyie
-	 *
-	 */
-	public static class BytesUrlStreamHandler extends URLStreamHandler {
-		byte[] bytes;
-		public BytesUrlStreamHandler(byte[] bytes) {
-			this.bytes = bytes;
-		}
-		protected URLConnection openConnection(URL u) throws IOException {
-			return new BytesUrlConnection(bytes, u);
-		}
-	}
-
-	/**Inner class for creating a {@linkplain URLConnection} for resource URLs returned by this classloader
-	 * @author kwakutwumasi-afriyie
-	 *
-	 */
-	public static class BytesUrlConnection extends URLConnection {
-		byte[] bytes = null;
-		public BytesUrlConnection(byte[] bytes, URL u) {
-			super(u);
-			this.bytes = bytes;
-		}
-		
-		@Override
-		public void connect() throws IOException {
-			//Do nothing
-		}
-		
-		@Override
-		public InputStream getInputStream() throws IOException {
-			return new ByteArrayInputStream(bytes);
-		}
-	}	
 }

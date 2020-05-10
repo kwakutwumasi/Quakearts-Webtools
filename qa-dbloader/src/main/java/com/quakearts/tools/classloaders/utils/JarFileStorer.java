@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -26,6 +27,7 @@ import com.quakearts.tools.classloaders.hibernate.JarFileEntry;
 import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.DataStoreFactory;
 import com.quakearts.webapp.orm.exception.DataStoreException;
+import static com.quakearts.tools.classloaders.utils.UtilityMethods.findZipEntry;
 
 /**A utility class for storing jar files. Unzips the jar file, 
  * traverses its contents then adds the class files to persistent storage
@@ -138,8 +140,8 @@ public class JarFileStorer {
 			StringBuilder summaryBuilder, int savecount, JarFileEntry duplicateJarFileEntry) throws IOException {
 		summaryBuilder.append(zipEntry.getName()).append(" already exists in database");
 		JarFile duplicateFile = duplicateJarFileEntry.getJarFile();
-		ZipInputStream duplicateJarStream = new ZipInputStream(new ByteArrayInputStream(duplicateFile.getJarData()));
-		ZipEntry duplicateZipEntry = UtilityMethods.findZipEntry(duplicateJarFileEntry.getId(), duplicateJarStream);
+		JarInputStream duplicateJarStream = new JarInputStream(new ByteArrayInputStream(duplicateFile.getJarData()));
+		ZipEntry duplicateZipEntry = findZipEntry(duplicateJarFileEntry.getId(), duplicateJarStream);
 		if(duplicateZipEntry == null){
 			updateEmptyDuplicateEntry(store, jarFile, summaryBuilder, duplicateJarFileEntry);
 			++savecount;			

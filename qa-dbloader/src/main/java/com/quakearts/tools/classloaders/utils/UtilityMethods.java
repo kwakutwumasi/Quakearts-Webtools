@@ -16,13 +16,13 @@ import java.util.zip.ZipInputStream;
 
 public class UtilityMethods {
 	
+	private UtilityMethods() {}
+	
 	public static ZipEntry findZipEntry(String entryFileName, ZipInputStream jarStream) throws IOException {
 		ZipEntry zipEntry=null;
 		while((zipEntry = jarStream.getNextEntry())!=null){
-			if(zipEntry.isDirectory())
-				continue;
-
-			if(zipEntry.getName().equals(entryFileName)){
+			if(!zipEntry.isDirectory() 
+					&& zipEntry.getName().equals(entryFileName)){
 				break;
 			}
 		}
