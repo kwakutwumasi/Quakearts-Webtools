@@ -135,7 +135,7 @@ public class ApprovalProcessPage extends BaseBean {
 	
 	public boolean isInSearchMode(){
 		return FacesContext.getCurrentInstance().getViewRoot().getViewId().endsWith("list.xhtml") 
-				&& approvalapp.getMode() == null || approvalapp.getMode().trim().isEmpty();
+				&& (approvalapp.getMode() == null || approvalapp.getMode().trim().isEmpty());
 	}
 	
 	private List<Approval> approvals;
