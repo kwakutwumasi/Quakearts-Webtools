@@ -43,7 +43,14 @@
 								</tr>
 								<tr>
 									<th>Action</th>
-									<td>#{approval.action}</td>
+									<td>
+										<h:panelGroup rendered="#{approval.action eq 'APPROVED'}">
+											<b:glyph value="check" style="color:green" /> Approved
+										</h:panelGroup>
+										<h:panelGroup rendered="#{approval.action eq 'REJECTED'}">
+											<b:glyph value="remove" style="color:red" /> Rejected
+										</h:panelGroup>
+									</td>
 								</tr>
 								<tr>
 									<th>Approval Date</th>

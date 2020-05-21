@@ -94,6 +94,34 @@
 					<ui:include src="../cp/process.crud.xhtml">
 						<ui:param name="process" value="#{processPage.process}"></ui:param>
 					</ui:include>
+					<h:panelGroup rendered="#{processPage.approvalapp.mode eq 'read'}">
+						<b:dataTable value="#{processPage.approvals}" var="approval">
+							<h:column>
+								<f:facet name="header">
+									Approver ID
+								</f:facet>
+								#{approval.approver.externalId} #{approval.approver.group.name}
+							</h:column>
+							<h:column>
+								<f:facet name="header">
+									Date
+								</f:facet>
+								<h:outputText value="#{approval.approvalDate}"
+											converter="#{processPage.approvalapp.converter}" />
+							</h:column>
+							<h:column>
+								<f:facet name="header">
+									Action
+								</f:facet>
+								<h:panelGroup rendered="#{approval.action eq 'APPROVED'}">
+									<b:glyph value="check" style="color:green" /> Approved
+								</h:panelGroup>
+								<h:panelGroup rendered="#{approval.action eq 'REJECTED'}">
+									<b:glyph value="remove" style="color:red" /> Rejected
+								</h:panelGroup>
+							</h:column>
+						</b:dataTable>
+					</h:panelGroup>
 					<c:secure roles="Update.AE">
 						<b:buttonGroup rendered="#{processPage.approvalapp.mode eq 'edit'}">
 							<b:button>

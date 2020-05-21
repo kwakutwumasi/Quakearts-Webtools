@@ -12,6 +12,7 @@ import com.quakearts.webapp.orm.query.Range;
 import com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.approvalengine.model.ApprovalProcess;
+import com.quakearts.approvalengine.model.Approval;
 import com.quakearts.approvalengine.model.ApprovalGroup;
 
 @Named("processPage")
@@ -70,6 +71,7 @@ public class ApprovalProcessPage extends BaseBean {
 			if(group!=null){
 				getApprovalGroupDropdownHelper().addToFoundItemsList(group);
 			}
+			approvals = null;
 		}
 	}
 	
@@ -134,5 +136,14 @@ public class ApprovalProcessPage extends BaseBean {
 	public boolean isInSearchMode(){
 		return FacesContext.getCurrentInstance().getViewRoot().getViewId().endsWith("list.xhtml") 
 				&& approvalapp.getMode() == null || approvalapp.getMode().trim().isEmpty();
+	}
+	
+	private List<Approval> approvals;
+	
+	public List<Approval> getApprovals() {
+		if(approvals == null && process != null) {
+			approvals = finder.findApprovals(process);
+		}
+		return approvals;
 	}
 }

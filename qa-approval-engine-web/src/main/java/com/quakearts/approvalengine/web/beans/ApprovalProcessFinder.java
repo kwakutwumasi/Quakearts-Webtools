@@ -6,6 +6,7 @@ import javax.inject.Singleton;
 import com.quakearts.webapp.orm.DataStoreFactory;
 import com.quakearts.webapp.orm.cdi.annotation.DataStoreFactoryHandle;
 import com.quakearts.webapp.orm.query.criteria.CriteriaMap;
+import com.quakearts.approvalengine.model.Approval;
 import com.quakearts.approvalengine.model.ApprovalProcess;
 @Singleton
 public class ApprovalProcessFinder {	
@@ -35,5 +36,12 @@ public class ApprovalProcessFinder {
 					.filterBy("group.name").withAValueLike(suggestion+"%")
 					.thenList();
 		}
+	}
+
+	public List<Approval> findApprovals(ApprovalProcess process) {
+		return dataStoreFactory.getDataStore().find(Approval.class)
+				.filterBy("approvalProcess").withAValueEqualTo(process)
+				.filterBy("valid").withAValueEqualTo(Boolean.TRUE)
+				.thenList();
 	}
 }
