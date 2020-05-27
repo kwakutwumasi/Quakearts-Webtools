@@ -10,13 +10,14 @@
  ******************************************************************************/
 package com.quakearts.tools.test.mockserver.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**Implemented by classes that hold HTTP header values
  * @author kwakutwumasi-afriyie
  *
  */
-public interface HttpHeader {
+public interface HttpHeader extends Serializable {
 	/**Get the header name
 	 * @return the header name
 	 */

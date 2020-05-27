@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.quakearts.tools.test.mockserver.model.HttpHeader;
 import com.quakearts.tools.test.mockserver.model.HttpRequest;
@@ -125,36 +126,30 @@ class HttpRequestImpl extends HttpMessageImpl implements HttpRequest {
 	public boolean hasParameter(String name) {
 		return uriParameters!=null?uriParameters.containsKey(name):false;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((method == null) ? 0 : method.hashCode());
-		result = prime * result + ((resource == null) ? 0 : resource.hashCode());
+		result = prime * result + Objects.hash(id, method, resource, response, uriParameters);
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (!super.equals(obj))
+		}
+		if (!super.equals(obj)) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		HttpRequestImpl other = (HttpRequestImpl) obj;
-		if (method == null) {
-			if (other.method != null)
-				return false;
-		} else if (!method.equals(other.method))
-			return false;
-		if (resource == null) {
-			if (other.resource != null)
-				return false;
-		} else if (!resource.equals(other.resource))
-			return false;
-		return super.equals(obj);
+		return Objects.equals(id, other.id) && Objects.equals(method, other.method)
+				&& Objects.equals(resource, other.resource) && Objects.equals(response, other.response)
+				&& Objects.equals(uriParameters, other.uriParameters);
 	}
 
 	@Override

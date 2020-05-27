@@ -5,9 +5,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.quakearts.tools.test.mockserver.model.HttpHeader;
@@ -19,7 +22,7 @@ abstract class HttpMessageImpl implements Serializable, HttpMessage {
 	 * 
 	 */
 	private static final long serialVersionUID = 2699839481501156721L;
-	Map<String, HttpHeader> headers = new HashMap<String, HttpHeader>();
+	Map<String, HttpHeader> headers = new HashMap<>();
 	byte[] contentBytes;
 	String contentEncoding = "UTF-8";
 	
@@ -28,9 +31,8 @@ abstract class HttpMessageImpl implements Serializable, HttpMessage {
 	 */
 	@Override
 	public Collection<HttpHeader> getHeaders() {
-		return headers.entrySet().stream().map((entry)->{
-			return entry.getValue();
-		}).collect(Collectors.toCollection(ArrayList::new));
+		return headers.entrySet().stream().map(Entry::getValue)
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 	
 	@Override
@@ -48,7 +50,7 @@ abstract class HttpMessageImpl implements Serializable, HttpMessage {
 				&& headers.get(name)!=null)
 			return headers.get(name).getValues();
 			
-		return null;
+		return Collections.emptyList();
 	}
 	
 	/* (non-Javadoc)
@@ -74,38 +76,29 @@ abstract class HttpMessageImpl implements Serializable, HttpMessage {
 	public String getContent() throws UnsupportedEncodingException {
 		return new String(contentBytes, contentEncoding);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + Arrays.hashCode(contentBytes);
-		result = prime * result + ((contentEncoding == null) ? 0 : contentEncoding.hashCode());
-		result = prime * result + ((headers == null) ? 0 : headers.hashCode());
+		result = prime * result + Objects.hash(contentEncoding, headers);
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		HttpMessageImpl other = (HttpMessageImpl) obj;
-		if (!Arrays.equals(contentBytes, other.contentBytes))
-			return false;
-		if (contentEncoding == null) {
-			if (other.contentEncoding != null)
-				return false;
-		} else if (!contentEncoding.equals(other.contentEncoding))
-			return false;
-		if (headers == null) {
-			if (other.headers != null)
-				return false;
-		} else if (!headers.equals(other.headers))
-			return false;
-		return true;
-	}		
+		return Arrays.equals(contentBytes, other.contentBytes) && Objects.equals(contentEncoding, other.contentEncoding)
+				&& Objects.equals(headers, other.headers);
+	}
 }

@@ -11,6 +11,7 @@
 package com.quakearts.tools.test.mockserver.model.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Objects;
 
 import com.quakearts.tools.test.mockserver.model.HttpHeader;
 import com.quakearts.tools.test.mockserver.model.HttpResponse;
@@ -45,27 +46,28 @@ class HttpResponseImpl extends HttpMessageImpl implements HttpResponse {
 	public int getResponseCode() {
 		return responseCode;
 	}
-
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + responseCode;
+		result = prime * result + Objects.hash(responseCode);
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (!super.equals(obj))
+		}
+		if (!super.equals(obj)) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		HttpResponseImpl other = (HttpResponseImpl) obj;
-		if (responseCode != other.responseCode)
-			return false;
-		return super.equals(obj);
+		return responseCode == other.responseCode;
 	}
 
 	@Override
