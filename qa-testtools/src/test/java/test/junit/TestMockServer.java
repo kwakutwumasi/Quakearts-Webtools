@@ -306,6 +306,34 @@ public class TestMockServer {
 			assertThat(httpRequest.getResponse().getHeaders().isEmpty(), is(false));
 			assertThat(httpRequest.getResponse().getContent(), is("{\"test\":\"value\"}"));
 			file.delete();
+			
+			connection = (HttpURLConnection) new URL("http://localhost:4084/test/404").openConnection();
+			connection.setRequestMethod("GET");
+			connection.addRequestProperty("Content-Type", "application/json");
+			connection.setDoInput(true);
+			connection.connect();
+			assertThat(connection.getResponseCode(), is(404));
+			bos = new ByteArrayOutputStream();
+			in = connection.getErrorStream();
+			while ((read=in.read())!=-1) {
+				bos.write(read);
+			}
+			assertThat(new String(bos.toByteArray()), is("{\"test\":\"value\"}"));		
+			connection.disconnect();
+			file = new File("http-messages"+File.separator+"GET-https---localhost-4443-test-404.mock");
+			assertThat(file.exists(), is(true));
+			httpRequest = MockServletHttpMessageStore.getInstance().findRequestIdentifiedBy("GET-https://localhost:4443/test/404");
+			assertThat(httpRequest.getMethod(), is("GET"));
+			assertThat(httpRequest.getResource(), is("/test/404"));
+			assertThat(httpRequest.getHeaders()!=null, is(true));
+			assertThat(httpRequest.getHeaders().isEmpty(), is(false));
+			assertThat(httpRequest.getContentBytes() == null, is(true));
+			assertThat(httpRequest.getResponse()!=null, is(true));
+			assertThat(httpRequest.getResponse().getResponseCode(), is(404));
+			assertThat(httpRequest.getResponse().getHeaders()!=null, is(true));
+			assertThat(httpRequest.getResponse().getHeaders().isEmpty(), is(false));
+			assertThat(httpRequest.getResponse().getContent(), is("{\"test\":\"value\"}"));
+			file.delete();
 						
 			connection = (HttpURLConnection) new URL("http://localhost:4084/test").openConnection();
 			connection.setRequestMethod("POST");
@@ -333,6 +361,68 @@ public class TestMockServer {
 			assertThat(httpRequest.getContent(), is("{\"test\":\"value\"}"));
 			assertThat(httpRequest.getResponse()!=null, is(true));
 			assertThat(httpRequest.getResponse().getResponseCode(), is(200));
+			assertThat(httpRequest.getResponse().getHeaders()!=null, is(true));
+			assertThat(httpRequest.getResponse().getHeaders().isEmpty(), is(false));
+			assertThat(httpRequest.getResponse().getContent(), is("{\"status\":\"ok\"}"));
+			file.delete();
+			
+			connection = (HttpURLConnection) new URL("http://localhost:4084/test/202").openConnection();
+			connection.setRequestMethod("POST");
+			connection.addRequestProperty("Content-Type", "application/json");
+			connection.setDoInput(true);
+			connection.setDoOutput(true);
+			connection.getOutputStream().write("{\"test\":\"value\"}".getBytes());
+			connection.connect();
+			assertThat(connection.getResponseCode(), is(202));
+			bos = new ByteArrayOutputStream();
+			in = connection.getInputStream();
+			while ((read=in.read())!=-1) {
+				bos.write(read);
+			}
+			assertThat(new String(bos.toByteArray()), is("{\"status\":\"ok\"}"));
+			connection.disconnect();
+
+			file = new File("http-messages"+File.separator+"POST-https---localhost-4443-test-202.mock");
+			assertThat(file.exists(), is(true));			
+			httpRequest = MockServletHttpMessageStore.getInstance().findRequestIdentifiedBy("POST-https://localhost:4443/test/202");
+			assertThat(httpRequest.getMethod(), is("POST"));
+			assertThat(httpRequest.getResource(), is("/test/202"));
+			assertThat(httpRequest.getHeaders()!=null, is(true));
+			assertThat(httpRequest.getHeaders().isEmpty(), is(false));
+			assertThat(httpRequest.getContent(), is("{\"test\":\"value\"}"));
+			assertThat(httpRequest.getResponse()!=null, is(true));
+			assertThat(httpRequest.getResponse().getResponseCode(), is(202));
+			assertThat(httpRequest.getResponse().getHeaders()!=null, is(true));
+			assertThat(httpRequest.getResponse().getHeaders().isEmpty(), is(false));
+			assertThat(httpRequest.getResponse().getContent(), is("{\"status\":\"ok\"}"));
+			file.delete();	
+			
+			connection = (HttpURLConnection) new URL("http://localhost:4084/test/299").openConnection();
+			connection.setRequestMethod("POST");
+			connection.addRequestProperty("Content-Type", "application/json");
+			connection.setDoInput(true);
+			connection.setDoOutput(true);
+			connection.getOutputStream().write("{\"test\":\"value\"}".getBytes());
+			connection.connect();
+			assertThat(connection.getResponseCode(), is(299));
+			bos = new ByteArrayOutputStream();
+			in = connection.getInputStream();
+			while ((read=in.read())!=-1) {
+				bos.write(read);
+			}
+			assertThat(new String(bos.toByteArray()), is("{\"status\":\"ok\"}"));
+			connection.disconnect();
+
+			file = new File("http-messages"+File.separator+"POST-https---localhost-4443-test-299.mock");
+			assertThat(file.exists(), is(true));			
+			httpRequest = MockServletHttpMessageStore.getInstance().findRequestIdentifiedBy("POST-https://localhost:4443/test/299");
+			assertThat(httpRequest.getMethod(), is("POST"));
+			assertThat(httpRequest.getResource(), is("/test/299"));
+			assertThat(httpRequest.getHeaders()!=null, is(true));
+			assertThat(httpRequest.getHeaders().isEmpty(), is(false));
+			assertThat(httpRequest.getContent(), is("{\"test\":\"value\"}"));
+			assertThat(httpRequest.getResponse()!=null, is(true));
+			assertThat(httpRequest.getResponse().getResponseCode(), is(299));
 			assertThat(httpRequest.getResponse().getHeaders()!=null, is(true));
 			assertThat(httpRequest.getResponse().getHeaders().isEmpty(), is(false));
 			assertThat(httpRequest.getResponse().getContent(), is("{\"status\":\"ok\"}"));
@@ -484,6 +574,21 @@ public class TestMockServer {
 						.thenBuild())
 				.add(MockActionBuilder.createNewMockAction()
 						.setRequestAs(HttpMessageBuilder
+									.createNewHttpRequest()
+									.setId("testId1")
+									.setMethodAs("GET")
+									.setResourceAs("/test/404")
+									.addHeaders(new HttpHeaderImpl("Content-Type", "application/json"))
+									.setResponseAs(HttpMessageBuilder
+										.createNewHttpResponse()
+										.setContentBytes("{\"test\":\"value\"}".getBytes())
+										.setResponseCodeAs(404)
+										.addHeaders(new HttpHeaderImpl("Content-Type", "application/json"))
+										.thenBuild())
+									.thenBuild())
+							.thenBuild())
+				.add(MockActionBuilder.createNewMockAction()
+						.setRequestAs(HttpMessageBuilder
 								.createNewHttpRequest()
 								.setId("testId2")
 								.setMethodAs("POST")
@@ -495,6 +600,40 @@ public class TestMockServer {
 									.createNewHttpResponse()
 									.setContentBytes("{\"status\":\"ok\"}".getBytes())
 									.setResponseCodeAs(200)
+									.addHeaders(new HttpHeaderImpl("Content-Type", "application/json"))
+									.thenBuild())
+								.thenBuild())
+						.thenBuild())
+				.add(MockActionBuilder.createNewMockAction()
+						.setRequestAs(HttpMessageBuilder
+								.createNewHttpRequest()
+								.setId("testId2.1")
+								.setMethodAs("POST")
+								.setResourceAs("/test/202")
+								.setContentBytes("{\"test\":\"value\"}".getBytes())
+								.addHeaders(new HttpHeaderImpl("Content-Type", "application/json"))
+								.addHeaders(new HttpHeaderImpl("Content-Length", "16"))
+								.setResponseAs(HttpMessageBuilder
+									.createNewHttpResponse()
+									.setContentBytes("{\"status\":\"ok\"}".getBytes())
+									.setResponseCodeAs(202)
+									.addHeaders(new HttpHeaderImpl("Content-Type", "application/json"))
+									.thenBuild())
+								.thenBuild())
+						.thenBuild())
+				.add(MockActionBuilder.createNewMockAction()
+						.setRequestAs(HttpMessageBuilder
+								.createNewHttpRequest()
+								.setId("testId2.2")
+								.setMethodAs("POST")
+								.setResourceAs("/test/299")
+								.setContentBytes("{\"test\":\"value\"}".getBytes())
+								.addHeaders(new HttpHeaderImpl("Content-Type", "application/json"))
+								.addHeaders(new HttpHeaderImpl("Content-Length", "16"))
+								.setResponseAs(HttpMessageBuilder
+									.createNewHttpResponse()
+									.setContentBytes("{\"status\":\"ok\"}".getBytes())
+									.setResponseCodeAs(299)
 									.addHeaders(new HttpHeaderImpl("Content-Type", "application/json"))
 									.thenBuild())
 								.thenBuild())

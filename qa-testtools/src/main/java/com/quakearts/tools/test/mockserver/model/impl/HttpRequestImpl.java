@@ -131,7 +131,7 @@ class HttpRequestImpl extends HttpMessageImpl implements HttpRequest {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + Objects.hash(id, method, resource, response, uriParameters);
+		result = prime * result + Objects.hash(method, resource, response, uriParameters);
 		return result;
 	}
 
@@ -147,7 +147,7 @@ class HttpRequestImpl extends HttpMessageImpl implements HttpRequest {
 			return false;
 		}
 		HttpRequestImpl other = (HttpRequestImpl) obj;
-		return Objects.equals(id, other.id) && Objects.equals(method, other.method)
+		return Objects.equals(method, other.method)
 				&& Objects.equals(resource, other.resource) && Objects.equals(response, other.response)
 				&& Objects.equals(uriParameters, other.uriParameters);
 	}

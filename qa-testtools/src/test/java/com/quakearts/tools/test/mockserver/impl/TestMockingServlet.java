@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.quakearts.tools.test.mockserver.context.ProcessingContext;
 import com.quakearts.tools.test.mockserver.exception.MockServerProcessingException;
 import com.quakearts.tools.test.mockserver.fi.DefaultAction;
-import com.quakearts.tools.test.mockserver.impl.MockServletProcessingContextBuilder;
 import com.quakearts.tools.test.mockserver.model.MockAction;
 
 public class TestMockingServlet extends HttpServlet {

@@ -247,6 +247,12 @@ public class TestHttpMessageBuilder {
 				.setMethodAs("POST")
 				.setResourceAs("/test/resource")
 				.setContentBytes("{\"test1\":\"value1\", \"test2\",\"value2\"}".getBytes())
+				.setResponseAs(HttpMessageBuilder
+						.createNewHttpResponse()
+						.setResponseCodeAs(400)
+						.setContentBytes("{\"error\":\"No such item\"}".getBytes())
+						.addHeaders(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
+						.thenBuild())
 				.addHeaders(new HttpHeaderImpl("Content-Type", "application/json; charset=iso-8859-1"))
 				.addHeaders(new HttpHeaderImpl("Authorization", "Basic dGVzdHVzZXI6dGVzdHBhc3N3b3Jk"))
 				.addHeaders(new HttpHeaderImpl("X-Application-Role", Arrays.asList("User","Admin")))

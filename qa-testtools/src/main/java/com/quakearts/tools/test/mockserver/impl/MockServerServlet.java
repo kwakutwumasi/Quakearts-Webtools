@@ -189,7 +189,7 @@ public class MockServerServlet extends HttpServlet {
 		byte[] responseContent;
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		InputStream in;
-		if(con.getResponseCode() == 200)
+		if(con.getResponseCode() >= 200 && con.getResponseCode() <= 299)
 			in = con.getInputStream();
 		else
 			in = con.getErrorStream();
