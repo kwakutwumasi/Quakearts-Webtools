@@ -138,8 +138,10 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		writer.writeAttribute("role", "menu", null);
 		
 		writer.write("\n");	
-		if(!componentDisabled)
-			writer.write(holder.buffer);
+		if(!componentDisabled){
+			writer.write(holder.selectedBuffer);
+			writer.write(holder.unselectedBuffer);
+		}
 		
 		writer.endElement("div");
 		writer.write("\n");
@@ -174,7 +176,7 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 			Converter converter, SelectItem curItem, Object currentSelections,
 			Object[] submittedValues, OptionComponentInfo optionInfo,
 			Map<String, String> values, boolean isManySelect, 
-			ResponseWriter writer, int index)
+			ResponseWriter selectedWriter, ResponseWriter unselectedWriter, int index)
 			throws IOException {
 	
 		Object valuesArray;
@@ -209,6 +211,8 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		} else {
 			labelClass = optionInfo.getEnabledClass();
 		}
+		
+		ResponseWriter writer = isSelected?selectedWriter:unselectedWriter;
 		
 		writer.startElement("a", component);
 		writer.writeAttribute("class", "list-group-item select-list"

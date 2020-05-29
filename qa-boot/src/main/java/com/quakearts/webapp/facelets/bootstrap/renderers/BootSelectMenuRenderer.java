@@ -54,7 +54,6 @@ import com.quakearts.webapp.facelets.bootstrap.renderkit.AttributeManager;
 import com.quakearts.webapp.facelets.bootstrap.renderkit.html_basic.HtmlBasicInputRenderer;
 import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.*;
 import static com.quakearts.webapp.facelets.util.UtilityMethods.*;
-import static com.quakearts.webapp.facelets.bootstrap.common.BootOnLoadComponent.*;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
@@ -382,10 +381,6 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 				if(size!=5)
 					styleBuilder.append("max-height:").append(size*44).append("px");
 				
-				if(holder.firstIndex>0) {
-					String content = "$(function(){\n$('#list_"+id+"').scrollTop("+(holder.firstIndex*44)+");\n});\n";
-					addScriptContent(fctx->content, context);
-				}
 				writer.writeAttribute("style", styleBuilder.toString(), null);
 			}
 		} else {
@@ -394,7 +389,8 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 		}
 		
 		writer.write("\n");	
-		writer.write(holder.buffer);
+		writer.write(holder.selectedBuffer);
+		writer.write(holder.unselectedBuffer);
 
 		if(limit && holder.total>size){
 			writer.endElement("div");
@@ -442,14 +438,14 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 
 	protected class Holder {
 		Map<String, String> options;
-		char[] buffer;
+		char[] selectedBuffer;
+		char[] unselectedBuffer;
 		int total;
-		int firstIndex;
-		public Holder(Map<String, String> values, char[] rendered, int total, int firstIndex) {
+		public Holder(Map<String, String> values, char[] selectedRendered, char[] unselectedRendered, int total) {
 			this.options = values;
-			this.buffer = rendered;
+			this.selectedBuffer = selectedRendered;
+			this.unselectedBuffer = unselectedRendered;
 			this.total = total;
-			this.firstIndex = firstIndex;
 		}		
 	}
 	
@@ -457,8 +453,10 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 			Iterator<SelectItem> items, boolean componentDisabled, String id) throws IOException {
 		
 		Map<String, String> values = new HashMap<String,String>();
-		CharArrayWriter charWriter = new CharArrayWriter();
-		ResponseWriter writer = context.getResponseWriter().cloneWithWriter(charWriter);
+		CharArrayWriter selectedCharWriter = new CharArrayWriter();
+		CharArrayWriter unselectedCharWriter = new CharArrayWriter();
+		ResponseWriter selectedWriter = context.getResponseWriter().cloneWithWriter(selectedCharWriter);
+		ResponseWriter unselectedWriter = context.getResponseWriter().cloneWithWriter(unselectedCharWriter);
 		boolean isManySelect = component instanceof BootSelectManyMenu || component instanceof BootSelectManyListbox;
 	
 		Converter converter = null;
@@ -475,30 +473,24 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 				isHideNoSelection(component), id);
 
 		int index = 0;
-		int firstIndex = -1;
 		while (items.hasNext()) {
 			SelectItem item = items.next();
 	
 			if (item instanceof SelectItemGroup) {	
 				SelectItem[] itemsArray = ((SelectItemGroup) item)
 						.getSelectItems();
-				for (int i = 0; i < itemsArray.length; ++i) 
-					if(renderOption(context, component, converter, itemsArray[i],
-							currentSelections, submittedValues, optionInfo,
-							values, isManySelect,writer,index)){
-						if(firstIndex==-1&& !values.isEmpty()) firstIndex= index;
-						index++;
-					}
-			} else {
-				if(renderOption(context, component, converter, item,
-						currentSelections, submittedValues, optionInfo,
-						values, isManySelect,writer,index)){
-					if(firstIndex==-1&& !values.isEmpty()) firstIndex= index;
+				for (int i = 0; i < itemsArray.length; ++i){
+					renderOption(context, component, converter, itemsArray[i], currentSelections, submittedValues,
+							optionInfo, values, isManySelect, selectedWriter, unselectedWriter, index);
 					index++;
 				}
+			} else {
+				renderOption(context, component, converter, item, currentSelections, submittedValues, optionInfo,
+						values, isManySelect, selectedWriter, unselectedWriter, index);
+				index++;
 			}
 		}
-		return new Holder(values, charWriter.toCharArray(), index, firstIndex);
+		return new Holder(values, selectedCharWriter.toCharArray(), unselectedCharWriter.toCharArray(), index);
 	}
 
     protected static String getDisplayType(UIComponent button, FacesContext context){
@@ -519,7 +511,7 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 			Converter converter, SelectItem curItem, Object currentSelections,
 			Object[] submittedValues, OptionComponentInfo optionInfo,
 			Map<String, String> values, boolean isManySelect, 
-			ResponseWriter writer, int index)
+			ResponseWriter selectedWriter, ResponseWriter unselectedWriter, int index)
 			throws IOException {
 	
 		Object valuesArray;
@@ -561,6 +553,8 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 		else
 			function="qab.olis(this)";
 
+		ResponseWriter writer = isSelected? selectedWriter:unselectedWriter;
+		
 		writer.startElement("a", component);
 		writer.writeAttribute("class", "list-group-item select-list"
 				+ (isSelected ? " active" : "")

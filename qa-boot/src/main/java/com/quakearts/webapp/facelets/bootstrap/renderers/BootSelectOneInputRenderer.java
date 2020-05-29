@@ -128,8 +128,10 @@ public class BootSelectOneInputRenderer extends BootSelectInputGroupRenderer {
 		writer.writeAttribute("role", "menu", null);
 		
 		writer.write("\n");	
-		if(!componentDisabled)
-			writer.write(holder.buffer);
+		if(!componentDisabled){
+			writer.write(holder.selectedBuffer);
+			writer.write(holder.unselectedBuffer);
+		}
 		
 		writer.endElement("div");
 		writer.write("\n");				
