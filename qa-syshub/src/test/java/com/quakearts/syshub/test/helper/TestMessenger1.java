@@ -18,7 +18,7 @@ import com.quakearts.syshub.model.AgentConfigurationParameter;
 import com.quakearts.syshub.model.AgentModule;
 import com.quakearts.syshub.model.ProcessingLog;
 
-public class TestMessenger1 implements Messenger {
+public class TestMessenger1 extends ShutdownMonitor implements Messenger {
 
 	private AgentConfiguration agentConfiguration;
 	private Map<String, AgentConfigurationParameter> parameters;

@@ -18,7 +18,7 @@ import com.quakearts.syshub.model.AgentConfiguration.RunType;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 import com.quakearts.syshub.model.AgentModule;
 
-public class TestDataSpooler implements DataSpooler {
+public class TestDataSpooler extends ShutdownMonitor implements DataSpooler {
 
 	private AgentConfiguration agentConfiguration;
 	private Map<String, AgentConfigurationParameter> parameters;

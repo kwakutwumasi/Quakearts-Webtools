@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.quakearts.syshub.agent.event.ProcessingEvent;
+import com.quakearts.syshub.core.AgentConfigurationModule;
 import com.quakearts.syshub.core.CloseableIterator;
 import com.quakearts.syshub.core.DataSpooler;
 import com.quakearts.syshub.core.Message;
@@ -128,6 +129,15 @@ public class ProcessingAgent {
 		if(executor!=null){
 			executor.shutdown();
 		}
+		getDataSpoolers().stream()
+			.filter(this::hasTheSameAgentConfiguration)
+			.forEach(AgentConfigurationModule::shutdown);
+		getMessengerFormatterMapper().keySet().stream()
+			.filter(this::hasTheSameAgentConfiguration)
+			.forEach(AgentConfigurationModule::shutdown);
+		getMessengerFormatterMapper().values().stream()
+			.filter(this::hasTheSameAgentConfiguration)
+			.forEach(AgentConfigurationModule::shutdown);
 	}
 	
 	public boolean isShutdown() {
@@ -135,6 +145,12 @@ public class ProcessingAgent {
 			return executor.isShutdown();
 		}
 		return true;
+	}
+	
+	private boolean hasTheSameAgentConfiguration(AgentConfigurationModule module) {
+		return agentConfiguration!=null 
+				&& module.getAgentConfiguration() != null 
+				&& agentConfiguration.getId()==module.getAgentConfiguration().getId();
 	}
 	
 	public void reset() {
@@ -558,6 +574,9 @@ public class ProcessingAgent {
 	 * @return A list of configured {@link DataSpooler}s
 	 */
 	public List<DataSpooler> getDataSpoolers() {
+		if(dataSpoolers == null)
+			return Collections.emptyList();
+		
 		return dataSpoolers;
 	}
 
@@ -573,7 +592,10 @@ public class ProcessingAgent {
 	 * @return a {@link Map} of {@link MessageFormatter}/{@link Messenger} pairs
 	 */
 	public Map<Messenger, MessageFormatter> getMessengerFormatterMapper() {
-		return Collections.unmodifiableMap(mapper);
+		if(mapper == null)
+			return Collections.emptyMap();
+		
+		return mapper;
 	}
 	
 	public void setMessengerFormatterMapper(Map<Messenger, MessageFormatter> mapper) {

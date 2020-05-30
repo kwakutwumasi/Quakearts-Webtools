@@ -12,7 +12,7 @@ import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 import com.quakearts.syshub.model.AgentModule;
 
-public class TestFormatter1 implements MessageFormatter {
+public class TestFormatter1 extends ShutdownMonitor implements MessageFormatter {
 	
 	private Map<String, AgentConfigurationParameter> parameters;
 	private AgentConfiguration agentConfiguration;

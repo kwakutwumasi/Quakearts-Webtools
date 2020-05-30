@@ -21,6 +21,10 @@ import com.quakearts.syshub.model.AgentModule;
  * @author kwakutwumasi-afriyie
  *
  */
+/**
+ * @author kwaku
+ *
+ */
 public interface AgentConfigurationModule {
     /** Get the {@link AgentConfiguration} used to configure the formatter
      * @return
@@ -48,4 +52,11 @@ public interface AgentConfigurationModule {
      * @param agentModule the module
      */
     void setAgentModule(AgentModule agentModule);
+    
+    
+    /**This method can be implemented to release resources when the
+     * {@link com.quakearts.syshub.agent.ProcessingAgent#shutdown() ProcessingAgent.shutdown()}
+     * method is called.
+     */
+    default void shutdown(){}
 }

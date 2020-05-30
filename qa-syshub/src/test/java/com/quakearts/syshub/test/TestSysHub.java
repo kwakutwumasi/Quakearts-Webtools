@@ -65,6 +65,7 @@ import com.quakearts.syshub.model.ProcessingLog;
 import com.quakearts.syshub.test.helper.ErrorObserver;
 import com.quakearts.syshub.test.helper.ErrorThrowingModule;
 import com.quakearts.syshub.test.helper.ErrorThrowingModule.ExceptionLocation;
+import com.quakearts.syshub.test.helper.ShutdownMonitor;
 import com.quakearts.syshub.test.helper.TestAgentTrigger2;
 import com.quakearts.syshub.test.helper.TestDataSpooler;
 import com.quakearts.syshub.test.helper.TestFormatter1;
@@ -1408,5 +1409,56 @@ public class TestSysHub {
 	private void pause(long time){
 		long start = System.currentTimeMillis();
 		while (System.currentTimeMillis() - start < time);
+	}
+	
+	@Test
+	public void testShutdown() throws Exception {
+		AgentConfiguration agentConfiguration = new AgentConfiguration();
+		agentConfiguration.setActive(true);
+		agentConfiguration.setAgentName("Test Shutdown Agent 1");
+		agentConfiguration.setType(RunType.LOOPED);
+		
+		AgentModule agentModule = new AgentModule();
+		agentModule.setId(1);
+		agentModule.setModuleClassName(TestDataSpooler.class.getName());
+		agentModule.setModuleName("Test Module 1.1");
+		agentModule.setModuleType(ModuleType.DATASPOOLER);
+		
+		agentConfiguration.getAgentModules().add(agentModule);
+		
+		agentModule = new AgentModule();
+		agentModule.setId(22);
+		agentModule.setAgentConfiguration(agentConfiguration);
+		agentModule.setModuleClassName(TestFormatter1.class.getName());
+		agentModule.setModuleName("Test Shutdown Formatter");
+		agentModule.setModuleType(ModuleType.FORMATTER);
+		
+		agentConfiguration.getAgentModules().add(agentModule);
+
+		agentModule = new AgentModule();
+		agentModule.setId(22);
+		agentModule.setAgentConfiguration(agentConfiguration);
+		agentModule.setModuleClassName(TestMessenger1.class.getName());
+		agentModule.setModuleName("Test Shutdown Messenger");
+		agentModule.setModuleType(ModuleType.MESSENGER);
+		agentConfiguration.getAgentModules().add(agentModule);
+
+		SysHub sysHubMain = CDI.current().select(SysHub.class).get();
+		
+		sysHubMain.deployAgent(agentConfiguration);
+		ProcessingAgent processingAgent = sysHubMain.fetchAgentRunner(agentConfiguration).getProcessingAgent();
+		sysHubMain.undeployAgent(agentConfiguration);
+		
+		assertThat(processingAgent.getDataSpoolers().size(), is(1));
+		assertThat(processingAgent.getMessengerFormatterMapper().size(), is(1));
+		processingAgent.getDataSpoolers()
+				.forEach(dataSpooler -> assertThat(((ShutdownMonitor) dataSpooler).isShutdown(), is(false)));
+		processingAgent.getMessengerFormatterMapper().keySet()
+				.forEach(formatter -> assertThat(((ShutdownMonitor) formatter).isShutdown(), is(true)));
+		processingAgent.getMessengerFormatterMapper().values()
+				.forEach(messenger -> assertThat(((ShutdownMonitor) messenger).isShutdown(), is(true)));
+		
+		processingAgent = new ProcessingAgent();
+		processingAgent.shutdown();
 	}
 }
