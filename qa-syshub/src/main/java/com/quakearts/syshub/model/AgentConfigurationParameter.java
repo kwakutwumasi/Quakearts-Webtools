@@ -236,8 +236,6 @@ public class AgentConfigurationParameter implements Serializable {
 			return new byte[0];
 	}
 	
-	
-	
 	@Override
 	public int hashCode() {
 		return Objects.hash(agentConfiguration, agentModule, name);
