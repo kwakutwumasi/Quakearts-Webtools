@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import com.quakearts.syshub.core.Message;
 import com.quakearts.syshub.core.MessageFormatter;
 import com.quakearts.syshub.core.Messenger;
+import com.quakearts.syshub.core.event.ParameterEventBroadcaster;
+import com.quakearts.syshub.core.event.ParameterEventListener;
 import com.quakearts.syshub.core.impl.MessageStringImpl;
 import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperties;
 import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperty;
@@ -31,7 +33,7 @@ import com.quakearts.syshub.webapp.helpers.viewupdate.UpdateViewEvent;
 	@ConfigurationProperty(value="test.longstring", type=ParameterType.LONGSTRING),
 	@ConfigurationProperty(value="test.string", pattern="\\d+(DEF)")
 })
-public class TestMessenger1 extends RandomErrorThrower implements Messenger {
+public class TestMessenger1 extends RandomErrorThrower implements Messenger, ParameterEventListener {
 
 	@Inject
 	private Event<UpdateViewEvent> updateViewEvent;
@@ -41,6 +43,8 @@ public class TestMessenger1 extends RandomErrorThrower implements Messenger {
 	private AgentModule agentModule;
 	private AtomicInteger integer = new AtomicInteger(0);
 	private static final Logger log = LoggerFactory.getLogger(TestMessenger1.class);
+	@Inject
+	private ParameterEventBroadcaster parameterEventBroadcaster;
 	
 	@Inject
 	private MessageLogger logger;
@@ -67,6 +71,7 @@ public class TestMessenger1 extends RandomErrorThrower implements Messenger {
 	public void setupWithConfigurationParameters(Map<String, AgentConfigurationParameter> parameters)
 			throws ConfigurationException {
 		this.parameters = parameters;
+		parameterEventBroadcaster.registerListener(this);
 	}
 
 	@Override
@@ -128,5 +133,10 @@ public class TestMessenger1 extends RandomErrorThrower implements Messenger {
 	@Override
 	public boolean isResendCapable() {
 		return true;
+	}
+	
+	@Override
+	public void shutdown() {
+		parameterEventBroadcaster.unregisterListener(this);
 	}
 }

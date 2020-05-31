@@ -5,10 +5,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import com.quakearts.syshub.core.CloseableIterator;
 import com.quakearts.syshub.core.DataSpooler;
 import com.quakearts.syshub.core.Message;
 import com.quakearts.syshub.core.Result;
+import com.quakearts.syshub.core.event.ParameterEventBroadcaster;
+import com.quakearts.syshub.core.event.ParameterEventListener;
 import com.quakearts.syshub.core.impl.ResultImpl;
 import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperties;
 import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperty;
@@ -27,11 +31,13 @@ import com.quakearts.syshub.model.AgentModule;
 	@ConfigurationProperty(type=ParameterType.EMAIL, value="test.email", global=true),
 	@ConfigurationProperty(type=ParameterType.ENDPOINTADDRESS, value="test.endpointaddress", required=true)
 })
-public class TestDataSpooler extends RandomErrorThrower implements DataSpooler {
+public class TestDataSpooler extends RandomErrorThrower implements DataSpooler, ParameterEventListener {
 
 	private AgentConfiguration agentConfiguration;
 	private Map<String, AgentConfigurationParameter> parameters;
 	private AgentModule agentModule;
+	@Inject
+	private ParameterEventBroadcaster parameterEventBroadcaster;
 	
 	public Map<String, AgentConfigurationParameter> getParameters() {
 		return parameters;
@@ -53,6 +59,7 @@ public class TestDataSpooler extends RandomErrorThrower implements DataSpooler {
 		this.parameters = parameters;
 		if(parameters.containsKey("throw.error"))
 			throw new ConfigurationException("Throwing error for test");
+		parameterEventBroadcaster.registerListener(this);
 	}
 
 	@Override
@@ -127,5 +134,9 @@ public class TestDataSpooler extends RandomErrorThrower implements DataSpooler {
 	@Override
 	public void close() {
 	}
-
+	
+	@Override
+	public void shutdown() {
+		parameterEventBroadcaster.unregisterListener(this);
+	}
 }

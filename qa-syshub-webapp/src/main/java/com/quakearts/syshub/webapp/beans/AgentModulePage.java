@@ -37,6 +37,7 @@ import com.quakearts.syshub.webapp.helpers.parameter.AgentModuleDatabase;
 import com.quakearts.syshub.core.DataSpooler;
 import com.quakearts.syshub.core.MessageFormatter;
 import com.quakearts.syshub.core.Messenger;
+import com.quakearts.syshub.core.event.ParameterEventBroadcaster;
 import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 
@@ -59,7 +60,9 @@ public class AgentModulePage extends BaseBean {
 
 	private AgentModule agentModule;
 	@Inject @Named("webappmain")
-	private WebApplicationMain webappmain;
+	private WebApplicationMain webappmain;	
+	@Inject
+	private transient ParameterEventBroadcaster eventBroadcaster;
 	private transient AgentModuleFinder finder = new AgentModuleFinder();
 
 	public WebApplicationMain getWebappmain() {
@@ -209,7 +212,7 @@ public class AgentModulePage extends BaseBean {
 		Class<?> moduleClass;
 		try {
 			moduleClass = Class.forName(agentModule.getModuleClassName());
-			configurationHelper = new AgentConfigurationParameterHelper(moduleClass, agentModule, agentModule.getAgentConfiguration());
+			configurationHelper = new AgentConfigurationParameterHelper(moduleClass, agentModule, agentModule.getAgentConfiguration(), eventBroadcaster);
 		} catch (ClassNotFoundException e) {
 			addError(INVALID_DATA, "Agent Class not found: "+getAgentModule().getModuleClassName(), FacesContext.getCurrentInstance());
 		}

@@ -9,12 +9,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.LogManager;
 
@@ -34,6 +37,10 @@ import com.quakearts.syshub.core.Message;
 import com.quakearts.syshub.core.MessageFormatter;
 import com.quakearts.syshub.core.Messenger;
 import com.quakearts.syshub.core.Result;
+import com.quakearts.syshub.core.event.ParameterEvent;
+import com.quakearts.syshub.core.event.ParameterEvent.EventType;
+import com.quakearts.syshub.core.event.ParameterEventBroadcaster;
+import com.quakearts.syshub.core.event.ParameterEventListener;
 import com.quakearts.syshub.core.factory.DataSpoolerFactory;
 import com.quakearts.syshub.core.factory.MessageFormatterFactory;
 import com.quakearts.syshub.core.factory.MessengerFactory;
@@ -1460,5 +1467,50 @@ public class TestSysHub {
 		
 		processingAgent = new ProcessingAgent();
 		processingAgent.shutdown();
+	}
+	
+	@Test
+	public void testParameterBroadcast() throws Exception {
+		AgentConfigurationParameter parameter = new AgentConfigurationParameter();
+		EventType eventType = EventType.UPDATED;
+		
+		ParameterEventBroadcaster parameterEventBroadcaster = CDI.current()
+				.select(ParameterEventBroadcaster.class).get();
+		
+		List<ParameterEventListener> listeners = Collections
+				.synchronizedList(new ArrayList<>());
+		for(int i=0;i<1000;i++) {
+			listeners.add(e->{});
+		}
+		
+		Executor executor1 = Executors.newFixedThreadPool(4),
+				executor2 = Executors.newFixedThreadPool(4);
+		
+		class ExceptionHolder {
+			Exception e;
+		}
+		
+		ExceptionHolder holder = new ExceptionHolder();
+		
+		for(int i=0;i<1000;i++) {
+			ParameterEventListener listener = listeners.get(i);
+			parameterEventBroadcaster.registerListener(listener);
+			executor1.execute(()->{
+				try {
+					parameterEventBroadcaster.broadcast(new ParameterEvent(parameter, eventType));
+					executor2.execute(()->{
+						try {
+							parameterEventBroadcaster.unregisterListener(listener);
+						} catch (ConcurrentModificationException e) {
+							holder.e = e;
+						}
+					});
+				} catch (ConcurrentModificationException e) {
+					holder.e = e;
+				}
+			});
+		}
+
+		assertNull(holder.e);
 	}
 }

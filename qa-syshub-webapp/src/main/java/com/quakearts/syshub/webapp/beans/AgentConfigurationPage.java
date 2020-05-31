@@ -29,6 +29,7 @@ import com.quakearts.webapp.facelets.base.BaseBean;
 import com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder;
 import com.quakearts.webapp.orm.exception.DataStoreException;
 import com.quakearts.syshub.SysHub;
+import com.quakearts.syshub.core.event.ParameterEventBroadcaster;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentConfiguration.RunType;
@@ -55,6 +56,9 @@ public class AgentConfigurationPage extends BaseBean {
 
 	@Inject
 	private transient SysHub sysHub;
+	
+	@Inject
+	private transient ParameterEventBroadcaster eventBroadcaster;
 	
 	private AgentConfiguration agentConfiguration;
 	private transient AgentConfigurationFinder finder = new AgentConfigurationFinder();
@@ -406,7 +410,7 @@ public class AgentConfigurationPage extends BaseBean {
 
 		try {
 			Class<?> clazz = Class.forName(triggerClass.configurationParameter.getStringValue());
-			configurationHelper = new AgentConfigurationParameterHelper(clazz, null, agentConfiguration);
+			configurationHelper = new AgentConfigurationParameterHelper(clazz, null, agentConfiguration, eventBroadcaster);
 		} catch (ClassNotFoundException e) {
 			addError("Invalid Data", "Trigger1 Class not found:" + triggerClass.configurationParameter.getStringValue(),
 					FacesContext.getCurrentInstance());

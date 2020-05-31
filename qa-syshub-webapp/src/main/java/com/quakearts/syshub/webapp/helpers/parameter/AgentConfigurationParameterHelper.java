@@ -26,6 +26,9 @@ import javax.naming.NamingException;
 
 import org.quartz.CronExpression;
 
+import com.quakearts.syshub.core.event.ParameterEvent;
+import com.quakearts.syshub.core.event.ParameterEvent.EventType;
+import com.quakearts.syshub.core.event.ParameterEventBroadcaster;
 import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperties;
 import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperty;
 import com.quakearts.syshub.core.utils.SysHubUtils;
@@ -48,9 +51,10 @@ public class AgentConfigurationParameterHelper implements SysHubDataStoreUser {
 			+ "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:"
 			+ "(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\"
 			+ "[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])";
+	private ParameterEventBroadcaster eventBroadcaster;
 	
 	public AgentConfigurationParameterHelper(Class<?> configurableClass, AgentModule module,
-			AgentConfiguration agentConfiguration) {		
+			AgentConfiguration agentConfiguration, ParameterEventBroadcaster eventBroadcaster) {		
 		ConfigurationProperty classProperty = configurableClass.getAnnotation(ConfigurationProperty.class);
 		if(classProperty != null){
 			parameterMetaDataList.add(new ParameterMetaData(classProperty, module, agentConfiguration));
@@ -63,9 +67,10 @@ public class AgentConfigurationParameterHelper implements SysHubDataStoreUser {
 					parameterMetaDataList.add(new ParameterMetaData(property, module, agentConfiguration));
 				}
 		}
+		this.eventBroadcaster = eventBroadcaster;
 	}
 	
-	public static final class ParameterMetaData {
+	public final class ParameterMetaData {
 		private static final String PARAMETER = "Parameter ";
 		private static final String INVALID_DATA = "Invalid Data";
 		ConfigurationProperty property;
@@ -150,6 +155,7 @@ public class AgentConfigurationParameterHelper implements SysHubDataStoreUser {
 			
 			if(agentConfigurationParameter.getId() != 0){
 				finder.getDataStore().update(agentConfigurationParameter);
+				eventBroadcaster.broadcast(new ParameterEvent(agentConfigurationParameter, EventType.UPDATED));
 			}
 		}
 		
@@ -162,6 +168,7 @@ public class AgentConfigurationParameterHelper implements SysHubDataStoreUser {
 					agentConfiguration.getParameters().remove(agentConfigurationParameter);
 
 				agentConfigurationParameter = new AgentConfigurationParameter(property.value(), property.type());
+				eventBroadcaster.broadcast(new ParameterEvent(agentConfigurationParameter, EventType.DELETED));
 			}
 		}
 		

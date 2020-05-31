@@ -2,9 +2,13 @@ package com.quakearts.syshub.webapp.test;
 
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import com.quakearts.syshub.core.Message;
 import com.quakearts.syshub.core.MessageFormatter;
 import com.quakearts.syshub.core.Result;
+import com.quakearts.syshub.core.event.ParameterEventBroadcaster;
+import com.quakearts.syshub.core.event.ParameterEventListener;
 import com.quakearts.syshub.core.impl.MessageStringImpl;
 import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperties;
 import com.quakearts.syshub.core.metadata.annotations.ConfigurationProperty;
@@ -19,11 +23,13 @@ import com.quakearts.syshub.model.AgentConfigurationParameter.ParameterType;
 	@ConfigurationProperty(type=ParameterType.FILE, value="test.file"),
 	@ConfigurationProperty(type=ParameterType.JNDINAME, value="test.jndiname")
 })
-public class TestFormatter1 extends RandomErrorThrower implements MessageFormatter {
+public class TestFormatter1 extends RandomErrorThrower implements MessageFormatter, ParameterEventListener {
 	
 	private Map<String, AgentConfigurationParameter> parameters;
 	private AgentConfiguration agentConfiguration;
 	private AgentModule agentModule;
+	@Inject
+	private ParameterEventBroadcaster parameterEventBroadcaster;
 	
 	public Map<String, AgentConfigurationParameter> getParameters() {
 		return parameters;
@@ -43,6 +49,7 @@ public class TestFormatter1 extends RandomErrorThrower implements MessageFormatt
 	public void setupWithConfigurationParameters(Map<String, AgentConfigurationParameter> parameters)
 			throws ConfigurationException {
 		this.parameters = parameters;
+		parameterEventBroadcaster.registerListener(this);
 	}
 
 	@Override
@@ -92,6 +99,11 @@ public class TestFormatter1 extends RandomErrorThrower implements MessageFormatt
 
 	@Override
 	public void close() {
+	}
+
+	@Override
+	public void shutdown() {
+		parameterEventBroadcaster.unregisterListener(this);
 	}
 
 }
