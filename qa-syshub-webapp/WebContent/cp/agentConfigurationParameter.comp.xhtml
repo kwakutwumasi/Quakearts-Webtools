@@ -57,6 +57,7 @@
 			<h:inputTextarea styleClass="form-control" rows="1"
 				value="#{parameter.agentConfigurationParameter.stringValue}"
 				validator="#{parameter.validateParameter}">
+				<f:ajax listener="#{parameter.parameterChanged}" onevent="#{loader.overlayAjaxLoader}"></f:ajax>
 			</h:inputTextarea>
 		</h:panelGroup>
 		<b:inputText rows="1"
