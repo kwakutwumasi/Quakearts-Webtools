@@ -38,12 +38,12 @@ public class JarFile implements java.io.Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="jid")
 	private long id;
-	@Column(nullable=false, name="jar_data", length = 32672)
+	@Column(nullable=false, name="jar_data", columnDefinition = "BLOB (2M)")
 	private byte[] jarData;
 	@Column(nullable=false, name="jar_name", length = 100)
 	private String jarName;
 	@OneToMany(mappedBy="jarFile")
-	private Set<JarFileEntry> jarFileEntries = new HashSet<JarFileEntry>(0);
+	private Set<JarFileEntry> jarFileEntries = new HashSet<>(0);
 
 	public JarFile() {
 	}
