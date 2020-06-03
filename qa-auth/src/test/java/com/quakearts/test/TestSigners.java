@@ -58,6 +58,14 @@ public class TestSigners {
 		
 		token = signer.sign(header, claims);
 		signer.verify(token);
+		
+		HSSigner hexSigner = new HSSigner();
+		hexSigner.setAlgorithim("HS512");
+		hexSigner.setParameter("secret.hex", "31323334323334323433");
+		
+		token = hexSigner.sign(header, claims);
+		hexSigner.verify(token);
+		signer.verify(token);
 	}
 	
 	@Test

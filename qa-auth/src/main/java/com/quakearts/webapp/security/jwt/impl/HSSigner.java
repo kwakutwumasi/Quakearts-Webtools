@@ -22,6 +22,7 @@ import com.quakearts.webapp.security.jwt.signature.MacBase;
 public class HSSigner extends SignerBase {
 
 	public static final String SECRETPARAMETER = "secret";
+	public static final String SECRETPARAMETERHEX = "secret.hex";
 	private HMac mac;
 	private HSAlgorithmType algorithmType;
 	private byte[] key;
@@ -53,6 +54,8 @@ public class HSSigner extends SignerBase {
 	public HSSigner setParameter(String name, Object parameter) {
 		if(SECRETPARAMETER.equals(name))
 			key = parameter.toString().getBytes();
+		else if(SECRETPARAMETERHEX.equals(name))
+			key = hexAsByte(parameter.toString());
 		
 		return this;
 	}
@@ -69,5 +72,24 @@ public class HSSigner extends SignerBase {
 		
 		if(! new String(signatureDecoded).equals(new String(comparedSignature)))
 			throw new SignatureException("Invalid signature");
+	}
+	
+	private byte[] hexAsByte(String hexstring) {
+		if (hexstring == null || hexstring.isEmpty())
+			return new byte[0];
+
+		if (hexstring.length() % 2 != 0) {
+			throw new IllegalArgumentException("Invalid hexidecimal string");
+		}
+		byte[] results = new byte[hexstring.length() / 2];
+		try {
+			for (int i = 0; i < hexstring.length() - 1; i += 2) {
+				results[i / 2] = ((byte) Long.parseLong(hexstring.substring(i, i + 2), 16));
+			}
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("Invalid hexidecimal string", e);
+		}
+
+		return results;
 	}
 }
