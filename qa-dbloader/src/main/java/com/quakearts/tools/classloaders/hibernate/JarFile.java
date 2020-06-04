@@ -15,8 +15,10 @@ package com.quakearts.tools.classloaders.hibernate;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -38,25 +40,13 @@ public class JarFile implements java.io.Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="jid")
 	private long id;
+	@Basic(fetch = FetchType.LAZY)
 	@Column(nullable=false, name="jar_data", columnDefinition = "BLOB (2M)")
 	private byte[] jarData;
 	@Column(nullable=false, name="jar_name", length = 100)
 	private String jarName;
 	@OneToMany(mappedBy="jarFile")
 	private Set<JarFileEntry> jarFileEntries = new HashSet<>(0);
-
-	public JarFile() {
-	}
-
-	public JarFile(byte[] jarData) {
-		this.jarData = jarData;
-	}
-
-	public JarFile(byte[] jarData, String jarName, Set<JarFileEntry> jarFileEntries) {
-		this.jarData = jarData;
-		this.jarName = jarName;
-		this.jarFileEntries = jarFileEntries;
-	}
 
 	public long getId() {
 		return this.id;

@@ -19,13 +19,13 @@ public class UtilityMethods {
 	private UtilityMethods() {}
 	
 	public static ZipEntry findZipEntry(String entryFileName, ZipInputStream jarStream) throws IOException {
-		ZipEntry zipEntry=null;
+		ZipEntry zipEntry = null;
 		while((zipEntry = jarStream.getNextEntry())!=null){
 			if(!zipEntry.isDirectory() 
 					&& zipEntry.getName().equals(entryFileName)){
-				break;
+				return zipEntry;
 			}
 		}
-		return zipEntry;
+		return null;
 	}
 }

@@ -40,8 +40,7 @@ public class JarFileEntry implements java.io.Serializable {
 	@JoinColumn(name="jid", nullable=false, foreignKey=@ForeignKey(ConstraintMode.CONSTRAINT))
 	private JarFile jarFile;
 
-	public JarFileEntry() {
-	}
+	public JarFileEntry() {}
 
 	public JarFileEntry(String id, JarFile jarFile) {
 		this.id = id;

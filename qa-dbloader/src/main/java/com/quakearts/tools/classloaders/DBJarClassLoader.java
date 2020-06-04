@@ -28,10 +28,10 @@ import static com.quakearts.tools.classloaders.utils.UtilityMethods.findZipEntry
  * @author kwakutwumasi-afriyie
  *
  */
-public class DBJarClassLoader extends ClassLoader {
+public class DBJarClassLoader extends ClassLoader implements AutoCloseable {
 
 	private static final String JAVA_PROTOCOL_HANDLER_PKGS = "java.protocol.handler.pkgs";
-	private static final ConcurrentHashMap<Long, byte[]> CACHED_JARS = new ConcurrentHashMap<>();
+	private static final ConcurrentHashMap<String, byte[]> CACHED_JARS = new ConcurrentHashMap<>();
 	private String domain;
 	
 	static {
@@ -71,6 +71,7 @@ public class DBJarClassLoader extends ClassLoader {
 	public DBJarClassLoader(String domain, ClassLoader parent) {
 		super(parent);
 		this.domain = domain;
+		Handler.registerClassLoader(this);
 	}
 
 	/**Get a class from storage using the passed in name
@@ -97,7 +98,7 @@ public class DBJarClassLoader extends ClassLoader {
 		}
 	}
 
-	private JarFileEntry loadEntry(String entryName) {
+	protected JarFileEntry loadEntry(String entryName) {
 		DataStore store;
 		if(domain==null)
 			store = DataStoreFactory.getInstance().getDataStore();
@@ -116,14 +117,14 @@ public class DBJarClassLoader extends ClassLoader {
 		return bos.toByteArray();
 	}
 
-	private JarInputStream getStream(JarFileEntry jarFileEntry) throws IOException {
+	protected JarInputStream getStream(JarFileEntry jarFileEntry) throws IOException {
 		ByteArrayInputStream in;
 		byte[] cachedJar;
-		if((cachedJar = CACHED_JARS.get(jarFileEntry.getJarId()))!=null)
-			in = new ByteArrayInputStream(cachedJar);
-		else
-			in = new ByteArrayInputStream(jarFileEntry.getJarFile().getJarData());
-
+		String cachedJarKey = domainToString()+jarFileEntry.getJarId();
+		cachedJar = CACHED_JARS.computeIfAbsent(cachedJarKey, 
+				key->jarFileEntry.getJarFile().getJarData());
+		in = new ByteArrayInputStream(cachedJar);
+		
 		JarInputStream jarStream = new JarInputStream(in);
 		String entryFileName = jarFileEntry.getId();
 		if(findZipEntry(entryFileName, jarStream)==null)
@@ -140,11 +141,10 @@ public class DBJarClassLoader extends ClassLoader {
 	protected URL findResource(String name) {		
 		try {
 			JarFileEntry entry = loadEntry(name);
-			if(entry==null)
+			if(entry == null)
 				return null;
 			
-			String url = domain+"/"+entry.getJarId()+"/"+name;
-			Handler.cache(url, getStream(entry));
+			String url = domain+"/"+name;
 			return new URL("classloaders://"+url);
 		} catch (IOException e1) {
 			return null;
@@ -163,5 +163,16 @@ public class DBJarClassLoader extends ClassLoader {
 	 */
 	public void setDomain(String domain) {
 		this.domain = domain;
+	}
+	
+	@Override
+	public void close() throws IOException {
+		Handler.unregisterClassLoader(this);
+		CACHED_JARS.entrySet()
+			.removeIf(entry->entry.getKey().startsWith(domainToString()));
+	}
+
+	private String domainToString() {
+		return domain==null?"null":domain;
 	}
 }
