@@ -48,6 +48,12 @@ public class JarFile implements java.io.Serializable {
 	@OneToMany(mappedBy="jarFile")
 	private Set<JarFileEntry> jarFileEntries = new HashSet<>(0);
 
+	public JarFile() {}
+	
+	public JarFile(byte[] jarData) {
+		this.jarData = jarData;
+	}
+
 	public long getId() {
 		return this.id;
 	}
