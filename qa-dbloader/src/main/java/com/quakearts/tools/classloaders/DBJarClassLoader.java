@@ -14,6 +14,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarInputStream;
 
@@ -33,6 +35,7 @@ public class DBJarClassLoader extends ClassLoader implements AutoCloseable {
 	private static final String JAVA_PROTOCOL_HANDLER_PKGS = "java.protocol.handler.pkgs";
 	private static final ConcurrentHashMap<String, byte[]> CACHED_JARS = new ConcurrentHashMap<>();
 	private String domain;
+	private Set<String> loadedPackages = new HashSet<>();
 	
 	static {
 		String existingHandlers = System.getProperties().contains(JAVA_PROTOCOL_HANDLER_PKGS)
@@ -133,8 +136,23 @@ public class DBJarClassLoader extends ClassLoader implements AutoCloseable {
 	}
 
 	private Class<?> defineClass(JarFileEntry classObject, String className) throws IOException {
+		String packageName = getPackageName(className);
+		if(packageName!=null && !loadedPackages.contains(packageName)) {
+			loadedPackages.add(packageName);
+			if(getPackage(packageName) == null)
+				definePackage(packageName, "", "", "", "", "", "", null);
+		}
 		byte[] classBytes = getBytes(classObject);
 		return defineClass(className, classBytes, 0, classBytes.length);
+	}
+
+	private String getPackageName(String className) {
+		int dotIndex = className.lastIndexOf('.');
+		if(dotIndex != -1) {
+			return className.substring(0, dotIndex);
+		}
+		
+		return null;
 	}
 
 	@Override

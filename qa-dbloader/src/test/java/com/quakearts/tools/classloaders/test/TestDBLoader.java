@@ -248,6 +248,11 @@ public class TestDBLoader {
 			assertThat(event.getJarFileEntry().getJarFile().getJarData(), is(jarBytes));
 			CurrentSessionContextHelper.closeOpenSessions();
 		}
+		Field cacheField = DBJarClassLoader.class.getDeclaredField("CACHED_JARS");
+		cacheField.setAccessible(true);
+		@SuppressWarnings("rawtypes")
+		Map map = (Map) cacheField.get(null);
+		assertTrue(map.isEmpty());
 	}
 
 	@Test
@@ -335,17 +340,25 @@ public class TestDBLoader {
 			assertThat(UtilityMethods.findZipEntry("NotFoundItem", jis), is(nullValue()));
 		}
 	}
-	
-	@SuppressWarnings("rawtypes")
+		
 	@Test
-	public void testCacheClearOnClose() throws Exception {
-		try(DBJarClassLoader classLoader = new DBJarClassLoader("test")) {
-			new URL("classloaders://test/test/test.properties").openStream();
+	public void testPackageCode() throws Exception {
+		JarFileStorer fileStorer = new JarFileStorer("test");
+		fileStorer.storeJarFile(readFileBytes("test-package-0.0.1.jar"), "test-package-0.0.1.jar");
+		CurrentSessionContextHelper.closeOpenSessions();
+		try(DBJarClassLoader classLoader = new DBJarClassLoader("test")){
+			Class<?> noPackageClass = classLoader.loadClass("NoPackageClass");
+			assertThat(noPackageClass.getPackage(),is(nullValue()));
+			Class<?> aPackagedClass = classLoader.loadClass("apackage.APackagedClass");
+			assertThat(aPackagedClass.getPackage(),is(notNullValue()));
+			assertThat(aPackagedClass.getPackage().getName(),is("apackage"));
+			Class<?> aPackagedClassWithInfo = classLoader.loadClass("apackagewithinfo.APackagedClassWithInfo");
+			assertThat(aPackagedClassWithInfo.getPackage(),is(notNullValue()));
+			assertThat(aPackagedClassWithInfo.getPackage().getName(),is("apackagewithinfo"));
+			assertThat(aPackagedClassWithInfo.getPackage().getAnnotation(Deprecated.class),is(notNullValue()));
 		}
-		Field cacheField = DBJarClassLoader.class.getDeclaredField("CACHED_JARS");
-		cacheField.setAccessible(true);
-		Map map = (Map) cacheField.get(null);
-		assertTrue(map.isEmpty());
+		
+		CurrentSessionContextHelper.closeOpenSessions();
 	}
 	
 	private byte[] readFileBytes(String fileName) throws IOException, FileNotFoundException {
