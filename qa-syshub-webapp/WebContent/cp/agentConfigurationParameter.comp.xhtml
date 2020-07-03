@@ -54,13 +54,13 @@
 			<span class="input-group-addon">
 				<b:fa value="i-cursor"></b:fa>
 			</span> 
-			<h:inputTextarea styleClass="form-control" rows="1"
+			<h:inputTextarea styleClass="form-control" rows="1" disabled="#{disabled}"
 				value="#{parameter.agentConfigurationParameter.stringValue}"
 				validator="#{parameter.validateParameter}">
 				<f:ajax listener="#{parameter.parameterChanged}" onevent="#{loader.overlayAjaxLoader}"></f:ajax>
 			</h:inputTextarea>
 		</h:panelGroup>
-		<b:inputText rows="1"
+		<b:inputText rows="1" disabled="#{disabled}"
 			rendered="#{parameter.type == 'PASSWORD'}"
 			value="#{parameter.agentConfigurationParameter.encryptedValue}"
 			converter="#{webappmain.encryptedValueConverter}"
