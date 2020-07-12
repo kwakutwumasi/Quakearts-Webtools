@@ -156,6 +156,10 @@
 		<component-type>com.quakearts.bootstrap.sidemenu</component-type>
 		<component-class>com.quakearts.webapp.facelets.bootstrap.components.BootSideMenuComponent</component-class>
 	</component>
+	<component>
+		<component-type>com.quakearts.bootstrap.output</component-type>
+		<component-class>com.quakearts.webapp.facelets.bootstrap.components.BootOutputComponent</component-class>
+	</component>
 	<render-kit>
 		<renderer>
 			<component-family>com.quakearts.bootstrap.header</component-family>

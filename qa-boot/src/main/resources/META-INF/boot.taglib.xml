@@ -3748,4 +3748,15 @@ child component if present
 			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootBaseHandler</handler-class>
 		</component>
 	</tag>
+	<tag>
+		<description><![CDATA[
+			A tag for printing out unescaped literal text values
+		]]></description>
+		<tag-name>output</tag-name>
+		<component>
+			<component-type>com.quakearts.bootstrap.output</component-type>
+			<renderer-type>com.quakearts.bootstrap.output.renderer</renderer-type>
+			<handler-class>com.quakearts.webapp.facelets.bootstrap.handlers.BootOutputHandler</handler-class>
+		</component>
+	</tag>
 </facelet-taglib>
