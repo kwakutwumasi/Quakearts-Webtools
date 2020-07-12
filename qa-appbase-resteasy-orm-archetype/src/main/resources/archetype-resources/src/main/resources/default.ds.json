@@ -4,5 +4,6 @@
 	"xa.databaseName":"./internaldb",
 	"xa.createDatabase":"create",
 	"minPoolSize":3,
-	"maxPoolSize":20
+	"maxPoolSize":20,
+	"localTransactionMode":true
 }
