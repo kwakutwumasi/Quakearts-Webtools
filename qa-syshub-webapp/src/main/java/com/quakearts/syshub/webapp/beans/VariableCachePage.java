@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+import javax.faces.convert.ConverterException;
 import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -107,8 +108,12 @@ public class VariableCachePage extends BaseBean {
 
 		@Override
 		public Object getAsObject(FacesContext context, UIComponent component, String value) {
-			if(value!=null)
-				return Base64.getDecoder().decode(value.getBytes());
+			try {
+				if(value!=null)
+					return Base64.getDecoder().decode(value.getBytes());
+			} catch (Exception e) {
+				throw new ConverterException("Unable to convert Base64 string", e);
+			}
 			
 			return value;
 		}
@@ -118,7 +123,7 @@ public class VariableCachePage extends BaseBean {
 			if(value instanceof byte[])
 				return Base64.getEncoder().encodeToString((byte[])value);
 			
-			return "";
+			throw new ConverterException("Unable to convert value. Value is not a byte array");
 		}
 	}
 }
