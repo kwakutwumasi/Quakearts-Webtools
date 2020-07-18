@@ -108,7 +108,7 @@ public class VariableCachePage extends BaseBean {
 		@Override
 		public Object getAsObject(FacesContext context, UIComponent component, String value) {
 			if(value!=null)
-				return Base64.getEncoder().encode(value.getBytes());
+				return Base64.getDecoder().decode(value.getBytes());
 			
 			return value;
 		}
@@ -116,7 +116,7 @@ public class VariableCachePage extends BaseBean {
 		@Override
 		public String getAsString(FacesContext context, UIComponent component, Object value) {
 			if(value instanceof byte[])
-				return new String(Base64.getDecoder().decode((byte[])value));
+				return Base64.getEncoder().encodeToString((byte[])value);
 			
 			return "";
 		}
