@@ -10,9 +10,13 @@
  ******************************************************************************/
 package com.quakearts.syshub.webapp.beans;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.logging.Logger;
+
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.convert.Converter;
 import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -91,5 +95,30 @@ public class VariableCachePage extends BaseBean {
 		
 	public boolean isInCreateOrEditMode(){
 		return FacesContext.getCurrentInstance().getViewRoot().getViewId().endsWith("create.xhtml") || "edit".equals(webappmain.getMode());
+	}
+	
+	private transient Converter base64Converter = new Base64Converter();
+	
+	public Converter getBase64Converter() {
+		return base64Converter;
+	}
+	
+	private class Base64Converter implements Converter {
+
+		@Override
+		public Object getAsObject(FacesContext context, UIComponent component, String value) {
+			if(value!=null)
+				return Base64.getEncoder().encode(value.getBytes());
+			
+			return value;
+		}
+
+		@Override
+		public String getAsString(FacesContext context, UIComponent component, Object value) {
+			if(value instanceof byte[])
+				return new String(Base64.getDecoder().decode((byte[])value));
+			
+			return "";
+		}
 	}
 }

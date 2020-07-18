@@ -16,7 +16,7 @@
 		<label id="appData_label">Agent Module Data</label>
 		<h:inputTextarea styleClass="form-control" value="#{variableCache.appData}" rows="5" 
 			disabled="#{variableCachePage.webappmain.mode eq 'read'}"
-			converter="#{variableCachePage.webappmain.base64Converter}">
+			converter="#{variableCachePage.base64Converter}">
 		</h:inputTextarea>
 	</b:formGroup>
 </ui:component>
