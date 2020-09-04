@@ -7,8 +7,6 @@ import static org.hamcrest.core.IsNull.*;
 import static com.quakearts.webapp.security.auth.JWTLoginModule.*;
 import static com.quakearts.webapp.security.jwt.RegisteredNames.*;
 
-import java.security.Principal;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -24,7 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.quakearts.webapp.security.auth.DirectoryRoles;
 import com.quakearts.webapp.security.auth.EmailPrincipal;
 import com.quakearts.webapp.security.auth.JWTLoginModule;
 import com.quakearts.webapp.security.auth.JWTPrincipal;
@@ -80,20 +77,7 @@ public class TestJWTLoginModule extends LoginModuleTest {
 		assertThat(claims.getIssuer(), is(JWTLoginModule.class.getName()));
 		assertThat(claims.getNotBefore(), is(0l));
 		assertThat(claims.getSubject(), is("test1@quakearts.com"));
-		
-		assertThat(subject.getPrincipals(DirectoryRoles.class).size(), is(1));
-		DirectoryRoles roles = subject.getPrincipals(DirectoryRoles.class).iterator().next();
-		assertThat(roles.getName(), is("Roles"));
-
-		Enumeration<? extends Principal> principals = roles.members();
-		int count=0;
-		while (principals.hasMoreElements()) {
-			Principal principal = principals.nextElement();
-			assertThat(principal, is(jwtPrincipal));
-			count++;
-		}
-		assertThat(count, is(1));
-		
+				
 		subject = new Subject();
 		sharedState = new HashMap<>();
 
@@ -138,7 +122,6 @@ public class TestJWTLoginModule extends LoginModuleTest {
 				.add("password", "test12")
 				.add("storeType", "JCEKS")
 				.add(ADDITIONALCLAIMSPARAMETER, "")
-				.add(ROLESGROUPNAMEPARAMETER, "TestRoles")
 				.add(GRACEPERIODPARAMETER, "Invalid")
 				.add(VALIDITYPARAMETER, "Invalid")
 				.add(VALIDITY_PERIODPARAMETER, "In Valid")
@@ -173,32 +156,15 @@ public class TestJWTLoginModule extends LoginModuleTest {
 		assertThat(claims.getIssuer(), is(JWTLoginModule.class.getName()));
 		assertThat(claims.getNotBefore(), is(0l));
 		assertThat(claims.getSubject(), is(nullValue()));	
-		
-		assertThat(subject.getPrincipals(DirectoryRoles.class).size(), is(1));
-		DirectoryRoles roles = subject.getPrincipals(DirectoryRoles.class).iterator().next();
-		assertThat(roles.getName(), is("TestRoles"));
-
-		Enumeration<? extends Principal> principals = roles.members();
-		int count=0;
-		while (principals.hasMoreElements()) {
-			Principal principal = principals.nextElement();
-			assertThat(principal, is(jwtPrincipal));
-			count++;
-		}
-		assertThat(count, is(1));
 	}
 
 	@Test
 	public void testTrack1_3() throws Exception {
 		Subject subject = new Subject();
-		DirectoryRoles roles = new DirectoryRoles("Roles");
-		roles.addMember(new NamePrincipal("Kwaku Appiah"));
-		roles.addMember(new EmailPrincipal("kwaku@appiah.com"));
-		roles.addMember(new OtherPrincipal("Admin", "admin-role"));
-		roles.addMember(()->"Test3");
-		subject.getPrincipals().add(roles);
-		subject.getPrincipals().add(new DirectoryRoles("OtherRoles"));
-		subject.getPrincipals().add(new OtherPrincipal("Ignored"));
+		subject.getPrincipals().add(new NamePrincipal("Kwaku Appiah"));
+		subject.getPrincipals().add(new EmailPrincipal("kwaku@appiah.com"));
+		subject.getPrincipals().add(new OtherPrincipal("Admin", "admin-role"));
+		subject.getPrincipals().add(()->"Test3");
 		
 		Map<String, ?> options = newMap()
 				.add(ISSUERPARAMETER, "https://test.quakearts.com")

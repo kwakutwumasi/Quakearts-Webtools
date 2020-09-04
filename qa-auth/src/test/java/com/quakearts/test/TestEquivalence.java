@@ -6,7 +6,6 @@ import static org.hamcrest.core.Is.*;
 import org.junit.Test;
 
 import com.quakearts.webapp.security.auth.DirectoryPrincipal;
-import com.quakearts.webapp.security.auth.DirectoryRoles;
 import com.quakearts.webapp.security.auth.EmailPrincipal;
 import com.quakearts.webapp.security.auth.NamePrincipal;
 import com.quakearts.webapp.security.auth.OtherPrincipal;
@@ -76,59 +75,7 @@ public class TestEquivalence {
 		assertThat(new NameAttributeOverridePrincipal("test", null), is(new NameAttributeOverridePrincipal("test", null)));
 		assertThat(new NameAttributeOverridePrincipal("test", null).hashCode(), is(new NameAttributeOverridePrincipal("test", null).hashCode()));
 		assertThat(new NameAttributeOverridePrincipal(null, "test"), is(new NameAttributeOverridePrincipal(null, "test")));
-		assertThat(new NameAttributeOverridePrincipal(null, "test").hashCode(), is(new NameAttributeOverridePrincipal(null, "test").hashCode()));
-		
-		DirectoryRoles directoryRoles = new DirectoryRoles("Roles");
-		
-		assertFalse(directoryRoles.equals(null));
-		assertThat(directoryRoles, is(directoryRoles));
-		assertThat(directoryRoles.hashCode(), is(directoryRoles.hashCode()));
-		assertFalse(((Object)directoryRoles).equals(""));
-
-		DirectoryRoles directoryRoles2 = new DirectoryRoles(null);
-		assertThat(directoryRoles, is(directoryRoles2));
-		assertThat(directoryRoles.hashCode(), is(directoryRoles2.hashCode()));
-		DirectoryRoles directoryRoles3 = new DirectoryRoles("Roles3");
-		assertFalse(directoryRoles.equals(directoryRoles3));
-
-		directoryRoles.addMember(namePrincipal);
-		directoryRoles.addMember(emailPrincipal);
-		directoryRoles.addMember(otherPrincipal);
-		directoryRoles.addMember(userPrincipal);
-		
-		DirectoryRoles directoryRoles4 = new DirectoryRoles("Roles");
-		directoryRoles4.addMember(namePrincipal);
-		directoryRoles4.addMember(emailPrincipal);
-		directoryRoles4.addMember(otherPrincipal);
-		
-		assertFalse(directoryRoles.equals(directoryRoles4));		
-		DirectoryRoles directoryRoles5 = new DirectoryRoles("Roles");
-		directoryRoles5.addMember(namePrincipal);
-		directoryRoles5.addMember(emailPrincipal);
-		directoryRoles5.addMember(otherPrincipal2);
-		directoryRoles5.addMember(userPrincipal);
-		assertFalse(directoryRoles.equals(directoryRoles5));		
-
-		DirectoryRoles directoryRoles6 = new DirectoryRoles("Roles");
-		directoryRoles6.addMember(namePrincipal);
-		directoryRoles6.addMember(emailPrincipal);
-		directoryRoles6.addMember(otherPrincipal);
-		directoryRoles6.addMember(userPrincipal);
-		assertThat(directoryRoles, is(directoryRoles6));
-		assertThat(directoryRoles.hashCode(), is(directoryRoles6.hashCode()));
-		
-		assertTrue(directoryRoles.isMember(userPrincipal));
-		assertFalse(directoryRoles.isMember(otherPrincipal2));
-		assertTrue(directoryRoles6.removeMember(userPrincipal));
-		assertThat(directoryRoles6, is(directoryRoles4));
-		assertThat(directoryRoles6.hashCode(), is(directoryRoles4.hashCode()));
-		
-		assertTrue(directoryRoles4.addMember(userPrincipal));
-		assertThat(directoryRoles, is(directoryRoles4));
-		assertThat(directoryRoles.hashCode(), is(directoryRoles4.hashCode()));
-		assertFalse(directoryRoles4.addMember(userPrincipal));
-		assertThat(directoryRoles, is(directoryRoles4));
-		assertThat(directoryRoles.hashCode(), is(directoryRoles4.hashCode()));
+		assertThat(new NameAttributeOverridePrincipal(null, "test").hashCode(), is(new NameAttributeOverridePrincipal(null, "test").hashCode()));	
 	}
 	
 	class NameAttributeOverridePrincipal

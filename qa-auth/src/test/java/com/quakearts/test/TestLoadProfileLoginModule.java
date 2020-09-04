@@ -4,10 +4,8 @@ import static org.hamcrest.core.Is.*;
 import static org.junit.Assert.*;
 import static com.quakearts.webapp.security.auth.LoadProfileLoginModule.*;
 
-import java.security.Principal;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +15,6 @@ import javax.security.auth.spi.LoginModule;
 
 import org.junit.Test;
 
-import com.quakearts.webapp.security.auth.DirectoryRoles;
 import com.quakearts.webapp.security.auth.LoadProfileLoginModule;
 import com.quakearts.webapp.security.auth.OtherPrincipal;
 import com.quakearts.webapp.security.auth.UserPrincipal;
@@ -69,21 +66,10 @@ public class TestLoadProfileLoginModule extends DatabaseModuleTestBase {
 		
 		runModule();
 		
-		assertThat(subject.getPrincipals().size(), is(5));
+		assertThat(subject.getPrincipals().size(), is(4));
 		for(OtherPrincipal otherPrincipal:subject.getPrincipals(OtherPrincipal.class)) {
 			assertThat(rolesValues.contains(otherPrincipal.getName()), is(true));
-		}
-		
-		DirectoryRoles roles = subject.getPrincipals(DirectoryRoles.class).iterator().next();
-		assertThat(roles.getName(), is("Roles"));
-		Enumeration<? extends Principal> principals = roles.members();
-		int count=0;
-		while (principals.hasMoreElements()) {
-			++count;
-			Principal principal = principals.nextElement();
-			assertThat(rolesValues.contains(principal.getName()), is(true));		
-		}
-		assertThat(count, is(4));
+		}		
 	}
 
 	@Test
@@ -146,21 +132,10 @@ public class TestLoadProfileLoginModule extends DatabaseModuleTestBase {
 		
 		runModule();
 		
-		assertThat(subject.getPrincipals().size(), is(4));
+		assertThat(subject.getPrincipals().size(), is(3));
 		for(OtherPrincipal otherPrincipal:subject.getPrincipals(OtherPrincipal.class)) {
 			assertThat(rolesValues.contains(otherPrincipal.getName()), is(true));
-		}
-		
-		DirectoryRoles roles = subject.getPrincipals(DirectoryRoles.class).iterator().next();
-		assertThat(roles.getName(), is("Roles"));
-		Enumeration<? extends Principal> principals = roles.members();
-		int count=0;
-		while (principals.hasMoreElements()) {
-			++count;
-			Principal principal = principals.nextElement();
-			assertThat(rolesValues.contains(principal.getName()), is(true));		
-		}
-		assertThat(count, is(3));
+		}		
 	}
 	
 	@Test
@@ -218,33 +193,17 @@ public class TestLoadProfileLoginModule extends DatabaseModuleTestBase {
 				.add("com.quakearts.LoginOk", Boolean.TRUE)
 				.thenBuild();
 		Subject subject = new Subject();
-		DirectoryRoles existingRoles = new DirectoryRoles("Roles");
-		existingRoles.addMember(new OtherPrincipal("Existing"));
-		subject.getPrincipals().add(existingRoles);
-		DirectoryRoles notMatchingGroup = new DirectoryRoles("ExistingGroup");
-		notMatchingGroup.addMember(new OtherPrincipal("AnotherExisting"));
-		subject.getPrincipals().add(notMatchingGroup);
 		subject.getPrincipals().add(new OtherPrincipal("ExistingRole"));
 
 		getModule().initialize(subject, callbacks->{}, sharedState, options);
 		
 		runModule();
 		
-		assertThat(subject.getPrincipals().size(), is(7));
+		assertThat(subject.getPrincipals().size(), is(4));
 		for(OtherPrincipal otherPrincipal:subject.getPrincipals(OtherPrincipal.class)) {
 			if(!otherPrincipal.getName().startsWith("Existing"))
 				assertThat(rolesValues.contains(otherPrincipal.getName()), is(true));
-		}
-		
-		Enumeration<? extends Principal> principals = existingRoles.members();
-		int count=0;
-		while (principals.hasMoreElements()) {
-			++count;
-			Principal principal = principals.nextElement();
-			if(!principal.getName().equals("Existing"))
-				assertThat(rolesValues.contains(principal.getName()), is(true));		
-		}
-		assertThat(count, is(4));
+		}		
 	}
 	
 	@Test

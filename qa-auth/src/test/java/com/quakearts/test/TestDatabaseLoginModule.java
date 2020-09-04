@@ -4,11 +4,9 @@ import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.*;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +27,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import com.quakearts.webapp.security.auth.DatabaseLoginModule;
-import com.quakearts.webapp.security.auth.DirectoryRoles;
 import com.quakearts.webapp.security.auth.OtherPrincipal;
 import com.quakearts.webapp.security.auth.UserPrincipal;
 import com.quakearts.webapp.security.auth.util.AttemptChecker;
@@ -115,26 +112,12 @@ public class TestDatabaseLoginModule extends DatabaseModuleTestBase {
 		
 		runModule();
 		
-		assertThat(subject.getPrincipals().size(), is(6));
+		assertThat(subject.getPrincipals().size(), is(5));
 		for(OtherPrincipal principal: subject.getPrincipals(OtherPrincipal.class)) {
 			assertThat(rolesValues.contains(principal.getName()), is(true));
 		}		
 		assertThat(subject.getPrincipals(UserPrincipal.class).iterator().next().getName(), is(username));
-		DirectoryRoles roles = subject.getPrincipals(DirectoryRoles.class).iterator().next();
-		assertThat(roles.getName(), is("Roles"));
-		Enumeration<? extends Principal> principals = roles.members();
-		int count=0;
-		while (principals.hasMoreElements()) {
-			++count;
-			Principal principal = principals.nextElement();
-			if(principal instanceof UserPrincipal) {
-				assertThat(principal.getName(), is(username));		
-			} else {
-				assertThat(rolesValues.contains(principal.getName()), is(true));		
-			}
-		}
-		assertThat(count, is(5));
-		
+				
 		AttemptChecker.createChecker("java:/TDBLMT11",0,0);
 		AttemptChecker attemptChecker = AttemptChecker.getChecker("java:/TDBLMT11");
 		assertThat(attemptChecker.getLockoutTime(), is(3600000));
@@ -198,13 +181,8 @@ public class TestDatabaseLoginModule extends DatabaseModuleTestBase {
 		
 		runModule();
 		
-		assertThat(subject.getPrincipals().size(), is(2));	
+		assertThat(subject.getPrincipals().size(), is(1));	
 		assertThat(subject.getPrincipals(UserPrincipal.class).iterator().next().getName(), is(username));
-		DirectoryRoles roles = subject.getPrincipals(DirectoryRoles.class).iterator().next();
-		assertThat(roles.getName(), is("TestRoles"));
-		Enumeration<? extends Principal> principals = roles.members();
-		assertThat(principals.nextElement().getName(), is(username));
-		assertThat(principals.hasMoreElements(), is(false));
 		
 		AttemptChecker.createChecker("java:/TDBLMT12",0,0);
 		AttemptChecker attemptChecker = AttemptChecker.getChecker("java:/TDBLMT12");
@@ -247,12 +225,6 @@ public class TestDatabaseLoginModule extends DatabaseModuleTestBase {
 		
 		Map<String, ?> sharedState = null;
 		Subject subject = new Subject();
-		DirectoryRoles existingRoles = new DirectoryRoles("Roles");
-		existingRoles.addMember(new OtherPrincipal("Existing"));
-		subject.getPrincipals().add(existingRoles);
-		DirectoryRoles notMatchingGroup = new DirectoryRoles("ExistingGroup");
-		notMatchingGroup.addMember(new OtherPrincipal("AnotherExisting"));
-		subject.getPrincipals().add(notMatchingGroup);
 		subject.getPrincipals().add(new OtherPrincipal("ExistingRole"));
 		
 		getModule().initialize(subject, callbacks->{
@@ -267,7 +239,7 @@ public class TestDatabaseLoginModule extends DatabaseModuleTestBase {
 		
 		runModule();
 		
-		assertThat(subject.getPrincipals().size(), is(9));	
+		assertThat(subject.getPrincipals().size(), is(6));
 		assertThat(subject.getPrincipals(UserPrincipal.class).iterator().next().getName(), is(username));
 		for(OtherPrincipal principal: subject.getPrincipals(OtherPrincipal.class)) {
 			if(principal.getName().startsWith("Existing")||
@@ -276,22 +248,6 @@ public class TestDatabaseLoginModule extends DatabaseModuleTestBase {
 			}
 			assertThat(rolesValues.contains(principal.getName()), is(true));
 		}		
-
-		Enumeration<? extends Principal> principals = existingRoles.members();
-		int count=0;
-		while (principals.hasMoreElements()) {
-			++count;
-			Principal principal = principals.nextElement();
-			if(principal instanceof UserPrincipal) {
-				assertThat(principal.getName(), is(username));
-			} else if(principal.getName().equals("Existing")
-					||principal.getName().equals("AppUser")) {
-				continue;
-			} else {
-				assertThat(rolesValues.contains(principal.getName()), is(true));		
-			}
-		}
-		assertThat(count, is(6));
 		
 		AttemptChecker.createChecker("java:/TDBLMT13",0,0);
 		AttemptChecker attemptChecker = AttemptChecker.getChecker("java:/TDBLMT13");
@@ -343,29 +299,13 @@ public class TestDatabaseLoginModule extends DatabaseModuleTestBase {
 		
 		runModule();
 		
-		assertThat(subject.getPrincipals().size(), is(4));	
+		assertThat(subject.getPrincipals().size(), is(3));	
 		assertThat(subject.getPrincipals(UserPrincipal.class).iterator().next().getName(), is(username));
 		
 		for(OtherPrincipal otherPrincipal:subject.getPrincipals(OtherPrincipal.class)) {
 			assertTrue(otherPrincipal.getName().equals("AppUser") || otherPrincipal.getName().equals("DevUser"));
 		}
-		
-		DirectoryRoles roles = subject.getPrincipals(DirectoryRoles.class).iterator().next();
-		assertThat(roles.getName(), is("Roles"));
-
-		Enumeration<? extends Principal> principals = roles.members();
-		int count = 0;
-		while (principals.hasMoreElements()) {
-			++count;
-			Principal principal = principals.nextElement();
-			if(principal instanceof UserPrincipal) {
-				assertThat(principal.getName(), is(username));		
-			} else {
-				assertTrue(principal.getName().equals("AppUser") || principal.getName().equals("DevUser"));
-			}
-		}
-		assertThat(count, is(3));
-		
+				
 		AttemptChecker.createChecker("java:/TDBLMT14",0,0);
 		AttemptChecker attemptChecker = AttemptChecker.getChecker("java:/TDBLMT14");
 		assertThat(attemptChecker.getLockoutTime(), is(3600000));
@@ -417,31 +357,14 @@ public class TestDatabaseLoginModule extends DatabaseModuleTestBase {
 		
 		runModule();
 		
-		assertThat(subject.getPrincipals().size(), is(6));	
+		assertThat(subject.getPrincipals().size(), is(5));	
 		assertThat(subject.getPrincipals(UserPrincipal.class).iterator().next().getName(), is(username));
 		for(OtherPrincipal principal: subject.getPrincipals(OtherPrincipal.class)) {
 			if(principal.getName().equals("AppUser"))
 				continue;
 			
 			assertThat(rolesValues.contains(principal.getName()), is(true));
-		}		
-		DirectoryRoles roles = subject.getPrincipals(DirectoryRoles.class).iterator().next();
-		assertThat(roles.getName(), is("Roles"));
-
-		Enumeration<? extends Principal> principals = roles.members();
-		int count = 0;
-		while (principals.hasMoreElements()) {
-			++count;
-			Principal principal = principals.nextElement();
-			if(principal instanceof UserPrincipal) {
-				assertThat(principal.getName(), is(username));		
-			} else if(principal.getName().equals("AppUser")) {
-				continue;		
-			} else {
-				assertThat(rolesValues.contains(principal.getName()), is(true));
-			}
 		}
-		assertThat(count, is(5));		
 	}
 
 	@Test
@@ -494,24 +417,9 @@ public class TestDatabaseLoginModule extends DatabaseModuleTestBase {
 		
 		runModule();
 		
-		assertThat(subject.getPrincipals().size(), is(3));	
+		assertThat(subject.getPrincipals().size(), is(2));	
 		assertThat(subject.getPrincipals(UserPrincipal.class).iterator().next().getName(), is(username));
 		assertThat(subject.getPrincipals(OtherPrincipal.class).iterator().next().getName(), is("AppUser"));			
-		DirectoryRoles roles = subject.getPrincipals(DirectoryRoles.class).iterator().next();
-		assertThat(roles.getName(), is("Roles"));
-
-		Enumeration<? extends Principal> principals = roles.members();
-		int count = 0;
-		while (principals.hasMoreElements()) {
-			++count;
-			Principal principal = principals.nextElement();
-			if(principal instanceof UserPrincipal) {
-				assertThat(principal.getName(), is(username));		
-			} else {
-				assertThat(principal.getName(), is("AppUser"));		
-			}
-		}
-		assertThat(count, is(2));
 	}
 
 	@Test
@@ -558,25 +466,11 @@ public class TestDatabaseLoginModule extends DatabaseModuleTestBase {
 		
 		runModule();
 		
-		assertThat(subject.getPrincipals().size(), is(6));
+		assertThat(subject.getPrincipals().size(), is(5));
 		for(OtherPrincipal principal: subject.getPrincipals(OtherPrincipal.class)) {
 			assertThat(principal.getName(), is(""));
 		}		
 		assertThat(subject.getPrincipals(UserPrincipal.class).iterator().next().getName(), is(username));
-		DirectoryRoles roles = subject.getPrincipals(DirectoryRoles.class).iterator().next();
-		assertThat(roles.getName(), is("Roles"));
-		Enumeration<? extends Principal> principals = roles.members();
-		int count=0;
-		while (principals.hasMoreElements()) {
-			++count;
-			Principal principal = principals.nextElement();
-			if(principal instanceof UserPrincipal) {
-				assertThat(principal.getName(), is(username));		
-			} else {
-				assertThat(principal.getName(), is(""));		
-			}
-		}
-		assertThat(count, is(5));
 	}
 
 	@Test

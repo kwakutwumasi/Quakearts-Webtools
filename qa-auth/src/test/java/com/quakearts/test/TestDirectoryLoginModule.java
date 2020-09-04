@@ -5,11 +5,7 @@ import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.*;
 
 import java.io.IOException;
-import java.security.Principal;
-import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.security.auth.Subject;
@@ -26,9 +22,6 @@ import org.junit.rules.ExpectedException;
 
 import com.quakearts.test.TestLDAPConnectionFactory.Mode;
 import com.quakearts.webapp.security.auth.DirectoryLoginModule;
-import com.quakearts.webapp.security.auth.DirectoryRoles;
-import com.quakearts.webapp.security.auth.EmailPrincipal;
-import com.quakearts.webapp.security.auth.NamePrincipal;
 import com.quakearts.webapp.security.auth.OtherPrincipal;
 import com.quakearts.webapp.security.auth.UserPrincipal;
 import com.quakearts.webapp.security.auth.util.AttemptChecker;
@@ -116,13 +109,8 @@ public class TestDirectoryLoginModule extends LoginModuleTest {
 		
 		runModule();
 		
-		assertThat(subject.getPrincipals().size(), is(2));
+		assertThat(subject.getPrincipals().size(), is(1));
 		assertThat(subject.getPrincipals(UserPrincipal.class).iterator().next().getName(), is(username));
-		assertThat(subject.getPrincipals(DirectoryRoles.class).iterator().next().getName(), is("Roles"));
-		
-		DirectoryRoles roles = subject.getPrincipals(DirectoryRoles.class).iterator().next();
-		Enumeration<? extends Principal> principals = roles.members();
-		assertThat(principals.nextElement().getName(), is(username));
 		
 		AttemptChecker.createChecker("localhost",0,0);
 		AttemptChecker attemptChecker = AttemptChecker.getChecker("localhost");
@@ -144,14 +132,9 @@ public class TestDirectoryLoginModule extends LoginModuleTest {
 		
 		runModule();
 		
-		assertThat(subject.getPrincipals().size(), is(2));
+		assertThat(subject.getPrincipals().size(), is(1));
 		assertThat(subject.getPrincipals(UserPrincipal.class).iterator().next().getName(), is(username));
-		assertThat(subject.getPrincipals(DirectoryRoles.class).iterator().next().getName(), is("Roles"));
-		
-		roles = subject.getPrincipals(DirectoryRoles.class).iterator().next();
-		principals = roles.members();
-		assertThat(principals.nextElement().getName(), is(username));
-		
+				
 		expectedException.expect(LoginException.class);
 		expectedException.expectMessage("Password is empty.");
 		
@@ -189,7 +172,6 @@ public class TestDirectoryLoginModule extends LoginModuleTest {
 				.add(LDAP_COMPARE_USEPARAMETER, TRUE)//usecompare
 				.add(DIRECTORY_ATTRIBUTESPARAMETER, "fname;lname;email;dept;computer")
 				.add(MAX_TRY_ATTEMPTSPARAMETER, "6")
-				.add(DIRECTORY_ROLENAMEPARAMETER, "DirectoyRoles")
 				.add(DIRECTORY_DEFAULTROLESPARAMETER, "AppUser")
 				.thenBuild();
 		
@@ -215,12 +197,6 @@ public class TestDirectoryLoginModule extends LoginModuleTest {
 					.addAttributeEntry("computer", "N123495"));
 		
 		Subject subject = new Subject();
-		DirectoryRoles existingRoles = new DirectoryRoles("DirectoyRoles");
-		existingRoles.addMember(new OtherPrincipal("Existing"));
-		subject.getPrincipals().add(existingRoles);
-		DirectoryRoles notMatchingGroup = new DirectoryRoles("ExistingGroup");
-		notMatchingGroup.addMember(new OtherPrincipal("AnotherExisting"));
-		subject.getPrincipals().add(notMatchingGroup);
 		subject.getPrincipals().add(new OtherPrincipal("ExistingRole"));
 		
 		getModule().initialize(subject, callbacks->{
@@ -235,30 +211,8 @@ public class TestDirectoryLoginModule extends LoginModuleTest {
 		
 		runModule();
 		
-		assertThat(subject.getPrincipals().size(), is(10));
+		assertThat(subject.getPrincipals().size(), is(7));
 		assertThat(subject.getPrincipals(UserPrincipal.class).iterator().next().getName(), is(username));
-		assertThat(subject.getPrincipals(DirectoryRoles.class).size(), is(2));
-		for(DirectoryRoles roles:subject.getPrincipals(DirectoryRoles.class)) {
-			if(roles.getName().equals("DirectoryRoles")) {
-				Enumeration<? extends Principal> principals = roles.members();
-				int count = 0;
-				List<String> expectedNames = Arrays.asList("IT","N123495","AppUser","Existing");
-				while (principals.hasMoreElements()) {
-					count++;
-					Principal principal = principals.nextElement();
-					if(principal instanceof UserPrincipal) {
-						assertThat(principal.getName(), is(username));
-					} else if(principal instanceof OtherPrincipal) {
-						assertThat(expectedNames.contains(principal.getName()), is(true));
-					} else if(principal instanceof NamePrincipal) {
-						assertThat(principal.getName(), is("Kwame Nyame"));
-					} else if(principal instanceof EmailPrincipal) {
-						assertThat(principal.getName(), is("kwame@server.com"));
-					}
-				}
-				assertThat(count, is(7));
-			}
-		}
 		
 		AttemptChecker.createChecker("localhost.2",0,0);
 		AttemptChecker attemptChecker = AttemptChecker.getChecker("localhost.2");
@@ -332,27 +286,8 @@ public class TestDirectoryLoginModule extends LoginModuleTest {
 		
 		runModule();
 		
-		assertThat(subject.getPrincipals().size(), is(6));
+		assertThat(subject.getPrincipals().size(), is(5));
 		assertThat(subject.getPrincipals(UserPrincipal.class).iterator().next().getName(), is(username));
-		DirectoryRoles roles = subject.getPrincipals(DirectoryRoles.class).iterator().next();
-		assertThat(roles.getName(), is("Roles"));
-		Enumeration<? extends Principal> principals = roles.members();
-		int count = 0;
-		List<String> expectedNames = Arrays.asList("DevUser","AppUser");
-		while (principals.hasMoreElements()) {
-			count++;
-			Principal principal = principals.nextElement();
-			if(principal instanceof UserPrincipal) {
-				assertThat(principal.getName(), is(username));
-			} else if(principal instanceof OtherPrincipal) {
-				assertThat(expectedNames.contains(principal.getName()), is(true));
-			} else if(principal instanceof NamePrincipal) {
-				assertThat(principal.getName(), is("Kofi Babone"));
-			} else if(principal instanceof EmailPrincipal) {
-				assertThat(principal.getName(), is("kofi@server.com"));
-			}
-		}
-		assertThat(count, is(5));
 		
 		AttemptChecker.createChecker("localhost.3",0,0);
 		AttemptChecker attemptChecker = AttemptChecker.getChecker("localhost.3");
@@ -420,27 +355,8 @@ public class TestDirectoryLoginModule extends LoginModuleTest {
 				
 		runModule();
 		
-		assertThat(subject.getPrincipals().size(), is(6));
+		assertThat(subject.getPrincipals().size(), is(5));
 		assertThat(subject.getPrincipals(UserPrincipal.class).iterator().next().getName(), is(username));
-		DirectoryRoles roles = subject.getPrincipals(DirectoryRoles.class).iterator().next();
-		assertThat(roles.getName(), is("Roles"));
-		Enumeration<? extends Principal> principals = roles.members();
-		int count = 0;
-		List<String> expectedNames = Arrays.asList("DevUser","AppUser");
-		while (principals.hasMoreElements()) {
-			count++;
-			Principal principal = principals.nextElement();
-			if(principal instanceof UserPrincipal) {
-				assertThat(principal.getName(), is(username));
-			} else if(principal instanceof OtherPrincipal) {
-				assertThat(expectedNames.contains(principal.getName()), is(true));
-			} else if(principal instanceof NamePrincipal) {
-				assertThat(principal.getName(), is("Kwabena Kwabena"));
-			} else if(principal instanceof EmailPrincipal) {
-				assertThat(principal.getName(), is("kwabena@server.com"));
-			}
-		}
-		assertThat(count, is(5));
 		
 		AttemptChecker.createChecker("localhost.4",0,0);
 		AttemptChecker attemptChecker = AttemptChecker.getChecker("localhost.4");
@@ -510,27 +426,8 @@ public class TestDirectoryLoginModule extends LoginModuleTest {
 				
 		runModule();
 		
-		assertThat(subject.getPrincipals().size(), is(6));
+		assertThat(subject.getPrincipals().size(), is(5));
 		assertThat(subject.getPrincipals(UserPrincipal.class).iterator().next().getName(), is(username));
-		DirectoryRoles roles = subject.getPrincipals(DirectoryRoles.class).iterator().next();
-		assertThat(roles.getName(), is("Roles"));
-		Enumeration<? extends Principal> principals = roles.members();
-		int count = 0;
-		List<String> expectedNames = Arrays.asList("DevUser","AppUser");
-		while (principals.hasMoreElements()) {
-			count++;
-			Principal principal = principals.nextElement();
-			if(principal instanceof UserPrincipal) {
-				assertThat(principal.getName(), is(username));
-			} else if(principal instanceof OtherPrincipal) {
-				assertThat(expectedNames.contains(principal.getName()), is(true));
-			} else if(principal instanceof NamePrincipal) {
-				assertThat(principal.getName(), is("Kofi Babone"));
-			} else if(principal instanceof EmailPrincipal) {
-				assertThat(principal.getName(), is("kofi@server.com"));
-			}
-		}
-		assertThat(count, is(5));
 		
 		AttemptChecker.createChecker("localhost.5",0,0);
 		AttemptChecker attemptChecker = AttemptChecker.getChecker("localhost.5");

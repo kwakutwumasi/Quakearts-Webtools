@@ -2,10 +2,8 @@ package com.quakearts.webapp.security.auth;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +40,6 @@ public class JWTLoginModule implements LoginModule {
 	public static final String GRACEPERIODPARAMETER = "grace.period";
 	public static final String VALIDITY_PERIODPARAMETER = "validity.period";
 	public static final String VALIDITYPARAMETER = "validity";
-	public static final String ROLESGROUPNAMEPARAMETER = "rolesgroupname";
 	public static final String ISSUERPARAMETER = "issuer";
 	public static final String AUDIENCEPARAMETER = "audience";
 	public static final String ALGORITHMPARAMETER = "algorithm";
@@ -59,7 +56,6 @@ public class JWTLoginModule implements LoginModule {
 
 	private Map<String, ?> options;
 	private String algorithm = "HS256";
-	private String rolesgrpname = "Roles";
 	private String additionalClaims;
 	private String issuer = JWTLoginModule.class.getName();
 	private String audience = JWTLoginModule.class.getName();
@@ -102,8 +98,6 @@ public class JWTLoginModule implements LoginModule {
 	}
 
 	private void setCommonOptions(Map<String, ?> options) {
-		if (options.containsKey(ROLESGROUPNAMEPARAMETER))
-			rolesgrpname = options.get(ROLESGROUPNAMEPARAMETER).toString();
 
 		if(options.containsKey(ADDITIONALCLAIMSPARAMETER)){
 			additionalClaims = options.get(ADDITIONALCLAIMSPARAMETER).toString();
@@ -257,48 +251,23 @@ public class JWTLoginModule implements LoginModule {
 		if (loginOk) {
 			Set<Principal> principalset = subject.getPrincipals();
 
-			Group rolesgrp = null;
-			rolesgrp = findRolesGroup(principalset, rolesgrp);
-			if (rolesgrp == null) {
-				rolesgrp = createRolesGroup(principalset);
-			}
-
 			if (authenticationMode == AuthenticationMode.GENERATE) {
-				List<String[]> foundRoles = loadPrincipalsFromSubject(rolesgrp);
+				List<String[]> foundRoles = loadPrincipalsFromSubject();
 				JWTPrincipal principal = new JWTPrincipal(generateJWTToken(foundRoles));
-				rolesgrp.addMember(principal);
 				principalset.add(principal);				
 			} else {
-				loadPrincipalsFromToken(principalset, rolesgrp);
+				loadPrincipalsFromToken(principalset);
 			}
 		}
 		return loginOk;
 	}
 
-	private Group findRolesGroup(Set<Principal> principalset, Group rolesgrp) {
-		for (Iterator<?> i = principalset.iterator(); i.hasNext();) {
-			Object obj = i.next();
-			if (obj instanceof Group && ((Group) obj).getName().equals(rolesgrpname)) {
-				rolesgrp = (Group) obj;
-				break;
-			}
-		}
-		return rolesgrp;
-	}
-
-	private Group createRolesGroup(Set<Principal> principalset) {
-		Group rolesgrp;
-		rolesgrp = new DirectoryRoles(rolesgrpname);
-		principalset.add(rolesgrp);
-		return rolesgrp;
-	}
-
-	private List<String[]> loadPrincipalsFromSubject(Group rolesgrp) {
+	private List<String[]> loadPrincipalsFromSubject() {
 		List<String[]> foundRoles = new ArrayList<>();
 		Principal principal;
-		Enumeration<? extends Principal> roles = rolesgrp.members();
-		while(roles.hasMoreElements()) {
-			principal = roles.nextElement();
+		Iterator<? extends Principal> roles = subject.getPrincipals().iterator();
+		while(roles.hasNext()) {
+			principal = roles.next();
 			
 			if(principal instanceof OtherPrincipal) {
 				OtherPrincipal otherPrincipal = (OtherPrincipal) principal;
@@ -319,18 +288,16 @@ public class JWTLoginModule implements LoginModule {
 		return foundRoles;
 	}
 
-	private void loadPrincipalsFromToken(Set<Principal> principalset, Group rolesgrp) {
+	private void loadPrincipalsFromToken(Set<Principal> principalset) {
 		JWTClaims claims = verifier.getClaims();
 		for(JWTClaims.Claim claim:claims){
 			if(!REGISTEREDNAMESLIST.contains(claim.getName().trim())){
 				OtherPrincipal principal = new OtherPrincipal(claim.getValue(), claim.getName());
-				rolesgrp.addMember(principal);
 				principalset.add(principal);
 			}
 			
 			if(claim.getName().equals(SUB)){
 				UserPrincipal principal = new UserPrincipal(claim.getValue());
-				rolesgrp.addMember(principal);
 				principalset.add(principal);
 			}
 		}

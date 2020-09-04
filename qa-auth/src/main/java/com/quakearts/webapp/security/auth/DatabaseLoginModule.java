@@ -11,7 +11,6 @@
 package com.quakearts.webapp.security.auth;
 
 import java.security.Principal;
-import java.security.acl.Group;
 import java.util.Map;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
@@ -21,9 +20,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Set;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.security.auth.callback.Callback;
@@ -38,8 +35,6 @@ import java.util.logging.Logger;
 import com.quakearts.webapp.security.auth.util.AttemptChecker;
 import com.quakearts.webapp.security.util.HashPassword;
 import com.quakearts.webapp.security.util.UtilityMethods;
-
-import java.util.Iterator;
 
 public class DatabaseLoginModule implements LoginModule {
 	private static final Logger log = Logger.getLogger(DatabaseLoginModule.class.getName());
@@ -61,7 +56,6 @@ public class DatabaseLoginModule implements LoginModule {
 	public static final String DATABASE_ROLENAME = "database.rolename";
 
 	private Subject subject;
-	private Group rolesgrp;
 	private CallbackHandler callbackHandler;
 	private Map<String, ?> sharedState;
 	private boolean loginOk;
@@ -331,19 +325,8 @@ public class DatabaseLoginModule implements LoginModule {
 
 	public boolean commit() {
 		if (loginOk) {
-			Set<Principal> principalset = subject.getPrincipals();
-
-			if (useFirstPass) {
-				findRolesGroup(principalset);
-			}
-			
-			createRolesGroup(principalset);
-
 			loadRoles();
 			loadDefaultRoles();
-
-			addPrincipalSetToSubject(principalset);
-
 			userprof = null;
 			return true;
 		} else {
@@ -351,29 +334,13 @@ public class DatabaseLoginModule implements LoginModule {
 		}
 	}
 
-	private void findRolesGroup(Set<Principal> principalset) {
-		for (Iterator<Principal> i = principalset.iterator(); i.hasNext();) {
-			Object obj = i.next();
-			if (obj instanceof Group && ((Group) obj).getName().equals(rolesgrpname)) {
-				rolesgrp = (Group) obj;
-				break;
-			}
-		}
-	}
-
-	private void createRolesGroup(Set<Principal> principalset) {
-		if (rolesgrp == null) {
-			rolesgrp = new DirectoryRoles(rolesgrpname);
-			principalset.add(rolesgrp);
-		}
-	}
-
 	private void loadRoles() {
+		subject.getPrincipals().add(new UserPrincipal(username));
 		userprof.entrySet().forEach(entry ->{
 			OtherPrincipal principal;
 			principal = new OtherPrincipal(entry.getValue() != null ? entry.getValue() : "",
 					entry.getKey());
-			rolesgrp.addMember(principal);
+			subject.getPrincipals().add(principal);
 		});
 	}
 
@@ -383,17 +350,8 @@ public class DatabaseLoginModule implements LoginModule {
 			int count = 1;
 			for (String role : defaultroles) {
 				principal = new OtherPrincipal(role, "default"+(count++));
-				rolesgrp.addMember(principal);
+				subject.getPrincipals().add(principal);
 			}
-		}
-	}
-
-	private void addPrincipalSetToSubject(Set<Principal> principalset) {
-		rolesgrp.addMember(new UserPrincipal(username));
-		Enumeration<? extends Principal> members = rolesgrp.members();
-		while (members.hasMoreElements()) {
-			Principal type = members.nextElement();
-			principalset.add(type);				
 		}
 	}
 
@@ -405,7 +363,6 @@ public class DatabaseLoginModule implements LoginModule {
 		usernameAsSalt = false;
 		rolesgrpname = null;
 		subject = null;
-		rolesgrp = null;
 		callbackHandler = null;
 		sharedState = null;
 		loginOk = false;

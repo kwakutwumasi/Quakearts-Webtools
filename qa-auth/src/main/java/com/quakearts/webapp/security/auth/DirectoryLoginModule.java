@@ -11,7 +11,6 @@
 package com.quakearts.webapp.security.auth;
 
 import java.security.Principal;
-import java.security.acl.Group;
 import java.util.Map;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
@@ -24,9 +23,6 @@ import com.quakearts.webapp.security.ldap.impl.DefaultLDAPConnectionFactory;
 import com.quakearts.webapp.security.util.HashPassword;
 
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Set;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
@@ -50,7 +46,6 @@ public class DirectoryLoginModule implements LoginModule{
 	public static final String LDAP_ALLOW_ANONYMOUSBINDPARAMETER = "ldap.allow.anonymousbind";
 	public static final String LDAP_USEHASH = "ldap.use.hash";
 	public static final String LDAP_FILTERPARAMETER = "ldap.filter";
-	public static final String DIRECTORY_ROLENAMEPARAMETER = "directory.rolename";
 	public static final String LDAP_SEARCH_BASE_DNPARAMETER = "ldap.search.baseDN";
 	public static final String LDAP_COMPARE_USEPARAMETER = "ldap.compare.use";
 	public static final String LDAP_SSL_USEPARAMETER = "ldap.ssl.use";
@@ -69,7 +64,6 @@ public class DirectoryLoginModule implements LoginModule{
 	private char[] password;
     private boolean loginOk=false;
     private LDAPObject userprof;
-	private Group rolesgrp;
     private AttemptChecker checker;
 
     private int ldapPort;
@@ -87,7 +81,6 @@ public class DirectoryLoginModule implements LoginModule{
      * ex "givenname","sn","mail","costcenter","ou","sitelocation","title","employeetype","employeenumber"
      */
     private String[] attributes;
-    private String rolesgrpname;
     private String[] defaultroles;
 	private boolean usessl;
 	private boolean usehash;
@@ -209,11 +202,8 @@ public class DirectoryLoginModule implements LoginModule{
 	}
 
 	private void setCommonOptions(Map<String,?> options) {
-        rolesgrpname = (String) options.get(DIRECTORY_ROLENAMEPARAMETER);
         String defaultrolesString = (String) options.get(DIRECTORY_DEFAULTROLESPARAMETER);
         
-		if (rolesgrpname == null)
-        	rolesgrpname = "Roles";     
         if(defaultrolesString != null){
         	defaultroles = defaultrolesString.split(";");
         	for(int i=0;i<defaultroles.length;i++)
@@ -366,41 +356,16 @@ public class DirectoryLoginModule implements LoginModule{
 
 	public boolean commit() {
         if(loginOk){
-            Set<Principal> principalset = subject.getPrincipals();  
-            if(useFirstPass){
-				loadRolesGroup(principalset);				
-        	}
-            
-        	if(rolesgrp==null){
-        		createRolesGroup(principalset);
-        	}
         	
             if(attributes.length >= 3) {
 	            addRoles();	            
             }
           
             addDefaultRoles();            
-			addPrincipalsToPrincipalSet(principalset);
-            
             userprof = null;
         }
         return loginOk;
     }
-
-	private void loadRolesGroup(Set<Principal> principalset) {
-		for (Iterator<Principal> i = principalset.iterator(); i.hasNext();) {
-			Object obj = i.next();
-			if (obj instanceof Group && ((Group) obj).getName().equals(rolesgrpname)) {
-				rolesgrp = (Group) obj;
-				break;
-			}
-		}
-	}
-    
-	private void createRolesGroup(Set<Principal> principalset) {
-		rolesgrp = new DirectoryRoles(rolesgrpname);
-		principalset.add(rolesgrp);
-	}
 
 	private void addRoles() {
         StringBuilder buf = new StringBuilder();
@@ -416,28 +381,20 @@ public class DirectoryLoginModule implements LoginModule{
 		attribute = userprof.getAttributeEntries().get(2);
 		EmailPrincipal email = new EmailPrincipal(attribute[1]);
 		
-		rolesgrp.addMember(name);
-		rolesgrp.addMember(email);
+		subject.getPrincipals().add(name);
+		subject.getPrincipals().add(email);
 		for(int index=3;index<attributes.length;index++) {
 			attribute = userprof.getAttributeEntries().get(index);
-			rolesgrp.addMember(new OtherPrincipal(attribute[1], attribute[0]));
+			subject.getPrincipals().add(new OtherPrincipal(attribute[1], attribute[0]));
 		}
 	}
 
 	private void addDefaultRoles() {
+		subject.getPrincipals().add(new UserPrincipal(username));
 		if(defaultroles!=null) {
 			for(int i=0;i<defaultroles.length;i++){
-			    rolesgrp.addMember(new OtherPrincipal(defaultroles[i]));
+				subject.getPrincipals().add(new OtherPrincipal(defaultroles[i]));
 			}
-		}
-	}
-
-	private void addPrincipalsToPrincipalSet(Set<Principal> principalset) {
-		rolesgrp.addMember(new UserPrincipal(username));            
-		Enumeration<? extends Principal> members = rolesgrp.members();
-		while (members.hasMoreElements()) {
-			Principal type = members.nextElement();
-			principalset.add(type);				
 		}
 	}
 
@@ -450,7 +407,6 @@ public class DirectoryLoginModule implements LoginModule{
         checker = null;
         loginOk = false;
         userprof = null;
-        rolesgrp = null;
         return true;
     }
 

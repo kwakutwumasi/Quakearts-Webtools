@@ -11,7 +11,6 @@
 package com.quakearts.webapp.security.auth;
 
 import java.security.Principal;
-import java.security.acl.Group;
 import java.util.Map;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
@@ -20,9 +19,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Set;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.security.auth.login.LoginException;
@@ -33,8 +30,6 @@ import java.util.logging.Logger;
 
 import com.quakearts.webapp.security.util.UtilityMethods;
 
-import java.util.Iterator;
-
 public class LoadProfileLoginModule implements LoginModule{ 
     private static final Logger log = Logger.getLogger(LoadProfileLoginModule.class.getName());
 	public static final String RESULT_ORIENTATION_POTRAITPARAMETER = "result_orientation_potrait";
@@ -44,7 +39,6 @@ public class LoadProfileLoginModule implements LoginModule{
 	public static final String DATABASE_ROLENAMEPARAMETER = "database.rolename";
 	
 	private Subject subject;
-    private Group rolesgrp;
     private boolean loginOk=false;
     private HashMap<String,String> userprof = new HashMap<>();
     private Map<String, ?> sharedState;
@@ -159,18 +153,8 @@ public class LoadProfileLoginModule implements LoginModule{
 	}
 
 	public boolean commit() {
-        if(loginOk){
-            Set<Principal> principalset = subject.getPrincipals();
-            
-			findRolesGroup(principalset);				
-            
-            if(rolesgrp == null){
-                createRolesGroup(principalset);
-            }
-                       
+        if(loginOk){            
             loadRoles();
-
-			addPrincipalSetToSubject(principalset);
             userprof = null;
             return true;
         } else {
@@ -178,41 +162,17 @@ public class LoadProfileLoginModule implements LoginModule{
         }
     }
 
-	private void findRolesGroup(Set<Principal> principalset) {
-		for (Iterator<Principal> i = principalset.iterator(); i.hasNext();) {
-			Object obj = i.next();
-			if (obj instanceof Group && ((Group) obj).getName().equals(rolesgrpname)) {
-				rolesgrp = (Group) obj;
-				break;
-			}
-		}
-	}
-
-	private void createRolesGroup(Set<Principal> principalset) {
-		rolesgrp = new DirectoryRoles(rolesgrpname);
-		principalset.add(rolesgrp);
-	}
-
 	private void loadRoles() {
 		userprof.entrySet().forEach(entry->{
 			OtherPrincipal principal;
 			principal = new OtherPrincipal(entry.getValue()!=null?
 		    		entry.getValue():"",entry.getKey());
-		    rolesgrp.addMember(principal);
+			subject.getPrincipals().add(principal);
 		});
-	}
-
-	private void addPrincipalSetToSubject(Set<Principal> principalset) {
-		Enumeration<? extends Principal> members = rolesgrp.members();
-		while (members.hasMoreElements()) {
-			Principal type = members.nextElement();
-			principalset.add(type);				
-		}
 	}
     
 	public boolean abort() {
     	subject = null;
-        rolesgrp = null;
         loginOk = false;
         userprof = new HashMap<>();
         sharedState = null;
