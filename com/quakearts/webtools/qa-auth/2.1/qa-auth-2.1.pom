@@ -2,10 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.quakearts.webtools</groupId>
-	<artifactId>qa-common</artifactId>
-	<version>2.3.2</version>
-	<name>Quakearts JSF Common Tools</name>
-	<description>Tools for web application development using JSF</description>
+	<artifactId>qa-auth</artifactId>
+	<version>2.1</version>
+	<name>Quakearts Authentication and Security</name>
+	<packaging>jar</packaging>
 	<build>
 		<plugins>
 			<plugin>
@@ -15,9 +15,6 @@
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
-					<excludes>
-						<exclude>com/quakearts/test/*.java</exclude>
-					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -36,10 +33,9 @@
 	</build>
 	<dependencies>
 		<dependency>
-		  <groupId>com.quakearts.webtools</groupId>
-		  <artifactId>qa-orm</artifactId>
-		  <version>2.4.0</version>
-		  <scope>provided</scope>
+			<groupId>com.novell.ldap</groupId>
+			<artifactId>jldap</artifactId>
+			<version>2009-10-07</version>
 		</dependency>
 		<dependency>
 			<groupId>javax</groupId>
@@ -48,16 +44,36 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.quakearts.webtools</groupId>
-			<artifactId>qa-auth</artifactId>
-			<version>2.1</version>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>directory-naming</groupId>
+		    <artifactId>naming-core</artifactId>
+		    <version>0.8</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.quakearts.webtools.test</groupId>
+			<artifactId>qa-testtools</artifactId>
+			<version>1.0.3</version>
+			<scope>test</scope>
 			<exclusions>
 				<exclusion>
-					<artifactId>jta</artifactId>
-					<groupId>javax.transaction</groupId>
+					<groupId>com.quakearts.webtools</groupId>
+					<artifactId>qa-classpathscanner</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.tomcat.embed</groupId>
+					<artifactId>tomcat-embed-logging-juli</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.tomcat.embed</groupId>
+					<artifactId>tomcat-embed-core</artifactId>
 				</exclusion>
 			</exclusions>
-		    <scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>
