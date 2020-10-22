@@ -5,9 +5,9 @@
 			"qa-common-2.3.2.jar",
 			"jsf-api-2.2.14.jar",
 			"jsf-impl-2.2.14.jar",
-			"tomcat-embed-websocket-9.0.12.jar",
-			"tomcat-embed-el-9.0.12.jar",
-			"qa-orm-hibernate-web-1.0.1.jar",
+			"tomcat-embed-websocket-9.0.33.jar",
+			"tomcat-embed-el-9.0.33.jar",
+			"qa-orm-hibernate-web-1.1.0.jar",
 			"qa-weldjsf-cdi-1.0.1.jar"
 		]
 	},
