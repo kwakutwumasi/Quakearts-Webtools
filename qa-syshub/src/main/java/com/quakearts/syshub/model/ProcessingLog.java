@@ -49,7 +49,7 @@ public class ProcessingLog implements Serializable {
 	@Column(length=100)
 	private String recipient;
 	@Enumerated(EnumType.ORDINAL)
-	@Column(nullable=true)
+	@Column(nullable=false)
 	private LogType type;
 	@ManyToOne(optional=false, fetch=FetchType.EAGER)
 	private AgentConfiguration agentConfiguration;
