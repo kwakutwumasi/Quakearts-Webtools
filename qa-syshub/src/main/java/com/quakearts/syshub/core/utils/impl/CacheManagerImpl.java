@@ -47,10 +47,10 @@ public class CacheManagerImpl implements CacheManager {
 						.evictionType(EvictionType.COUNT)
 						.size(1000)
 					// Expiration...is this neccessary?
-					.expiration().lifespan(3, TimeUnit.DAYS).reaperEnabled(true).wakeUpInterval(1, TimeUnit.DAYS)
+					.expiration().lifespan(5, TimeUnit.DAYS).reaperEnabled(true).wakeUpInterval(1, TimeUnit.DAYS)
 					// Save items to file. Good for managing high loads
 					.persistence()
-						.passivation(true)
+						.passivation(false)
 						.addSingleFileStore()
 							.location("syshub_log_cache")
 								.async()
