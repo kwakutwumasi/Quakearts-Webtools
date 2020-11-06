@@ -48,7 +48,7 @@ public class JWTLoginModule implements LoginModule {
 	private boolean loginOk;
 	private Map<String, ?> sharedState;
 	private Subject subject;
-	private CallbackHandler callbackHandler;
+	protected CallbackHandler callbackHandler;
 	private AuthenticationMode authenticationMode;
 	private enum AuthenticationMode {
 		VERIFY, GENERATE
@@ -191,7 +191,7 @@ public class JWTLoginModule implements LoginModule {
 			loginOk = (Boolean) (loginOkObject);	
 	}
 
-	private byte[] handleCallbacks() throws IOException, 
+	protected byte[] handleCallbacks() throws IOException, 
 		UnsupportedCallbackException, LoginException {
 		TokenCallback headerCallback = new TokenCallback();
 		PasswordCallback passwordCallback = new PasswordCallback("Enter your password", false);

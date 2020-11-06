@@ -24,6 +24,7 @@ import org.junit.rules.ExpectedException;
 
 import com.quakearts.webapp.security.auth.EmailPrincipal;
 import com.quakearts.webapp.security.auth.JWTLoginModule;
+import com.quakearts.webapp.security.auth.JWTPasswordLoginModule;
 import com.quakearts.webapp.security.auth.JWTPrincipal;
 import com.quakearts.webapp.security.auth.NamePrincipal;
 import com.quakearts.webapp.security.auth.OtherPrincipal;
@@ -45,7 +46,6 @@ public class TestJWTLoginModule extends LoginModuleTest {
 		Subject subject = new Subject();
 		
 		Map<String, ?> options = newMap()
-				.add(ALGORITHMPARAMETER, "HS256")
 				.add("secret", "616161")
 				.thenBuild(); 
 		Map<String, ?> sharedState = newMap()
@@ -164,6 +164,7 @@ public class TestJWTLoginModule extends LoginModuleTest {
 		subject.getPrincipals().add(new NamePrincipal("Kwaku Appiah"));
 		subject.getPrincipals().add(new EmailPrincipal("kwaku@appiah.com"));
 		subject.getPrincipals().add(new OtherPrincipal("Admin", "admin-role"));
+		subject.getPrincipals().add(new UserPrincipal("kwaku"));
 		subject.getPrincipals().add(()->"Test3");
 		
 		Map<String, ?> options = newMap()
@@ -215,6 +216,7 @@ public class TestJWTLoginModule extends LoginModuleTest {
 		assertThat(claims.getPrivateClaim("name"), is("Kwaku Appiah"));
 		assertThat(claims.getPrivateClaim("mail"), is("kwaku@appiah.com"));
 		assertThat(claims.getPrivateClaim("admin-role"), is("Admin"));
+		assertThat(claims.getPrivateClaim("username"), is("kwaku"));
 		assertThat(claims.getPrivateClaim("test1"), is("value1"));
 		assertThat(claims.getPrivateClaim("test2"), is("value2"));
 		assertThat(claims.getPrivateClaim("test3"), is("Test3"));
@@ -571,6 +573,104 @@ public class TestJWTLoginModule extends LoginModuleTest {
 		
 		getModule().initialize(subject, c->{}, sharedState, options);
 		runModule();	
+	}
+	
+	@Test
+	public void testTrack11() throws Exception {
+		expectedException.expect(LoginException.class);
+		expectedException.expectMessage("Token is not active");
+		Map<String, ?> sharedState = null;
+		
+		JWTHeader header = JWTFactory.getInstance().createEmptyClaimsHeader();
+		JWTClaims claims = JWTFactory.getInstance().createJWTClaimsFromMap(newMap()
+				.add(SUB, "test5@quakearts.com")
+				.add(ISS, "https://jwt.quakearts.com")
+				.add(AUD, "https://api.quakearts.com")
+				.add(EXP, (System.currentTimeMillis()/1000)+1800)
+				.add(NBF, (System.currentTimeMillis()/1000)+200)
+				.add("role", "PaymentChange")
+				.thenBuild());
+		
+		Map<String, ?> options = newMap()
+				.add(ALGORITHMPARAMETER, "HS256")
+				.add("secret", "secret.test")
+				.add(ISSUERPARAMETER, "https://jwt.quakearts.com")
+				.add(AUDIENCEPARAMETER, "https://api.quakearts.com")				
+			.thenBuild();
+		
+		JWTSigner jwtSigner = JWTFactory.getInstance().getSigner("HS256", options);
+		String token = jwtSigner.sign(header, claims);		
+		Subject subject = new Subject();
+		
+		getModule().initialize(subject, callbacks->{
+			for(Callback callback:callbacks) {
+				if(callback instanceof PasswordCallback) {
+					((PasswordCallback)callback).setPassword(token.toCharArray());
+				}
+			}
+		}, sharedState, options);
+		
+		runModule();
+	}
+	
+	@Test
+	public void testJWTPasswordLoginModule() throws Exception {
+		Map<String, ?> sharedState = null;
+		
+		JWTHeader header = JWTFactory.getInstance().createEmptyClaimsHeader();
+		JWTClaims claims = JWTFactory.getInstance().createJWTClaimsFromMap(newMap()
+				.add(SUB, "test5@quakearts.com")
+				.add(ISS, "https://jwt.quakearts.com")
+				.add(AUD, "https://api.quakearts.com")
+				.add(EXP, (System.currentTimeMillis()/1000)+1800)
+				.add("role", "PaymentChange")
+				.thenBuild());
+		
+		Map<String, ?> options = newMap()
+				.add(ALGORITHMPARAMETER, "HS256")
+				.add("secret", "secret.test")
+				.add(ISSUERPARAMETER, "https://jwt.quakearts.com")
+				.add(AUDIENCEPARAMETER, "https://api.quakearts.com")				
+			.thenBuild();
+		
+		JWTSigner jwtSigner = JWTFactory.getInstance().getSigner("HS256", options);
+		String token = jwtSigner.sign(header, claims);		
+		Subject subject = new Subject();
+		
+		JWTPasswordLoginModule module = new JWTPasswordLoginModule();
+		
+		module.initialize(subject, callbacks->{
+			for(Callback callback:callbacks) {
+				if(callback instanceof PasswordCallback) {
+					((PasswordCallback)callback).setPassword(token.toCharArray());
+				}
+			}
+		}, sharedState, options);
+		
+		assertTrue(module.login());
+		assertTrue(module.commit());
+		assertTrue(module.logout());
+	}
+	
+	@Test
+	public void testJWTPasswordLoginModuleWithMissingPassword() throws Exception {
+		expectedException.expect(LoginException.class);
+		expectedException.expectMessage("Credentials are missing");
+		Map<String, ?> sharedState = null;
+		
+		Map<String, ?> options = newMap()
+				.add(ALGORITHMPARAMETER, "HS256")
+				.add("secret", "secret.test")
+				.add(ISSUERPARAMETER, "https://jwt.quakearts.com")
+				.add(AUDIENCEPARAMETER, "https://api.quakearts.com")				
+			.thenBuild();
+		
+		Subject subject = new Subject();
+		
+		JWTPasswordLoginModule module = new JWTPasswordLoginModule();
+		
+		module.initialize(subject, callbacks->{}, sharedState, options);		
+		module.login();
 	}
 	
 	private JWTLoginModule loginModule;
