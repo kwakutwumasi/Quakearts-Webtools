@@ -71,8 +71,8 @@ public class MockActionBuilder {
 		if(mockAction.request == null)
 			throw new BuilderException("HttpRequest is required");
 
-		if(mockAction.request.getResponse() == null)
-			throw new BuilderException("HttpResponse is required");
+		if(mockAction.request.getResponse() == null && mockAction.responseAction == null)
+			throw new BuilderException("One of HttpResponseAction or HttpResponse is required");
 		
 		return mockAction;
 	}
@@ -83,9 +83,7 @@ public class MockActionBuilder {
 			return request.getMethod().equals(requestToMatch.getMethod())
 					&& request.getResource().equals(requestToMatch.getResource());
 		};
-		HttpResponseAction responseAction = (request, response) -> { 
-			return null;
-		};
+		HttpResponseAction responseAction;
 		
 		@Override
 		public boolean requestMatches(HttpRequest request) {
