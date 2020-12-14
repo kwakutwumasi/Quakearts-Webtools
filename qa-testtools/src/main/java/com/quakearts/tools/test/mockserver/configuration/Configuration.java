@@ -67,9 +67,13 @@ public interface Configuration {
 	 * @return the key store type
 	 */
 	String getKeyStoreType();
+	/**Get the key alias. Only used when {@link #useTLS()} is true
+	 * @return the key store alias
+	 */
+	String getKeyAlias();
 	/**Get the read timeout to use when recording from a URL. . Only used when {@link MockingMode} is RECORD
 	 * @return the read timeout in milliseconds
-	 */
+	 */	
 	int getReadTimeout();
 	/**Get the connection timeout to use when recording from a URL. Only used when {@link MockingMode} is RECORD
 	 * @return the connection timeout in milliseconds

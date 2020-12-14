@@ -100,6 +100,9 @@ public class ConfigurationBuilder {
 					setKeyStoreTypeAs(props.getProperty("keystore.type"));
 				else
 					throw new ConfigurationException("keystore.type property required");
+				
+				if(props.containsKey("key.alias"))
+					setKeyAliasAs(props.getProperty("key.alias"));
 			}
 		}
 		return thenBuild();
@@ -182,6 +185,15 @@ public class ConfigurationBuilder {
 		return this;
 	}
 	
+	/**Set the key store type
+	 * @param keyStoreType
+	 * @return this object for method chaining
+	 */
+	public ConfigurationBuilder setKeyAliasAs(String keyAlias) {
+		configuration.keyAlias = keyAlias;
+		return this;
+	}
+	
 	/**Set the connection timeout to use when recording from a URL
 	 * @param timeInMills the connection timeout in milliseconds
 	 * @return this object for method chaining
@@ -250,6 +262,7 @@ public class ConfigurationBuilder {
 		String keyStore;
 		String keyStorePassword;
 		String keyStoreType;
+		String keyAlias;
 		int connectTimeout;
 		int readTimeout;
 		boolean disHonorRESTContract;
@@ -294,6 +307,11 @@ public class ConfigurationBuilder {
 			return keyStoreType;
 		}
 
+		@Override
+		public String getKeyAlias() {
+			return keyAlias;
+		}
+		
 		@Override
 		public int getConnectTimeout() {
 			return connectTimeout;

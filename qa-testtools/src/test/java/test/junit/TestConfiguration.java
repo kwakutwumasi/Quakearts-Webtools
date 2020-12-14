@@ -73,6 +73,7 @@ public class TestConfiguration {
 		assertThat(configuration.getKeyStore(), is("conf/tomcat.keystore"));
 		assertThat(configuration.getKeyStorePassword(), is("password1"));
 		assertThat(configuration.getKeyStoreType(), is("JCEKS"));	
+		assertThat(configuration.getKeyAlias(), is("localhost"));	
 	}
 
 	@Test

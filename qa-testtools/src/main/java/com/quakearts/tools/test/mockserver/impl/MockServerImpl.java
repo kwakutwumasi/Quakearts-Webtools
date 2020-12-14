@@ -78,6 +78,7 @@ public class MockServerImpl implements MockServer {
 				hostConfig.setCertificateKeystoreType(configuration.getKeyStoreType());
 				hostConfig.setCertificateKeystorePassword(configuration.getKeyStorePassword());
 				hostConfig.setCertificateKeystoreFile(configuration.getKeyStore());
+				hostConfig.setCertificateKeyAlias(configuration.getKeyAlias());
 				
 				tomcat.getConnector().addSslHostConfig(hostConfig);
 				tomcat.getConnector().setScheme("https");
