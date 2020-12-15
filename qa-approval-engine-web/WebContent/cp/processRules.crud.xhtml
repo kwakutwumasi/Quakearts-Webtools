@@ -10,7 +10,7 @@
 		<label id="approvalProcess_label">Process</label>
 		<b:selectOneInput id="processRulesProcessDropDown"
 			mainClass="#{loader.overlayClass}"
-			disabled="#{processRulesPage.approvalapp.mode eq 'read' || processRulesPage.approvalProcessDropdownHelper.inCreateMode}"
+			disabled="#{processRules.approvalProcess ne null || processRulesPage.approvalProcessDropdownHelper.inCreateMode}"
 			value="#{processRules.approvalProcess}" autocomplete="true"
 			suggestion="#{processRulesPage.approvalProcessDropdownHelper.searchText}"
 			delay="0.55"
@@ -31,7 +31,7 @@
 		<label id="approvalRules_label">Rules Set</label>
 		<b:selectOneInput id="processRulesRulesDropDown"
 			mainClass="#{loader.overlayClass}"
-			disabled="#{processRulesPage.approvalapp.mode eq 'read' || processRulesPage.approvalRulesDropdownHelper.inCreateMode}"
+			disabled="#{processRules.approvalRules ne null || processRulesPage.approvalRulesDropdownHelper.inCreateMode}"
 			value="#{processRules.approvalRules}" autocomplete="true"
 			suggestion="#{processRulesPage.approvalRulesDropdownHelper.searchText}"
 			delay="0.55"
