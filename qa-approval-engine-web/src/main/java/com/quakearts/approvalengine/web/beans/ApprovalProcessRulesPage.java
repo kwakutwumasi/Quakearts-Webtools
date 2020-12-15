@@ -40,7 +40,8 @@ public class ApprovalProcessRulesPage extends BaseBean {
 	}
 	
 	public ApprovalProcessRules getProcessRules() {
-		if(processRules==null){    		setProcessRules(new ApprovalProcessRules());
+		if(processRules==null){    		
+			setProcessRules(new ApprovalProcessRules());
 		}
 		
 		return processRules;
