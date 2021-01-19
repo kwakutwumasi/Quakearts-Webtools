@@ -32,6 +32,14 @@ public interface JWTHeader {
 
 	String getType();
 	
+	JWTHeader setKeyID(String kid);
+	
+	String getKeyID();
+	
+	JWTHeader setAdditionalProperty(String key, String value);
+	
+	String getAdditionalProperty(String key);
+	
 	String compact();
 	
 	void unCompact(String compacted);

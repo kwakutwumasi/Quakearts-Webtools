@@ -160,7 +160,11 @@ public class TestSigners {
 		signer.setParameter("password", "test12");
 		signer.setParameter("storeType", "JCEKS");
 		
-		token = signer.sign(header, claims);
+		JWTHeader customHeader = JWTFactory.getInstance().createEmptyClaimsHeader();
+		customHeader.setKeyID("1234567");
+		customHeader.setAdditionalProperty("cty", "application/json");
+		
+		token = signer.sign(customHeader, claims);
 		signer.verify(token);
 		
 		try {
@@ -171,8 +175,12 @@ public class TestSigners {
 			signer.setParameter("password", "test12");
 			signer.setParameter("storeType", "JCEKS");
 
-			token = signer.sign(header, claims);
+			token = signer.sign(customHeader, claims);
 			signer.verify(token.getBytes());
+			
+			JWTHeader verifiedHeader = signer.getHeader();
+			assertThat(verifiedHeader.getKeyID(), is("1234567"));
+			assertThat(verifiedHeader.getAdditionalProperty("cty"), is("application/json"));
 			fail();
 		} catch (Exception e) {
 		}
