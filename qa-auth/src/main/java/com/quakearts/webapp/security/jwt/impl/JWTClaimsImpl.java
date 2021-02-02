@@ -141,7 +141,9 @@ public class JWTClaimsImpl extends JWTJsonObjectBase implements JWTClaims {
 			throw new UnsupportedOperationException("Invalid private claim:" + name);
 
 		try {
-			return jsonObject.get(name).asString();
+			if(jsonObject.get(name) != null)
+				return jsonObject.get(name).asString();
+			return null;
 		} catch (UnsupportedOperationException e) {
 			return null;
 		}
