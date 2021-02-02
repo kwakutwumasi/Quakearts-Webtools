@@ -6,6 +6,6 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ TestDatabaseLoginModule.class, TestDatabaseServerLoginModule.class, TestDefaultLDAPConnection.class, TestDirectoryLoginModule.class,
-		TestEquivalence.class, TestHashPassword.class,
+		TestEquivalence.class, TestHashPassword.class, TestJWTClaims.class,
 		TestJWTLoginModule.class, TestJsonInternal.class, TestKeystoreOperations.class, TestLoadProfileLoginModule.class, TestSigners.class })
 public class AllLoginModuleTests {}
