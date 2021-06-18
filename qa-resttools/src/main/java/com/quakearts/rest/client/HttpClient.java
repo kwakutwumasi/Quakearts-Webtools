@@ -224,7 +224,7 @@ public abstract class HttpClient implements Serializable {
 				scon.setHostnameVerifier((hostname,session) ->  host.matches(LOCALHOST) 
 							|| host.matches(LOOPBACK));
 			}
-			
+			customizeHttpsConnection(scon);
 			con = scon;
 		} else {
 			con = (HttpURLConnection) new URL("http", host, port, file).openConnection();
@@ -232,6 +232,12 @@ public abstract class HttpClient implements Serializable {
 		return con;
 	}
 
+	/**Allows implementers to customize the {@linkplain HttpsURLConnection} 
+	 * to add things like a custom secure socket factory etc
+	 * @param scon
+	 */
+	protected void customizeHttpsConnection(HttpsURLConnection scon) {}
+	
 	private void setConnectionProperties(HttpVerb method, HttpURLConnection con) throws ProtocolException {
 		con.setRequestMethod(method.name());
 		con.setDoInput(true);
