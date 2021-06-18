@@ -33,8 +33,8 @@ public class TestAppBaseWebappClassLoader {
 		
 		WebResourceRoot root = context.getResources();
 		AppBaseVirtualDirectoryResourceSet resourceSet = new AppBaseVirtualDirectoryResourceSet(root, "/WEB-INF/lib", "/repo", "/");
-		resourceSet.addUrl("tomcat-embed-el-9.0.33.jar", impl.getLibraryPath("tomcat-embed-el-9.0.33.jar"));
-		resourceSet.addUrl("tomcat-embed-websocket-9.0.33.jar", impl.getLibraryPath("tomcat-embed-websocket-9.0.33.jar"));
+		resourceSet.addUrl("tomcat-embed-el-9.0.48.jar", impl.getLibraryPath("tomcat-embed-el-9.0.48.jar"));
+		resourceSet.addUrl("tomcat-embed-websocket-9.0.48.jar", impl.getLibraryPath("tomcat-embed-websocket-9.0.48.jar"));
 		root.addJarResources(resourceSet);
 				
 		try(AppBaseWebappClassLoader classLoader = new AppBaseWebappClassLoader(context);){
@@ -58,6 +58,7 @@ public class TestAppBaseWebappClassLoader {
 						return resourceRoot;
 					})
 				.mock("getAddWebinfClassesResources").withEmptyMethod(()->false)
+				.mock("getUseBloomFilterForArchives").withEmptyMethod(()->false)
 				.thenBuild();
 		resourceRoot.setContext(context);
 		return context;
@@ -71,8 +72,8 @@ public class TestAppBaseWebappClassLoader {
 		
 		WebResourceRoot root = context.getResources();
 		AppBaseVirtualDirectoryResourceSet resourceSet = new AppBaseVirtualDirectoryResourceSet(root, "/WEB-INF/lib", "/repo", "/");
-		resourceSet.addUrl("tomcat-embed-el-9.0.33.jar", impl.getLibraryPath("tomcat-embed-el-9.0.33.jar"));
-		resourceSet.addUrl("tomcat-embed-websocket-9.0.33.jar", impl.getLibraryPath("tomcat-embed-websocket-9.0.33.jar"));
+		resourceSet.addUrl("tomcat-embed-el-9.0.48.jar", impl.getLibraryPath("tomcat-embed-el-9.0.48.jar"));
+		resourceSet.addUrl("tomcat-embed-websocket-9.0.48.jar", impl.getLibraryPath("tomcat-embed-websocket-9.0.48.jar"));
 		root.addJarResources(resourceSet);
 		root.start();
 		try(AppBaseWebappClassLoader classLoader = new AppBaseWebappClassLoader(context);){

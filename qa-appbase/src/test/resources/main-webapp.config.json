@@ -1,6 +1,6 @@
 {
 	"webapp.libraries": {
-		"set": ["tomcat-embed-el-9.0.33.jar","tomcat-embed-websocket-9.0.33.jar"]
+		"set": ["tomcat-embed-el-9.0.48.jar","tomcat-embed-websocket-9.0.48.jar"]
 	},
 	"webapp.scifilter":".*"
 }

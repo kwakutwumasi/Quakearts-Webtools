@@ -230,7 +230,7 @@ public class TestTomcatEmbeddedServerSpiImpl {
 			assertThat(TestInjectImpl.saidHello(), is(true));
 			assertThat(TestInjectImpl.testSubInjectLoaded(), is(true));		
 			
-			PojoEndpointServer endpointServer = new PojoEndpointServer();
+			PojoEndpointServer endpointServer = new PojoEndpointServer(null,null);
 			manager.newInstance(endpointServer);
 			
 			serverSpi.shutdownEmbeddedWebServer();
