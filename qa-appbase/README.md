@@ -49,7 +49,7 @@ qa-appbase is designed to be modular. It is trivial to swap out implementations 
 * JTA: Atomikos JTA 5.0.6
 * JCA: Atomikos Datasource Beans/Custom Code
 * CDI: Jboss Weld 3.1.3.Final
-* Servlet: Tomcat Embedded 9.0.33
+* Servlet: Tomcat Embedded 9.0.48
 * JNDI: Apache Naming/Custom Code (integrated with Tomcat Embedded)
 
 #### Configuration
