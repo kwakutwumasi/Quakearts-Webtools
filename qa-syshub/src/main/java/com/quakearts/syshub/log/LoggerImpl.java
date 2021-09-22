@@ -10,8 +10,10 @@
  ******************************************************************************/
 package com.quakearts.syshub.log;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -47,7 +49,7 @@ import org.infinispan.Cache;
 
 @Singleton
 public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
-	private static final String MESSAGE_DUMP = "Message dump: [{}]";
+	private static final String MESSAGE_DUMP = "Message dump:\n{}";
 	@Inject
 	private CacheManager cacheManager;
 	@Inject
@@ -116,7 +118,7 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 				storeManager.getDataStore().save(notificationLog);
 			} catch (Exception e) {
 				log.error("Unable to persist notification log.");
-				log.error(MESSAGE_DUMP, notificationLog);
+				log.error(MESSAGE_DUMP, dump(notificationLog));
 			} finally {
 				getSaveLogCache().remove(notificationLog.getMid());
 			}
@@ -136,7 +138,7 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 				storeManager.getDataStore().update(notificationLog);
 			} catch (Exception e) {
 				log.error("Unable to persist notification log.");
-				log.error(MESSAGE_DUMP, notificationLog);
+				log.error(MESSAGE_DUMP, dump(notificationLog));
 			} finally {
 				getUpdateLogCache().remove(notificationLog.getMid());
 			}
@@ -155,11 +157,16 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 				storeManager.getDataStore().save(exceptionLog);
 			} catch (Exception e) {
 				log.error("Unable to persist result exception log.");
-				log.error(MESSAGE_DUMP, exceptionLog);
+				log.error(MESSAGE_DUMP, dump(exceptionLog));
 			} finally {
 				getResultExceptionLog().remove(exceptionLog.hashCodeAsString());
 			}
 		}
+	}
+	
+	private String dump(Serializable log) {
+		byte[] logData = serializer.toByteArray(log);
+		return Base64.getEncoder().encodeToString(logData);
 	}
 
 	@Override
