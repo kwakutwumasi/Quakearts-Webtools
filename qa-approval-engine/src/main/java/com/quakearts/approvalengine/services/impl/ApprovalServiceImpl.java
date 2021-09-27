@@ -12,10 +12,15 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.quakearts.approvalengine.context.ApprovalContext;
+import com.quakearts.approvalengine.event.ApprovalProcessEvent;
+import com.quakearts.approvalengine.event.ApprovalProcessRulesEvent;
+import com.quakearts.approvalengine.event.ApprovalProcessRulesEventType;
+import com.quakearts.approvalengine.event.ApprovalEventType;
 import com.quakearts.approvalengine.exception.ApprovalCompleteException;
 import com.quakearts.approvalengine.exception.ApprovalProcessingException;
 import com.quakearts.approvalengine.exception.DuplicateRuleException;
@@ -48,6 +53,12 @@ public class ApprovalServiceImpl implements ApprovalService {
 	
 	private Map<Long, Object> approvalSynchronization = new ConcurrentHashMap<>();
 
+	@Inject
+	private Event<ApprovalProcessEvent> approvalProcessEventTrigger;
+
+	@Inject
+	private Event<ApprovalProcessRulesEvent> approvalProcessRulesEventTrigger;
+
 	@Override
 	public ApprovalProcess initiateApproval(String groupName, String ruleName) throws ApprovalProcessingException {
 		if(groupName == null || ruleName == null)
@@ -70,6 +81,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 		ApprovalProcess approvalProcess = storeApprovalProcess(dataStore, approvalGroup);		
 		storeApprovalRules(rulesSet, dataStore, approvalProcess, true);
 		
+		approvalProcessEventTrigger.fireAsync(new ApprovalProcessEvent(approvalProcess, ApprovalEventType.STARTED));
 		return approvalProcess;
 	}
 
@@ -98,6 +110,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 		storeApprovalRules(activeRuleNamesSet, dataStore, approvalProcess, true);
 		storeApprovalRules(inActiveRuleNamesSet, dataStore, approvalProcess, false);
 		
+		approvalProcessEventTrigger.fireAsync(new ApprovalProcessEvent(approvalProcess, ApprovalEventType.STARTED));
 		return approvalProcess;
 	}
 
@@ -256,10 +269,14 @@ public class ApprovalServiceImpl implements ApprovalService {
 			approvalProcess.setApproved(true);
 			approvalProcess.setCompleteDate(Timestamp.from(Instant.now()));
 			dataStore.update(approvalProcess);
+			approvalProcessEventTrigger.fireAsync(new ApprovalProcessEvent(approvalProcess, context, ApprovalEventType.COMPLETE));
 		} else if(approval.getAction() == ApprovalAction.REJECTED) {
 			approvalProcess.setComplete(true);
 			approvalProcess.setCompleteDate(Timestamp.from(Instant.now()));
 			dataStore.update(approvalProcess);
+			approvalProcessEventTrigger.fireAsync(new ApprovalProcessEvent(approvalProcess, context, ApprovalEventType.REJECTED));
+		} else {
+			approvalProcessEventTrigger.fireAsync(new ApprovalProcessEvent(approvalProcess, context, ApprovalEventType.PROCEEDING));
 		}
 	}
 
@@ -287,6 +304,8 @@ public class ApprovalServiceImpl implements ApprovalService {
 			foundApprovalProcessRules.setActive(activate);
 			dataStore.update(foundApprovalProcessRules);
 		}
+		approvalProcessRulesEventTrigger.fireAsync(new ApprovalProcessRulesEvent(approvalProcessRules,
+				activate ? ApprovalProcessRulesEventType.ACTIVATED : ApprovalProcessRulesEventType.DEACTIVATED));
 	}
 
 	private void checkParameters(Set<String> ruleNames, ApprovalProcess approvalProcess) {

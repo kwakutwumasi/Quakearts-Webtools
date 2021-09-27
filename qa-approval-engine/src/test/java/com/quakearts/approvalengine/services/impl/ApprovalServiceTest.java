@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.core.Is.*;
 import static org.hamcrest.core.IsNull.*;
@@ -27,6 +28,10 @@ import com.quakearts.appbase.cdi.annotation.Transactional.TransactionType;
 import com.quakearts.appbase.spi.factory.JavaTransactionManagerSpiFactory;
 import com.quakearts.approvalengine.context.ApprovalContext;
 import com.quakearts.approvalengine.context.ApprovalContextBuilderFactory;
+import com.quakearts.approvalengine.event.ApprovalEventType;
+import com.quakearts.approvalengine.event.ApprovalProcessEvent;
+import com.quakearts.approvalengine.event.ApprovalProcessRulesEvent;
+import com.quakearts.approvalengine.event.ApprovalProcessRulesEventType;
 import com.quakearts.approvalengine.exception.ApprovalCompleteException;
 import com.quakearts.approvalengine.exception.DuplicateRuleException;
 import com.quakearts.approvalengine.exception.InvalidApprovalException;
@@ -40,6 +45,7 @@ import com.quakearts.approvalengine.model.ApprovalProcess;
 import com.quakearts.approvalengine.model.ApprovalProcessRules;
 import com.quakearts.approvalengine.model.Approval.ApprovalAction;
 import com.quakearts.approvalengine.services.ApprovalService;
+import com.quakearts.approvalengine.services.impl.EventNotificationHelper.TestEventHandle;
 import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.cdi.annotation.DataStoreHandle;
 import com.quakearts.webapp.orm.cdi.annotation.RequiresTransaction;
@@ -60,6 +66,9 @@ public class ApprovalServiceTest {
 	@Inject
 	private ApprovalContextBuilderFactory contextBuilder;
 	
+	@Inject
+	private EventNotificationHelper eventNotificationHelper;
+	
 	@Before
 	public void createTestData(){
 		dataCreator.createTestData();
@@ -67,6 +76,9 @@ public class ApprovalServiceTest {
 	
 	@Test @Transactional(TransactionType.SINGLETON)
 	public void testInitiateApprovalWithApprovalGroupNameAndApprovalRuleName() throws Exception {
+		TestEventHandle testEventHandle = new TestEventHandle(this::isApprovalEventObjectAndStarted);		
+		eventNotificationHelper.registerTestHandle(testEventHandle);
+
 		ApprovalProcess approvalProcess = approvalService
 				.initiateApproval("testGroup1", "testApprovalRules1");
 		
@@ -87,10 +99,28 @@ public class ApprovalServiceTest {
 		assertThat(approvalProcessRules.getApprovalRules(), is(notNullValue()));
 		assertThat(approvalProcessRules.getApprovalRules().getName(), is("testApprovalRules1"));
 		assertTrue(approvalProcessRules.isActive());
+		
+		await().atMost(4, TimeUnit.SECONDS).until(testEventHandle::hasEventObject);
+		eventNotificationHelper.unRegisterTestHandle(testEventHandle);
+	}
+
+	private boolean isApprovalEventObjectAndStarted(Object eventObject) {
+		return (eventObject instanceof ApprovalProcessEvent && approvalEventType(eventObject, ApprovalEventType.STARTED));
+	}
+	
+	private boolean approvalEventType(Object eventObject, ApprovalEventType eventType) {
+		ApprovalProcessEvent approvalProcessEvent = ((ApprovalProcessEvent)eventObject);
+		assertThat(approvalProcessEvent.getApprovalProcess(), is(notNullValue()));
+		assertThat(approvalProcessEvent.getContext(), is(notNullValue()));
+		
+		return approvalProcessEvent.getEventType() == eventType;
 	}
 
 	@Test @Transactional(TransactionType.SINGLETON)
 	public void testInitiateApprovalWithASetOfApprovalRules() throws Exception {
+		TestEventHandle testEventHandle = new TestEventHandle(this::isApprovalEventObjectAndStarted);		
+		eventNotificationHelper.registerTestHandle(testEventHandle);
+
 		Set<String> approvalRulesSet = new HashSet<>();
 		approvalRulesSet.add("testApprovalRules1");
 		ApprovalProcess approvalProcess = approvalService.initiateApproval("testGroup1", approvalRulesSet);
@@ -133,10 +163,16 @@ public class ApprovalServiceTest {
 					||approvalProcessRules.getApprovalRules().getName().equals("testApprovalRules2"));
 			assertTrue(approvalProcessRules.isActive());
 		}
+
+		await().atMost(4, TimeUnit.SECONDS).until(testEventHandle::hasEventObject);
+		eventNotificationHelper.unRegisterTestHandle(testEventHandle);
 	}
 
 	@Test @Transactional(TransactionType.SINGLETON) 
 	public void testInitiateApprovalWithASetOfActiveApprovalRulesAndSetOfInactiveApprovalRules() throws Exception {
+		TestEventHandle testEventHandle = new TestEventHandle(this::isApprovalEventObjectAndStarted);		
+		eventNotificationHelper.registerTestHandle(testEventHandle);
+
 		Set<String> activeApprovalRulesSet = new HashSet<>();
 		Set<String> inactiveApprovalRulesSet = new HashSet<>();
 		activeApprovalRulesSet.add("testApprovalRules1");
@@ -196,10 +232,16 @@ public class ApprovalServiceTest {
 					|| (approvalProcessRules.getApprovalRules().getName().equals("testApprovalRules4")
 							&& !approvalProcessRules.isActive()));
 		}
+
+		await().atMost(4, TimeUnit.SECONDS).until(testEventHandle::hasEventObject);
+		eventNotificationHelper.unRegisterTestHandle(testEventHandle);
 	}
 	
 	@Test @Transactional(TransactionType.SINGLETON) 
 	public void testActivateASingleApprovalProcessRulesInstanceInASet() throws Exception {
+		TestEventHandle testEventHandle = new TestEventHandle(this::isApprovalProcessRulesEventObjectAndActivated);
+		eventNotificationHelper.registerTestHandle(testEventHandle);
+		
 		approvalService.activateApprovalProcessRules(Collections.singleton("testApprovalRules1"),
 				dataCreator.getApprovalProcess11());
 		dataStore.flushBuffers();
@@ -213,10 +255,26 @@ public class ApprovalServiceTest {
 						.getApprovalRulesId())
 				.filterBy("active").withAValueEqualTo(true)
 				.thenGetFirst().isPresent());
+
+		await().atMost(4, TimeUnit.SECONDS).until(testEventHandle::hasEventObject);
+		eventNotificationHelper.unRegisterTestHandle(testEventHandle);
+	}
+
+	private boolean isApprovalProcessRulesEventObjectAndActivated(Object eventObject) {
+		return (eventObject instanceof ApprovalProcessRulesEvent && approvalProcessRuleEventType(eventObject, ApprovalProcessRulesEventType.ACTIVATED));
+	}
+	
+	private boolean approvalProcessRuleEventType(Object eventObject, ApprovalProcessRulesEventType eventType) {
+		ApprovalProcessRulesEvent approvalProcessRulesEvent = ((ApprovalProcessRulesEvent)eventObject);
+		assertThat(approvalProcessRulesEvent.getApprovalProcessRules(), is(notNullValue()));
+		return approvalProcessRulesEvent.getEventType() == eventType;
 	}
 
 	@Test @Transactional(TransactionType.SINGLETON) 
 	public void testActivateAMultipleApprovalProcessRulesInstancesInASet() throws Exception {
+		TestEventHandle testEventHandle = new TestEventHandle(this::isApprovalProcessRulesEventObjectAndActivated);
+		eventNotificationHelper.registerTestHandle(testEventHandle);
+
 		approvalService.activateApprovalProcessRules(asSet("testApprovalRules1","testApprovalRules2"),
 				dataCreator.getApprovalProcess12());
 		dataStore.flushBuffers();
@@ -241,10 +299,16 @@ public class ApprovalServiceTest {
 						.getApprovalRulesId())
 				.filterBy("active").withAValueEqualTo(true)
 				.thenGetFirst().isPresent());
+
+		await().atMost(4, TimeUnit.SECONDS).until(testEventHandle::hasEventObject);
+		eventNotificationHelper.unRegisterTestHandle(testEventHandle);
 	}
 	
 	@Test @Transactional(TransactionType.SINGLETON) 
 	public void testDeactivateASingleApprovalProcessRulesInstanceInASet() throws Exception {
+		TestEventHandle testEventHandle = new TestEventHandle(this::isApprovalProcessRulesEventObjectAndDeactivated);
+		eventNotificationHelper.registerTestHandle(testEventHandle);
+
 		approvalService.deactivateApprovalProcessRules(Collections.singleton("testApprovalRules2"),
 				dataCreator.getApprovalProcess11());
 		ApprovalProcessRules approvalProcessRules = dataCreator
@@ -257,10 +321,20 @@ public class ApprovalServiceTest {
 						.getApprovalRulesId())
 				.filterBy("active").withAValueEqualTo(false)
 				.thenGetFirst().isPresent());
+
+		await().atMost(4, TimeUnit.SECONDS).until(testEventHandle::hasEventObject);
+		eventNotificationHelper.unRegisterTestHandle(testEventHandle);
+	}
+	
+	private boolean isApprovalProcessRulesEventObjectAndDeactivated(Object eventObject) {
+		return (eventObject instanceof ApprovalProcessRulesEvent && approvalProcessRuleEventType(eventObject, ApprovalProcessRulesEventType.DEACTIVATED));
 	}
 	
 	@Test @Transactional(TransactionType.SINGLETON) 
 	public void testDeactivateMultipleApprovalProcessRulesInstancesInASet() throws Exception {
+		TestEventHandle testEventHandle = new TestEventHandle(this::isApprovalProcessRulesEventObjectAndDeactivated);
+		eventNotificationHelper.registerTestHandle(testEventHandle);
+
 		approvalService.deactivateApprovalProcessRules(asSet("testApprovalRules3","testApprovalRules4"),
 				dataCreator.getApprovalProcess12());
 		ApprovalProcessRules approvalProcessRules = dataCreator
@@ -284,10 +358,22 @@ public class ApprovalServiceTest {
 						.getApprovalRulesId())
 				.filterBy("active").withAValueEqualTo(false)
 				.thenGetFirst().isPresent());
+
+		await().atMost(4, TimeUnit.SECONDS).until(testEventHandle::hasEventObject);
+		eventNotificationHelper.unRegisterTestHandle(testEventHandle);
 	}
 	
 	@Test @Transactional(TransactionType.SINGLETON) 
 	public void testProcessApprovalAcceptedWithOneRuleAscendingOrder() throws Exception {
+		TestEventHandle testEventHandle1 = new TestEventHandle(this::isApprovalEventObjectAndProcessed);
+		eventNotificationHelper.registerTestHandle(testEventHandle1);
+
+		TestEventHandle testEventHandle2 = new TestEventHandle(this::isApprovalEventObjectAndProcessed);
+		eventNotificationHelper.registerTestHandle(testEventHandle2);
+
+		TestEventHandle testEventHandle3 = new TestEventHandle(this::isApprovalEventObjectAndComplete);
+		eventNotificationHelper.registerTestHandle(testEventHandle3);
+
 		ApprovalContext approvalContext = contextBuilder.createApprovalContext().
 				setApproverAs("testApprover1", 
 						"testGroup1")
@@ -309,6 +395,9 @@ public class ApprovalServiceTest {
 		assertThat(approvalContext.getApproval().getApprover(), is(notNullValue()));
 		assertThat(approvalContext.getApproval().getApprover().getId(), is(dataCreator.getApprover1().getId()));
 		assertThat(approvalContext.getApproval().getAction(), is(ApprovalAction.APPROVED));
+
+		await().atMost(4, TimeUnit.SECONDS).until(testEventHandle1::hasEventObject);
+		eventNotificationHelper.unRegisterTestHandle(testEventHandle1);
 		
 		approvalContext = contextBuilder.createApprovalContext().
 				setApproverAs("testApprover2", 
@@ -318,7 +407,7 @@ public class ApprovalServiceTest {
 		approvalService.processApproval(approvalContext);
 		
 		dataStore.flushBuffers();
-		
+
 		assertTrue(approvalContext.getApproval().getId()>0);
 		assertThat(approvalContext.getApproval().getApprovalDate(), is(notNullValue()));
 		assertThat(approvalContext.getApproval().getApprovalProcess(), is(notNullValue()));
@@ -331,6 +420,9 @@ public class ApprovalServiceTest {
 		assertThat(approvalContext.getApproval().getApprover(), is(notNullValue()));
 		assertThat(approvalContext.getApproval().getApprover().getId(), is(dataCreator.getApprover2().getId()));
 		assertThat(approvalContext.getApproval().getAction(), is(ApprovalAction.APPROVED));
+
+		await().atMost(4, TimeUnit.SECONDS).until(testEventHandle2::hasEventObject);
+		eventNotificationHelper.unRegisterTestHandle(testEventHandle2);
 		
 		approvalContext = contextBuilder.createApprovalContext().
 				setApproverAs("testApprover3", 
@@ -353,6 +445,17 @@ public class ApprovalServiceTest {
 		assertThat(approvalContext.getApproval().getApprover(), is(notNullValue()));
 		assertThat(approvalContext.getApproval().getApprover().getId(), is(dataCreator.getApprover3().getId()));
 		assertThat(approvalContext.getApproval().getAction(), is(ApprovalAction.APPROVED));
+		
+		await().atMost(4, TimeUnit.SECONDS).until(testEventHandle3::hasEventObject);
+		eventNotificationHelper.unRegisterTestHandle(testEventHandle3);
+	}
+
+	private boolean isApprovalEventObjectAndProcessed(Object eventObject) {
+		return (eventObject instanceof ApprovalProcessEvent && approvalEventType(eventObject, ApprovalEventType.PROCEEDING));
+	}
+
+	private boolean isApprovalEventObjectAndComplete(Object eventObject) {
+		return (eventObject instanceof ApprovalProcessEvent && approvalEventType(eventObject, ApprovalEventType.COMPLETE));
 	}
 
 	@Test
@@ -787,6 +890,9 @@ public class ApprovalServiceTest {
 	
 	@Test @Transactional(TransactionType.SINGLETON) 
 	public void testProcessApprovalWithRejected1() throws Exception {
+		TestEventHandle testEventHandle = new TestEventHandle(this::isApprovalEventObjectAndReject);
+		eventNotificationHelper.registerTestHandle(testEventHandle);
+
 		ApprovalContext approvalContext = contextBuilder.createApprovalContext().
 				setApproverAs("testApprover1", 
 						"testGroup1")
@@ -808,6 +914,13 @@ public class ApprovalServiceTest {
 		assertThat(approvalContext.getApproval().getApprover(), is(notNullValue()));
 		assertThat(approvalContext.getApproval().getApprover().getId(), is(dataCreator.getApprover1().getId()));
 		assertThat(approvalContext.getApproval().getAction(), is(ApprovalAction.REJECTED));
+
+		await().atMost(4, TimeUnit.SECONDS).until(testEventHandle::hasEventObject);
+		eventNotificationHelper.unRegisterTestHandle(testEventHandle);
+	}
+	
+	private boolean isApprovalEventObjectAndReject(Object eventObject) {
+		return (eventObject instanceof ApprovalProcessEvent && approvalEventType(eventObject, ApprovalEventType.REJECTED));
 	}
 
 	@Test @Transactional(TransactionType.SINGLETON) 
