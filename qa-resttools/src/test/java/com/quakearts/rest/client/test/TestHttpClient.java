@@ -16,8 +16,11 @@ import static org.awaitility.Awaitility.*;
 import static com.quakearts.tools.test.mockserver.model.impl.MockActionBuilder.*;
 import static com.quakearts.tools.test.mockserver.model.impl.HttpMessageBuilder.*;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.net.Authenticator;
 import java.net.HttpCookie;
+import java.net.PasswordAuthentication;
 import java.net.SocketTimeoutException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
@@ -39,10 +42,12 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.servlet.http.Cookie;
 
+import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.util.http.Rfc6265CookieProcessor;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.quakearts.rest.client.HttpClient.AuthenticationScheme;
 import com.quakearts.rest.client.HttpResponse;
 import com.quakearts.rest.client.HttpVerb;
 import com.quakearts.rest.client.exception.HttpClientException;
@@ -59,6 +64,7 @@ import com.quakearts.tools.test.mockserver.configuration.impl.ConfigurationBuild
 import com.quakearts.tools.test.mockserver.model.HttpHeader;
 import com.quakearts.tools.test.mockserver.model.HttpRequest;
 import com.quakearts.tools.test.mockserver.model.impl.HttpHeaderImpl;
+import com.quakearts.tools.test.mockserver.model.impl.HttpMessageBuilder;
 
 public class TestHttpClient {
 
@@ -245,6 +251,27 @@ public class TestHttpClient {
 						.setContentBytes("Authenticated".getBytes())
 						.thenBuild())
 				.thenBuild();
+		HttpRequest bearerAuthenticationRequest = createNewHttpRequest()
+				.setMethodAs("GET")
+				.setResourceAs("/test-bearer-authentication")
+				.setId("/test-bearer-authentication")
+				.setResponseAs(
+						createNewHttpResponse()
+						.setResponseCodeAs(200)
+						.setContentBytes("Authenticated".getBytes())
+						.thenBuild())
+				.thenBuild();
+		HttpRequest getWithBodyRequest = createNewHttpRequest()
+				.setMethodAs("GET")
+				.setResourceAs("/test-getwithbody-authentication")
+				.setId("/test-getwithbody-authentication")
+				.setContentBytes("\"Test Get Body\"".getBytes())
+				.setResponseAs(
+						createNewHttpResponse()
+						.setResponseCodeAs(200)
+						.setContentBytes("Recieved".getBytes())
+						.thenBuild())
+				.thenBuild();
 		HttpRequest defaultCookieRequest = createNewHttpRequest()
 					.setMethodAs("GET")
 					.setResourceAs("/test-default-cookie")
@@ -397,6 +424,20 @@ public class TestHttpClient {
 									.thenBuild();
 						}).thenBuild(),
 					createNewMockAction()
+						.setRequestAs(bearerAuthenticationRequest)
+						.setResponseActionAs((request, response)->{
+							if("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyIiwibmFtZSI6IlVzZXIifQ.O4rdWs_33PpEfYlkvqj-evo6PfIcEx6gxQ8qmIiV30o"
+									.equalsIgnoreCase(request.getHeaderValue("authorization")))
+								return null;
+							
+							return createNewHttpResponse()
+									.setResponseCodeAs(401)
+									.setContentBytes("Not authorized".getBytes())
+									.thenBuild();
+						}).thenBuild(),
+					createNewMockAction()
+						.setRequestAs(getWithBodyRequest).thenBuild(),
+					createNewMockAction()
 						.setRequestAs(defaultCookieRequest)
 						.setResponseActionAs((context, response)->{
 							if(context.getHeaderValue("cookie").contains("testCookie"))
@@ -471,6 +512,7 @@ public class TestHttpClient {
 					.createNewHttpClient()
 					.setHostAs("localhost")
 					.setPortAs(8080)
+					.setAuthenticationSchemeAs(AuthenticationScheme.BASIC)
 					.setUsernameAs("test")
 					.setPasswordAs("password")
 					.setUserAgentAs("Custom Agent")
@@ -484,6 +526,29 @@ public class TestHttpClient {
 			assertThat(httpResponse.getOutput(), is("Authenticated"));			
 			assertThat(httpResponse.getHeaders().isEmpty(), is(false));
 			
+			client = MockHttpClientBuilder.getInstance()
+					.createNewHttpClient()
+					.setHostAs("localhost")
+					.setPortAs(8080)
+					.setAuthenticationSchemeAs(AuthenticationScheme.BEARER)
+					.setTokenAs("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyIiwibmFtZSI6IlVzZXIifQ.O4rdWs_33PpEfYlkvqj-evo6PfIcEx6gxQ8qmIiV30o")
+					.thenBuild();
+			
+			httpResponse = client.sendRequest(bearerAuthenticationRequest);
+			assertThat(httpResponse.getHttpCode(), is(200));
+			assertThat(httpResponse.getOutput(), is("Authenticated"));			
+			assertThat(httpResponse.getHeaders().isEmpty(), is(false));
+
+			client = MockHttpClientBuilder.getInstance()
+					.createNewHttpClient()
+					.setHostAs("localhost")
+					.setPortAs(8080)
+					.thenBuild();
+			
+			httpResponse = client.sendRequest(getWithBodyRequest);
+			assertThat(httpResponse.getHttpCode(), is(200));
+			assertThat(httpResponse.getOutput(), is("Recieved"));
+
 			client = MockHttpClientBuilder.getInstance()
 					.createNewHttpClient()
 					.setHostAs("localhost")
@@ -866,6 +931,74 @@ public class TestHttpClient {
 		assertThat(client.getPort(), is(80));		
 	}
 	
+	private Tomcat authenticationTestServer;
+	
+	private void startAuthenticationServer() throws Exception {
+		authenticationTestServer = new Tomcat();
+		
+		File file = new File("tomcat-test");
+		File webappsFile = new File(file,"webapps");
+		if(!file.exists()) {
+			file.mkdir();
+			webappsFile.mkdir();
+		}
+		
+		if(!webappsFile.exists()) {
+			webappsFile.mkdir();
+		}
+					
+		authenticationTestServer.setBaseDir(new File("tomcat-authentication").getCanonicalPath());
+		authenticationTestServer.getConnector();
+		
+		authenticationTestServer.getConnector().setPort(8081);
+				
+		authenticationTestServer.addWebapp("/digest", new File("tomcat-authentication"+File.separator+"webapps"+File.separator+"digest").getAbsolutePath());
+		authenticationTestServer.addWebapp("/basic", new File("tomcat-authentication"+File.separator+"webapps"+File.separator+"basic").getAbsolutePath());
+		
+		authenticationTestServer.start();        
+	}
+	
+	private void stopAuthenticationServer() throws Exception {
+		if(authenticationTestServer != null)
+			authenticationTestServer.stop();
+	}
+	
+	@Test
+	public void testBasicAuthentication() throws Exception {
+		startAuthenticationServer();
+		try {
+			Authenticator.setDefault(new Authenticator() {
+				@Override
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication("test", "password".toCharArray());
+				}
+			});
+			
+			MockHttpClient client = MockHttpClientBuilder
+					.getInstance().createNewHttpClient()
+				.setURLAs("http://localhost:8081")
+				.setFollowRedirectAs(true)
+				.thenBuild();
+			
+			HttpResponse response = client.sendRequest(HttpMessageBuilder.createNewHttpRequest()
+					.setId("basic").setMethodAs("GET")
+					.setResourceAs("/basic").thenBuild());
+			
+			assertThat(response.getHttpCode(), is(200));
+			assertThat(response.getOutput(), is("Basic Authenticated!"));
+			
+			response = client.sendRequest(HttpMessageBuilder.createNewHttpRequest()
+					.setMethodAs("GET").setId("digest")
+					.setResourceAs("/digest").thenBuild());
+
+			assertThat(response.getHttpCode(), is(200));
+			assertThat(response.getOutput(), is("Digest Authenticated!"));
+		} finally {
+			stopAuthenticationServer();
+			Authenticator.setDefault(null);
+		}
+	}
+	
 	public static class TestHttpResponse implements com.quakearts.tools.test.mockserver.model.HttpResponse {
 
 		@Override
@@ -978,7 +1111,7 @@ public class TestHttpClient {
 
 		@Override
 		public void setId(String id) {
-			// TODO Auto-generated method stub
+			// 3
 		}
 
 	}

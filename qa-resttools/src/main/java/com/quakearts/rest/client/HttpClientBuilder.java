@@ -11,12 +11,19 @@ package com.quakearts.rest.client;
 
 import java.net.HttpCookie;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URL;
 
+import com.quakearts.rest.client.HttpClient.AuthenticationScheme;
 import com.quakearts.rest.client.exception.HttpClientRuntimeException;
 
 /**Base class for creating builders for {@linkplain HttpClient}
  * @author kwakutwumasi-afriyie
+ *
+ * @param <T>
+ */
+/**
+ * @author kwaku
  *
  * @param <T>
  */
@@ -96,6 +103,15 @@ public abstract class HttpClientBuilder<T extends HttpClient> {
 		return this;
 	}
 
+	/**Set the {@linkplain AuthenticationScheme} to use
+	 * @param authenticationScheme the AuthenticationScheme
+	 * @return this object for method chaining
+	 */
+	public HttpClientBuilder<T> setAuthenticationSchemeAs(AuthenticationScheme authenticationScheme) {
+		httpClient.authenticationScheme = authenticationScheme;
+		return this;
+	}
+
 	/**Set the Basic Authentication username
 	 * @param username the username
 	 * @return this object for method chaining
@@ -111,6 +127,15 @@ public abstract class HttpClientBuilder<T extends HttpClient> {
 	 */
 	public HttpClientBuilder<T> setPasswordAs(String password) {
 		httpClient.password = password;
+		return this;
+	}
+
+	/**Set the Bearer Authentication token
+	 * @param token the password
+	 * @return this object for method chaining
+	 */
+	public HttpClientBuilder<T> setTokenAs(String token) {
+		httpClient.password = token;
 		return this;
 	}
 
@@ -174,6 +199,15 @@ public abstract class HttpClientBuilder<T extends HttpClient> {
 	 */
 	public HttpClientBuilder<T> setAcceptLanguageAs(String acceptLanguage){
 		httpClient.acceptLanguage = acceptLanguage;
+		return this;
+	}
+	
+	/**Set the {@link Proxy} to use making HTTP requests
+	 * @param proxy the Proxy to use
+	 * @return this object for method chaining
+	 */
+	public HttpClientBuilder<T> setProxyAs(Proxy proxy){
+		httpClient.proxy = proxy;
 		return this;
 	}
 
