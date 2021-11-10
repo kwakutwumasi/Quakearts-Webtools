@@ -59,6 +59,12 @@
 			<groupId>org.jboss.weld</groupId>
 			<artifactId>weld-api</artifactId>
 			<version>${weld.spi.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.enterprise</groupId>
+					<artifactId>cdi-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.weld</groupId>
