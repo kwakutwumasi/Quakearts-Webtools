@@ -314,7 +314,7 @@ public abstract class HttpClient implements Serializable {
 			}
 			String contentLength = Integer.toString((requestValue.length() / 8));
 			connection.addRequestProperty("Content-Length", contentLength);
-			connection.addRequestProperty("Content-Type", contentType + "; charset=" + charset.toLowerCase());
+			connection.addRequestProperty("Content-Type", contentType);
 			connection.setDoOutput(true);
 			connection.getOutputStream().write(requestValue.getBytes(charset));
 			log.trace("Request Body:\n" + "Content-Type:{}\n" + "Content-Length:{}\n" + "Content:\n{}\n", contentType,
