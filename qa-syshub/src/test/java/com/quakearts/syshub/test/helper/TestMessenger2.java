@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +15,8 @@ import com.quakearts.syshub.core.Messenger;
 import com.quakearts.syshub.core.impl.MessageByteImpl;
 import com.quakearts.syshub.exception.ConfigurationException;
 import com.quakearts.syshub.exception.ProcessingException;
+import com.quakearts.syshub.log.MessageLogger;
+import com.quakearts.syshub.log.MessageLogging;
 import com.quakearts.syshub.model.AgentConfiguration;
 import com.quakearts.syshub.model.AgentConfigurationParameter;
 import com.quakearts.syshub.model.AgentModule;
@@ -25,7 +29,9 @@ public class TestMessenger2 implements Messenger {
 	private AgentModule agentModule;
 	private AtomicInteger integer = new AtomicInteger(0);
 	private static final Logger log = LoggerFactory.getLogger(TestMessenger1.class);
-	
+	@Inject @MessageLogging
+	private MessageLogger messageLogger;
+
 	public int getSendCount(){
 		return integer.get();
 	}
@@ -80,6 +86,9 @@ public class TestMessenger2 implements Messenger {
 		integer.incrementAndGet();
 		log.trace(outputBuilder.toString());		
 		mssg.setMessageStatus("complete");		
+		if(agentConfiguration != null && agentConfiguration.getId() > 0 && agentModule != null && agentModule.getId() > 0) {
+			messageLogger.logMessage(agentConfiguration, agentModule, mssg, "Success", false);
+		}
 	}
 
 	@Override

@@ -337,6 +337,45 @@ public class TestSysHubMain {
 			
 			dataStore.save(agentModule);
 			dataStore.flushBuffers();
+			
+			agentConfiguration = new AgentConfiguration();
+			agentConfiguration.setId(5);
+			agentConfiguration.setActive(false);
+			agentConfiguration.setAgentName("Logging Agent");
+			agentConfiguration.setType(RunType.TRIGGERED);
+			
+			dataStore.save(agentConfiguration);
+			dataStore.flushBuffers();
+
+			agentModule = new AgentModule();
+			agentModule.setId(15);
+			agentModule.setAgentConfiguration(agentConfiguration);
+			agentModule.setModuleClassName(TestFormatter2.class.getName());
+			agentModule.setModuleName("Test Module 3.3");
+			agentModule.setModuleType(ModuleType.FORMATTER);
+			parameter = new AgentConfigurationParameter("testParameter1", ParameterType.JNDINAME);
+			parameter.setStringValue("java:/comp/Address");
+			parameter.setAgentConfiguration(agentConfiguration);
+			parameter.setAgentModule(agentModule);
+			agentModule.getParameters().add(parameter);
+	
+			dataStore.save(agentModule);
+			
+			agentModule = new AgentModule();
+			agentModule.setId(16);
+			agentModule.setAgentConfiguration(agentConfiguration);
+			agentModule.setModuleClassName(TestMessenger2.class.getName());
+			agentModule.setModuleName("Test Module 3.4");
+			agentModule.setModuleType(ModuleType.MESSENGER);
+			agentModule.setMappedModuleName("Test Module 3.3");
+			parameter = new AgentConfigurationParameter("testParameter1", ParameterType.LIST);
+			parameter.setStringValue("Option1");
+			parameter.setAgentConfiguration(agentConfiguration);
+			parameter.setAgentModule(agentModule);
+			agentModule.getParameters().add(parameter);
+	
+			dataStore.save(agentModule);
+			
 			userTransaction.commit();
 			
 			sysHubMain.init();

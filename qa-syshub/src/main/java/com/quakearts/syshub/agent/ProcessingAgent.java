@@ -167,7 +167,7 @@ public class ProcessingAgent {
 		if(processingLog.getAgentModule() == null)
 			throw new ProcessingException("Invalid log passed in. getAgentModule() was null");			
 		
-		if(processingLog.getMessageData()==null)
+		if(processingLog.getMessageData() == null)
 			throw new ProcessingException("Invalid log passed in. getMessageData() was null");			
 		
 		for(Messenger messenger:mapper.keySet()){

@@ -479,7 +479,7 @@ public class TestSysHub {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
-		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
+		agent.setDataSpoolers(Arrays.asList(DataSpoolerFactory.getFactory().getInstance(TestDataSpooler.class.getName())));
 		try {
 			agent.processData();
 		} finally {
@@ -492,7 +492,7 @@ public class TestSysHub {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
-		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
+		agent.setDataSpoolers(Arrays.asList(DataSpoolerFactory.getFactory().getInstance(TestDataSpooler.class.getName())));
 		agent.setMessengerFormatterMapper(Collections.emptyMap());
 		try {
 			agent.processData();
@@ -627,7 +627,7 @@ public class TestSysHub {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
-		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
+		agent.setDataSpoolers(Arrays.asList(DataSpoolerFactory.getFactory().getInstance(TestDataSpooler.class.getName())));
 		agent.reprocessProcessingLog(new ProcessingLog());
 	}
 
@@ -636,7 +636,7 @@ public class TestSysHub {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
-		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
+		agent.setDataSpoolers(Arrays.asList(DataSpoolerFactory.getFactory().getInstance(TestDataSpooler.class.getName())));
 		agent.setMessengerFormatterMapper(Collections.emptyMap());
 		agent.reprocessProcessingLog(new ProcessingLog());
 	}
@@ -646,12 +646,12 @@ public class TestSysHub {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
-		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
+		agent.setDataSpoolers(Arrays.asList(DataSpoolerFactory.getFactory().getInstance(TestDataSpooler.class.getName())));
 		Map<Messenger, MessageFormatter> map = new HashMap<>();
-		TestMessenger1 messenger = new TestMessenger1();
+		TestMessenger1 messenger = (TestMessenger1) MessengerFactory.getFactory().getInstance(TestMessenger1.class.getName());
 		messenger.setAgentModule(new AgentModule());
 		messenger.getAgentModule().setModuleName("Test");
-		map.put(messenger, new TestFormatter1());
+		map.put(messenger,  MessageFormatterFactory.getFactory().getInstance(TestFormatter1.class.getName()));
 		agent.setMessengerFormatterMapper(map);
 		
 		agent.reprocessProcessingLog(null);
@@ -662,12 +662,12 @@ public class TestSysHub {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
-		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
+		agent.setDataSpoolers(Arrays.asList(DataSpoolerFactory.getFactory().getInstance(TestDataSpooler.class.getName())));
 		Map<Messenger, MessageFormatter> map = new HashMap<>();
-		TestMessenger1 messenger = new TestMessenger1();
+		TestMessenger1 messenger = (TestMessenger1) MessengerFactory.getFactory().getInstance(TestMessenger1.class.getName());
 		messenger.setAgentModule(new AgentModule());
 		messenger.getAgentModule().setModuleName("Test");
-		map.put(messenger, new TestFormatter1());
+		map.put(messenger,  MessageFormatterFactory.getFactory().getInstance(TestFormatter1.class.getName()));
 		agent.setMessengerFormatterMapper(map);
 		
 		agent.reprocessProcessingLog(new ProcessingLog());
@@ -678,12 +678,12 @@ public class TestSysHub {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
-		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
+		agent.setDataSpoolers(Arrays.asList(DataSpoolerFactory.getFactory().getInstance(TestDataSpooler.class.getName())));
 		Map<Messenger, MessageFormatter> map = new HashMap<>();
-		TestMessenger1 messenger = new TestMessenger1();
+		TestMessenger1 messenger = (TestMessenger1) MessengerFactory.getFactory().getInstance(TestMessenger1.class.getName());
 		messenger.setAgentModule(new AgentModule());
 		messenger.getAgentModule().setModuleName("Test");
-		map.put(messenger, new TestFormatter1());
+		map.put(messenger,  MessageFormatterFactory.getFactory().getInstance(TestFormatter1.class.getName()));
 		agent.setMessengerFormatterMapper(map);
 		
 		ProcessingLog processingLog = new ProcessingLog();
@@ -700,12 +700,12 @@ public class TestSysHub {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
-		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
+		agent.setDataSpoolers(Arrays.asList(DataSpoolerFactory.getFactory().getInstance(TestDataSpooler.class.getName())));
 		Map<Messenger, MessageFormatter> map = new HashMap<>();
-		TestMessenger1 messenger = new TestMessenger1();
+		TestMessenger1 messenger = (TestMessenger1) MessengerFactory.getFactory().getInstance(TestMessenger1.class.getName());
 		messenger.setAgentModule(new AgentModule());
 		messenger.getAgentModule().setModuleName("Test");
-		map.put(messenger, new TestFormatter1());
+		map.put(messenger,  MessageFormatterFactory.getFactory().getInstance(TestFormatter1.class.getName()));
 		agent.setMessengerFormatterMapper(map);
 
 		ProcessingLog processingLog = new ProcessingLog();
@@ -734,12 +734,12 @@ public class TestSysHub {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
-		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
+		agent.setDataSpoolers(Arrays.asList(DataSpoolerFactory.getFactory().getInstance(TestDataSpooler.class.getName())));
 		Map<Messenger, MessageFormatter> map = new HashMap<>();
-		TestMessenger1 messenger = new TestMessenger1();
+		TestMessenger1 messenger = (TestMessenger1) MessengerFactory.getFactory().getInstance(TestMessenger1.class.getName());
 		messenger.setAgentModule(new AgentModule());
 		messenger.getAgentModule().setModuleName("Test");
-		map.put(messenger, new TestFormatter1());
+		map.put(messenger,  MessageFormatterFactory.getFactory().getInstance(TestFormatter1.class.getName()));
 		agent.setMessengerFormatterMapper(map);
 
 		ProcessingLog processingLog = new ProcessingLog();
@@ -768,12 +768,12 @@ public class TestSysHub {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
-		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
+		agent.setDataSpoolers(Arrays.asList(DataSpoolerFactory.getFactory().getInstance(TestDataSpooler.class.getName())));
 		Map<Messenger, MessageFormatter> map = new HashMap<>();
-		TestMessenger2 messenger = new TestMessenger2();
+		TestMessenger2 messenger = (TestMessenger2) MessengerFactory.getFactory().getInstance(TestMessenger2.class.getName());
 		messenger.setAgentModule(new AgentModule());
 		messenger.getAgentModule().setModuleName("Test");
-		map.put(messenger, new TestFormatter1());
+		map.put(messenger,  MessageFormatterFactory.getFactory().getInstance(TestFormatter1.class.getName()));
 		agent.setMessengerFormatterMapper(map);
 
 		ProcessingLog processingLog = new ProcessingLog();
@@ -801,7 +801,7 @@ public class TestSysHub {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
-		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
+		agent.setDataSpoolers(Arrays.asList(DataSpoolerFactory.getFactory().getInstance(TestDataSpooler.class.getName())));
 		agent.reprocessResultExceptionLog(null);
 	}
 
@@ -810,7 +810,7 @@ public class TestSysHub {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
-		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
+		agent.setDataSpoolers(Arrays.asList(DataSpoolerFactory.getFactory().getInstance(TestDataSpooler.class.getName())));
 		agent.setMessengerFormatterMapper(Collections.emptyMap());
 		agent.reprocessResultExceptionLog(null);;
 	}
@@ -820,9 +820,11 @@ public class TestSysHub {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
-		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
+		agent.setDataSpoolers(Arrays.asList(DataSpoolerFactory.getFactory().getInstance(TestDataSpooler.class.getName())));
 		Map<Messenger, MessageFormatter> map = new HashMap<>();
-		map.put(new TestMessenger1(), new TestFormatter1());
+		map.put(MessengerFactory.getFactory().getInstance(TestMessenger1.class.getName()), 
+				MessageFormatterFactory.getFactory().getInstance(TestFormatter1.class.getName()));
+		agent.setDataSpoolers(Arrays.asList(DataSpoolerFactory.getFactory().getInstance(TestDataSpooler.class.getName())));
 		agent.setMessengerFormatterMapper(map);
 		
 		agent.reprocessResultExceptionLog(null);		
@@ -833,9 +835,10 @@ public class TestSysHub {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
-		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
+		agent.setDataSpoolers(Arrays.asList(DataSpoolerFactory.getFactory().getInstance(TestDataSpooler.class.getName())));
 		Map<Messenger, MessageFormatter> map = new HashMap<>();
-		map.put(new TestMessenger1(), new TestFormatter1());
+		map.put(MessengerFactory.getFactory().getInstance(TestMessenger1.class.getName()), 
+				MessageFormatterFactory.getFactory().getInstance(TestFormatter1.class.getName()));
 		agent.setMessengerFormatterMapper(map);
 		ResultExceptionLog exceptionLog = new ResultExceptionLog();
 		
@@ -851,9 +854,10 @@ public class TestSysHub {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
-		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
+		agent.setDataSpoolers(Arrays.asList(DataSpoolerFactory.getFactory().getInstance(TestDataSpooler.class.getName())));
 		Map<Messenger, MessageFormatter> map = new HashMap<>();
-		map.put(new TestMessenger1(), new TestFormatter1());
+		map.put(MessengerFactory.getFactory().getInstance(TestMessenger1.class.getName()), 
+				MessageFormatterFactory.getFactory().getInstance(TestFormatter1.class.getName()));
 		agent.setMessengerFormatterMapper(map);
 		ResultExceptionLog exceptionLog = new ResultExceptionLog();
 		
@@ -868,10 +872,11 @@ public class TestSysHub {
 		ProcessingAgent agent = CDI.current().select(ProcessingAgent.class).get();
 		agent.setAgentConfiguration(new AgentConfiguration());
 		agent.setName("Name");
-		agent.setDataSpoolers(Arrays.asList(new TestDataSpooler()));
+		agent.setDataSpoolers(Arrays.asList(DataSpoolerFactory.getFactory().getInstance(TestDataSpooler.class.getName())));
 		Map<Messenger, MessageFormatter> map = new HashMap<>();
-		TestMessenger1 messenger = new TestMessenger1();
-		map.put(messenger, new TestFormatter1());
+		TestMessenger1 messenger = (TestMessenger1) MessengerFactory.getFactory().getInstance(TestMessenger1.class.getName());
+		map.put(messenger, 
+				MessageFormatterFactory.getFactory().getInstance(TestFormatter1.class.getName()));
 		agent.setMessengerFormatterMapper(map);
 		
 		ResultExceptionLog exceptionLog = new ResultExceptionLog();
@@ -1074,13 +1079,13 @@ public class TestSysHub {
 		LoggerImpl loggerImpl = LoggerImpl.getInstance();
 		
 		AgentConfiguration agentConfiguration = new AgentConfiguration();
-		agentConfiguration.setId(1);
+		agentConfiguration.setId(5);
 		
 		AgentModule formatterModule = new AgentModule();
-		formatterModule.setId(2);
+		formatterModule.setId(15);
 		
 		AgentModule messengerModule = new AgentModule();
-		messengerModule.setId(3);
+		messengerModule.setId(16);
 				
 		Result<Object> result = generateResult();
 		Exception e = new Exception("Test Error");
@@ -1133,9 +1138,9 @@ public class TestSysHub {
 			for(ProcessingLog processingLog:processingLogs) {
 				if(processingLog.getType() == LogType.INFO){
 					assertThat(processingLog.getAgentConfiguration(), is(notNullValue()));
-					assertThat(processingLog.getAgentConfiguration().getId(), is(1));
+					assertThat(processingLog.getAgentConfiguration().getId(), is(5));
 					assertThat(processingLog.getAgentModule(), is(notNullValue()));
-					assertThat(processingLog.getAgentModule().getId(), is(3));
+					assertThat(processingLog.getAgentModule().getId(), is(16));
 					assertThat(processingLog.getLogDt(), is(notNullValue()));
 					assertThat(processingLog.getMessageData(), is(notNullValue()));		
 					assertThat(((Message<?>)serializer.toObject(processingLog.getMessageData())).getId(), is(message1.getId()));
@@ -1157,9 +1162,9 @@ public class TestSysHub {
 
 			assertThat(exceptionLogs.size(), is(1));
 			assertThat(exceptionLogs.get(0).getAgentConfiguration(), is(notNullValue()));
-			assertThat(exceptionLogs.get(0).getAgentConfiguration().getId(), is(1));
+			assertThat(exceptionLogs.get(0).getAgentConfiguration().getId(), is(5));
 			assertThat(exceptionLogs.get(0).getAgentModule(), is(notNullValue()));
-			assertThat(exceptionLogs.get(0).getAgentModule().getId(), is(2));
+			assertThat(exceptionLogs.get(0).getAgentModule().getId(), is(15));
 			assertThat(serializer.toObject(exceptionLogs.get(0).getResultData()), is(result));
 			assertThat(((Exception)serializer.toObject(exceptionLogs.get(0).getExceptionData())).getMessage(), is(e.getMessage()));
 			assertThat(exceptionLogs.get(0).getExceptionType(), is(e.getClass().getName()));

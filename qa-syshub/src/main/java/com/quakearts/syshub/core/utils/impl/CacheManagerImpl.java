@@ -38,27 +38,9 @@ public class CacheManagerImpl implements CacheManager {
 	private EmbeddedCacheManager embeddedCacheManager;
 	private Configuration configuration;
 
-	private synchronized EmbeddedCacheManager getEmbeddedCacheManager() {
+	private EmbeddedCacheManager getEmbeddedCacheManager() {
 		if (embeddedCacheManager == null) {
-			configuration = new ConfigurationBuilder()
-					// Eviction configuration
-					.memory()
-						.evictionStrategy(EvictionStrategy.REMOVE)
-						.evictionType(EvictionType.COUNT)
-						.size(1000)
-					// Expiration...is this neccessary?
-					.expiration().lifespan(5, TimeUnit.DAYS).reaperEnabled(true).wakeUpInterval(1, TimeUnit.DAYS)
-					// Save items to file. Good for managing high loads
-					.persistence()
-						.passivation(false)
-						.addSingleFileStore()
-							.location("syshub_log_cache")
-								.async()
-								.enable()
-								.preload(true)
-								.segmented(false)
-								.shared(false)
-					.build();
+			createConfiguration();
 
 			embeddedCacheManager = new DefaultCacheManager(new GlobalConfigurationBuilder()
 					.serialization()
@@ -77,6 +59,34 @@ public class CacheManagerImpl implements CacheManager {
 		return embeddedCacheManager;
 	}
 
+	/**Create the {@linkplain Configuration} for the embedded cache
+	 * Implementers can override to customize configuration of
+	 * {@linkplain Configuration}
+	 * 
+	 */
+	protected void createConfiguration() {
+		configuration = new ConfigurationBuilder()
+				// Eviction configuration
+				.memory()
+					.evictionStrategy(EvictionStrategy.REMOVE)
+					.evictionType(EvictionType.COUNT)
+					.size(Integer.getInteger("cache.memory.size", 1000))
+				// Expiration...is this neccessary?
+				.expiration().lifespan(Integer.getInteger("cache.expiration.lifespan.days", 5), TimeUnit.DAYS)
+				.reaperEnabled(true).wakeUpInterval(Integer.getInteger("cache.reaper.interval.days", 1), TimeUnit.DAYS)
+				// Save items to file. Good for managing high loads
+				.persistence()
+					.passivation(false)
+					.addSingleFileStore()
+						.location("syshub_log_cache")
+							.async()
+							.enable()
+							.preload(true)
+							.segmented(false)
+							.shared(false)
+				.build();
+	}
+
 	private static List<String> loadWhiteList() {
 		List<String> whiteList = new ArrayList<>();
 		whiteList.add("com.quakearts.syshub.model.*");
@@ -93,7 +103,7 @@ public class CacheManagerImpl implements CacheManager {
 	 * @see com.quakearts.syshub.core.utils.CacheManager#getCache(java.lang.Class, java.lang.String)
 	 */
 	@Override
-	public <T> Cache<String, T> getCache(Class<T> cacheType, String suffix) {
+	public synchronized <T> Cache<String, T> getCache(Class<T> cacheType, String suffix) {
 		String name = cacheType.getName() + (suffix != null ? suffix : "");
 		return getCacheByName(name);
 	}
