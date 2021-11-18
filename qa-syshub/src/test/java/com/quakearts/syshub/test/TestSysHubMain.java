@@ -73,6 +73,14 @@ public class TestSysHubMain {
 			parameter.setAgentConfiguration(agentConfiguration);
 			parameter.setAgentModule(agentModule);
 			agentModule.getParameters().add(parameter);
+
+			parameter = new AgentConfigurationParameter("testParameter1", ParameterType.PASSWORD);
+			EncryptedValue encryptedValue = new EncryptedValue();
+			encryptedValue.setStringValue("password");
+			parameter.setEncryptedValue(encryptedValue);
+			parameter.setAgentConfiguration(agentConfiguration);
+			parameter.setAgentModule(agentModule);
+			agentModule.getParameters().add(parameter);
 			
 			dataStore.save(agentModule);
 			
@@ -225,7 +233,7 @@ public class TestSysHubMain {
 			agentModule.setModuleType(ModuleType.MESSENGER);
 			parameter = new AgentConfigurationParameter("testParameter1", ParameterType.PASSWORD);
 			parameter.setGlobal(true);
-			EncryptedValue encryptedValue = new EncryptedValue();
+			encryptedValue = new EncryptedValue();
 			encryptedValue.setStringValue("password");
 			parameter.setEncryptedValue(encryptedValue);
 			parameter.setAgentConfiguration(agentConfiguration);

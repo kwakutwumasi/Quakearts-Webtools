@@ -281,8 +281,16 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 		
 		notelog.setStatusMessage(statusMessage);
 		notelog.setMid(mssg.getId());
-		notelog.setAgentConfiguration(agentConfiguration);
-		notelog.setAgentModule(agentModule);
+
+		AgentConfiguration toSaveAgentConfiguration = new AgentConfiguration();
+		toSaveAgentConfiguration.setId(agentConfiguration.getId());
+		notelog.setAgentConfiguration(toSaveAgentConfiguration);
+
+		AgentModule toSaveAgentModule = new AgentModule();
+
+		toSaveAgentModule.setId(agentModule.getId());
+		notelog.setAgentModule(toSaveAgentModule);
+
 		String[] receipients = mssg.getRecipients(); 
 		notelog.setRecipient(Arrays.toString(receipients));
 		notelog.setType(type);

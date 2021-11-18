@@ -9,9 +9,6 @@
 		Useful for performing notifications of transactions, conversion of message from one format to another,
 		integration of disparate systems. Supports configuring retry rules, multiplexing datasources, formatters and messengers
 	</description>
-	<properties>
-		<version.org.jboss.ironjacamar>1.4.2.Final</version.org.jboss.ironjacamar>
-	</properties>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<plugins>
@@ -102,6 +99,12 @@
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
 			<version>10.13.1.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.awaitility</groupId>
+			<artifactId>awaitility</artifactId>
+			<version>4.1.1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

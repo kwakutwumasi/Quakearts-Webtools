@@ -11,9 +11,11 @@
 package com.quakearts.syshub.core.utils.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
@@ -22,6 +24,7 @@ import org.infinispan.Cache;
 import org.infinispan.commons.CacheConfigurationException;
 import org.infinispan.commons.configuration.ClassWhiteList;
 import org.infinispan.commons.marshall.JavaSerializationMarshaller;
+import org.infinispan.commons.marshall.Marshaller;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;
@@ -30,6 +33,7 @@ import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.configuration.cache.Configuration;
 
+import com.quakearts.appbase.exception.ConfigurationException;
 import com.quakearts.syshub.core.utils.CacheManager;
 import com.quakearts.syshub.core.utils.CacheWhiteListProvider;
 
@@ -37,6 +41,7 @@ import com.quakearts.syshub.core.utils.CacheWhiteListProvider;
 public class CacheManagerImpl implements CacheManager {
 	private EmbeddedCacheManager embeddedCacheManager;
 	private Configuration configuration;
+	private Set<String> cacheNames = new HashSet<>();
 
 	private EmbeddedCacheManager getEmbeddedCacheManager() {
 		if (embeddedCacheManager == null) {
@@ -44,7 +49,7 @@ public class CacheManagerImpl implements CacheManager {
 
 			embeddedCacheManager = new DefaultCacheManager(new GlobalConfigurationBuilder()
 					.serialization()
-					.marshaller(new JavaSerializationMarshaller(new ClassWhiteList(loadWhiteList())))
+					.marshaller(createMarshaller())
 					.defaultCacheName("global.default")
 					.build(), configuration);
 			
@@ -87,9 +92,21 @@ public class CacheManagerImpl implements CacheManager {
 				.build();
 	}
 
+	/**Create the {@linkplain Marshaller} for the embedded cache
+	 * Implementers can override to customize the
+	 * {@linkplain Marshaller}
+	 * 
+	 */
+	protected Marshaller createMarshaller() {
+		return new JavaSerializationMarshaller(new ClassWhiteList(loadWhiteList()));
+	}
+
 	private static List<String> loadWhiteList() {
 		List<String> whiteList = new ArrayList<>();
 		whiteList.add("com.quakearts.syshub.model.*");
+		whiteList.add("java.lang.*");
+		whiteList.add("java.util.*");
+		whiteList.add("java.sql.*");
 		ServiceLoader<CacheWhiteListProvider> whiteListProviders = ServiceLoader.load(CacheWhiteListProvider.class);
 		Iterator<CacheWhiteListProvider> whiteListProvidersIterators = whiteListProviders.iterator();
 		while (whiteListProvidersIterators.hasNext()) {
@@ -110,10 +127,14 @@ public class CacheManagerImpl implements CacheManager {
 
 	private <T> Cache<String, T> getCacheByName(String name) {
 		try {
+			if (!cacheNames.contains(name)) {
+				getEmbeddedCacheManager().defineConfiguration(name, configuration);
+				cacheNames.add(name);
+			}
+			
 			return getEmbeddedCacheManager().getCache(name);
 		} catch (CacheConfigurationException e) {
-			getEmbeddedCacheManager().defineConfiguration(name, configuration);
-			return getCacheByName(name);
+			throw new ConfigurationException("Unable to configure cache "+name, e);
 		}
 	}
 

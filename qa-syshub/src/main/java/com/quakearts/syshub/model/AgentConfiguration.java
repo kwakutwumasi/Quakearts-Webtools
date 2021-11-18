@@ -121,6 +121,14 @@ public class AgentConfiguration implements Serializable {
 		this.agentConfigurationModuleMappings = agentConfigurationModuleMappings;
 	}
 	
+	public Set<ProcessingLog> getProcessingLogs() {
+		return processingLogs;
+	}
+
+	public void setProcessingLogs(Set<ProcessingLog> processingLogs) {
+		this.processingLogs = processingLogs;
+	}
+
 	@Transient
 	private Map<Integer, Map<String, AgentConfigurationParameter>> moduleConfigurationMaps;
 	@Transient

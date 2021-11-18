@@ -63,9 +63,9 @@ public class SysHubMain implements SysHub {
 				try {
 					deployAgent(agentConfiguration);
 				} catch (ConfigurationException e) {
-					Main.log.error("Exception of type " + e.getClass().getName() 
-							+ " was thrown. Message is " + e.getMessage()
-							+ ". Exception occured whiles deploying "+agentConfiguration.getAgentName());
+					Main.log.error(
+							"Exception of type {} was thrown. Message is {}. Exception occured whiles deploying {}",
+							e.getClass().getName(), e.getMessage(), agentConfiguration.getAgentName());
 				}
 			}
 

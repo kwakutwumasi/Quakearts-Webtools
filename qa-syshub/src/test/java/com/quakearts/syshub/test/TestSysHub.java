@@ -4,8 +4,10 @@ import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.*;
 import static org.hamcrest.core.IsNull.*;
 import static org.hamcrest.core.IsNot.*;
+import static org.awaitility.Awaitility.*;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +26,9 @@ import java.util.logging.LogManager;
 
 import javax.enterprise.inject.spi.CDI;
 import javax.transaction.UserTransaction;
+
+import org.infinispan.commons.io.ByteBuffer;
+import org.infinispan.commons.marshall.Marshaller;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -109,7 +115,7 @@ public class TestSysHub {
 	public void testAgentsDeployed() throws Exception {
 		SysHub sysHubMain = CDI.current().select(SysHub.class).get();
 		assertThat(sysHubMain, is(notNullValue()));
-		assertThat(sysHubMain.listAgentRunners().size(), is(3));
+		await().atMost(5, TimeUnit.SECONDS).untilAsserted(()->assertThat(sysHubMain.listAgentRunners().size(), is(3)));
 
 		UserTransaction transaction = JavaTransactionManagerSpiFactory
 				.getInstance()
@@ -512,7 +518,7 @@ public class TestSysHub {
 		agent.setMessengerFormatterMapper(map);
 		try {
 			agent.processData();
-			assertThat(observer.getQueue().poll(1, TimeUnit.SECONDS) instanceof IOException, is(true));
+			await().atMost(3, TimeUnit.SECONDS).untilAsserted(()-> assertThat(observer.getQueue().poll(1, TimeUnit.SECONDS) instanceof IOException, is(true)));
 		} finally {
 			agent.shutdown();
 		}
@@ -529,7 +535,7 @@ public class TestSysHub {
 		agent.setMessengerFormatterMapper(map);
 		try {
 			agent.processData();
-			assertThat(observer.getQueue().poll(1, TimeUnit.SECONDS) instanceof ProcessingException, is(true));
+			await().atMost(3, TimeUnit.SECONDS).untilAsserted(()-> assertThat(observer.getQueue().poll(1, TimeUnit.SECONDS) instanceof ProcessingException, is(true)));
 		} finally {
 			agent.shutdown();
 		}
@@ -546,7 +552,7 @@ public class TestSysHub {
 		agent.setMessengerFormatterMapper(map);
 		try {
 			agent.processData();
-			assertThat(observer.getQueue().poll(1, TimeUnit.SECONDS) instanceof ProcessingException, is(true));
+			await().atMost(3, TimeUnit.SECONDS).untilAsserted(()-> assertThat(observer.getQueue().poll(1, TimeUnit.SECONDS) instanceof ProcessingException, is(true)));
 		} finally {
 			agent.shutdown();
 		}
@@ -563,7 +569,7 @@ public class TestSysHub {
 		agent.setMessengerFormatterMapper(map);
 		try {
 			agent.processData();
-			assertThat(observer.getQueue().poll(1, TimeUnit.SECONDS) instanceof ProcessingException, is(true));
+			await().atMost(3, TimeUnit.SECONDS).untilAsserted(()-> assertThat(observer.getQueue().poll(1, TimeUnit.SECONDS) instanceof ProcessingException, is(true)));
 		} finally {
 			agent.shutdown();
 		}
@@ -581,7 +587,7 @@ public class TestSysHub {
 
 		try {
 			agent.processData();
-			assertThat(observer.getQueue().poll(1, TimeUnit.SECONDS) instanceof ProcessingException, is(true));
+			await().atMost(3, TimeUnit.SECONDS).untilAsserted(()-> assertThat(observer.getQueue().poll(1, TimeUnit.SECONDS) instanceof ProcessingException, is(true)));
 		} finally {
 			agent.shutdown();
 		}
@@ -1517,5 +1523,57 @@ public class TestSysHub {
 		}
 
 		assertNull(holder.e);
+	}
+	
+	@Test
+	public void testSerialization() throws Exception {
+		Marshaller marshaller = new TestCacheManagerMarshaller().getMarshaller();
+				
+		Serializer serializer = CDI.current().select(Serializer.class).get();
+		
+		ProcessingLog processingLog = new ProcessingLog();
+		
+		AgentConfiguration agentConfiguration = new AgentConfiguration();
+		AgentModule messengerAgentModule = new AgentModule();
+		AgentModule formatterAgentModule = new AgentModule();
+		formatterAgentModule.getAgentConfigurationModuleMappings();
+		Message<?> messageStringImpl = new MessageStringImpl().appendBody("Test");
+		
+		processingLog.setAgentConfiguration(agentConfiguration);
+		processingLog.setAgentModule(messengerAgentModule);
+		processingLog.setError(false);
+		processingLog.setLogDt(new Timestamp(new Date().getTime()));
+		processingLog.setMessageData(serializer.toByteArray(messageStringImpl));
+		processingLog.setMid(UUID.randomUUID().toString());
+		processingLog.setRecipient("[Test]");
+		processingLog.setRetries(0);
+		processingLog.setStatusMessage("Success");
+		processingLog.setType(LogType.STORED);
+		
+		TransactionLog transactionLog = new TransactionLog();
+		transactionLog.setAction("Test");
+		transactionLog.setProcessingLog(processingLog);
+		transactionLog.setTranDt(new Date());
+		transactionLog.setUsername("Test");
+		
+		processingLog.getTransactionLogs().add(transactionLog);
+		
+		ByteBuffer buffer = marshaller.objectToBuffer(processingLog);
+		ProcessingLog processingLog2 = (ProcessingLog) marshaller.objectFromByteBuffer(buffer.getBuf());
+		
+		assertThat(processingLog2, is(processingLog));
+		
+		ResultExceptionLog resultExceptionLog = new ResultExceptionLog();
+		
+		resultExceptionLog.setAgentConfiguration(agentConfiguration);
+		resultExceptionLog.setAgentModule(formatterAgentModule);
+		resultExceptionLog.setExceptionData(serializer.toByteArray(new Exception("Error")));
+		resultExceptionLog.setExceptionDt(new Date());
+		resultExceptionLog.setExceptionType(Exception.class.getName());
+		resultExceptionLog.setResultData(serializer.toByteArray(new ResultImpl()));
+		
+		buffer = marshaller.objectToBuffer(resultExceptionLog);
+		ResultExceptionLog resultExceptionLog2 = (ResultExceptionLog) marshaller.objectFromByteBuffer(buffer.getBuf());
+		assertThat(resultExceptionLog2, is(resultExceptionLog));
 	}
 }
