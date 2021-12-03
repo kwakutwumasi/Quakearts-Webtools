@@ -27,8 +27,8 @@ public class BootOnLoadRenderer extends HtmlBasicRenderer {
 	private static final String BOOTSTRAP_ONLOAD = "com.quakearts.bootstrap.onload";
 
 	public static final String RESPOND = "<script src=\"@root/boot-services/js/respond.min.js\" type=\"text/javascript\"></script>\r\n";
-	public static final String JQUERY = "<script src=\"@root/boot-services/js/jquery-1.12.2.min.js\" type=\"text/javascript\"></script>\r\n";
-	public static final String JQUERYDEBUG = "<script src=\"@root/boot-services/js/jquery-1.12.2.js\" type=\"text/javascript\"></script>\r\n";
+	public static final String JQUERY = "<script src=\"@root/boot-services/js/jquery-1.12.4.min.js\" type=\"text/javascript\"></script>\r\n";
+	public static final String JQUERYDEBUG = "<script src=\"@root/boot-services/js/jquery-1.12.4.js\" type=\"text/javascript\"></script>\r\n";
 	public static final String JS = "<script src=\"@root/boot-services/js/bootstrap.min.js\" type=\"text/javascript\"></script>\r\n"+
 									"<script src=\"@root/boot-services/js/qaboot.min.js\" type=\"text/javascript\"></script>\r\n";
 	public static final String JSDEBUG = "<script src=\"@root/boot-services/js/bootstrap.js\" type=\"text/javascript\"></script>\r\n"+
