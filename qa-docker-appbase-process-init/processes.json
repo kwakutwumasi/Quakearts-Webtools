@@ -1,0 +1,21 @@
+{
+	"Test Init 1" : {
+		"workingDirectory":"D:\\test-init\\test-init-1",
+		"jarFile":"test-dockerinit-appbase-service-0.0.1.jar",
+		"properties":["test.server.name=Test Init 1"],
+		"arguments":["dontrun"],
+		"killTimeout": 30
+	},
+	"Test Init 2":{
+		"workingDirectory":"D:\\test-init\\test-init-2",
+		"jarFile":"test-dockerinit-appbase-service-0.0.1.jar",
+		"properties":["test.server.name=Test Init 2"],
+		"killTimeout": 30
+	},
+	"Test Init 3":{
+		"workingDirectory":"D:\\test-init\\test-init-3",
+		"jarFile":"test-dockerinit-appbase-service-0.0.1.jar",
+		"properties":["test.server.name=Test Init 3"],
+		"killTimeout": 30
+	}
+}
