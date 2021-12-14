@@ -31,7 +31,7 @@ public class AgentModuleFinder extends AbstractSysHubFinder {
 		searchString = "%"+searchString+"%";
 		return getDataStore().find(AgentModule.class).using(createCriteria().
 				requireAnyOfTheFollowing()
-					.property("agentClassName").mustBeLike(searchString)
+					.property("moduleClassName").mustBeLike(searchString)
 					.property("mappedModuleName").mustBeLike(searchString)
 					.property("moduleName").mustBeLike(searchString)
 				.finish()).thenList();
@@ -40,7 +40,7 @@ public class AgentModuleFinder extends AbstractSysHubFinder {
 	public List<AgentModule> filterMessageFormattersByText(String searchString) {
 		return getDataStore().find(AgentModule.class).using(createCriteria().
 				requireAnyOfTheFollowing()
-				.property("agentClassName").mustBeLike(searchString)
+				.property("moduleClassName").mustBeLike(searchString)
 				.property("mappedModuleName").mustBeLike(searchString)
 				.property("moduleName").mustBeLike(searchString)
 				.property("moduleType").mustBeEqualTo(ModuleType.FORMATTER)
