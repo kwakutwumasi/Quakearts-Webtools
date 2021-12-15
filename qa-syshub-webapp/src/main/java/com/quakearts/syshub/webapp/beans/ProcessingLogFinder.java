@@ -31,7 +31,7 @@ public class ProcessingLogFinder extends AbstractSysHubFinder {
 					.requireAnyOfTheFollowing()
 					.property("agentConfiguration.agentName").mustBeLike(searchString)
 					.property("agentModule.moduleName").mustBeLike(searchString)
-					.property("agentModule.agentClassName").mustBeLike(searchString)
+					.property("agentModule.moduleClassName").mustBeLike(searchString)
 					.property("mid").mustBeLike(searchString)
 					.property("recipient").mustBeLike(searchString)
 					.property("statusMessage").mustBeLike(searchString)
