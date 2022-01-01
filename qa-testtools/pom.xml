@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.quakearts.webtools.test</groupId>
 	<artifactId>qa-testtools</artifactId>
-	<version>1.0.3</version>
+	<version>1.0.4</version>
 	<name>Tool for Generating mock Object.</name>
 	<description>Uses a supplied configuration file to determine how to  generate random values</description>
 	<packaging>jar</packaging>

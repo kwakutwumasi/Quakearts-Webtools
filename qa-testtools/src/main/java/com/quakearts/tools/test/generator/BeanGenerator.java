@@ -30,8 +30,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.quakearts.tools.test.generator.Generator;
-import com.quakearts.tools.test.generator.GeneratorBase;
 import com.quakearts.tools.test.generator.annotation.CollectionType;
 import com.quakearts.tools.test.generator.annotation.NoGeneration;
 import com.quakearts.tools.test.generator.annotation.Size;

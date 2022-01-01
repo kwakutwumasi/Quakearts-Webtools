@@ -27,7 +27,7 @@ public final class GeneratorBootstrap {
 	private GeneratorBootstrap() {
 	}
 	
-	private static Boolean scanned = false;
+	private static boolean scanned = false;
 	private static final GeneratorBootstrap instance = new GeneratorBootstrap();
 	private static final ClassAnnotationScanningListener GENERATORANNOTATIONLISTENER = new GeneratesAnnotationScanningListener(),
 			USEGENERATORANNOTATIONLISTENER = new UseGeneratorClassAnnotationScanningListener(),
@@ -35,7 +35,7 @@ public final class GeneratorBootstrap {
 	private static Set<String> excludes = new HashSet<>();
 	
 	public static void init(){
-		synchronized (scanned) {
+		synchronized (GeneratorBootstrap.class) {
 			if(!scanned){
 				instance.bootstrapGenerators("com.quakearts.tools.test");
 				scanned=true;
