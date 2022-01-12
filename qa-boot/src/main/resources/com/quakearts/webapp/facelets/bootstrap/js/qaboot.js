@@ -498,6 +498,7 @@ qab.dc = function(idBase,iddiv){
 			this.hour = 0;
 			this.minute = 0;
 			this.second = 0;
+			$(this.chngsel).change();
 		},
 		"uc" : function() {
 			var hour = this.hour;
