@@ -312,13 +312,12 @@ public abstract class HttpClient implements Serializable {
 			if (!requiringOutputMethodsInclude(method) && !optionalOutputMethodsInlude(method)) {
 				throw new HttpClientException("Http Verb " + method + " cannot have a requestValue");
 			}
-			String contentLength = Integer.toString((requestValue.length() / 8));
-			connection.addRequestProperty("Content-Length", contentLength);
+			connection.addRequestProperty("Content-Length", Integer.toString(requestValue.length()));
 			connection.addRequestProperty("Content-Type", contentType);
 			connection.setDoOutput(true);
 			connection.getOutputStream().write(requestValue.getBytes(charset));
 			log.trace("Request Body:\n" + "Content-Type:{}\n" + "Content-Length:{}\n" + "Content:\n{}\n", contentType,
-					contentLength, requestValue);
+					requestValue.length(), requestValue);
 		}
 	}
 
