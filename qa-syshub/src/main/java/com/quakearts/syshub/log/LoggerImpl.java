@@ -69,10 +69,14 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 		logTimer.schedule(new TimerTask() {	
 			@Override
 			public void run() {
-				if(shutdown)
+				if(shutdown) {
+					log.trace("Scheduler has been shutdown");
 					return;
+				}
 				
+				log.trace("Scheduler Pushing logs...");
 				getInstance().pushLogsToDB();
+				log.trace("Scheduler Pushed logs.");
 			}
 		}, 0, 500);
 		
@@ -111,7 +115,7 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 		sortList.sort(logComparator);
 		
 		Queue<ProcessingLog> logQueue = new LinkedList<>(sortList);
-		
+		log.trace("Pushing {} new logs to database....", logQueue.size());
 		while (!logQueue.isEmpty() ) {
 			ProcessingLog notificationLog = logQueue.poll();
 			try {
@@ -123,6 +127,7 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 				getSaveLogCache().remove(notificationLog.getMid());
 			}
 		}
+		log.trace("Pushed new logs to database. {} logs remaining", logQueue.size());
 	
 		if(shutdown)
 			return;
@@ -132,6 +137,7 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 		
 		logQueue = new LinkedList<>(sortList);
 		
+		log.trace("Pushing {} log updates to database....", logQueue.size());
 		while(!logQueue.isEmpty()){
 			ProcessingLog notificationLog = logQueue.poll();
 			try {
@@ -143,6 +149,7 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 				getUpdateLogCache().remove(notificationLog.getMid());
 			}
 		}
+		log.trace("Pushed log updates to database. {} logs remaining", logQueue.size());
 		
 		if(shutdown)
 			return;
@@ -151,6 +158,7 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 		sortExceptionLogList.sort((r1,r2)-> r1.getExceptionDt().compareTo(r2.getExceptionDt()));
 		
 		Queue<ResultExceptionLog> exceptionQueue = new LinkedList<>(sortExceptionLogList);
+		log.trace("Pushing {} exceptions to database....", exceptionQueue.size());
 		while (!exceptionQueue.isEmpty()) {
 			ResultExceptionLog exceptionLog = exceptionQueue.poll();
 			try {
@@ -162,6 +170,7 @@ public class LoggerImpl implements MessageLogger, ResultExceptionLogger {
 				getResultExceptionLog().remove(exceptionLog.hashCodeAsString());
 			}
 		}
+		log.trace("Pushed exceptions to database. {} logs remaining", logQueue.size());
 	}
 	
 	private String dump(Serializable log) {
