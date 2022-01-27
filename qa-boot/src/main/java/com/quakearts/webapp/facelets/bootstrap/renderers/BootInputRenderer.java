@@ -25,11 +25,20 @@ import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.*
 
 public class BootInputRenderer extends HtmlBasicInputRenderer {
 
-    private static final Attribute[] INPUT_ATTRIBUTES =
+    private static final String MASKEDPASSWORD = "************************";
+	private static final Attribute[] INPUT_ATTRIBUTES =
           AttributeManager.getAttributes(AttributeManager.Key.INPUTTEXT);
     @Override
     public void encodeBegin(FacesContext context, UIComponent component)
           throws IOException {
+    }
+    
+    @Override
+    public void setSubmittedValue(UIComponent component, Object value) {
+    	if(MASKEDPASSWORD.equals(value))
+    		return;
+    	
+    	super.setSubmittedValue(component, value);
     }
 
     @Override
@@ -86,7 +95,11 @@ public class BootInputRenderer extends HtmlBasicInputRenderer {
         }
 
         if (currentValue != null) {
-            writer.writeAttribute("value", currentValue, "value");
+        	if(!"password".equals(type)) {
+        		writer.writeAttribute("value", currentValue, "value");
+        	} else {
+        		writer.writeAttribute("value", MASKEDPASSWORD, "value");
+        	}
         }
         
         writer.writeAttribute("class", "form-control"+(styleClass!=null?" "+styleClass:""), "styleClass");
