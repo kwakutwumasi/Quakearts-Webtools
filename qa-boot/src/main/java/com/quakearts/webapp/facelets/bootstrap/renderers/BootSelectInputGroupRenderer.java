@@ -80,24 +80,17 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 		
 		writer.endElement("span");
 		
-		writer.startElement("div", component);
-		writer.writeAttribute("class", "form-control form-select" +(componentDisabled?" disabled":"")+(autocompleteBehavior!=null 
-				&& autocompleteBehavior.hasSuggestion()?" form-select-focus":""), null);
+		String element = autocompleteBehavior!=null && !componentDisabled?"input":"span";
+		writer.startElement(element, component);
+		writer.writeAttribute("class", "form-control" +(componentDisabled?" disabled":""), null);
 
 		if(!componentDisabled){
 			writer.writeAttribute("onclick", "qab.ssidd(this)", null);
-			if(autocompleteBehavior==null){
-				writer.writeAttribute("onmouseenter", "qab.ssime(this,true)", null);
-				writer.writeAttribute("onmouseleave", "qab.ssime(this,false)", null);
-			}
 		}
 		String controlStyle = get("controlStyle", component);
 		writer.writeAttribute("style", "z-index: auto;"+(controlStyle!=null?"; "+controlStyle:""), null);
 		writer.writeAttribute("data-dropdown", id+"_drop", null);
 		
-		String element = autocompleteBehavior!=null && !componentDisabled?"input":"span";
-		writer.startElement(element, component);
-		writer.writeAttribute("class", "auto-complete", null);
 		if(autocompleteBehavior!=null && !componentDisabled){
 			autocompleteBehavior.loadFromComponent(component, context);
 			autocompleteBehavior.setId(id+"_display");
@@ -106,10 +99,7 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 					autocompleteBehavior.getScript(
 							ClientBehaviorContext.createClientBehaviorContext(context, component, "keyup", id, null)),
 					null);
-			writer.writeAttribute("onfocus", "$(this).select(); qab.ssime(this,true,event);", null);
-			writer.writeAttribute("onblur", "qab.ssime(this,false,event);", null);
-			writer.writeAttribute("onmouseenter", "qab.ssime(this,true,event)", null);
-			writer.writeAttribute("onmouseleave", "qab.ssime(this,false,event)", null);
+			writer.writeAttribute("onfocus", "$(this).select();", null);
 			writer.writeAttribute("name", id+"_display", null);
 		}
 		
@@ -120,13 +110,14 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 			writer.writeAttribute("value", (autocompleteBehavior.hasSuggestion()
 					? autocompleteBehavior.getSuggest() : (display != null ? display : "")), null);
 		}
-		writer.endElement(element);
 		
 		writer.write("\n");
 		writer.startElement("span", component);
 		writer.writeAttribute("class", "caret input-caret", null);
 		writer.write(" ");
 		writer.endElement("span");
+		writer.write("\n");
+		writer.endElement(element);
 		writer.write("\n");
 	
 		writer.startElement("div", component);
@@ -143,8 +134,6 @@ public class BootSelectInputGroupRenderer extends BootSelectMenuRenderer {
 			writer.write(holder.unselectedBuffer);
 		}
 		
-		writer.endElement("div");
-		writer.write("\n");
 		writer.endElement("div");
 		writer.write("\n");
 				

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://xmlns.jcp.org/jsf/html"
+	  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	  xmlns:f="http://xmlns.jcp.org/jsf/core"
+	  xmlns:c="http://quakearts.com/2.0/common"
+	  xmlns:b="http://quakearts.com/2.0/boot"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<h:head>
+	<meta charset="ISO-8859-1" />
+	<title>The Greeting App</title>
+<ui:insert name="top"></ui:insert>
+<b:resource library="scrollbars" name="jquery.mCustomScrollbar.concat.min.js" type="script"></b:resource>
+<b:resource library="scrollbars" name="jquery.mCustomScrollbar.min.css" type="css"></b:resource>
+</h:head>
+<h:body>
+	<b:ajaxLoader mainloaderimage="../resources/images/loading-squares.gif"
+		miniloaderimage="../resources/images/login-loading.GIF"
+		overlayloaderimage="../resources/images/loading-small.svg"
+		startTimeout="1" />
+	<b:sideMenu styleClass="hidden-xs hidden-sm">
+		<b:nav style="margin-top: 60px">
+			<h:outputLink value="https://www.quakearts.com">
+				<b:fa value="globe"></b:fa>QuakeArts
+			</h:outputLink>
+			<h:outputLink value="https://github.com/kwakutwumasi">
+				<b:fa value="github"></b:fa>Git Hub
+			</h:outputLink>
+			<b:menu value="Blog">
+				<h:outputLink value="https://blog.quakearts.com">
+					<b:fa value="list"></b:fa>Blog
+				</h:outputLink>			
+			</b:menu>
+			<b:menu value="Icon Showcase">
+				<h:outputLink value="/icons.html">
+					<b:fa value="th"></b:fa>Icon Showcase
+				</h:outputLink>			
+			</b:menu>
+		</b:nav>
+	</b:sideMenu>
+	<b:container fluid="true" id="container">
+		<b:navbar fluid="true" responsive="true" type="inverse" position="fixed-top">
+			<f:facet name="header"></f:facet>
+			<b:nav>
+				<h:outputLink value="https://gmail.com">
+					<b:glyph value="send"></b:glyph> GMail
+				</h:outputLink>
+				<h:outputLink value="https://instagram.com">
+					<b:fa value="instagram"></b:fa> Instagram
+				</h:outputLink>
+				<b:menu value="Others">
+					<h:outputLink value="https://facebook.com">
+						<b:fa value="facebook"></b:fa> Facebook 
+					</h:outputLink>			
+				</b:menu>
+			</b:nav>
+			<b:form>
+				<b:formGroup>
+					<b:button actionListener="#{greeting.reset}">
+						<b:glyph value="refresh"></b:glyph>
+					</b:button>
+				</b:formGroup>
+			</b:form>
+		</b:navbar>
+		<ui:insert name="content"></ui:insert>
+	</b:container>
+	<b:script id="script">
+var refresh = function(){
+	location.reload();
+};
+	</b:script>
+</h:body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://xmlns.jcp.org/jsf/html"
+	  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	  xmlns:f="http://xmlns.jcp.org/jsf/core"
+	  xmlns:c="http://quakearts.com/2.0/common"
+	  xmlns:b="http://quakearts.com/2.0/boot"
+	  xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition template="/template.xhtml">
+	<ui:define name="content">
+		<b:panel popup="true">
+			<f:facet name="header">Welcome</f:facet>
+			This app is a demo of the QA-Boot Library, an implementation of Bootstrap 3 for JSF 2.2
+			To view the JSF source code go to <a href="greeting.xhtml">greeting.xhtml</a>
+		</b:panel>		
+		<b:row style="margin-top:80px;" id="mainComp">
+			<h:form>
+				<b:column xs="10" lg="2" offsetlg="1">
+					<b:label value="Nav pills stacked" type="default"></b:label>
+					<br />
+					<b:nav type="pills" stacked="true">
+						<h:commandLink p:data-overlay-target="#{panelsComp.clientId}">
+							<f:ajax onevent="#{loader.overlayAjaxLoader}" 
+								onerror="refresh"
+								render="breadCrumbs panels messages"></f:ajax>
+								Home
+							<f:setPropertyActionListener value="#{null}" 
+								target="#{greeting.state}">
+							</f:setPropertyActionListener>
+						</h:commandLink>
+						<h:commandLink p:data-overlay-target="#{panelsComp.clientId}">
+							<f:ajax onevent="#{loader.overlayAjaxLoader}" 
+								onerror="refresh"
+								render="breadCrumbs panels messages"></f:ajax>
+								Settings
+							<f:setPropertyActionListener value="setting" 
+								target="#{greeting.state}">
+							</f:setPropertyActionListener>
+						</h:commandLink>
+						<h:commandLink p:data-overlay-target="#{panelsComp.clientId}">
+							<f:ajax onevent="#{loader.overlayAjaxLoader}" 
+								onerror="refresh"
+								render="breadCrumbs panels messages"></f:ajax>
+								Language Upload
+							<f:setPropertyActionListener value="languageUpload" 
+								target="#{greeting.state}">
+							</f:setPropertyActionListener>
+						</h:commandLink>
+						<h:commandLink p:data-overlay-target="#{panelsComp.clientId}">
+							<f:ajax onevent="#{loader.overlayAjaxLoader}" 
+								onerror="refresh"
+								render="breadCrumbs panels messages"></f:ajax>
+								Search
+							<f:setPropertyActionListener value="search" 
+								target="#{greeting.state}">
+							</f:setPropertyActionListener>
+						</h:commandLink>
+					</b:nav>
+				</b:column>
+				<b:column xs="10" lg="3" id="panels" binding="#{panelsComp}">
+					<b:messages showDetail="true" id="messages" dismissible="true"></b:messages>
+					<div>
+						<b:label value="Boot Breadcrumbs:" type="success"></b:label><br />
+						<b:breadCrumb style="font-size:8px;" id="breadCrumbsComp">
+							<b:breadCrumbItem activate="#{empty greeting.state}" id="breadCrumbs">
+								<h:commandLink value="Home">
+									<f:setPropertyActionListener target="#{greeting.state}"
+												value="#{null}"></f:setPropertyActionListener>
+									<f:ajax onerror="refresh" 
+									render="breadCrumbs panels messages"
+									onevent="#{loader.mainAjaxLoader}"></f:ajax>
+								</h:commandLink>
+								<b:breadCrumbItem label="Settings" activate="#{greeting.state eq 'setting'}">
+								</b:breadCrumbItem>
+								<b:breadCrumbItem label="Language Upload" activate="#{greeting.state eq 'languageUpload'}">
+								</b:breadCrumbItem>
+								<b:breadCrumbItem label="Search" activate="#{greeting.state eq 'search'}">
+								</b:breadCrumbItem>
+							</b:breadCrumbItem>
+						</b:breadCrumb>
+					</div>
+					<b:label value="Boot Panel:" type="info"></b:label><br />
+					<h:panelGroup rendered="#{empty greeting.state}">
+						<b:panel id="greetingComp" binding="#{greetingComp}">
+							<h:outputText styleClass="h1" value="#{greeting.value}"></h:outputText>
+						</b:panel>
+						<b:panel id="greetingForm">
+							<f:facet name="header">
+								Greeting Settings
+							</f:facet>
+							<b:label value="Boot Form:" type="warning"></b:label><br />
+							<b:formGroup>
+								<label>Name</label>
+								<b:inputText value="#{greeting.name}" id="name">
+									<f:facet name="label">
+										<b:fa value="user-o"></b:fa>
+									</f:facet>
+								</b:inputText>
+							</b:formGroup>
+							<b:formGroup styleClass="#{loader.overlayClass}">
+								<label>Name (SelectInputGroup Auto-Complete)</label>
+								<b:selectOneInputGroup value="#{greeting.name}" id="nameInputGroup"
+									suggestion="#{greeting.suggestion}"
+									listener="#{greeting.filter}"
+									autocomplete="true"
+									onevent="#{loader.overlayAjaxLoader}">
+									<f:facet name="label">
+										<b:fa value="user-o"></b:fa>
+									</f:facet>
+									<f:selectItems value="#{greeting.names}"></f:selectItems>
+								</b:selectOneInputGroup>
+							</b:formGroup>
+							<b:formGroup styleClass="#{loader.overlayClass}">
+								<label>Name (SelectInputGroup Drop Down)</label>
+								<b:selectOneInputGroup value="#{greeting.name}" id="nameInputGroupDropDown">
+									<f:facet name="label">
+										<b:fa value="user-o"></b:fa>
+									</f:facet>
+									<f:selectItem itemValue="John Ababio" />
+									<f:selectItem itemValue="William Adekorafo" />
+									<f:selectItem itemValue="James Baako" />
+									<f:selectItem itemValue="Charles Adjo" />
+									<f:selectItem itemValue="George Baba" />
+									<f:selectItem itemValue="Frank Afi" />
+								</b:selectOneInputGroup>
+							</b:formGroup>
+							<b:formGroup styleClass="#{loader.overlayClass}">
+								<label>Name (SelectMenu Auto-Complete)</label>
+								<b:selectOneMenu value="#{greeting.name}" id="nameOneInput"
+									suggestion="#{greeting.suggestion}"
+									listener="#{greeting.filter}"
+									autocomplete="true"
+									onevent="#{loader.overlayAjaxLoader}">
+									<f:facet name="label">
+										<b:fa value="user-o"></b:fa>
+									</f:facet>
+									<f:selectItems value="#{greeting.names}"></f:selectItems>
+								</b:selectOneMenu>
+							</b:formGroup>
+							<b:formGroup styleClass="#{loader.overlayClass}">
+								<label>Name (SelectOneInput Auto-Complete)</label>
+								<b:selectOneInput value="#{greeting.name}" id="nameMenu"
+									suggestion="#{greeting.suggestion}"
+									listener="#{greeting.filter}"
+									autocomplete="true"
+									onevent="#{loader.overlayAjaxLoader}">
+									<f:facet name="label">
+										<b:fa value="user-o"></b:fa>
+									</f:facet>
+									<f:selectItems value="#{greeting.names}"></f:selectItems>
+								</b:selectOneInput>
+							</b:formGroup>
+							<b:formGroup styleClass="#{loader.overlayClass}">
+								<label>Name (SelectOneInput Drop Down)</label>
+								<b:selectOneInput value="#{greeting.name}" id="nameMenuDropDown">
+									<f:facet name="label">
+										<b:fa value="user-o"></b:fa>
+									</f:facet>
+									<f:selectItem itemValue="John Ababio" />
+									<f:selectItem itemValue="William Adekorafo" />
+									<f:selectItem itemValue="James Baako" />
+									<f:selectItem itemValue="Charles Adjo" />
+									<f:selectItem itemValue="George Baba" />
+									<f:selectItem itemValue="Frank Afi" />
+								</b:selectOneInput>
+							</b:formGroup>
+							<b:formGroup>
+								<label>Presents</label>
+								<div>
+									<b:buttonGroup>
+										<b:button>
+											<b:glyph value="backward"></b:glyph>
+											<f:ajax listener="#{greeting.decrement}" 
+												onerror="refresh"
+												onevent="#{loader.miniAjaxLoader}"
+												render="presentsComp messages"></f:ajax>
+										</b:button>
+										<b:button disabled="true" id="presentsComp">
+											<b:fa value="birthday-cake"></b:fa>
+											#{greeting.numberOfPresents}
+										</b:button>
+										<b:button>
+											<b:glyph value="forward"></b:glyph>
+											<f:ajax listener="#{greeting.increment}"
+												onerror="refresh"
+											 	onevent="#{loader.miniAjaxLoader}" 
+												render="presentsComp messages"></f:ajax>
+										</b:button>
+									</b:buttonGroup>
+								</div>
+							</b:formGroup>
+							<b:formGroup>
+								<label>Birth Date</label>
+								<b:date value="#{greeting.birthDate}" min="10" id="birthdate">
+									<f:convertDateTime pattern="dd/MM/yyyy"></f:convertDateTime>
+								</b:date>
+							</b:formGroup>
+							<b:formGroup>
+								<b:button data-overlay-target="#{greetingComp.clientId}">
+									<b:glyph value="upload"></b:glyph>
+									<f:ajax listener="#{greeting.updateGreeting}" 
+										onerror="refresh"
+										onevent="#{loader.overlayAjaxLoader}"
+										render="greetingComp messages" 
+										execute="@this name birthdate"></f:ajax>
+								</b:button>
+							</b:formGroup>
+						</b:panel>
+					</h:panelGroup>
+					<b:panel rendered="#{greeting.state eq 'setting'}">
+						<f:facet name="header">
+							Advanced Settings
+						</f:facet>
+						<b:formGroup>
+							<label>Language</label>
+							<b:selectOneInputGroup value="#{greeting.language}"
+								id="greetingLanguage">
+								<f:facet name="label">
+									<b:glyph value="globe"></b:glyph>
+								</f:facet>
+								<f:selectItems value="#{greeting.languages}"
+									itemValue="#{langGroup[1]}"
+									var="langGroup">
+									<f:facet name="label">
+										<img src="/resources/images/#{langGroup[1]}.png" style="height: 1.5em;margin-right: 1em;" />#{langGroup[0]}
+									</f:facet>
+								</f:selectItems>
+							</b:selectOneInputGroup>
+						</b:formGroup>
+						<b:formGroup>
+							<label>Greeting Type</label>
+							<b:selectOneInput value="#{greeting.greetingType}" 
+								id="greetingType">
+								<f:selectItems value="#{greeting.greetingTypes}">
+								</f:selectItems>
+							</b:selectOneInput>
+						</b:formGroup>
+						<b:formGroup>
+							<b:button data-overlay-target="#{breadCrumbsComp.clientId}">
+								<b:flaticon value="settings"></b:flaticon>
+								<f:ajax listener="#{greeting.updateLanguage}" 
+									onevent="#{loader.miniAjaxLoader}"
+									onerror="refresh"
+									execute="@this greetingType greetingLanguage"
+									render="messages"></f:ajax>
+							</b:button>
+						</b:formGroup>
+						<b:formGroup>
+							<label>Theme</label>
+							<b:selectOneListbox value="#{greeting.theme}" mainClass="fill100">
+								<f:selectItems value="#{greeting.availableThemes}" var="val">
+									<f:facet name="label">
+										<b:glyph value="modal-window"></b:glyph> #{val}
+									</f:facet>
+								</f:selectItems>
+							</b:selectOneListbox>
+						</b:formGroup>
+						<b:formGroup>
+							<b:button displayType="primary">
+								<c:executeAction listener="#{greeting.changeTheme}">
+								</c:executeAction>
+								<b:glyph value="refresh"></b:glyph>
+							</b:button>
+						</b:formGroup>
+						<b:formGroup>
+							<label>Carousel Images</label>
+							<b:selectManyListbox mainClass="#{loader.overlayClass} fill100"
+								value="#{greeting.filterImages}" 
+								data-overlay-target="#{carouselColumnComp.clientId}">
+								<f:selectItems value="#{greeting.images}" var="image">
+									<f:facet name="label">
+										<img src="/resources/images/#{image}" style="height: 2em" />
+									</f:facet>
+								</f:selectItems>
+								<f:ajax onevent="#{loader.overlayAjaxLoader}"
+									onerror="refresh" 
+									render="carouselColumn">
+								</f:ajax>
+							</b:selectManyListbox>
+						</b:formGroup>
+					</b:panel>
+					<b:panel rendered="#{greeting.state eq 'languageUpload'}">
+						<f:facet name="header">
+							Upload Language Tags
+						</f:facet>
+						<b:formGroup>
+							<label>Available Language Tags</label>
+							<b:selectOneMenu id="availableLanguageTags"
+								value="#{greeting.selectedLanguageTag}"
+								label="Select a language to upload"
+								buttonClass="btn-block"
+								mainClass="fill100">
+								<f:selectItems value="#{greeting.availableLanguageTags}"
+									itemValue="#{langGroup[1]}"
+									var="langGroup">
+									<f:facet name="label">
+										<img src="/resources/images/#{langGroup[1]}.png" style="height: 1.5em;margin-right: 1em;" />#{langGroup[0]}
+									</f:facet>
+								</f:selectItems>
+							</b:selectOneMenu>
+						</b:formGroup>
+						<label>Upload File</label>
+						<b:fileinput accept=".properties" execute="availableLanguageTags"
+							render="messages" onerror="refresh" allowMultiple="true"
+							name="#{greeting.messageBundleFileName}"
+							data="#{greeting.messageBundleBytes}">
+							<c:executeAction listener="#{greeting.addGreetingBundle}">
+							</c:executeAction>
+						</b:fileinput>
+					</b:panel>
+					<b:panel rendered="#{greeting.state eq 'search'}">
+						<f:facet name="header">
+							Search Action Logs
+						</f:facet>
+						<b:label value="Boot Datatable:" type="danger"></b:label><br />
+						<b:pagination data-overlay-target="#{table.clientId}"
+							onevent="#{loader.overlayAjaxLoader}"
+							for="#{table}" maxPages="3" pageSize="10">
+						</b:pagination>
+						<b:dataTable binding="#{table}" id="table" var="actionLog" value="#{greeting.actionLogs}">
+							<h:column>
+								<f:facet name="header">
+									Date
+								</f:facet>
+								<h:outputText value="#{actionLog.actionDate}">
+									<f:convertDateTime pattern="ddd MMM yyyy HH:mm">
+									</f:convertDateTime>
+								</h:outputText>
+							</h:column>
+							<h:column>
+								<f:facet name="header">
+									Action
+								</f:facet>
+								<h:outputText value="#{actionLog.action}"></h:outputText>
+							</h:column>
+							<h:column>
+								<f:facet name="header">
+									Host
+								</f:facet>
+								<h:outputText value="#{actionLog.actionHost}"></h:outputText>
+							</h:column>
+						</b:dataTable>
+						<b:formGroup>
+							<label>Action Filter</label>
+							<b:selectManyMenu id="actions" label="Select filter to use"
+								mainClass="fill100" buttonClass="btn-block"
+								value="#{greeting.filterSelectedActions}">
+								<f:selectItems value="#{greeting.actions}" var="action"
+									itemValue="#{action[0]}"
+									itemLabel="#{action[1]}">
+								</f:selectItems>
+							</b:selectManyMenu>
+						</b:formGroup>
+						<b:formGroup>
+							<b:button data-overlay-target="#{table.clientId}">
+								<b:glyph value="search"></b:glyph>
+								<f:ajax listener="#{greeting.searchActionsWithFilter}"
+									onevent="#{loader.overlayAjaxLoader}" onerror="refresh"
+									render="table messages" execute="@this actions">
+								</f:ajax>
+							</b:button>
+							<b:button data-overlay-target="#{table.clientId}">
+								<b:glyph value="list"></b:glyph>
+								<f:ajax listener="#{greeting.showAllActions}"
+									onevent="#{loader.overlayAjaxLoader}" onerror="refresh"
+									render="table messages" execute="@this actions">
+								</f:ajax>
+							</b:button>
+						</b:formGroup>						
+					</b:panel>
+				</b:column>
+				<b:column id="carouselColumn" xs="12" lg="3"
+					binding="#{carouselColumnComp}">
+					<b:label value="images" type="primary"></b:label>
+					<div id="myCarousel" class="carousel slide" data-ride="carousel">
+						<!-- Indicators -->
+						<ol class="carousel-indicators">
+							<ui:repeat var="image" value="#{greeting.filterImages}" varStatus="status">
+								<li data-target="#myCarousel" 
+									data-slide-to="#{status.step}" 
+									class="#{status.first?'active':''}">
+								</li>
+							</ui:repeat>
+						</ol>
+
+						<!-- Wrapper for slides -->
+						<div class="carousel-inner">
+							<ui:repeat var="image" value="#{greeting.filterImages}" varStatus="status">
+								<div class="item #{status.first?'active':''}">
+									<img src="/resources/images/#{image}" alt="#{image}" class="img-rounded" />
+								</div>
+							</ui:repeat>
+						</div>
+
+						<!-- Left and right controls -->
+						<a class="left carousel-control" href="#myCarousel"
+							data-slide="prev">
+							<span class="glyphicon glyphicon-chevron-left"></span>
+							<span class="sr-only"></span>
+						</a>
+						<a class="right carousel-control" href="#myCarousel"
+							data-slide="next"> 
+							<span class="glyphicon glyphicon-chevron-right"></span> 
+							<span class="sr-only"></span>
+						</a>
+					</div>
+				</b:column>
+			</h:form>
+		</b:row>
+	</ui:define>
+</ui:composition>
+</html>

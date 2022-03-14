@@ -24,9 +24,6 @@ qab.mlis = function (obj){
 };
 
 qab.ssdd = function(obj){
-	if($(obj).hasClass("disabled"))
-		return;
-
 	var drop = $('#'+$(obj).data('dropdown'));
 	
 	if(drop.is(':hidden') && drop.find('a').length>0)	
@@ -52,22 +49,6 @@ qab.ssidd =function(obj){
 		drop.slideDown('slow');
 	else
 		drop.slideUp('fast');	
-};
-
-qab.ssime = function(obj,s,e){
-	var fc = $(obj);
-	if(!fc.hasClass('form-control')){
-		if(fc.is(":focus") && e.type!="blur")
-			return;
-		
-		fc = fc.parent();	
-	}
-	
-	if(s){
-		fc.addClass('form-select-focus');
-	} else {
-		fc.removeClass('form-select-focus');
-	}
 };
 
 qab.olis = function (obj){
@@ -105,6 +86,7 @@ qab.olis = function (obj){
 	}
 	//trigger change event
 	$('#'+ipid+"_change").change();
+	select.parent().slideUp('fast');
 };
 
 qab.pp = function(obj){

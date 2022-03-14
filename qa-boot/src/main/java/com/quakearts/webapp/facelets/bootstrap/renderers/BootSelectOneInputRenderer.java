@@ -64,24 +64,18 @@ public class BootSelectOneInputRenderer extends BootSelectInputGroupRenderer {
 		writer.writeAttribute("id", id+"_group", null);
 		
 		String wrapClass = get("wrapClass", component);
-		writer.writeAttribute("class","select-one-input form-control"+(wrapClass!=null?" "+wrapClass:"")
-				+ (componentDisabled ? " disabled" : "")+(autocompleteBehavior!=null 
-				&& autocompleteBehavior.hasSuggestion()?" form-select-focus":""), null);
+		writer.writeAttribute("class","select-one-input"+(wrapClass!=null?" "+wrapClass:""), null);
 		String wrapStyle = get("wrapStyle", component);
 		if(wrapStyle!=null)
 			writer.writeAttribute("style", wrapStyle, null);
-		writer.writeAttribute("data-dropdown", id+"_drop", null);
-		if(!componentDisabled){
-			writer.writeAttribute("onclick","qab.ssdd(this)", null);
-			if(autocompleteBehavior==null){
-				writer.writeAttribute("onmouseenter", "qab.ssime(this,true)", null);
-				writer.writeAttribute("onmouseleave", "qab.ssime(this,false)", null);
-			}
-		}
 		
 		String element = autocompleteBehavior!=null && !componentDisabled?"input":"span";
 		writer.startElement(element, component);
-		writer.writeAttribute("class", "auto-complete", null);
+		writer.writeAttribute("class", "form-control", null);
+		writer.writeAttribute("data-dropdown", id+"_drop", null);
+		if(!componentDisabled){
+			writer.writeAttribute("onclick","qab.ssdd(this)", null);
+		}
 		if(autocompleteBehavior!=null && !componentDisabled){
 			autocompleteBehavior.loadFromComponent(component, context);
 			autocompleteBehavior.setId(id+"_display");
@@ -90,10 +84,7 @@ public class BootSelectOneInputRenderer extends BootSelectInputGroupRenderer {
 					autocompleteBehavior.getScript(
 							ClientBehaviorContext.createClientBehaviorContext(context, component, "keyup", id, null)),
 					null);
-			writer.writeAttribute("onfocus", "$(this).select(); qab.ssime(this,true,event);", null);
-			writer.writeAttribute("onblur", "qab.ssime(this,false,event);", null);
-			writer.writeAttribute("onmouseenter", "qab.ssime(this,true,event)", null);
-			writer.writeAttribute("onmouseleave", "qab.ssime(this,false,event)", null);
+			writer.writeAttribute("onfocus", "$(this).select();", null);
 			writer.writeAttribute("name", id+"_display", null);
 		}
 		
