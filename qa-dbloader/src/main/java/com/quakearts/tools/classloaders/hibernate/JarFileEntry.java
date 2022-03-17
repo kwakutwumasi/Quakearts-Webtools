@@ -34,7 +34,7 @@ public class JarFileEntry implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = -1662876000076587796L;
 	@Id
-	@Column(name="entry_name", length = 100)
+	@Column(name="entry_name", length = 1024)
 	private String id;
 	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="jid", nullable=false, foreignKey=@ForeignKey(ConstraintMode.CONSTRAINT))
