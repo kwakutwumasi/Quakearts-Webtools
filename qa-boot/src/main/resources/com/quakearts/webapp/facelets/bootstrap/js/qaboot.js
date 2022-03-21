@@ -51,14 +51,14 @@ qab.ssidd =function(obj){
 		drop.slideUp('fast');	
 };
 
-qab.olis = function (obj){
+qab.olis = function (obj, coc){
 	if($(obj).hasClass("disabled"))
 		return;
 
 	var select = $(obj);
 	var ipid = select.data('dropdown-input');
 	var val = select.data('item-value');
-	var dspid = select.data('display-span');
+	var dspid = select.data('display');
 	
 	select.parent().children().each(function(){
 		if($(this).hasClass('active'))
@@ -86,7 +86,8 @@ qab.olis = function (obj){
 	}
 	//trigger change event
 	$('#'+ipid+"_change").change();
-	select.parent().slideUp('fast');
+	if(coc)
+		select.parent().slideUp('fast');
 };
 
 qab.pp = function(obj){

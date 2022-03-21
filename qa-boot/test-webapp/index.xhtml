@@ -164,6 +164,18 @@
 									<f:selectItem itemValue="Frank Afi" />
 								</b:selectOneInput>
 							</b:formGroup>
+							<b:formGroup styleClass="#{loader.overlayClass}">
+								<label id="product_label">Name (SelectOneListbox)</label>
+								<b:selectOneListbox value="#{greeting.name}" id="nameOneListbox">
+									<f:selectItem itemValue="John Ababio" />
+									<f:selectItem itemValue="William Adekorafo" />
+									<f:selectItem itemValue="James Baako" />
+									<f:selectItem itemValue="Charles Adjo" />
+									<f:selectItem itemValue="George Baba" />
+									<f:selectItem itemValue="Frank Afi" />
+									<f:ajax onevent="#{loader.overlayAjaxLoader}"></f:ajax>
+								</b:selectOneListbox>
+							</b:formGroup>
 							<b:formGroup>
 								<label>Presents</label>
 								<div>

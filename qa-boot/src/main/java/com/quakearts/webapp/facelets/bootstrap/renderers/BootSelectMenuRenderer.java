@@ -267,7 +267,7 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 						groupClass = get("groupClass", component),
 						groupStyle = get("groupStyle", component);
 				behavior.loadFromComponent(component, context);
-				behavior.setId(id+"_filter");
+				behavior.setId(id+"_display");
 				
 				writer.startElement("div", component);
 				writer.writeAttribute("class", "btn-group"
@@ -285,8 +285,8 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 				if(autoStyle!=null)
 					writer.writeAttribute("style", autoStyle, null);
 				
-				writer.writeAttribute("id", id+"_filter", null);
-				writer.writeAttribute("name", id+"_filter", null);
+				writer.writeAttribute("id", id+"_display", null);
+				writer.writeAttribute("name", id+"_display", null);
 				if(componentDisabled)
 					writer.writeAttribute("disabled", "disabled", null);
 				else {
@@ -458,7 +458,8 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 		ResponseWriter selectedWriter = context.getResponseWriter().cloneWithWriter(selectedCharWriter);
 		ResponseWriter unselectedWriter = context.getResponseWriter().cloneWithWriter(unselectedCharWriter);
 		boolean isManySelect = component instanceof BootSelectManyMenu || component instanceof BootSelectManyListbox;
-	
+		boolean isDropDown = component instanceof BootSelectManyMenu || component instanceof BootSelectOneMenu;
+
 		Converter converter = null;
 		if (component instanceof ValueHolder) {
 			converter = ((ValueHolder) component).getConverter();
@@ -481,12 +482,12 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 						.getSelectItems();
 				for (int i = 0; i < itemsArray.length; ++i){
 					renderOption(context, component, converter, itemsArray[i], currentSelections, submittedValues,
-							optionInfo, values, isManySelect, selectedWriter, unselectedWriter, index);
+							optionInfo, values, isManySelect, isDropDown, selectedWriter, unselectedWriter, index);
 					index++;
 				}
 			} else {
 				renderOption(context, component, converter, item, currentSelections, submittedValues, optionInfo,
-						values, isManySelect, selectedWriter, unselectedWriter, index);
+						values, isManySelect, isDropDown, selectedWriter, unselectedWriter, index);
 				index++;
 			}
 		}
@@ -510,7 +511,7 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 	protected boolean renderOption(FacesContext context, UIComponent component,
 			Converter converter, SelectItem curItem, Object currentSelections,
 			Object[] submittedValues, OptionComponentInfo optionInfo,
-			Map<String, String> values, boolean isManySelect, 
+			Map<String, String> values, boolean isManySelect, boolean isDropDown, 
 			ResponseWriter selectedWriter, ResponseWriter unselectedWriter, int index)
 			throws IOException {
 	
@@ -547,12 +548,6 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 			labelClass = optionInfo.getEnabledClass();
 		}	
 
-		String function;
-		if(isManySelect)
-			function="qab.mlis(this)";
-		else
-			function="qab.olis(this)";
-
 		ResponseWriter writer = isSelected? selectedWriter:unselectedWriter;
 		
 		writer.startElement("a", component);
@@ -563,7 +558,19 @@ public class BootSelectMenuRenderer extends HtmlBasicInputRenderer {
 		if (!curItem.isDisabled()){
 			writer.writeAttribute("data-dropdown-input", optionInfo.getId(), null);
 			writer.writeAttribute("data-item-value", valueString, null);
-			writer.writeAttribute("onclick", function, null);
+			String function;
+			if(isManySelect) {
+				function="qab.mlis(this)";
+			} else {
+				if(isDropDown) {
+					writer.writeAttribute("data-display", optionInfo.getId()+"_display", null);
+					function="qab.olis(this, true)";
+				} else {
+					function="qab.olis(this, false)";
+				}
+			}
+			
+			writer.writeAttribute("onclick", function, null);			
 		}
 			
 		String label = curItem.getLabel();
