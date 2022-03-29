@@ -107,6 +107,7 @@ public class CacheManagerImpl implements CacheManager {
 		whiteList.add("java.lang.*");
 		whiteList.add("java.util.*");
 		whiteList.add("java.sql.*");
+		whiteList.add("org.hibernate.collection.*");
 		ServiceLoader<CacheWhiteListProvider> whiteListProviders = ServiceLoader.load(CacheWhiteListProvider.class);
 		Iterator<CacheWhiteListProvider> whiteListProvidersIterators = whiteListProviders.iterator();
 		while (whiteListProvidersIterators.hasNext()) {
