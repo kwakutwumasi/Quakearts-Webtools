@@ -67,9 +67,7 @@ public class ClasspathScanner extends URLResourceScanner {
 	@Override
     protected final URL[] findResources() {
 		Set<URI> uris = new HashSet<>();
-        URI[] ret = getUrlsForCurrentClasspath();
-        uris.addAll(Arrays.asList(ret));
-        ret = getUrlsForSystemClasspath();
+        URI[] ret = getUrlsForSystemClasspath();
         uris.addAll(Arrays.asList(ret));
         return uris.stream().map(this::toUrl)
         		.collect(Collectors.toList()).toArray(new URL[0]);
@@ -128,29 +126,6 @@ public class ClasspathScanner extends URLResourceScanner {
      */
     public final void setFilter(Filter filter) {
         this.filter = filter;
-    }
-
-    /**Looks for {@link URI}s from the implementations of {@link URLClassLoader} in the current class loader hierarchy.
-     * @return an array of {@link URI}s to iterate over
-     */
-    private URI[] getUrlsForCurrentClasspath() {
-        Set<URI> list = new HashSet<>();
-
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        while (loader != null) {
-            if (loader instanceof URLClassLoader) {
-                URL[] urlArray = ((URLClassLoader) loader).getURLs();
-                for(URL url:urlArray) {
-					try {
-						list.add(url.toURI());
-					} catch (URISyntaxException e) {
-						throw new ScannerRuntimeException(e);
-					}
-                }
-            }
-            loader = loader.getParent();
-        }
-        return list.toArray(new URI[list.size()]);
     }
 
     /**Looks for {@link URI}s from the system class path
