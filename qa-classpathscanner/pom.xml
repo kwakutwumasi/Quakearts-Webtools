@@ -7,7 +7,7 @@
 		<version>2.0.0</version>
 		<relativePath>../qa-allwebtools</relativePath>
 	</parent>
-1	<artifactId>qa-classpathscanner</artifactId>
+	<artifactId>qa-classpathscanner</artifactId>
 	<version>2.0.0</version>
 	<name>A classpath annotation scanner</name>
 	<description>A classpath annotation scanner for bootstrapping annotated classes</description>
