@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.quakearts.tools.test.generator.bootstrap;
 
+import java.lang.reflect.InvocationTargetException;
+
 import com.quakearts.classannotationscanner.listener.ClassAnnotationScanningListener;
 import com.quakearts.tools.test.generator.annotation.CollectionFactoryFor;
 import com.quakearts.tools.test.generator.bean.collections.CollectionFactory;
@@ -33,7 +35,7 @@ public final class CollectionFactoryAnnotationListener implements ClassAnnotatio
 			Class<?> factoryClass = Class.forName(className);
 			
 			if(CollectionFactory.class.isAssignableFrom(factoryClass)){
-				CollectionFactory factory = (CollectionFactory) factoryClass.newInstance();
+				CollectionFactory factory = (CollectionFactory) factoryClass.getDeclaredConstructor().newInstance();
 				
 				CollectionFactoryFor factoryAnnotation = factoryClass.getAnnotation(CollectionFactoryFor.class);
 				for(Class<?> collectionClass:factoryAnnotation.value())
@@ -43,8 +45,8 @@ public final class CollectionFactoryAnnotationListener implements ClassAnnotatio
 				throw new GeneratorException("Factory class "+className+" does not implement "
 						+com.quakearts.tools.test.generator.bean.collections.CollectionFactory.class.getName());
 			}
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-			throw new GeneratorException("Factory class "+className+" cannot be loaded.");
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+			throw new GeneratorException("Factory class "+className+" cannot be loaded.", e);
 		}
 	}
 

@@ -11,6 +11,7 @@
 package com.quakearts.tools.test.generator.bootstrap;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 
 import com.quakearts.classannotationscanner.listener.ClassAnnotationScanningListener;
 import com.quakearts.tools.test.generator.Generator;
@@ -46,14 +47,14 @@ public final class GeneratesAnnotationScanningListener implements ClassAnnotatio
 							+ generatedClass.getName());
 				}
 				
-				GeneratorFactory.getInstance().addGenerator((Generator<?>)generatorClass.newInstance(), generatedClass);
+				GeneratorFactory.getInstance().addGenerator((Generator<?>)generatorClass.getDeclaredConstructor().newInstance(), generatedClass);
 			}
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-			throw new GeneratorException("Unable to find class for "+className);
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | InvocationTargetException  e) {
+			throw new GeneratorException("Unable to find class for "+className, e);
 		} catch (ClassCastException e) {
-			throw new GeneratorException("Class "+className+" does not implement com.quakearts.tools.test.Generator<?>");
+			throw new GeneratorException("Class "+className+" does not implement com.quakearts.tools.test.Generator<?>", e);
 		} catch (NoSuchMethodException | SecurityException e) {
-			throw new GeneratorException("Class "+className+" does not have an accessible method 'public T generateRandom()'");
+			throw new GeneratorException("Class "+className+" does not have an accessible method 'public T generateRandom()'", e);
 		}
 	}
 

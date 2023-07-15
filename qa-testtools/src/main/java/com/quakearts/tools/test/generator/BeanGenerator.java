@@ -21,6 +21,7 @@ import java.lang.invoke.ConstantCallSite;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -186,18 +187,18 @@ public final class BeanGenerator<T> extends GeneratorBase<T> {
 	private Generator<?> createNewGeneratorFromSetting(UseGeneratorProperty setting, Generator<?> generator)
 			throws IllegalAccessException {
 		try {
-			return generator.getClass().newInstance().useGeneratorProperty(setting.value());
-		} catch (InstantiationException e) {
-			throw new GeneratorException("Unable to instantiate new generator: " + generator.getClass().getName());
+			return generator.getClass().getDeclaredConstructor().newInstance().useGeneratorProperty(setting.value());
+		} catch (InstantiationException | InvocationTargetException | NoSuchMethodException e) {
+			throw new GeneratorException("Unable to instantiate new generator: " + generator.getClass().getName(), e);
 		}
 	}
 
 	private Generator<?> createNewGeneratorWithProperties(GenerateWith properties, Generator<?> generator)
 			throws IllegalAccessException {
 		try {
-			return ((AnnotationPropertyConsumer) generator.getClass().newInstance())
+			return ((AnnotationPropertyConsumer) generator.getClass().getDeclaredConstructor().newInstance())
 					.configureFromAnnotations(properties);
-		} catch (InstantiationException e) {
+		} catch (InstantiationException | InvocationTargetException | NoSuchMethodException e) {
 			throw new GeneratorException("Unable to instantiate new generator: " + generator.getClass().getName());
 		}
 	}
@@ -249,11 +250,11 @@ public final class BeanGenerator<T> extends GeneratorBase<T> {
 				return null;
 			
 			callStack.push(this);
-			T object = (T) beanClass.newInstance();
+			T object = (T) beanClass.getDeclaredConstructor().newInstance();
 			populateFields(object);
 			callStack.pop();
 			return object;
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 			throw new GeneratorException("Unable to instantiate new class: " + beanClass.getName());
 		}
 	}

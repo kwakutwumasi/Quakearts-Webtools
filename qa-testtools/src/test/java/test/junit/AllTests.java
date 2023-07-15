@@ -10,12 +10,12 @@
  ******************************************************************************/
 package test.junit;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.junit.platform.suite.api.SelectClasses;
+import org.junit.platform.suite.api.Suite;
 
-@RunWith(Suite.class)
-@SuiteClasses({ BeanGeneratorTest.class, CollectionFactoryTest.class, PrimitivesTest.class,
+@SelectClasses({ BeanGeneratorTest.class, CollectionFactoryTest.class, PrimitivesTest.class,
 	TestConfiguration.class, TestHttpMessageBuilder.class, TestHttpMessageStore.class,
 	TestMockActionBuilder.class, TestMockingProxy.class, TestMockServer.class})
+
+@Suite()
 public class AllTests {}

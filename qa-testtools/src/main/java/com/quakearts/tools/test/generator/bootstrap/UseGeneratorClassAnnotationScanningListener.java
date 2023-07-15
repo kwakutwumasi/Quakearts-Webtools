@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.quakearts.tools.test.generator.bootstrap;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import com.quakearts.classannotationscanner.listener.ClassAnnotationScanningListener;
@@ -45,8 +46,8 @@ public final class UseGeneratorClassAnnotationScanningListener implements ClassA
 						+ generatedClass.getName());
 			}
 			
-			GeneratorFactory.getInstance().addGenerator((Generator<?>)generatorClass.newInstance(), generatedClass);
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+			GeneratorFactory.getInstance().addGenerator((Generator<?>)generatorClass.getDeclaredConstructor().newInstance(), generatedClass);
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			throw new GeneratorException("Unable to load class "+className);
 		} catch (ClassCastException e) {
 			throw new GeneratorException("Class "+className+" does not implement com.quakearts.tools.test.Generator<?>");

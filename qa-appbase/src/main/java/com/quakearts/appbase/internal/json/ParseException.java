@@ -21,8 +21,6 @@
  ******************************************************************************/
 package com.quakearts.appbase.internal.json;
 
-import com.quakearts.appbase.internal.json.Location;
-
 /**
  * An unchecked exception to indicate that an input does not qualify as valid
  * JSON.

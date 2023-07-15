@@ -55,9 +55,14 @@ public interface Configuration {
 	 * @return true if TLS should be used.
 	 */
 	boolean useTLS();
+	/**
+	 * 
+	 * @return the keytype. Should be one of RSA, DSA, or EC
+	 */
+	String getKeyType();
 	/**Get the location of the key store file to use for the TLS public/private key. Only used when {@link #useTLS()} is true
 	 * @return the file location
-	 */
+	 */	
 	String getKeyStore();
 	/**Get the password for the key store. Only used when {@link #useTLS()} is true
 	 * @return the password

@@ -22,6 +22,8 @@ import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.util.net.SSLHostConfig;
+import org.apache.tomcat.util.net.SSLHostConfigCertificate;
+import org.apache.tomcat.util.net.SSLHostConfigCertificate.Type;
 
 import com.quakearts.tools.test.mockserver.MockServer;
 import com.quakearts.tools.test.mockserver.configuration.Configuration;
@@ -74,11 +76,16 @@ public class MockServerImpl implements MockServer {
 			
 			if(configuration.useTLS()) {
 				SSLHostConfig hostConfig = new SSLHostConfig();
-				hostConfig.setProtocols("TLSv1.2");
-				hostConfig.setCertificateKeystoreType(configuration.getKeyStoreType());
-				hostConfig.setCertificateKeystorePassword(configuration.getKeyStorePassword());
-				hostConfig.setCertificateKeystoreFile(configuration.getKeyStore());
-				hostConfig.setCertificateKeyAlias(configuration.getKeyAlias());
+				hostConfig.setProtocols("TLSv1.2,TLSv1.3");
+
+				var hostCertificate = new SSLHostConfigCertificate(hostConfig, getType(configuration));
+
+				hostCertificate.setCertificateKeystoreType(configuration.getKeyStoreType());
+				hostCertificate.setCertificateKeystorePassword(configuration.getKeyStorePassword());
+				hostCertificate.setCertificateKeystoreFile(configuration.getKeyStore());
+				hostCertificate.setCertificateKeyAlias(configuration.getKeyAlias());
+
+				hostConfig.addCertificate(hostCertificate);
 				
 				tomcat.getConnector().addSslHostConfig(hostConfig);
 				tomcat.getConnector().setScheme("https");
@@ -106,6 +113,10 @@ public class MockServerImpl implements MockServer {
 	        	        
 			started = true;
 		}
+	}
+
+	private Type getType(Configuration configuration) {
+		return configuration.getKeyType() == null? Type.RSA: Type.valueOf(configuration.getKeyType());
 	}
 
 	@Override

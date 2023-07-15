@@ -1,37 +1,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.quakearts.webtools</groupId>
+		<artifactId>qa-allwebtools</artifactId>
+		<version>2.0.0</version>
+		<relativePath>../qa-allwebtools</relativePath>
+	</parent>
 	<groupId>com.quakearts.webtools.test</groupId>
 	<artifactId>qa-testtools</artifactId>
-	<version>1.0.4</version>
+	<version>2.0.0</version>
 	<name>Tool for Generating mock Object.</name>
 	<description>Uses a supplied configuration file to determine how to  generate random values</description>
 	<packaging>jar</packaging>
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.6.1</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.9</version>
+				<version>3.0.0</version>
 				<configuration>
 					<skipTests>true</skipTests>
 				</configuration>
@@ -39,19 +25,26 @@
 		</plugins>
 	</build>
 	<properties>
-		<tomcat.version>9.0.27</tomcat.version>
-		<tomcat.juli.version>9.0.0.M6</tomcat.juli.version>
+		<tomcat.version>10.1.7</tomcat.version>
+		<qa-classpathscanner.version>2.0.0</qa-classpathscanner.version>
+		<junit-jupiter.version>5.9.2</junit-jupiter.version>
+		<junit-suite.version>1.9.2</junit-suite.version>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-classpathscanner</artifactId>
-			<version>1.0.1</version>
+			<version>${qa-classpathscanner.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>${junit-jupiter.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-suite-engine</artifactId>
+			<version>${junit-suite.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -59,10 +52,5 @@
 			<artifactId>tomcat-embed-core</artifactId>
 			<version>${tomcat.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-logging-juli</artifactId>
-			<version>${tomcat.juli.version}</version>
-		</dependency>		
 	</dependencies>
 </project>

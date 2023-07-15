@@ -12,6 +12,8 @@ package com.quakearts.tools.test.mockserver.configuration.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Properties;
 import com.quakearts.tools.test.mockserver.configuration.Configuration;
 import com.quakearts.tools.test.mockserver.configuration.Configuration.MockingMode;
@@ -185,12 +187,26 @@ public class ConfigurationBuilder {
 		return this;
 	}
 	
-	/**Set the key store type
-	 * @param keyStoreType
+	/**Set the key alias
+	 * @param keyAlias
 	 * @return this object for method chaining
 	 */
 	public ConfigurationBuilder setKeyAliasAs(String keyAlias) {
 		configuration.keyAlias = keyAlias;
+		return this;
+	}
+
+	private static final HashSet<String> TYPES = new HashSet<>(Arrays.asList("RSA","DSA","EC"));
+
+	/**Set the key type
+	 * @param keyType
+	 * @return this object for method chaining
+	 */
+	public ConfigurationBuilder setKeyTypeAs(String keyType) {
+		if(!TYPES.contains(keyType))
+			throw new ConfigurationException(keyType + " is not supported");
+
+		configuration.keyType = keyType;
 		return this;
 	}
 	
@@ -263,6 +279,7 @@ public class ConfigurationBuilder {
 		String keyStorePassword;
 		String keyStoreType;
 		String keyAlias;
+		String keyType;
 		int connectTimeout;
 		int readTimeout;
 		boolean disHonorRESTContract;
@@ -312,6 +329,11 @@ public class ConfigurationBuilder {
 			return keyAlias;
 		}
 		
+		@Override
+		public String getKeyType() {
+			return keyType;
+		}
+
 		@Override
 		public int getConnectTimeout() {
 			return connectTimeout;

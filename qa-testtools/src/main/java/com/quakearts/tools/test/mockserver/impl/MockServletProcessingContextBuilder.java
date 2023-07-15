@@ -15,8 +15,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.quakearts.tools.test.mockserver.context.ProcessingContext;
 import com.quakearts.tools.test.mockserver.exception.MockServerProcessingException;
