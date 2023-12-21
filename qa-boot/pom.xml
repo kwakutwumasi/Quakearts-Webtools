@@ -33,7 +33,7 @@
 		</plugins>
 	</build>
 	<properties>
-		<tomcat.version>9.0.48</tomcat.version>
+		<tomcat.version>9.0.83</tomcat.version>
 		<tomcat.juli.version>9.0.0.M6</tomcat.juli.version>
 		<jsf.version>2.2.14</jsf.version>
 	</properties>	
